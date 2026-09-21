@@ -150,6 +150,8 @@ export const viewport: Viewport = {
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+  const isVercelDeployment = process.env.VERCEL === "1";
+
   // Initialize Sentry on the server (non-blocking, graceful failure)
   initSentry().catch(() => {
     // Sentry initialization failed (package not available or not configured)
@@ -215,8 +217,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                   <SmoothScroll>{children}</SmoothScroll>
                 </main>
                 <GlobalClientShell />
-                <Analytics />
-                <SpeedInsights />
+                {isVercelDeployment ? (
+                  <>
+                    <Analytics />
+                    <SpeedInsights />
+                  </>
+                ) : null}
               </QueryProvider>
             </RuntimeUiConfigProvider>
           </TenantThemeProvider>

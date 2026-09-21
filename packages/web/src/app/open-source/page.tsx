@@ -19,17 +19,17 @@ import {
 } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Open Source - Settler",
+  title: "Open Core - Settler",
   description:
-    "Settler is Apache 2.0 licensed. The reconciliation engine, SDK, CLI, and evidence model are fully open source. Self-host in your infrastructure, inspect the source, contribute back.",
+    "Settler publishes MIT-licensed SDK, protocol, CLI, and React packages plus Apache-2.0 Rust verification crates. The hosted platform remains proprietary.",
 };
 
 const ossComponents = [
   {
     icon: Code2,
-    title: "Reconciliation Engine",
+    title: "Rust Verification Kernel",
     description:
-      "The deterministic matching core. Configurable rules, field-level tolerance, multi-source joins. Inspect every line of matching logic.",
+      "Apache-2.0 crates for deterministic primitives, hashing, content-addressed artifacts, and proof verification.",
     link: "https://github.com/Hardonian/Settler",
     badge: "Core",
   },
@@ -53,35 +53,34 @@ const ossComponents = [
     icon: FileCode,
     title: "Evidence Model",
     description:
-      "The hash-chain evidence schema is open and documented. Any system can verify Settler's output without running Settler itself.",
+      "Public protocol types and verification tools support independent checks of compatible evidence artifacts.",
     link: "/proof-explorer",
     badge: "Protocol",
   },
   {
     icon: Database,
-    title: "Self-Host Stack",
+    title: "Examples and Local Tooling",
     description:
-      "Docker Compose and Kubernetes targets ship with the repo. Self-host the full platform inside your own infrastructure.",
+      "Public examples and CLI workflows demonstrate local reconciliation and evidence verification without exposing the hosted control plane.",
     link: "/docs/getting-started",
     badge: "Infrastructure",
   },
   {
     icon: Shield,
-    title: "Security Model",
+    title: "Verification Tools",
     description:
-      "Tenant isolation, row-level security, and audit trail implementation are open for review. No security through obscurity.",
+      "WASM and CLI verification surfaces let reviewers inspect artifact integrity outside the hosted application.",
     link: "/security-and-audit",
     badge: "Security",
   },
 ];
 
 const selfHostBenefits = [
-  "Your financial data never leaves your network",
-  "Deploy on your own cloud or on-premise infrastructure",
-  "No per-seat pricing — scale without permission",
-  "Audit the source code before trusting it with production data",
+  "Keep local workflows inside your chosen environment when configured that way",
+  "Evaluate public packages without adopting the hosted platform",
+  "Inspect the published package source and license terms",
   "Customize matching rules and adapters for your specific data model",
-  "No telemetry in self-hosted mode by default",
+  "Verify compatible evidence artifacts with the public CLI or WASM tooling",
 ];
 
 const quickStartSteps = [
@@ -119,17 +118,17 @@ export default function OpenSourcePage() {
               <div className="lg:col-span-7 space-y-6">
                 <div className="flex items-center gap-3">
                   <Badge variant="outline" className="border-primary/40 text-primary">
-                    Apache 2.0
+                    Open core
                   </Badge>
-                  <Badge variant="outline">Sovereign Open Source</Badge>
+                  <Badge variant="outline">Explicit package boundaries</Badge>
                 </div>
                 <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground dark:text-white leading-tight">
                   Reconciliation Infrastructure You Can Actually Inspect
                 </h1>
                 <p className="text-lg sm:text-xl text-muted-foreground dark:text-muted-foreground leading-relaxed">
-                  Settler is fully open source. The Rust matching engine kernel, cryptographic
-                  content-addressable storage (CAS), WebAssembly verification client, and self-host
-                  stack are all Apache 2.0. No gated core, no hidden runtime logic.
+                  Settler publishes MIT-licensed SDK, protocol, CLI, and React packages plus
+                  Apache-2.0 Rust crates. The hosted web console, control-plane API, adapters, and
+                  data schema remain proprietary platform code.
                 </p>
                 <div className="pt-2 flex flex-wrap gap-4">
                   <Button asChild size="lg" className="font-semibold">
@@ -166,7 +165,7 @@ export default function OpenSourcePage() {
                       STACK: RUST + CAS + WASM
                     </span>
                     <span className="font-mono text-[11px] text-emerald-400 font-bold">
-                      APACHE 2.0
+                      MIT + APACHE-2.0
                     </span>
                   </div>
                 </div>
@@ -179,11 +178,10 @@ export default function OpenSourcePage() {
         <section className="py-16 px-4 sm:px-6 lg:px-8">
           <div className="max-w-5xl mx-auto">
             <h2 className="text-2xl font-bold text-foreground dark:text-white mb-3">
-              What&apos;s Open Source
+              What&apos;s public
             </h2>
             <p className="text-muted-foreground dark:text-muted-foreground mb-10">
-              Every component that processes, hashes, or moves your data is open source and
-              auditable.
+              Package-level licensing and repository classification define the public boundary.
             </p>
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {ossComponents.map((component) => {
@@ -221,11 +219,11 @@ export default function OpenSourcePage() {
             <div className="grid md:grid-cols-2 gap-12 items-start">
               <div>
                 <h2 className="text-2xl font-bold text-foreground dark:text-white mb-3">
-                  Run it in 3 Minutes
+                  Run the local demo
                 </h2>
                 <p className="text-muted-foreground dark:text-muted-foreground mb-6">
-                  Clone, install, and run the demo path to see deterministic reconciliation
-                  end-to-end. No database or API keys needed.
+                  Clone, install, and run the demo path to inspect a local reconciliation and its
+                  evidence output. Setup time depends on the local toolchain.
                 </p>
                 <div className="space-y-3">
                   {quickStartSteps.map((step) => (
@@ -258,7 +256,9 @@ export default function OpenSourcePage() {
               <div className="rounded-2xl border border-border dark:border-border bg-muted/20 dark:bg-card/50 p-6">
                 <div className="flex items-center gap-2 mb-4">
                   <Eye className="w-5 h-5 text-muted-foreground dark:text-muted-foreground" />
-                  <h3 className="font-bold text-foreground dark:text-white">Why Self-Host?</h3>
+                  <h3 className="font-bold text-foreground dark:text-white">
+                    Why use the public packages?
+                  </h3>
                 </div>
                 <ul className="space-y-3">
                   {selfHostBenefits.map((benefit) => (
@@ -284,7 +284,7 @@ export default function OpenSourcePage() {
                   Architecture
                 </h2>
                 <p className="text-muted-foreground dark:text-muted-foreground">
-                  The OSS build exposes the full system architecture.
+                  Public packages expose the verification and client-side portion of the system.
                 </p>
               </div>
               <Button variant="outline" asChild size="sm">

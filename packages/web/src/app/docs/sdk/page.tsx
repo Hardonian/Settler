@@ -17,10 +17,10 @@ export default function DocsSdkPage() {
   const sdks = [
     {
       name: "Node.js/TypeScript",
-      description: "Production-grade TypeScript SDK with full type safety",
+      description: "Typed TypeScript client for the Settler API",
       href: "/docs/sdk/nodejs",
       language: "TypeScript",
-      status: "stable",
+      status: "available",
       features: ["Full TypeScript Support", "Automatic Retries", "Request Deduplication"],
       install: "npm install @settler/sdk",
     },
@@ -29,8 +29,8 @@ export default function DocsSdkPage() {
       description: "Pythonic SDK with async support and type hints",
       href: "/docs/sdk/python",
       language: "Python 3.8+",
-      status: "stable",
-      features: ["Async/Await Support", "Type Hints", "Production Ready"],
+      status: "available",
+      features: ["Async/Await Support", "Type Hints", "API Client"],
       install: "pip install settler-sdk",
     },
     {
@@ -38,7 +38,7 @@ export default function DocsSdkPage() {
       description: "Go SDK with context support and concurrent safety",
       href: "/docs/sdk/go",
       language: "Go 1.21+",
-      status: "stable",
+      status: "available",
       features: ["Context Support", "Concurrent Safe", "Minimal Dependencies"],
       install: "go get github.com/settler/settler-go",
     },
@@ -48,7 +48,7 @@ export default function DocsSdkPage() {
       href: "/docs/sdk/ruby",
       language: "Ruby 3.0+",
       status: "beta",
-      features: ["Ruby Idioms", "Gem Support", "Full API Coverage"],
+      features: ["Ruby Idioms", "Gem Support", "Endpoint Clients"],
       install: "gem install settler-sdk",
     },
   ];
@@ -63,8 +63,8 @@ export default function DocsSdkPage() {
         <div className="mt-8 mb-12">
           <h1 className="text-4xl font-bold text-foreground mb-4">SDK Documentation</h1>
           <p className="text-xl text-muted-foreground mb-8">
-            Choose your language and get started with Settler in minutes. All SDKs are
-            production-ready with automatic retries, error handling, and full API coverage.
+            Choose a language, inspect the package implementation and tests, and validate the
+            required endpoints against your target API version. Package maturity varies by SDK.
           </p>
         </div>
 
@@ -78,7 +78,7 @@ export default function DocsSdkPage() {
                     <Code2 className="w-6 h-6 text-blue-600 dark:text-blue-400" />
                     <CardTitle className="text-2xl">{sdk.name}</CardTitle>
                   </div>
-                  <Badge variant={sdk.status === "stable" ? "default" : "secondary"}>
+                  <Badge variant={sdk.status === "available" ? "default" : "secondary"}>
                     {sdk.status}
                   </Badge>
                 </div>

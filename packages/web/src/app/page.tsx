@@ -17,19 +17,16 @@ import {
   AdapterConnectionMap,
   AmbientLightOrbs,
   ArchitectureModuleShowcase,
-  BilateralSettlementVisualizer,
-  EnterpriseRoiCalculator,
   ExceptionTriageVisual,
   InteractiveHeroEngine,
   ReconciliationFlow,
   VisualGrid,
 } from "@/components/site/HomeInfographics";
-import { CognitiveVerifierInteractiveEnclave } from "@/components/site/CognitiveVerifierInteractiveEnclave";
 
 export const metadata: Metadata = {
   title: "Settler — Reconciliation intelligence + audit OS",
   description:
-    "Settler turns messy reconciliation into deterministic audit evidence. Built for finance teams that need replayable runs, hash-linked proofpacks, and immutable operator truth.",
+    "Settler turns fragmented transaction data into deterministic reconciliation runs, explainable exceptions, and replayable evidence artifacts.",
 };
 
 const capabilityClusters = [
@@ -46,7 +43,7 @@ const capabilityClusters = [
   {
     title: "Evidence-first output",
     description:
-      "Every run produces hash-linked evidence manifests — not just reports, but verifiable proof artifacts.",
+      "Configured runs can produce hash-linked manifests and exportable evidence for later review.",
     bullets: ["Structured evidence JSON", "Run provenance chains", "Export-ready audit bundles"],
   },
   {
@@ -66,9 +63,9 @@ const capabilityClusters = [
     bullets: ["Full run replay", "Hash-verified determinism", "Drift detection across executions"],
   },
   {
-    title: "Verified integration adapters",
+    title: "Integration adapters",
     description:
-      "25+ verified platform adapters spanning payments, accounting, e-commerce, banking, ERP, and subscription billing.",
+      "Adapters and import paths span payment, accounting, commerce, banking, ERP, and billing systems.",
     bullets: [
       "Stripe, PayPal, Square, Shopify",
       "QuickBooks, Xero, NetSuite, SAP",
@@ -76,13 +73,13 @@ const capabilityClusters = [
     ],
   },
   {
-    title: "Omnichannel Enterprise Suite",
+    title: "Operational controls",
     description:
-      "Fully featured workspaces and APIs for CFO Maker-Checker flows, Data Residency policies, Vendor Portals, and AI Rule Discovery.",
+      "Role-scoped workflows, review surfaces, exports, and policy controls support governed operations.",
     bullets: [
-      "SOX-compliant Maker-Checker approvals",
-      "Agentic AI exception resolution",
-      "Isolated Auditor & Vendor portals",
+      "Approval and review workflows",
+      "Advisory, evidence-linked automation",
+      "Tenant-scoped operator surfaces",
     ],
   },
 ];
@@ -96,34 +93,26 @@ export default function HomePage() {
         <PageHero
           eyebrow="Reconciliation Intelligence Platform"
           title="Deterministic reconciliation. Verifiable audit evidence."
-          description="Settler is the operating system for financial integrity. We turn fragmented transaction flows into replayable, hash-linked proof artifacts. Built for teams that require absolute precision and audit-ready certainty."
+          description="Settler turns fragmented transaction flows into reproducible runs, explainable exceptions, and replayable evidence. It is built for teams that need to inspect how a reconciliation result was produced."
           actions={
             <>
               <Button asChild size="lg">
-                <UiLink
-                  href="/roi-calculator"
-                  data-cta="hero_roi_calc"
-                  data-analytics="hero_roi_calc_click"
-                >
-                  Calculate Recoverable ROI <ArrowRight className="ml-2 h-4 w-4" />
+                <UiLink href="/docs/pilot" data-cta="hero_pilot" data-analytics="hero_pilot_click">
+                  Plan a pilot <ArrowRight className="ml-2 h-4 w-4" />
+                </UiLink>
+              </Button>
+              <Button variant="outline" size="lg" asChild>
+                <UiLink href="/demo/console" data-cta="hero_demo" data-analytics="hero_demo_click">
+                  Explore the console
                 </UiLink>
               </Button>
               <Button variant="outline" size="lg" asChild>
                 <UiLink
-                  href="/realtime-dashboard"
-                  data-cta="hero_telemetry"
-                  data-analytics="hero_telemetry_click"
+                  href="/security-and-audit"
+                  data-cta="hero_security"
+                  data-analytics="hero_security_click"
                 >
-                  Live Telemetry Radar
-                </UiLink>
-              </Button>
-              <Button variant="outline" size="lg" asChild>
-                <UiLink
-                  href="/revenue-recovery"
-                  data-cta="hero_revenue_recovery"
-                  data-analytics="hero_revenue_recovery_click"
-                >
-                  Revenue Recovery
+                  Review security
                 </UiLink>
               </Button>
             </>
@@ -131,27 +120,60 @@ export default function HomePage() {
           visual={<InteractiveHeroEngine />}
         />
 
-        {/* Flagship Innovation: Cognitive Proposer / Deterministic Verifier Enclave */}
-        <Section className="py-20 bg-gradient-to-b from-background via-muted/10 to-background border-b border-border/40">
-          <CognitiveVerifierInteractiveEnclave />
-        </Section>
-
-        {/* Strategic Cross-Rail Enclave Section */}
         <Section className="py-24 bg-muted/15 border-y border-border/40">
           <SectionHeader
-            title="Why Stripe & PayPal Compete to Own Settler"
-            description="The Universal Bilateral Settlement Enclave — neutralizing cross-rail dispute arbitrage, contractual fee creep, and batch float drag with sovereign cryptographic proofs."
+            title="Neutral settlement truth across systems"
+            description="Settler normalizes source records, applies explicit matching policy, and preserves the evidence needed to review an outcome without depending on a single processor's view."
           />
-          <BilateralSettlementVisualizer />
+          <FeatureGrid>
+            <FeatureCard
+              title="Normalize"
+              description="Map processor, bank, commerce, and ledger records into a consistent reconciliation model."
+              bullets={[
+                "Explicit source provenance",
+                "Adapter-level validation",
+                "Stable normalized fields",
+              ]}
+            />
+            <FeatureCard
+              title="Reconcile"
+              description="Execute deterministic matching rules with declared tolerances and reviewable policy."
+              bullets={[
+                "Repeatable inputs and outputs",
+                "Tolerance-aware decisions",
+                "Explained mismatches",
+              ]}
+            />
+            <FeatureCard
+              title="Evidence"
+              description="Export run context and tamper-evident artifacts for audit support and independent verification."
+              bullets={["Hash-linked manifests", "Replay support", "Operator decision history"]}
+            />
+          </FeatureGrid>
         </Section>
 
-        {/* Interactive Enterprise ROI & Leakage Calculator */}
         <Section className="py-24">
           <SectionHeader
-            title="Institutional Payment Leakage & ROI Engine"
-            description="Simulate your multi-processor payment volume across Stripe, PayPal, and bank clearing accounts. Uncover hidden fee creep, float drag, and audit hours reclaimed by Settler."
+            title="A pilot with explicit acceptance criteria"
+            description="Start with one payout-to-bank-to-ledger workflow. Measure reproducibility, exception quality, evidence completeness, and operator review time against your own data."
           />
-          <EnterpriseRoiCalculator />
+          <FeatureGrid>
+            <FeatureCard
+              title="Bound the workflow"
+              description="Choose named sources, a fixed period, and a documented matching policy before execution."
+              bullets={["Known input population", "Declared tolerances", "Named data owners"]}
+            />
+            <FeatureCard
+              title="Prove repeatability"
+              description="Run the same input twice and compare outputs, hashes, and exception classifications."
+              bullets={["Replay the run", "Compare fingerprints", "Investigate any drift"]}
+            />
+            <FeatureCard
+              title="Review the evidence"
+              description="Have finance, engineering, and audit stakeholders inspect the same evidence package."
+              bullets={["Trace source lineage", "Review decisions", "Record acceptance gaps"]}
+            />
+          </FeatureGrid>
         </Section>
 
         <Section withGrid className="bg-muted/10 border-y border-border/40 py-24">
@@ -166,10 +188,9 @@ export default function HomePage() {
               <div className="space-y-6 text-center lg:text-left">
                 <h3 className="text-2xl font-bold tracking-tight">Connected Ecosystem</h3>
                 <p className="text-muted-foreground leading-relaxed italic">
-                  Ingest transaction data through 25+ verified adapters for Stripe, Shopify,
-                  QuickBooks, PayPal, Square, Xero, NetSuite, Plaid, SAP, and more. Custom systems
-                  connect through the adapter framework. All data normalizes into a unified schema
-                  for deterministic matching.
+                  Ingest transaction data through adapters for payment, commerce, accounting,
+                  banking, and ERP systems. Custom sources connect through the adapter framework,
+                  then normalize into a shared model for deterministic matching.
                 </p>
               </div>
               <AdapterConnectionMap />
@@ -199,7 +220,7 @@ export default function HomePage() {
         <Section className="py-24">
           <SectionHeader
             title="Core Architecture & Shipped Modules"
-            description="Explore the implemented 3D architecture modules powering deterministic matching, multi-rail orchestration, continuous close, and cryptographic evidence."
+            description="Review the system surfaces behind deterministic matching, reconciliation workflows, and evidence generation."
           />
           <ArchitectureModuleShowcase />
 
@@ -245,15 +266,15 @@ export default function HomePage() {
                   role: "CFO / Risk",
                   icon: Scale,
                   href: "/console/close",
-                  badge: "SOX-404 Compliance",
-                  desc: "SOX-compliant approvals, continuous close dashboards, and liquidity metric analysis.",
+                  badge: "Review Workflows",
+                  desc: "Approval surfaces, close workflows, and evidence review for finance and risk teams.",
                 },
                 {
                   role: "InfoSec / Admin",
                   icon: ShieldCheck,
                   href: "/console/security/data-residency",
-                  badge: "Zero-Trust Isolation",
-                  desc: "Geo-fencing, PII redaction engines, SIEM exports, and tenant observability.",
+                  badge: "Tenant Controls",
+                  desc: "Tenant boundaries, access controls, audit exports, and deployment configuration surfaces.",
                 },
               ].map((item) => {
                 const Icon = item.icon;

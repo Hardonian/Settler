@@ -189,8 +189,8 @@ export default function ProofExplorerMarketingPage() {
           Audit Harder. Worry Less.
         </h2>
         <p className="text-xl text-muted-foreground mb-10 leading-relaxed font-medium">
-          Eliminate the manual evidence collection process and provide auditors with a direct,
-          verifiable feed of data integrity.
+          Reduce manual evidence assembly and give reviewers an inspectable integrity trail tied to
+          the declared reconciliation inputs.
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Button asChild size="lg" className="h-14 px-8 text-lg font-bold">

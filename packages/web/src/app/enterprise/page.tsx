@@ -26,14 +26,14 @@ import {
 export const metadata: Metadata = {
   title: "Enterprise - Settler",
   description:
-    "Institutional-grade reconciliation infrastructure with tenant isolation, governance boundaries, and deterministic audit trails. Designed for serious financial operations.",
+    "Enterprise evaluation path for deterministic reconciliation, tenant controls, governance boundaries, and reviewable evidence.",
 };
 
 const enterpriseCapabilities = [
   {
     title: "Tenant Isolation",
     description:
-      "Logically or physically isolated tenants with strict data residency controls. Each tenant operates within deterministic governance boundaries.",
+      "Tenant-scoped application and repository boundaries with RLS definitions. Each target deployment requires live isolation verification.",
     icon: Shield,
   },
   {
@@ -45,13 +45,13 @@ const enterpriseCapabilities = [
   {
     title: "Self-Hosted Deployment",
     description:
-      "Deploy in your own VPC or on-premise for full control over your financial data. Your infrastructure, your governance perimeter.",
+      "Dedicated, VPC, or self-hosted options can be evaluated against architecture, identity, export, and support requirements.",
     icon: Server,
   },
   {
     title: "Custom Adapter Development",
     description:
-      "Native adapters developed for your specific core banking, ERP, or payment systems. Integration depth matched to your operational requirements.",
+      "Adapter work can be scoped for core banking, ERP, payment, or internal systems after source contracts and acceptance criteria are defined.",
     icon: Users,
   },
 ];
@@ -63,8 +63,8 @@ export default function EnterprisePage() {
 
       <PageHero
         eyebrow="Enterprise Infrastructure"
-        title="What Serious Financial Infrastructure Evolves Toward"
-        description="Deploy deterministic reconciliation with tenant isolation, governance boundaries, and audit-ready evidence trails. Designed for teams where operational confidence is not optional."
+        title="Evaluate Settler against enterprise controls"
+        description="Review deterministic reconciliation, tenant boundaries, governance surfaces, and evidence outputs against the requirements of a named deployment."
         visual={
           <div className="relative aspect-video w-full overflow-hidden rounded-2xl border border-primary/20 shadow-2xl">
             <Image
@@ -91,9 +91,9 @@ export default function EnterprisePage() {
 
       <Section className="py-24">
         <div className="text-center space-y-4 max-w-3xl mx-auto mb-16">
-          <h2 className="text-3xl font-bold tracking-tight">Institutional-Grade Capabilities</h2>
+          <h2 className="text-3xl font-bold tracking-tight">Enterprise evaluation surfaces</h2>
           <p className="text-muted-foreground font-medium">
-            Security, compliance, and governance controls built into the infrastructure layer.
+            Security and governance controls that must be verified in the target environment.
           </p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -196,7 +196,7 @@ export default function EnterprisePage() {
               {
                 icon: CheckCircle,
                 title: "Controlled State",
-                description: "Deterministic automation, governance boundaries enforced.",
+                description: "Deterministic automation with tested governance boundaries.",
               },
             ].map((phase, idx) => {
               const Icon = phase.icon;
@@ -224,7 +224,7 @@ export default function EnterprisePage() {
 
       <Section className="py-24" containerClassName="max-w-4xl text-center">
         <h2 className="text-3xl md:text-5xl font-bold tracking-tight mb-8">
-          This matches how your systems should already operate.
+          Test the architecture against your requirements.
         </h2>
         <div className="flex flex-col sm:flex-row gap-6 justify-center">
           <Button size="lg" className="h-16 px-10 text-lg font-bold bg-primary hover:bg-primary/90">

@@ -244,7 +244,7 @@ export default function GettingStartedPage() {
                 {
                   href: "/docs/pilot",
                   label: "Pilot guide",
-                  desc: "First value in 30 minutes — checkpoints included.",
+                  desc: "A checkpoint-driven evaluation path with explicit validation steps.",
                 },
                 { href: "/docs/api", label: "API reference", desc: "Full REST API documentation." },
                 { href: "/docs/sdk", label: "SDK guide", desc: "TypeScript/Node.js SDK." },

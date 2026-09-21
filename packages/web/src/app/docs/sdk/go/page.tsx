@@ -184,7 +184,7 @@ if err != nil {
         <Card className="mb-8">
           <CardHeader>
             <CardTitle>Quick Start</CardTitle>
-            <CardDescription>Get started in 5 minutes</CardDescription>
+            <CardDescription>Review the package quickstart</CardDescription>
           </CardHeader>
           <CardContent>
             <CodeBlock code={quickstartCode} language="go" />

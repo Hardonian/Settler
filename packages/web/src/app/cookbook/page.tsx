@@ -18,7 +18,7 @@ import {
 export const metadata: Metadata = {
   title: "Policy Cookbook | Settler",
   description:
-    "A library of battle-tested reconciliation policies and patterns for various financial data sources.",
+    "Illustrative reconciliation policy patterns for evaluation and adaptation to verified data contracts.",
 };
 
 const recipes = [
@@ -80,8 +80,8 @@ export default function CookbookPage() {
               Policy Cookbook
             </h1>
             <p className="text-xl text-muted-foreground font-medium max-w-3xl mx-auto leading-relaxed">
-              Browse a repository of production-ready reconciliation snippets. Don&apos;t reinvent
-              the wheel—copy and adapt these patterns for your specific data infrastructure.
+              Review illustrative reconciliation patterns, then adapt and test them against your own
+              data contracts, tolerances, and operating controls before production use.
             </p>
           </div>
 

@@ -302,13 +302,13 @@ export default function VerifyPage() {
               <CardHeader>
                 <CardTitle className="text-base flex items-center gap-2">
                   <ShieldCheck className="w-4 h-4 text-emerald-400" />
-                  100% Census vs Sampling
+                  Full-input integrity coverage
                 </CardTitle>
               </CardHeader>
               <CardContent className="text-xs text-muted-foreground space-y-2">
-                Traditional audit firms sample 25–40 transactions out of millions. Settler&apos;s
-                Merkle trees compute proofpacks across 100% of all ledger records, eliminating
-                sampling risk entirely.
+                A proofpack can cover every record included in its declared input population. That
+                integrity check does not establish population completeness or replace an
+                auditor&apos;s sampling and judgment.
               </CardContent>
             </Card>
 
@@ -321,8 +321,9 @@ export default function VerifyPage() {
               </CardHeader>
               <CardContent className="text-xs text-muted-foreground space-y-2">
                 Settler&apos;s Rust verification kernel avoids floating-point numbers completely,
-                utilizing fixed-point integer cents and explicit calendar bounds. Replaying a run
-                produces identical SHA-256 hashes forever.
+                utilizing fixed-point integer cents and explicit calendar bounds. Replaying a run is
+                expected to produce the same SHA-256 hashes when the serialized inputs, rules,
+                runtime contract, and version remain fixed.
               </CardContent>
             </Card>
 

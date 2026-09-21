@@ -25,6 +25,12 @@ test("unsupported commercial and diligence claims are rejected", () => {
     "SOC 2 Type II certified",
     "GDPR compliant",
     "HIPAA ready",
+    "Why Stripe & PayPal Compete to Own Settler",
+    "SOX-compliant approvals",
+    "Calculate Recoverable ROI",
+    "Institutional Payment Leakage & ROI Engine",
+    "absolute precision and audit-ready certainty",
+    "Zero Cross-Tenant Leakage Guaranteed",
   ];
 
   for (const claim of claims) {

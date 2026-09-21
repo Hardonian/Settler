@@ -20,7 +20,7 @@ export default function PythonSDKPage() {
     { icon: Code2, title: "Pythonic API", description: "Clean, intuitive Python interface" },
     { icon: Zap, title: "Automatic Retries", description: "Exponential backoff built-in" },
     { icon: Shield, title: "Type Hints", description: "Full type annotations for IDE support" },
-    { icon: Package, title: "Production Ready", description: "Battle-tested in production" },
+    { icon: Package, title: "Package Source", description: "Inspect implementation and tests" },
   ];
 
   const installationCode = `pip install settler-sdk
@@ -169,7 +169,7 @@ asyncio.run(main())`;
         <Card className="mb-8">
           <CardHeader>
             <CardTitle>Quick Start</CardTitle>
-            <CardDescription>Get started in 5 minutes</CardDescription>
+            <CardDescription>Review the package quickstart</CardDescription>
           </CardHeader>
           <CardContent>
             <CodeBlock code={quickstartCode} language="python" />

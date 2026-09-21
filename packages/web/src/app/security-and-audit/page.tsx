@@ -17,7 +17,7 @@ import Image from "next/image";
 export const metadata: Metadata = {
   title: "Security & Audit - Settler",
   description:
-    "Settler is built on a foundation of tenant isolation, immutable audit trails, and verifiable evidence. Every reconciliation run produces a cryptographic evidence chain.",
+    "Implemented security controls, verification evidence, and known assurance gaps for Settler deployments.",
 };
 
 const securityPillars = [
@@ -25,40 +25,40 @@ const securityPillars = [
     icon: Lock,
     title: "Tenant Isolation",
     description:
-      "All data is hard-partitioned by tenant at the database, API, and runtime layer. No shared state, no cross-tenant data leakage.",
+      "Repository, route, and authorization boundaries require tenant context. RLS definitions exist, while live database verification remains deployment-specific.",
     items: [
-      "Row-level security in PostgreSQL",
+      "PostgreSQL RLS definitions with live verification required",
       "API keys scoped to tenant context",
-      "Runtime isolation enforced server-side",
+      "Server-side runtime tenant guards",
     ],
   },
   {
     icon: FileText,
-    title: "Immutable Audit Trails",
+    title: "Audit Trails",
     description:
-      "Every action, every reconciliation run, and every mismatch review is logged with tamper-evident records. Logs cannot be modified after creation.",
+      "Implemented workflows record actors, timestamps, and decision context. Retention and write protections must be verified in the target deployment.",
     items: [
-      "Append-only audit log schema",
-      "Actor + timestamp + payload on every event",
-      "Exportable for compliance ingestion",
+      "Audit-event schema and service paths",
+      "Actor, timestamp, and payload context",
+      "Export surfaces for downstream review",
     ],
   },
   {
     icon: ShieldCheck,
     title: "Cryptographic Evidence",
     description:
-      "Reconciliation runs produce SHA-256 hash chains over the evidence payload. Any post-run modification to results is immediately detectable.",
+      "Configured runs can produce SHA-256 and Merkle evidence artifacts that support later integrity checks.",
     items: [
-      "SHA-256 per-run evidence hashes",
-      "Hash chain links sequential runs",
-      "Verifiable without re-running",
+      "SHA-256 evidence hashing",
+      "Hash-linked run artifacts",
+      "Independent verification tooling",
     ],
   },
   {
     icon: Eye,
     title: "Human-in-the-Loop Review",
     description:
-      "Settler does not make autonomous financial decisions. Every flagged mismatch requires explicit human review and resolution before closing.",
+      "AI-assisted features are advisory. Approval requirements and operator authority depend on the configured workflow and policy.",
     items: [
       "Manual override with documented reason",
       "Role-based review permissions",
@@ -78,24 +78,24 @@ const securityPillars = [
   },
   {
     icon: Server,
-    title: "Self-Hostable",
+    title: "Deployment Boundary",
     description:
-      "Deploy Settler inside your own infrastructure. Your financial data never transits a Settler-managed network unless you opt into the managed cloud.",
+      "Hosted, dedicated, and self-managed options have different data paths. The chosen architecture and operational responsibilities must be agreed before deployment.",
     items: [
-      "Docker Compose and Kubernetes targets",
-      "No telemetry by default in self-hosted mode",
-      "Apache 2.0 license — inspect and audit the source",
+      "Local Docker development path",
+      "Telemetry and export settings reviewed per deployment",
+      "Open-core license boundary documented separately",
     ],
   },
 ];
 
 const complianceItems = [
-  "Audit-trail export compatible with SOC 2 evidence collection",
-  "Data residency controls for GDPR and regional requirements",
+  "Audit-trail exports can support a broader SOC 2 evidence program",
+  "Data-residency configuration surfaces require deployment validation",
   "Configurable retention policies for reconciliation records",
   "Role-separation between data access and configuration",
   "Webhook delivery with signed payloads for downstream audit systems",
-  "No training data exfiltration — AI review layer is stateless per run",
+  "AI data handling must be validated against the configured provider and deployment",
 ];
 
 export default function SecurityAndAuditPage() {
@@ -106,7 +106,7 @@ export default function SecurityAndAuditPage() {
       <PageHero
         eyebrow="Security Architecture"
         title="Security, Isolation, and Verifiable Evidence"
-        description="Settler is designed so that every reconciliation run produces evidence you can verify, every action leaves a traceable record, and your data stays in your infrastructure."
+        description="Review the controls implemented in code, the checks enforced in CI, and the assurance work that remains specific to a live deployment."
         visual={<EvidenceArtifactPreview />}
         actions={
           <>
@@ -163,12 +163,13 @@ export default function SecurityAndAuditPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           <div className="space-y-8">
             <h2 className="text-3xl font-bold tracking-tight text-white">
-              Hardened Tenant Isolation
+              Tenant Isolation Controls
             </h2>
             <p className="text-lg text-slate-400 leading-relaxed">
-              Every tenant operates within a cryptographically isolated perimeter. Settler enforces
-              row-level security and runtime context partitioning to ensure zero-leakage between
-              institutional workloads.
+              Tenant identifiers are required across repository and route boundaries, with
+              authorization checks, runtime guards, and RLS definitions providing layered controls.
+              Live RLS and cross-tenant verification must still pass in the deployed database before
+              launch.
             </p>
             <IsolationVaultVisual />
           </div>
@@ -202,7 +203,8 @@ export default function SecurityAndAuditPage() {
         </h2>
         <p className="text-muted-foreground mb-8 leading-relaxed">
           Settler is not a compliance certification. It is infrastructure that makes compliance
-          evidence collection tractable. The following properties are structural — not add-ons.
+          evidence collection tractable. The following implemented surfaces still require
+          deployment-specific validation and do not establish certification.
         </p>
         <div className="rounded-xl border border-border bg-card p-6 sm:p-8 shadow-inner">
           <FeatureList items={complianceItems} />
@@ -222,8 +224,8 @@ export default function SecurityAndAuditPage() {
           Responsible Disclosure
         </h2>
         <p className="text-muted-foreground mb-6 leading-relaxed max-w-2xl">
-          Found a security vulnerability? Please report it responsibly. We take all reports
-          seriously and respond promptly.
+          Found a security vulnerability? Please report it privately with a sanitized reproduction.
+          Reports are triaged according to the available support and incident process.
         </p>
         <div className="flex flex-col sm:flex-row gap-4">
           <Button asChild variant="outline">

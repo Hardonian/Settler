@@ -1,556 +1,180 @@
-"use client";
-
-import { useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Navigation } from "@/components/Navigation";
-import { Footer } from "@/components/Footer";
-import { ConversionCTA } from "@/components/ConversionCTA";
-import { AnimatedPageWrapper } from "@/components/AnimatedPageWrapper";
-import { AnimatedHero } from "@/components/AnimatedHero";
-import { Breadcrumbs } from "@/components/Breadcrumbs";
-import { FAQSchema } from "@/components/StructuredData";
+import type { Metadata } from "next";
 import Link from "next/link";
+import { ArrowRight, BookOpen, Bug, Mail, ShieldAlert } from "lucide-react";
+import { Footer } from "@/components/Footer";
+import { Navigation } from "@/components/Navigation";
+import {
+  FeatureCard,
+  FeatureGrid,
+  PageHero,
+  PublicPageShell,
+  Section,
+  SectionHeader,
+} from "@/components/site/primitives";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-export default function Support() {
-  const [searchQuery, setSearchQuery] = useState("");
+export const metadata: Metadata = {
+  title: "Support | Settler",
+  description: "Settler documentation, issue reporting, and commercial support boundaries.",
+};
 
-  const supportOptions = [
-    {
-      icon: "📚",
-      title: "Documentation",
-      description: "Comprehensive guides, API reference, and tutorials",
-      link: "/docs",
-      linkText: "Browse Docs",
-      tier: "All Plans",
-    },
-    {
-      icon: "📖",
-      title: "Cookbooks & Examples",
-      description: "Pre-built workflows and code examples for common use cases",
-      link: "/cookbook",
-      linkText: "View Cookbooks",
-      tier: "All Plans",
-    },
-    {
-      icon: "💬",
-      title: "Community Support",
-      description: "Get help from our community on Discord and GitHub",
-      link: "https://discord.gg/settler",
-      linkText: "Join Discord",
-      external: true,
-      tier: "All Plans",
-    },
-    {
-      icon: "🎮",
-      title: "Interactive Playground",
-      description: "Test the API and see examples in action",
-      link: "/console/playground",
-      linkText: "Try Playground",
-      tier: "All Plans",
-    },
-    {
-      icon: "🧭",
-      title: "Future-Proof Suite",
-      description:
-        "Explore the complete milestone view across proof, lineage, arena, and operator panels",
-      link: "/future-proof",
-      linkText: "Open Suite",
-      tier: "All Plans",
-    },
-    {
-      icon: "📧",
-      title: "Email Support",
-      description: "Get help via email (response within 24 hours)",
-      link: "mailto:hello@settler.dev",
-      linkText: "Email Us",
-      external: true,
-      tier: "Commercial+",
-    },
-    {
-      icon: "🛠",
-      title: "Managed Operations",
-      description:
-        "Operator-assisted reconciliation: onboarding, exception triage, monthly close, and audit packets",
-      link: "/managed",
-      linkText: "See what's included",
-      tier: "Managed Ops",
-    },
-    {
-      icon: "🚀",
-      title: "Priority Support",
-      description: "24/7 support with SLA guarantees and dedicated account manager",
-      link: "/enterprise",
-      linkText: "Learn More",
-      tier: "Enterprise",
-    },
-  ];
+const severities = [
+  [
+    "P0 — Critical",
+    "Confirmed security incident, material data-integrity risk, or complete production outage.",
+  ],
+  [
+    "P1 — High",
+    "A production workflow is unavailable or materially incorrect with no practical workaround.",
+  ],
+  ["P2 — Medium", "A workflow is impaired, but a documented workaround exists."],
+  ["P3 — Low", "Documentation, usability, or non-urgent product feedback."],
+] as const;
 
-  const supportTiers = [
-    {
-      tier: "Starter",
-      features: [
-        "Documentation & Guides",
-        "Community Support (Discord, GitHub)",
-        "Cookbooks & Examples",
-        "Interactive Playground",
-        "Email Support (24 hour response)",
-        "Technical Integration Help",
-      ],
-      responseTime: "24 hours",
-    },
-    {
-      tier: "Growth",
-      features: [
-        "Everything in Starter",
-        "Priority Email Support (4 hour response)",
-        "Advanced Integration Help",
-        "Bug Reports & Feature Requests",
-        "Security evidence support",
-      ],
-      responseTime: "4 hours",
-    },
-    {
-      tier: "Enterprise",
-      features: [
-        "Everything in Commercial",
-        "24/7 Priority Support",
-        "Dedicated Account Manager",
-        "SLA Guarantees (<4hr response)",
-        "Phone Support",
-        "Custom Integration Support",
-      ],
-      responseTime: "<4 hours (P1)",
-    },
-  ];
-
-  const escalationLevels = [
-    {
-      level: "Level 1",
-      name: "Support Bot / Self-Service",
-      includes: ["Documentation", "Community", "Knowledge Base", "Automated Responses"],
-    },
-    {
-      level: "Level 2",
-      name: "Support Engineer",
-      includes: ["Email Support", "Technical Questions", "Integration Help"],
-    },
-    {
-      level: "Level 3",
-      name: "Senior Support Engineer",
-      includes: ["Complex Issues", "Performance Problems", "Advanced Integration"],
-    },
-    {
-      level: "Level 4",
-      name: "Engineering Team",
-      includes: ["Bugs", "Feature Requests", "Infrastructure Issues"],
-    },
-    {
-      level: "Level 5",
-      name: "Leadership",
-      includes: ["Critical Incidents", "Security Issues", "Customer Escalations"],
-    },
-  ];
-
-  const severityLevels = [
-    {
-      severity: "P0: Critical",
-      description: "System down, data breach, complete service outage",
-      responseTime: "15 minutes",
-      resolutionTime: "4 hours",
-    },
-    {
-      severity: "P1: High",
-      description: "Major feature broken, high error rate, multiple customers affected",
-      responseTime: "1 hour",
-      resolutionTime: "24 hours",
-    },
-    {
-      severity: "P2: Medium",
-      description: "Minor feature broken, moderate error rate, single customer affected",
-      responseTime: "4 hours",
-      resolutionTime: "72 hours",
-    },
-    {
-      severity: "P3: Low",
-      description: "Documentation issues, UI improvements, feature requests",
-      responseTime: "24 hours",
-      resolutionTime: "7 days",
-    },
-  ];
-
-  const faqs = [
-    {
-      question: "How do I get started with Settler?",
-      answer:
-        "Get started in under 5 minutes! Install the SDK with `npm install @settler/sdk`, get your API key from the dashboard, and create your first reconciliation job. Check out our quickstart guide in the documentation or try the interactive playground to see it in action.",
-    },
-    {
-      question: "What platforms does Settler support?",
-      answer:
-        "Settler supports multiple platforms including Stripe, Shopify, QuickBooks, PayPal, Square, Amazon Pay, and more. We have pre-built integrations for popular platforms, and you can build custom integrations with our SDK.",
-    },
-    {
-      question: "Is there a free trial?",
-      answer:
-        "Yes! All paid plans include a 14-day free trial with full access—no credit card required. Perfect for testing Settler with your data. Check out our pricing page for full details on all plans.",
-    },
-    {
-      question: "How accurate is the reconciliation?",
-      answer:
-        "Settler uses advanced matching algorithms, confidence scoring, and fuzzy matching capabilities. We use multiple matching strategies including exact matching, fuzzy matching, and date range matching to improve reliability even with imperfect data.",
-    },
-    {
-      question: "Can I use Settler on-premise?",
-      answer:
-        "Yes! Enterprise plans include on-premise deployment options for maximum security and compliance. We provide Docker containers and deployment guides. Contact our sales team at hello@settler.dev to discuss your requirements.",
-    },
-    {
-      question: "What security certifications do you have?",
-      answer:
-        "Settler does not currently represent SOC 2, PCI DSS, HIPAA, or GDPR certification as complete. The product includes tenant-isolation, audit-logging, and data-protection controls, while certification and regulatory scope must be validated for each deployment during diligence.",
-    },
-    {
-      question: "How do I handle unmatched records?",
-      answer:
-        "Settler provides fully automated exception handling with 95%+ instant resolution. Our system automatically processes exceptions using confidence-based matching and rule-based resolution. You can view exception reports, quality metrics, and complete audit trails. All processing happens automatically—no manual intervention required.",
-    },
-    {
-      question: "What happens if my reconciliation job fails?",
-      answer:
-        "Settler automatically retries failed jobs with exponential backoff. You'll receive webhook notifications for failures, and all errors are logged with detailed information. Check the job logs via the API or dashboard to diagnose issues.",
-    },
-    {
-      question: "Can I reconcile multiple currencies?",
-      answer:
-        "Yes! Settler supports multi-currency reconciliation with automatic currency conversion using real-time exchange rates. You can configure currency matching rules and tolerance levels for each currency pair.",
-    },
-    {
-      question: "How do webhooks work?",
-      answer:
-        "Settler sends webhooks for key events like reconciliation completion, job failures, and unmatched records. Webhooks are signed with HMAC for security verification. Failed webhook deliveries are automatically retried up to 5 times with exponential backoff.",
-    },
-    {
-      question: "What is the API rate limit?",
-      answer:
-        "Rate limits vary by plan. Starter: 500 requests/15 minutes. Growth: 2,000 requests/15 minutes. Enterprise: Custom limits. All responses include rate limit headers (X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset) so you can implement proper backoff strategies.",
-    },
-    {
-      question: "How do I build a custom adapter?",
-      answer:
-        "Custom platform integrations are built using our integration SDK. Each integration implements a simple interface to fetch and standardize data from your platform. Check out our integration documentation and examples in the cookbooks section.",
-    },
-    {
-      question: "What data retention policies do you have?",
-      answer:
-        "Data retention varies by plan: Starter (30 days), Growth (1 year), Enterprise (custom, up to 7 years). You can export all data via the API at any time. Enterprise customers can configure custom retention policies.",
-    },
-    {
-      question: "How do I integrate Settler with my existing systems?",
-      answer:
-        "Settler is API-first and integrates easily with any system. Use our REST API, TypeScript/JavaScript SDK, or CLI. We provide webhooks for real-time updates and detailed documentation with integration recipes for common patterns.",
-    },
-    {
-      question: "What kind of support do you offer?",
-      answer:
-        "Starter: Email support with 24-hour response time. Growth: Priority email support with 4-hour response time. Enterprise: 24/7 priority support with SLA guarantees (<1 hour response), dedicated account manager, and phone support. See the support tiers section above for details.",
-    },
-  ];
-
-  const filteredFaqs = faqs.filter(
-    (faq) =>
-      faq.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      faq.answer.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
+export default function SupportPage() {
   return (
-    <AnimatedPageWrapper aria-label="Support and help center">
-      <FAQSchema faqs={faqs as Array<{ question: string; answer: string }>} />
+    <PublicPageShell>
       <Navigation />
+      <main id="main-content" className="pt-16">
+        <PageHero
+          eyebrow="Support"
+          title="A support path with explicit boundaries"
+          description="Use the documentation for product guidance, GitHub for reproducible open-source issues, and email for commercial or security-sensitive questions. Contractual response targets apply only when they are written into an executed agreement."
+          actions={
+            <>
+              <Button asChild size="lg">
+                <Link href="/docs">
+                  Read documentation <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
+              </Button>
+              <Button asChild size="lg" variant="outline">
+                <a href="mailto:hello@settler.dev">Email support</a>
+              </Button>
+            </>
+          }
+          visual={
+            <Card className="border-primary/25 bg-card/80 shadow-xl">
+              <CardHeader>
+                <CardTitle>Before opening a request</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3 text-sm text-muted-foreground">
+                <p>
+                  Include the affected route or package, observed and expected behavior, and a
+                  minimal reproduction.
+                </p>
+                <p>Remove credentials, personal data, and customer records from attachments.</p>
+                <p>For suspected security issues, use email and do not publish exploit details.</p>
+              </CardContent>
+            </Card>
+          }
+        />
 
-      {/* Breadcrumbs */}
-      <section className="px-4 sm:px-6 lg:px-8 pt-24">
-        <div className="max-w-7xl mx-auto">
-          <Breadcrumbs items={[{ label: "Support" }]} />
-        </div>
-      </section>
-
-      {/* Hero Section */}
-      <AnimatedHero
-        badge="We're Here to Help"
-        title="Support & Help Center"
-        description="Find answers, get help, and connect with our team"
-      />
-
-      {/* Support Options */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8" aria-labelledby="support-options-heading">
-        <div className="max-w-7xl mx-auto">
-          <h2
-            id="support-options-heading"
-            className="text-3xl md:text-4xl font-bold text-center mb-4 text-foreground dark:text-white"
-          >
-            Support Channels
-          </h2>
-          <p className="text-center text-muted-foreground dark:text-muted-foreground mb-12 max-w-2xl mx-auto">
-            Choose the support channel that works best for you
-          </p>
-          <div
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12"
-            role="list"
-            aria-label="Available support channels"
-          >
-            {supportOptions.map((option, index) => (
-              <Card
-                key={index}
-                className="bg-card dark:bg-background border-border border-border transition-all duration-200 hover:shadow-lg hover:scale-[1.02]"
-                role="listitem"
-              >
-                <CardHeader>
-                  <div className="text-4xl mb-2">{option.icon}</div>
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-lg text-foreground dark:text-white">
-                      {option.title}
-                    </CardTitle>
-                    <Badge variant="outline" className="text-xs">
-                      {option.tier}
-                    </Badge>
-                  </div>
-                  <CardDescription className="text-muted-foreground dark:text-muted-foreground">
-                    {option.description}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  {option.external ? (
-                    <Button
-                      asChild
-                      variant="outline"
-                      className="w-full border-border border-border"
-                    >
-                      <a
-                        href={option.link}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        aria-label={`${option.linkText} (opens in new tab)`}
-                      >
-                        {option.linkText} →
-                      </a>
-                    </Button>
-                  ) : (
-                    <Button
-                      asChild
-                      variant="outline"
-                      className="w-full border-border border-border"
-                    >
-                      <Link href={option.link}>{option.linkText} →</Link>
-                    </Button>
-                  )}
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Support Tiers */}
-      <section
-        className="py-20 px-4 sm:px-6 lg:px-8 bg-card/50 dark:bg-card/50"
-        aria-labelledby="support-tiers-heading"
-      >
-        <div className="max-w-7xl mx-auto">
-          <h2
-            id="support-tiers-heading"
-            className="text-3xl md:text-4xl font-bold text-center mb-4 text-foreground dark:text-white"
-          >
-            Support Tiers
-          </h2>
-          <p className="text-center text-muted-foreground dark:text-muted-foreground mb-12 max-w-2xl mx-auto">
-            Different support levels for different needs
-          </p>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {supportTiers.map((tier, index) => (
-              <Card
-                key={index}
-                className={`bg-card dark:bg-background border-border border-border transition-all duration-200 hover:shadow-lg ${
-                  tier.tier === "Enterprise" ? "ring-2 ring-blue-500" : ""
-                }`}
-              >
-                <CardHeader>
-                  <CardTitle className="text-xl text-foreground dark:text-white mb-2">
-                    {tier.tier}
-                  </CardTitle>
-                  <CardDescription className="text-muted-foreground dark:text-muted-foreground">
-                    Response Time: {tier.responseTime}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <ul className="space-y-2">
-                    {tier.features.map((feature, idx) => (
-                      <li
-                        key={idx}
-                        className="flex items-start text-sm text-muted-foreground dark:text-muted-foreground"
-                      >
-                        <span className="mr-2 text-green-500">✓</span>
-                        {feature}
-                      </li>
-                    ))}
-                  </ul>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Escalation Matrix */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8" aria-labelledby="escalation-heading">
-        <div className="max-w-7xl mx-auto">
-          <h2
-            id="escalation-heading"
-            className="text-3xl md:text-4xl font-bold text-center mb-4 text-foreground dark:text-white"
-          >
-            Support Escalation
-          </h2>
-          <p className="text-center text-muted-foreground dark:text-muted-foreground mb-12 max-w-2xl mx-auto">
-            How we handle and escalate support requests
-          </p>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-            {escalationLevels.map((level, index) => (
-              <Card key={index} className="bg-card dark:bg-background border-border border-border">
-                <CardHeader>
-                  <Badge variant="outline" className="w-fit mb-2">
-                    {level.level}
-                  </Badge>
-                  <CardTitle className="text-lg text-foreground dark:text-white">
-                    {level.name}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <ul className="space-y-1 text-sm text-muted-foreground dark:text-muted-foreground">
-                    {level.includes.map((item, idx) => (
-                      <li key={idx} className="flex items-start">
-                        <span className="mr-2">•</span>
-                        {item}
-                      </li>
-                    ))}
-                  </ul>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Severity Levels */}
-      <section
-        className="py-20 px-4 sm:px-6 lg:px-8 bg-card/50 dark:bg-card/50"
-        aria-labelledby="severity-heading"
-      >
-        <div className="max-w-4xl mx-auto">
-          <h2
-            id="severity-heading"
-            className="text-3xl md:text-4xl font-bold text-center mb-4 text-foreground dark:text-white"
-          >
-            Issue Severity & Response Times
-          </h2>
-          <p className="text-center text-muted-foreground dark:text-muted-foreground mb-12">
-            We prioritize issues based on severity to ensure critical problems are resolved quickly
-          </p>
-          <div className="space-y-4">
-            {severityLevels.map((severity, index) => (
-              <Card key={index} className="bg-card dark:bg-background border-border border-border">
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-lg text-foreground dark:text-white">
-                      {severity.severity}
-                    </CardTitle>
-                    <div className="flex gap-4 text-sm">
-                      <Badge variant="outline">Response: {severity.responseTime}</Badge>
-                      <Badge variant="outline">Resolution: {severity.resolutionTime}</Badge>
-                    </div>
-                  </div>
-                  <CardDescription className="text-muted-foreground dark:text-muted-foreground">
-                    {severity.description}
-                  </CardDescription>
-                </CardHeader>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* FAQ Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-card/50 dark:bg-card/50">
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-foreground dark:text-white">
-              Frequently Asked Questions
-            </h2>
-            <p className="text-lg text-muted-foreground dark:text-muted-foreground">
-              Search our knowledge base for quick answers
-            </p>
-          </div>
-
-          {/* Search */}
-          <div className="mb-8">
-            <input
-              type="text"
-              placeholder="Search FAQs..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full px-4 py-3 border border-border border-border rounded-lg bg-card dark:bg-background text-foreground dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              aria-label="Search frequently asked questions"
+        <Section>
+          <SectionHeader title="Choose the right channel" />
+          <FeatureGrid>
+            <FeatureCard
+              title="Documentation"
+              description="Start with setup, API, integration, replay, and pilot guidance."
+              bullets={["Quickstart", "API contracts", "Operational guidance"]}
             />
+            <FeatureCard
+              title="Open-source issues"
+              description="Use GitHub for reproducible defects or proposals related to public packages."
+              bullets={["Sanitized reproduction", "Version information", "Expected behavior"]}
+            />
+            <FeatureCard
+              title="Commercial and security"
+              description="Use email for account, procurement, architecture, or security-sensitive discussions."
+              bullets={[
+                "No secrets in email",
+                "State deployment context",
+                "Name the affected workflow",
+              ]}
+            />
+          </FeatureGrid>
+          <div className="mt-8 flex flex-wrap gap-3">
+            <Button asChild variant="outline">
+              <a
+                href="https://github.com/Hardonian/Settler/issues"
+                target="_blank"
+                rel="noreferrer"
+              >
+                <Bug className="mr-2 h-4 w-4" /> Open-source issues
+              </a>
+            </Button>
+            <Button asChild variant="outline">
+              <a href="mailto:hello@settler.dev">
+                <Mail className="mr-2 h-4 w-4" /> hello@settler.dev
+              </a>
+            </Button>
+            <Button asChild variant="outline">
+              <Link href="/security-and-audit">
+                <ShieldAlert className="mr-2 h-4 w-4" /> Security posture
+              </Link>
+            </Button>
           </div>
+        </Section>
 
-          {/* FAQ List */}
-          <div className="space-y-4" role="list" aria-label="Frequently asked questions">
-            {filteredFaqs.length > 0 ? (
-              filteredFaqs.map((faq, index) => (
-                <Card
-                  key={index}
-                  className="bg-card dark:bg-background border-border border-border transition-all duration-300 hover:shadow-lg"
-                  role="listitem"
-                >
-                  <CardHeader>
-                    <CardTitle className="text-lg text-foreground dark:text-white">
-                      {faq.question}
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-muted-foreground dark:text-muted-foreground">{faq.answer}</p>
-                  </CardContent>
-                </Card>
-              ))
-            ) : (
-              <Card className="bg-card dark:bg-background border-border border-border">
-                <CardContent className="py-8 text-center">
-                  <p className="text-muted-foreground dark:text-muted-foreground">
-                    No FAQs found matching "{searchQuery}". Try a different search term.
-                  </p>
+        <Section className="border-y border-border/50 bg-muted/15">
+          <SectionHeader
+            title="Incident classification"
+            description="These definitions help route a report. Availability, response, and resolution commitments are contract-specific and are not promised by this public page."
+          />
+          <div className="grid gap-4 md:grid-cols-2">
+            {severities.map(([title, description]) => (
+              <Card key={title} className="border-border/60">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-lg">{title}</CardTitle>
+                </CardHeader>
+                <CardContent className="text-sm leading-relaxed text-muted-foreground">
+                  {description}
                 </CardContent>
               </Card>
-            )}
+            ))}
           </div>
-        </div>
-      </section>
+        </Section>
 
-      {/* Contact Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-4xl mx-auto">
-          <ConversionCTA
-            title="Still Need Help?"
-            description="Our support team is ready to assist you. Get in touch via email or schedule a call with our sales team."
-            primaryAction="Email Support"
-            primaryLink="mailto:hello@settler.dev"
-            secondaryAction="Contact Sales"
-            secondaryLink="/enterprise"
-            variant="gradient"
-          />
-        </div>
-      </section>
-
+        <Section>
+          <SectionHeader title="Evidence and expectations" />
+          <div className="grid gap-6 md:grid-cols-2">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-lg">
+                  <BookOpen className="h-5 w-5 text-primary" /> Public support posture
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3 text-sm text-muted-foreground">
+                <p>
+                  Documentation and public issue tracking are available without a service
+                  commitment.
+                </p>
+                <p>
+                  Commercial support scope is established during evaluation and recorded in the
+                  order form or support schedule.
+                </p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-lg">
+                  <ShieldAlert className="h-5 w-5 text-primary" /> Security boundary
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3 text-sm text-muted-foreground">
+                <p>
+                  Settler does not claim completed SOC 2, PCI DSS, HIPAA, or GDPR certification.
+                </p>
+                <p>
+                  Security controls and deployment evidence should be verified for the environment
+                  under evaluation.
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+        </Section>
+      </main>
       <Footer />
-    </AnimatedPageWrapper>
+    </PublicPageShell>
   );
 }

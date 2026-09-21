@@ -3,8 +3,6 @@ import Image from "next/image";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
 import { AnimatedHero } from "@/components/AnimatedHero";
-import { FeatureComparison } from "@/components/FeatureComparison";
-import { CompetitiveComparisonTable } from "@/components/pricing/CompetitiveComparisonTable";
 import { CTASection, Section, SectionHeader } from "@/components/site/primitives";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -14,7 +12,6 @@ import { VisualGrid } from "@/components/site/infographics";
 import { COMMERCIAL_OFFERS, OfferCode } from "@/domain/billing/commercialModel";
 import { PREMIUM_PACKS } from "@/domain/billing/premiumPacks";
 import { calculateMonthlyCost, planConfigs } from "@/domain/billing/planConfig";
-import { ROICalculator } from "@/components/pricing/ROICalculator";
 
 export const metadata: Metadata = {
   title: "Pricing | Settler",
@@ -51,13 +48,17 @@ export default function PricingPage() {
       {/* Hero Section */}
       <AnimatedHero
         badge="Pricing Plans"
-        title="High-Integrity Infrastructure, Low-Frustration Pricing"
-        description="Choose the plan that matches your volume and governance requirements. From open-source developers to global enterprise flows."
+        title="A clear model for evaluating Settler"
+        description="Start with the open-source engine or evaluate the hosted and managed paths. Commercial availability, deployment scope, support, and service commitments are confirmed in writing."
       />
 
       {/* Pricing Cards */}
       <Section className="py-16 sm:py-20">
         <div className="mx-auto max-w-7xl">
+          <SectionHeader
+            title="Published evaluation model"
+            description="Prices shown here are the current product configuration, not a substitute for an executed order form. Enterprise capabilities and support commitments remain architecture- and contract-scoped."
+          />
           <div className="grid grid-cols-1 gap-8 md:grid-cols-2 xl:grid-cols-4">
             {COMMERCIAL_OFFERS.map((offer) => {
               const Icon = iconByOffer[offer.code];
@@ -132,16 +133,6 @@ export default function PricingPage() {
         </div>
       </Section>
 
-      {/* Feature Comparison */}
-      <FeatureComparison />
-
-      {/* Competitive Market Positioning */}
-      <Section className="border-t border-border/40 py-16 sm:py-20 bg-muted/10">
-        <div className="mx-auto max-w-7xl">
-          <CompetitiveComparisonTable />
-        </div>
-      </Section>
-
       <Section className="border-t border-border/40 py-16 sm:py-24">
         <div className="mx-auto max-w-7xl">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
@@ -204,10 +195,10 @@ export default function PricingPage() {
                 <div className="absolute inset-0 bg-gradient-to-tr from-primary/15 via-transparent to-transparent pointer-events-none" />
                 <div className="absolute bottom-4 left-4 right-4 rounded-xl border border-white/10 bg-black/60 backdrop-blur-md p-3 text-xs text-white/90 flex items-center justify-between">
                   <span className="font-mono text-[11px] text-emerald-400 font-semibold">
-                    FLOAT LEAKAGE: 0.000%
+                    METERING INPUTS: EXPLICIT
                   </span>
                   <span className="font-mono text-[11px] text-cyan-300 font-bold">
-                    SUB-MS PRECISION
+                    PLAN CONFIG: VERSIONED
                   </span>
                 </div>
               </div>
@@ -256,19 +247,6 @@ export default function PricingPage() {
         </div>
       </Section>
 
-      {/* ROI Calculator */}
-      <Section className="border-t border-border/40 py-16 sm:py-20">
-        <div className="mx-auto max-w-7xl">
-          <SectionHeader
-            title="Calculate your ROI"
-            description="See how much time and money Settler saves compared to manual reconciliation. Adjust the inputs to match your workload."
-          />
-          <div className="mt-10">
-            <ROICalculator />
-          </div>
-        </div>
-      </Section>
-
       {/* FAQ */}
       <Section className="border-t border-border/40 py-16 sm:py-20">
         <div className="mx-auto max-w-3xl">
@@ -280,8 +258,9 @@ export default function PricingPage() {
             <div className="space-y-2">
               <h3 className="text-lg font-semibold text-foreground">Can I switch plans later?</h3>
               <p className="text-sm leading-relaxed text-muted-foreground">
-                Absolutely. Our cloud infrastructure supports seamless migration between plans.
-                Downgrading from Cloud API to OSS requires moving to self-managed deployment.
+                Plan changes use the product billing workflow. Moving between hosted and
+                self-managed deployment requires a data and operations review before production
+                cutover.
               </p>
             </div>
             <div className="space-y-2">
@@ -314,8 +293,8 @@ export default function PricingPage() {
       <Section className="border-y border-border/40 py-16 sm:py-20">
         <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 text-center">
           <SectionHeader
-            title="API onboarding in under 30 minutes"
-            description="Start with run creation, evidence retrieval, and replay routes. Promote to Managed / Enterprise when you need contractual reliability and named operator support."
+            title="An API-first evaluation path"
+            description="Start with run creation, evidence retrieval, and replay routes. Move to Managed or Enterprise only after architecture, support, and reliability terms are agreed."
           />
           <div className="mt-8 flex flex-wrap justify-center gap-3">
             <Button asChild>
@@ -333,9 +312,9 @@ export default function PricingPage() {
 
       <CTASection
         title="Ready to evaluate Settler?"
-        description="Start a trial or read the docs to see how deterministic runs and evidence fit your stack."
-        primaryHref="/signup"
-        primaryLabel="Start free trial"
+        description="Use the pilot guide or read the API documentation to test deterministic runs and evidence against your own acceptance criteria."
+        primaryHref="/docs/pilot"
+        primaryLabel="Plan an evaluation"
         secondaryHref="/docs"
         secondaryLabel="Read documentation"
       />

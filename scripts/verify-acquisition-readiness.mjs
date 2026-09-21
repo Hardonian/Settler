@@ -29,6 +29,20 @@ export const unsupportedClaimPatterns = [
   },
   { label: "unsupported GDPR claim", pattern: /\bgdpr compliant\b/i },
   { label: "unsupported HIPAA claim", pattern: /\bhipaa ready\b/i },
+  {
+    label: "acquisition-bait positioning",
+    pattern: /why\s+(?:stripe|paypal)[^\n]{0,80}\b(?:own|acquir(?:e|es|ing))\b/i,
+  },
+  { label: "unsupported SOX conclusion", pattern: /\bsox(?:-404)?[- ]compliant\b/i },
+  {
+    label: "unsupported ROI promise",
+    pattern: /\b(?:calculate recoverable roi|institutional payment leakage\s*&\s*roi engine)\b/i,
+  },
+  {
+    label: "unsupported certainty claim",
+    pattern:
+      /\b(?:absolute precision|audit-ready certainty|zero cross-tenant leakage guaranteed)\b/i,
+  },
 ];
 
 export function findUnsupportedClaims(text) {
@@ -71,6 +85,17 @@ export function auditAcquisitionReadiness(root = defaultRoot) {
     resolve(root, "INVESTOR_OVERVIEW.md"),
     resolve(root, "docs/STAKEHOLDER_READINESS.md"),
     resolve(root, "docs/strategy/POSITIONING_TRUTH.md"),
+    resolve(root, "packages/web/src/app/page.tsx"),
+    resolve(root, "packages/web/src/app/about/page.tsx"),
+    resolve(root, "packages/web/src/app/capabilities/page.tsx"),
+    resolve(root, "packages/web/src/app/compare/page.tsx"),
+    resolve(root, "packages/web/src/app/enterprise/page.tsx"),
+    resolve(root, "packages/web/src/app/open-source/page.tsx"),
+    resolve(root, "packages/web/src/app/pricing/page.tsx"),
+    resolve(root, "packages/web/src/app/security-and-audit/page.tsx"),
+    resolve(root, "packages/web/src/app/support/page.tsx"),
+    resolve(root, "packages/web/src/components/site/ArchitectureModuleShowcase.tsx"),
+    resolve(root, "packages/web/src/domain/billing/commercialModel.ts"),
   ].filter(existsSync);
 
   for (const file of activeFiles) {
@@ -91,6 +116,29 @@ export function auditAcquisitionReadiness(root = defaultRoot) {
     const path = resolve(root, file);
     if (existsSync(path) && !readFileSync(path, "utf8").includes(boundary)) {
       violations.push(`${file}: required boundary is missing: ${boundary}`);
+    }
+  }
+
+  const retiredMarketingRoutes = [
+    ["packages/web/src/app/(marketing)/home/page.tsx", 'permanentRedirect("/")'],
+    ["packages/web/src/app/astra/page.tsx", 'permanentRedirect("/architecture")'],
+    ["packages/web/src/app/cognitive/page.tsx", 'permanentRedirect("/capabilities")'],
+    ["packages/web/src/app/document-onboarding/page.tsx", 'permanentRedirect("/docs/pilot")'],
+    ["packages/web/src/app/docs/quickstart/page.tsx", 'permanentRedirect("/docs/getting-started")'],
+    ["packages/web/src/app/docs/launch/page.tsx", 'permanentRedirect("/docs/status")'],
+    ["packages/web/src/app/docs/support/page.tsx", 'permanentRedirect("/support")'],
+    ["packages/web/src/app/future-proof/page.tsx", 'permanentRedirect("/product")'],
+    ["packages/web/src/app/realtime-dashboard/page.tsx", 'permanentRedirect("/demo/console")'],
+    ["packages/web/src/app/revenue-recovery/page.tsx", 'permanentRedirect("/capabilities")'],
+    ["packages/web/src/app/roi-calculator/page.tsx", 'permanentRedirect("/docs/pilot")'],
+    ["packages/web/src/app/sidereal/page.tsx", 'permanentRedirect("/architecture")'],
+    ["packages/web/src/app/value-proposition/page.tsx", 'permanentRedirect("/product")'],
+  ];
+
+  for (const [file, redirect] of retiredMarketingRoutes) {
+    const path = resolve(root, file);
+    if (!existsSync(path) || !readFileSync(path, "utf8").includes(redirect)) {
+      violations.push(`${file}: retired marketing route must retain ${redirect}`);
     }
   }
 

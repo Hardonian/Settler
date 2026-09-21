@@ -22,16 +22,16 @@ import { Badge } from "@/components/ui/badge";
 import { UiLink } from "@/components/ui/link";
 
 export const metadata: Metadata = {
-  title: "Pilot Guide — First 30 Minutes | Settler Docs",
+  title: "Pilot Guide — Acceptance Criteria | Settler Docs",
   description:
-    "Get to your first reconciliation result in under 30 minutes. This guide covers signup, workspace creation, connecting a data source, running your first reconciliation, and reviewing exceptions.",
+    "Run a scoped reconciliation evaluation with explicit setup, source, execution, exception-review, and evidence checkpoints.",
 };
 
 const pilotSteps = [
   {
     step: "01",
     icon: Zap,
-    time: "~3 min",
+    time: "Setup",
     title: "Create your account and workspace",
     description:
       "Sign up and create your tenant workspace. Your workspace is the isolated scope for all your runs, exceptions, and proof artifacts.",
@@ -46,7 +46,7 @@ const pilotSteps = [
   {
     step: "02",
     icon: Database,
-    time: "~5 min",
+    time: "Source",
     title: "Connect a data source or upload a CSV",
     description:
       "The fastest path to your first result is a CSV upload — no credentials required. If you have a Stripe account, connect it directly for a live integration.",
@@ -64,7 +64,7 @@ const pilotSteps = [
   {
     step: "03",
     icon: Play,
-    time: "~2 min",
+    time: "Policy",
     title: "Trigger your first reconciliation run",
     description:
       "Start a reconciliation run from the Runs page or via the API. Settler will apply your matching rules and surface every record that couldn't be matched.",
@@ -79,7 +79,7 @@ const pilotSteps = [
   {
     step: "04",
     icon: AlertTriangle,
-    time: "~10 min",
+    time: "Run",
     title: "Review your exceptions queue",
     description:
       "Every record that couldn't be matched automatically becomes an exception. Open the exceptions queue to see what the engine flagged, understand why, and make a resolution decision.",
@@ -94,7 +94,7 @@ const pilotSteps = [
   {
     step: "05",
     icon: Shield,
-    time: "~5 min",
+    time: "Review",
     title: "Inspect run provenance and download the proofpack",
     description:
       "Open the run detail, go to the Proof & Provenance tab, and download the proofpack artifact. This JSON file is the hash-linked evidence record for the run — the same artifact you would share with an auditor.",
@@ -109,7 +109,7 @@ const pilotSteps = [
   {
     step: "06",
     icon: Download,
-    time: "~2 min",
+    time: "Evidence",
     title: "Export your results",
     description:
       "From the run detail, click 'Export results' to download the full reconciliation output as CSV. This is your portable record of matched and unmatched records.",
@@ -201,26 +201,27 @@ export default function PilotGuidePage() {
           <div className="flex items-center gap-2 text-muted-foreground">
             <Clock className="h-4 w-4" />
             <span className="text-xs font-semibold uppercase tracking-[0.2em]">
-              30-minute pilot guide
+              Scoped pilot guide
             </span>
           </div>
           <h1 className="text-4xl font-bold tracking-tight text-foreground">
-            First value in 30 minutes
+            Prove one reconciliation workflow
           </h1>
           <p className="text-lg text-muted-foreground leading-relaxed max-w-3xl">
             This guide walks you through your first reconciliation run end-to-end: account setup,
             data source connection, running the engine, reviewing exceptions, and downloading a
-            proofpack artifact. Each step has a time estimate and explicit checkpoints.
+            proofpack artifact. Each step has explicit checkpoints; completion time depends on
+            source access, schema quality, and deployment configuration.
           </p>
           <div className="flex flex-wrap gap-3 pt-2">
             <Badge variant="outline" className="gap-1.5">
-              <CheckCircle2 className="h-3 w-3 text-green-500" /> No infrastructure to manage
+              <CheckCircle2 className="h-3 w-3 text-green-500" /> One bounded workflow
             </Badge>
             <Badge variant="outline" className="gap-1.5">
-              <CheckCircle2 className="h-3 w-3 text-green-500" /> CSV upload — no credentials needed
+              <CheckCircle2 className="h-3 w-3 text-green-500" /> Sanitized sample input
             </Badge>
             <Badge variant="outline" className="gap-1.5">
-              <CheckCircle2 className="h-3 w-3 text-green-500" /> Full audit trail from run 1
+              <CheckCircle2 className="h-3 w-3 text-green-500" /> Evidence review checkpoint
             </Badge>
           </div>
         </div>

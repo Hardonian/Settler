@@ -15,7 +15,7 @@ const CATEGORY_ARTICLES: Record<
     {
       id: "1",
       title: "Quick Start Guide",
-      description: "Get up and running with Settler in 5 minutes",
+      description: "Follow the documented setup and validation path",
       href: "/support/articles/quick-start",
     },
     {

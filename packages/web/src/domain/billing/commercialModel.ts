@@ -41,8 +41,8 @@ export const COMMERCIAL_OFFERS: CommercialOffer[] = [
     headlinePrice: `$${planConfigs.pro.monthlyPrice.toLocaleString()}`,
     period: "/mo",
     description:
-      "The scalable control plane for modern finance. Metered volume, hosted evidence, and exception triage.",
-    ctaLabel: "Start Cloud",
+      "Hosted evaluation path with metered volume, evidence storage, and exception review surfaces.",
+    ctaLabel: "Evaluate Cloud",
     ctaHref: "/signup",
     evidencePosture: "Hosted run evidence, replay detail, and usage telemetry",
     deployment: "Multi-tenant cloud",
@@ -55,12 +55,12 @@ export const COMMERCIAL_OFFERS: CommercialOffer[] = [
     headlinePrice: `$${planConfigs.scale.monthlyPrice.toLocaleString()}+`,
     period: "/mo",
     description:
-      "White-glove reconciliation operations. We handle the runs, exceptions, and audit packet preparation.",
+      "Engagement-scoped operator assistance for runs, exceptions, and evidence-package preparation.",
     ctaLabel: "See what's included",
     ctaHref: "/managed",
     evidencePosture: "Shared operator proofpacks, escalation ledger, and monthly close evidence",
     deployment: "Hosted with human-in-the-loop",
-    supportModel: "Named operator + escalation",
+    supportModel: "Named support scope by agreement",
     planCode: "scale",
   },
   {
@@ -68,12 +68,12 @@ export const COMMERCIAL_OFFERS: CommercialOffer[] = [
     name: "Enterprise Dedicated",
     headlinePrice: "Custom",
     description:
-      "The ultimate governance layer. Dedicated VPC deployment, custom retention, and audit-ready evidence controls.",
+      "Architecture-scoped deployment, retention, identity, and evidence controls for enterprise evaluation.",
     ctaLabel: "Contact Enterprise",
     ctaHref: "/contact",
-    evidencePosture: "Audit export controls, retention controls, and architecture review",
-    deployment: "Dedicated, VPC, or on-prem",
-    supportModel: "SLA + security review",
+    evidencePosture: "Export and retention controls reviewed during diligence",
+    deployment: "Dedicated options subject to architecture review",
+    supportModel: "Contract-defined support and security review",
     planCode: "enterprise",
   },
 ];
