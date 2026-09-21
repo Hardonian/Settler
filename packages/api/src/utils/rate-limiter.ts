@@ -46,22 +46,37 @@ const ENDPOINT_OVERRIDES: Record<string, RateLimitConfig> = {
 };
 
 export class RedisRateLimiter {
-  private redis: Redis;
+  private redis: Redis | null;
 
   constructor(redisClient?: Redis) {
-    const redisUrl = config.redis.url || "redis://localhost:6379";
-    this.redis = redisClient || new Redis(redisUrl);
+    this.redis = redisClient ?? null;
+  }
+
+  private getRedis(): Redis {
+    if (!this.redis) {
+      const redisUrl = config.redis.url || "redis://localhost:6379";
+      this.redis = new Redis(redisUrl);
+    }
+    return this.redis;
+  }
+
+  async close(): Promise<void> {
+    if (!this.redis) return;
+
+    await this.redis.quit();
+    this.redis = null;
   }
 
   /**
    * Toggles the global kill switch to block all traffic.
    */
   async setGlobalKillSwitch(active: boolean): Promise<void> {
+    const redis = this.getRedis();
     if (active) {
-      await this.redis.set(KILL_SWITCH_KEY, "true");
+      await redis.set(KILL_SWITCH_KEY, "true");
       killSwitchGauge.set(1);
     } else {
-      await this.redis.del(KILL_SWITCH_KEY);
+      await redis.del(KILL_SWITCH_KEY);
       killSwitchGauge.set(0);
     }
   }
@@ -70,7 +85,7 @@ export class RedisRateLimiter {
    * Returns the current status of the global kill switch.
    */
   async isKillSwitchActive(): Promise<boolean> {
-    const status = await this.redis.get(KILL_SWITCH_KEY);
+    const status = await this.getRedis().get(KILL_SWITCH_KEY);
     const active = status === "true";
     killSwitchGauge.set(active ? 1 : 0);
     return active;
@@ -102,8 +117,9 @@ export class RedisRateLimiter {
     windowSeconds: number,
     labels: { path: string; role: string } = { path: "unknown", role: "unknown" }
   ): Promise<RateLimitResult> {
+    const redis = this.getRedis();
     // 1. Check Global Kill Switch
-    const killSwitch = await this.redis.get(KILL_SWITCH_KEY);
+    const killSwitch = await redis.get(KILL_SWITCH_KEY);
     if (killSwitch === "true") {
       killSwitchGauge.set(1);
       rateLimitCounter.inc({ event_type: "kill_switch", ...labels });
@@ -120,7 +136,7 @@ export class RedisRateLimiter {
     const now = Math.floor(Date.now() / 1000);
     const windowKey = `ratelimit:${key}:${Math.floor(now / windowSeconds)}`;
 
-    const multi = this.redis.multi();
+    const multi = redis.multi();
     multi.incr(windowKey);
     multi.expire(windowKey, windowSeconds + 1);
 

@@ -25,5 +25,12 @@ jest.setTimeout(30000);
 
 // Clean up after all tests
 afterAll(async () => {
-  // Close any open connections, cleanup, etc.
+  const [{ rateLimiter }, { streamProcessor }, { siemEgress }] = await Promise.all([
+    import("../utils/rate-limiter"),
+    import("../services/reconciliation-graph/stream-processor"),
+    import("../jobs/egress"),
+  ]);
+
+  streamProcessor.stopProcessing();
+  await Promise.all([rateLimiter.close(), siemEgress.close()]);
 });

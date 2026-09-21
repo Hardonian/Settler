@@ -69,7 +69,8 @@ function cleanupOldMutexes(): void {
 }
 
 // Run cleanup every 30 minutes
-setInterval(cleanupOldMutexes, 30 * 60 * 1000);
+const mutexCleanupTimer = setInterval(cleanupOldMutexes, 30 * 60 * 1000);
+mutexCleanupTimer.unref();
 
 // Validation schemas with input sanitization
 const adapterConfigSchema = z
