@@ -75,13 +75,13 @@ import { v1Router, v1WebhookRouter } from "./routes/v1";
 import { v2Router } from "./routes/v2";
 import { reconciliationSummaryRouter } from "./routes/reconciliation-summary";
 import { SecretsManager, REQUIRED_SECRETS } from "./infrastructure/security/SecretsManager";
-import { initializeTracing } from "./infrastructure/observability/tracing";
+import { initializeTracing, shutdownTracing } from "./infrastructure/observability/tracing";
 import { compressionMiddleware, brotliCompressionMiddleware } from "./middleware/compression";
 import { observabilityMiddleware } from "./middleware/observability";
 import { eventTrackingMiddleware } from "./middleware/event-tracking";
 import { setupSignalHandlers, registerShutdownHandler } from "./utils/graceful-shutdown";
 import { requestTimeoutMiddleware, getRequestTimeout } from "./middleware/request-timeout";
-import { initializeSentry, sentryErrorHandler } from "./middleware/sentry";
+import { initializeSentry, sentryErrorHandler, shutdownSentry } from "./middleware/sentry";
 import { profilingMiddleware } from "./infrastructure/observability/profiling";
 import { setCsrfToken, csrfProtection, getCsrfToken } from "./middleware/csrf";
 import { sanitizeInput, sanitizeUrlParams } from "./middleware/input-sanitization";
@@ -495,6 +495,11 @@ async function startServer() {
       clearInterval(distributedGuardsMaintenanceTimer);
       await siemEgress.close();
       logInfo("Webhook processing stopped");
+    });
+
+    registerShutdownHandler(async () => {
+      await Promise.allSettled([shutdownTracing(), shutdownSentry()]);
+      logInfo("Observability exporters stopped");
     });
 
     const httpServer = createServer(app);

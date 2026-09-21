@@ -27,5 +27,13 @@ jest.setTimeout(30000);
 afterAll(async () => {
   const rateLimiterModule = require.cache[require.resolve("../utils/rate-limiter")] as
     { exports?: { rateLimiter?: { close?: () => Promise<void> } } } | undefined;
+  const tracingModule = require.cache[
+    require.resolve("../infrastructure/observability/tracing")
+  ] as { exports?: { shutdownTracing?: () => Promise<void> } } | undefined;
+  const sentryModule = require.cache[require.resolve("../middleware/sentry")] as
+    { exports?: { shutdownSentry?: () => Promise<void> } } | undefined;
+
   await rateLimiterModule?.exports?.rateLimiter?.close?.();
+  await tracingModule?.exports?.shutdownTracing?.();
+  await sentryModule?.exports?.shutdownSentry?.();
 });

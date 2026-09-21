@@ -27,6 +27,7 @@ let trace: any;
 let SpanStatusCode: any;
 
 let loadPromise: Promise<void> | null = null;
+let shutdownRequested = false;
 
 function loadOpenTelemetry(): Promise<void> {
   if (loadPromise) {
@@ -63,12 +64,22 @@ function loadOpenTelemetry(): Promise<void> {
 let sdk: any = null;
 
 export function initializeTracing(): void {
+  if (config.nodeEnv === "test" && process.env.OTEL_ENABLE_TESTS !== "true") {
+    return;
+  }
+
   if (sdk) {
     return; // Already initialized
   }
 
+  shutdownRequested = false;
+
   void loadOpenTelemetry()
     .then(() => {
+      if (shutdownRequested) {
+        return;
+      }
+
       // Check if OpenTelemetry packages are available
       if (!NodeSDK || !Resource || !SemanticResourceAttributes) {
         // Note: Can't use logger here as it may depend on tracing - use console for initialization only
@@ -117,11 +128,17 @@ export function initializeTracing(): void {
     });
 }
 
-export function shutdownTracing(): Promise<void> {
-  if (sdk) {
-    return sdk.shutdown();
+export async function shutdownTracing(): Promise<void> {
+  shutdownRequested = true;
+  await loadPromise?.catch(() => undefined);
+
+  if (!sdk) {
+    return;
   }
-  return Promise.resolve();
+
+  const activeSdk = sdk;
+  sdk = null;
+  await activeSdk.shutdown();
 }
 
 /**

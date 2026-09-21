@@ -15,6 +15,10 @@ let sentryInitialized = false;
  * Initialize Sentry
  */
 export function initializeSentry(): void {
+  if (validatedConfig.nodeEnv === "test" && process.env.SENTRY_ENABLE_TESTS !== "true") {
+    return;
+  }
+
   if (sentryInitialized) {
     return;
   }
@@ -40,6 +44,15 @@ export function initializeSentry(): void {
 
   sentryInitialized = true;
   logInfo("Sentry initialized");
+}
+
+export async function shutdownSentry(timeoutMs = 2_000): Promise<void> {
+  if (!sentryInitialized) {
+    return;
+  }
+
+  await Sentry.close(timeoutMs);
+  sentryInitialized = false;
 }
 
 /**
