@@ -21,7 +21,7 @@ interface InMemoryBucket {
 export type RateLimitMode = "distributed" | "local-fallback";
 
 export class TokenBucket {
-  private redis: Redis;
+  private redis: Redis | null = null;
   private _mode: RateLimitMode = "distributed";
   private _fallbackWarningEmitted = false;
   private inMemoryBuckets = new Map<string, InMemoryBucket>();
@@ -31,7 +31,11 @@ export class TokenBucket {
     return this._mode;
   }
 
-  constructor() {
+  private getRedis(): Redis {
+    if (this.redis) {
+      return this.redis;
+    }
+
     const redisOptions: {
       host: string;
       port: number;
@@ -47,10 +51,10 @@ export class TokenBucket {
     if (config.redis.url) {
       redisOptions.url = config.redis.url;
     }
-    this.redis = new Redis(redisOptions);
+    const redis = new Redis(redisOptions);
 
     // Use defineCommand to securely execute the Lua script by SHA under the hood
-    this.redis.defineCommand("consumeTokens", {
+    redis.defineCommand("consumeTokens", {
       numberOfKeys: 1,
       lua: `
         local key = KEYS[1]
@@ -84,46 +88,11 @@ export class TokenBucket {
       `,
     });
 
-    // Use defineCommand to securely execute the Lua script by SHA under the hood
-    this.redis.defineCommand("consumeTokens", {
-      numberOfKeys: 1,
-      lua: `
-        local key = KEYS[1]
-        local tokens = tonumber(ARGV[1])
-        local capacity = tonumber(ARGV[2])
-        local refillRate = tonumber(ARGV[3])
-        local now = tonumber(ARGV[4])
-        local windowMs = tonumber(ARGV[5])
-
-        local bucket = redis.call('HMGET', key, 'tokens', 'lastRefill')
-        local currentTokens = tonumber(bucket[1]) or capacity
-        local lastRefill = tonumber(bucket[2]) or now
-
-        -- Calculate tokens to add based on time elapsed
-        local elapsed = (now - lastRefill) / 1000
-        local tokensToAdd = math.floor(elapsed * refillRate)
-        currentTokens = math.min(capacity, currentTokens + tokensToAdd)
-
-        -- Check if we can consume
-        if currentTokens >= tokens then
-          currentTokens = currentTokens - tokens
-          redis.call('HMSET', key, 'tokens', currentTokens, 'lastRefill', now)
-          redis.call('EXPIRE', key, math.ceil(windowMs / 1000))
-          return {1, currentTokens, now + windowMs}
-        else
-          -- Update last refill time even if we can't consume
-          redis.call('HMSET', key, 'tokens', currentTokens, 'lastRefill', now)
-          redis.call('EXPIRE', key, math.ceil(windowMs / 1000))
-          return {0, currentTokens, lastRefill + windowMs}
-        end
-      `,
-    });
-
-    this.redis.on("error", () => {
+    redis.on("error", () => {
       this.enterFallbackMode();
     });
 
-    this.redis.on("ready", () => {
+    redis.on("ready", () => {
       if (this._mode === "local-fallback") {
         logInfo("token_bucket_redis_recovered", {
           component: "TokenBucket",
@@ -135,6 +104,9 @@ export class TokenBucket {
         this.inMemoryBuckets.clear();
       }
     });
+
+    this.redis = redis;
+    return redis;
   }
 
   private enterFallbackMode(): void {
@@ -215,9 +187,10 @@ export class TokenBucket {
     }
 
     try {
+      const redis = this.getRedis();
       // Use defineCommand to securely execute the Lua script by SHA under the hood
-      if (!(this.redis as any).consumeTokens) {
-        this.redis.defineCommand("consumeTokens", {
+      if (!(redis as any).consumeTokens) {
+        redis.defineCommand("consumeTokens", {
           numberOfKeys: 1,
           lua: `
             local key = KEYS[1]
@@ -252,7 +225,7 @@ export class TokenBucket {
         });
       }
 
-      const result = (await (this.redis as any).consumeTokens(
+      const result = (await (redis as any).consumeTokens(
         redisKey,
         tokens.toString(),
         config.capacity.toString(),
@@ -292,7 +265,7 @@ export class TokenBucket {
     const redisKey = `rate_limit:${key}`;
 
     try {
-      const bucket = await this.redis.hmget(redisKey, "tokens", "lastRefill");
+      const bucket = await this.getRedis().hmget(redisKey, "tokens", "lastRefill");
       const currentTokens = bucket[0] ? parseFloat(bucket[0]) : config.capacity;
       const lastRefill = bucket[1] ? parseFloat(bucket[1]) : now;
 
@@ -322,7 +295,7 @@ export class TokenBucket {
    */
   async reset(key: string): Promise<void> {
     const redisKey = `rate_limit:${key}`;
-    await this.redis.del(redisKey);
+    await this.getRedis().del(redisKey);
   }
 
   /**
@@ -363,7 +336,13 @@ export class TokenBucket {
    * Close Redis connection
    */
   async close(): Promise<void> {
-    await this.redis.quit();
+    if (!this.redis) {
+      return;
+    }
+
+    const redis = this.redis;
+    this.redis = null;
+    await redis.quit();
   }
 }
 
