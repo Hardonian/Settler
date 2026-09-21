@@ -28,6 +28,13 @@ test.describe("Landing page visual baselines", () => {
       `,
     });
 
+    await expect(page.getByText("Bit-Perfect Reproducibility at Institutional Scale")).toBeVisible({
+      timeout: 30000,
+    });
+    await page.evaluate(() => document.fonts.ready);
+    await page.waitForFunction(() =>
+      Array.from(document.images).every((image) => image.complete && image.naturalWidth > 0)
+    );
     await page.waitForTimeout(300);
 
     const viewportTag = testInfo.project.name.includes("mobile") ? "mobile" : "desktop";

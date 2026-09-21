@@ -15,7 +15,10 @@ export async function replayRun(
     artifacts: { run: string };
   };
 
-  const runRaw = await fs.readFile(evidence.artifacts.run, "utf8");
+  const runPath = path.isAbsolute(evidence.artifacts.run)
+    ? evidence.artifacts.run
+    : path.resolve(path.dirname(evidencePath), evidence.artifacts.run);
+  const runRaw = await fs.readFile(runPath, "utf8");
   const run = JSON.parse(runRaw) as {
     inputs: unknown;
     config: unknown;

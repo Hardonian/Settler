@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import {
   CheckCircle2,
   ShieldCheck,
@@ -58,6 +58,7 @@ const INITIAL_TRANSACTIONS: StreamTx[] = [
 ];
 
 export function InteractiveHeroEngine() {
+  const shouldReduceMotion = useReducedMotion();
   const [mode, setMode] = useState<EngineMode>("stream");
   const [tolerance, setTolerance] = useState<number>(0.05);
   const [streamList, setStreamList] = useState<StreamTx[]>(INITIAL_TRANSACTIONS);
@@ -67,7 +68,7 @@ export function InteractiveHeroEngine() {
 
   // Simulated live ticker for the stream mode
   useEffect(() => {
-    if (mode !== "stream") return;
+    if (mode !== "stream" || shouldReduceMotion) return;
 
     const interval = setInterval(() => {
       setVerifiedCount((prev) => prev + 1);
@@ -96,7 +97,7 @@ export function InteractiveHeroEngine() {
     }, 2800);
 
     return () => clearInterval(interval);
-  }, [mode]);
+  }, [mode, shouldReduceMotion]);
 
   const handleVerifyClick = () => {
     setIsVerifying(true);

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useReducedMotion } from "framer-motion";
 import {
   Check,
   Shield,
@@ -27,6 +28,7 @@ import { Badge } from "@/components/ui/badge";
  * Includes moving energy beams and interactive step selection.
  */
 export function ReconciliationFlow() {
+  const shouldReduceMotion = useReducedMotion();
   const [activeStep, setActiveStep] = useState(0);
 
   const steps = [
@@ -58,11 +60,13 @@ export function ReconciliationFlow() {
 
   // Auto-cycle through the steps to provide continuous live motion
   useEffect(() => {
+    if (shouldReduceMotion) return;
+
     const timer = setInterval(() => {
       setActiveStep((prev) => (prev + 1) % steps.length);
     }, 3200);
     return () => clearInterval(timer);
-  }, [steps.length]);
+  }, [shouldReduceMotion, steps.length]);
 
   return (
     <div className="relative flex w-full flex-col items-center gap-6 py-10 md:py-14">

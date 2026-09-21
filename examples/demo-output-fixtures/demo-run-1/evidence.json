@@ -26,10 +26,10 @@
     "summary": "input->config->output->fingerprint"
   },
   "artifacts": {
-    "run": "C:\\Users\\scott\\GitHub\\Settler\\examples\\demo-output\\run.json",
-    "results": "C:\\Users\\scott\\GitHub\\Settler\\examples\\demo-output\\results.json",
-    "evidence": "C:\\Users\\scott\\GitHub\\Settler\\examples\\demo-output\\evidence.json",
-    "report": "C:\\Users\\scott\\GitHub\\Settler\\examples\\demo-output\\report.html"
+    "run": "run.json",
+    "results": "results.json",
+    "evidence": "evidence.json",
+    "report": "report.html"
   },
   "metadata": {
     "retention_days": 90,

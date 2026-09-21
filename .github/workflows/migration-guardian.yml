@@ -58,6 +58,7 @@ env:
   NPM_CONFIG_FETCH_RETRY_MINTIMEOUT: "20000"
   NPM_CONFIG_FETCH_RETRY_MAXTIMEOUT: "120000"
   MIGRATION_LOG_PATH: artifacts/migration-log/MIGRATION_LOG.md
+  DB_REGION: ${{ vars.SUPABASE_DB_REGION || 'us-west-2' }}
 
 jobs:
   detect-migrations:
@@ -169,6 +170,21 @@ jobs:
           const env = process.env;
           let databaseUrl = env.DATABASE_URL || env.SUPABASE_DB_URL || env.SUPABASE_DATABASE_URL;
 
+          if (databaseUrl) {
+            const parsed = new URL(databaseUrl);
+            const directHost = parsed.hostname.match(/^db\.([^.]+)\.supabase\.co$/);
+            if (directHost) {
+              const projectRef = directHost[1];
+              const region = env.DB_REGION || 'us-west-2';
+              parsed.hostname = `aws-0-${region}.pooler.supabase.com`;
+              parsed.port = '5432';
+              parsed.username = `postgres.${projectRef}`;
+              parsed.searchParams.set('sslmode', 'require');
+              databaseUrl = parsed.toString();
+              console.log('✅ Routed direct Supabase DSN through the IPv4 session pooler');
+            }
+          }
+
           if (!databaseUrl && env.SUPABASE_URL && (env.SUPABASE_DB_PASSWORD || env.DATABASE_PASSWORD)) {
             const match = env.SUPABASE_URL.match(/https?:\/\/([^.]+)\.supabase\.co/);
             if (match) {
@@ -184,7 +200,7 @@ jobs:
             process.exit(1);
           }
 
-          fs.appendFileSync(process.env.GITHUB_ENV, `DATABASE_URL=${databaseUrl}\nSUPABASE_DB_URL=${env.SUPABASE_DB_URL || databaseUrl}\n`);
+          fs.appendFileSync(process.env.GITHUB_ENV, `DATABASE_URL=${databaseUrl}\nSUPABASE_DB_URL=${databaseUrl}\n`);
           console.log('::add-mask::' + databaseUrl);
           console.log('✅ Database URL resolved for Prisma CLI');
           NODE

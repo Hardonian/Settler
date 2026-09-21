@@ -110,7 +110,7 @@ jobs:
         run: pnpm run test
 
       - name: Verify content routes in production mode
-        run: pnpm run test --workspace=packages/web -- src/__tests__/integration/content-pages.production.test.ts
+        run: pnpm --filter @settler/web test -- src/__tests__/integration/content-pages.production.test.ts
         env:
           NODE_ENV: production
 

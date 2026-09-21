@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import {
   ShieldCheck,
   Zap,
@@ -61,6 +61,7 @@ const LIVE_EVENTS: RailEvent[] = [
 ];
 
 export function BilateralSettlementVisualizer() {
+  const shouldReduceMotion = useReducedMotion();
   const [activeTab, setActiveTab] = useState<"architecture" | "anomalies" | "proofpack">(
     "architecture"
   );
@@ -71,11 +72,13 @@ export function BilateralSettlementVisualizer() {
 
   // Simulated live telemetry pulses
   useEffect(() => {
+    if (shouldReduceMotion) return;
+
     const timer = setInterval(() => {
       setPacketTick((prev) => prev + 1);
     }, 2400);
     return () => clearInterval(timer);
-  }, []);
+  }, [shouldReduceMotion]);
 
   const handleAdjudicateAnomaly = () => {
     setIsAdjudicating(true);
