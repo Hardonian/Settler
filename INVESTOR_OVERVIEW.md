@@ -22,27 +22,30 @@ verifiable reconciliation pipeline.
   detection, and resilience monitoring.
 - **Console** — operator-facing dashboard for exceptions, alerts, usage analytics, and
   billing.
-- **Enterprise tier** — SCIM provisioning, IP allowlisting, custom domains, dedicated
-  support.
+- **Enterprise path** — tenant-scoped RBAC is verified; OIDC is configuration-gated and
+  requires provider-specific runtime validation. SCIM lifecycle provisioning is not yet shipped.
 
 ## Business Model
 
 Open-core with three tiers:
 
-| Tier       | Price       | Key Differentiator                 |
-| ---------- | ----------- | ---------------------------------- |
-| Free       | $0/mo       | Single-rail, community support     |
-| Pro        | Usage-based | Multi-rail, proofpacks, API access |
-| Enterprise | Custom      | SSO, SCIM, SLA, dedicated infra    |
+| Tier       | Price       | Key Differentiator                             |
+| ---------- | ----------- | ---------------------------------------------- |
+| Free       | $0/mo       | Single-rail, community support                 |
+| Pro        | Usage-based | Multi-rail, proofpacks, API access             |
+| Enterprise | Custom      | Validated deployment scope, RBAC, audit export |
 
 Revenue is driven by transaction-volume-based metering on Pro and annual contracts on
 Enterprise.
 
-## Traction
+## Product Evidence
 
-- Production reconciliation runs across Stripe, PayPal, and ACH rails.
-- Proofpack verification used in audit workflows.
-- Self-hosted and SaaS deployment options.
+- Deterministic reconciliation and proofpack behavior are covered by executable verification
+  (`pnpm run verify:determinism`, `pnpm run verify:replay`, and `pnpm run verify:proofpack`).
+- Verified adapter surfaces include payment and ledger integrations documented in the adapter
+  registry; live customer usage is tracked separately from repository capability evidence.
+- The repository includes managed and self-hosted packaging paths. Deployment readiness remains
+  environment-specific and requires runtime validation.
 
 ## Technology Moat
 
@@ -50,12 +53,12 @@ Enterprise.
    basis-point tolerances. Eliminates rounding drift.
 2. **Cryptographic audit trail** — every reconciliation run produces a Merkle-root
    proof that is independently verifiable.
-3. **Multi-tenant isolation** — enforced at the application, middleware, and database
-   (PostgreSQL RLS) layers. Cross-tenant data access is structurally impossible.
+3. **Multi-tenant isolation** — enforced at application, middleware, and database
+   (PostgreSQL RLS) layers, with tenant-coverage and cross-tenant verification gates.
 
 ## Team
 
-Founded by operators with direct experience in payment reconciliation pain at scale.
+Founder and hiring details are available in the confidential diligence package.
 
 ## Use of Funds
 

@@ -189,11 +189,12 @@ export default function EdgeAIPage() {
           <Card>
             <CardHeader>
               <Lock className="w-8 h-8 text-red-500 mb-2" />
-              <CardTitle>Compliance Ready</CardTitle>
+              <CardTitle>Compliance-Aware Controls</CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-sm text-muted-foreground">
-                GDPR, HIPAA, and SOC 2 compliant. Data residency controls and audit trails.
+                Audit trails and deployment controls support compliance review. Regulatory and
+                certification scope must be validated for each deployment.
               </p>
             </CardContent>
           </Card>

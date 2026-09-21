@@ -17,7 +17,7 @@
 ## Security / Compliance
 
 - **Objection:** "Where is my data?"
-- **Answer:** "Encrypted in our SOC2-ready infrastructure (AWS/Supabase). We verify webhooks using raw signatures."
+- **Answer:** "Data protection controls and signed-webhook verification are implemented. SOC 2 is a readiness program, not a completed certification; deployment-specific hosting and encryption evidence are provided during diligence."
 - **Objection:** "Do you store PII?"
 - **Answer:** "Minimal PII needed for matching (Customer Name/Email). No Credit Card PANs."
 

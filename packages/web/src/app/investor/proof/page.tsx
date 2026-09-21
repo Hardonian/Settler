@@ -165,23 +165,23 @@ async function InvestorProofContent() {
           <div>
             <h3 className="font-semibold mb-2">1. Data Normalization Engine</h3>
             <p className="text-sm text-muted-foreground">
-              Universal adapter system that normalizes data from 50+ sources into a consistent
-              schema. This requires deep domain knowledge of each integration's quirks and edge
-              cases.
+              The verified adapter registry normalizes supported payment and ledger sources into a
+              consistent schema. Coverage is evidenced by registry and adapter-contract checks.
             </p>
           </div>
           <div>
             <h3 className="font-semibold mb-2">2. Intelligent Matching Algorithms</h3>
             <p className="text-sm text-muted-foreground">
-              Multi-strategy matching (exact, fuzzy, probabilistic) with confidence scoring.
-              Continuously improved through production data feedback loops.
+              Deterministic matching is the default, with explicit tolerances and replayable run
+              serialization. Optional ML-assisted matching stays outside the deterministic boundary.
             </p>
           </div>
           <div>
             <h3 className="font-semibold mb-2">3. Real-time Processing Infrastructure</h3>
             <p className="text-sm text-muted-foreground">
-              Event-driven architecture that processes millions of records with sub-second latency.
-              Built on proven infrastructure (Supabase, Postgres, Edge Functions).
+              Stateless reconciliation jobs can be distributed across workers. Throughput and
+              latency are deployment-specific and must be demonstrated with target-environment load
+              evidence.
             </p>
           </div>
           <div>
@@ -214,8 +214,8 @@ async function InvestorProofContent() {
           <div>
             <h3 className="font-semibold mb-2">Cost Efficiency</h3>
             <p className="text-sm text-muted-foreground">
-              Serverless architecture means costs scale linearly with usage. No fixed infrastructure
-              costs for idle capacity.
+              Scale-to-zero deployment options reduce idle compute, while database, queue, and
+              observability costs remain workload- and provider-dependent.
             </p>
           </div>
           <div>
@@ -235,7 +235,7 @@ async function InvestorProofContent() {
             <Zap className="w-5 h-5 text-purple-600" />
             <CardTitle>Unit Economics</CardTitle>
           </div>
-          <CardDescription>Revenue and cost structure</CardDescription>
+          <CardDescription>Commercial metrics require source-backed diligence data</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
@@ -243,27 +243,28 @@ async function InvestorProofContent() {
               <div className="text-sm text-muted-foreground mb-1">
                 Average Revenue Per User (ARPU)
               </div>
-              <div className="text-2xl font-bold text-foreground">$299/mo</div>
+              <div className="text-2xl font-bold text-foreground">Confidential</div>
             </div>
             <div>
               <div className="text-sm text-muted-foreground mb-1">
                 Customer Acquisition Cost (CAC)
               </div>
-              <div className="text-2xl font-bold text-foreground">$150</div>
+              <div className="text-2xl font-bold text-foreground">Not published</div>
             </div>
             <div>
               <div className="text-sm text-muted-foreground mb-1">Lifetime Value (LTV)</div>
-              <div className="text-2xl font-bold text-foreground">$3,588</div>
+              <div className="text-2xl font-bold text-foreground">Not published</div>
             </div>
             <div>
               <div className="text-sm text-muted-foreground mb-1">LTV:CAC Ratio</div>
-              <div className="text-2xl font-bold text-green-600">24:1</div>
+              <div className="text-2xl font-bold text-foreground">Not published</div>
             </div>
           </div>
           <div className="pt-4 border-t">
             <p className="text-sm text-muted-foreground">
-              <strong>Note:</strong> These are calculated from actual subscription data and pricing
-              tiers. Gross margins are approximately 75% due to serverless infrastructure.
+              <strong>Evidence boundary:</strong> This public product surface does not synthesize
+              unit economics. Current cohort definitions, source exports, and calculation periods
+              belong in the confidential diligence package.
             </p>
           </div>
         </CardContent>
@@ -279,16 +280,14 @@ async function InvestorProofContent() {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex flex-wrap gap-2">
-            <Badge>SOC 2 Type II</Badge>
-            <Badge>GDPR Compliant</Badge>
-            <Badge>HIPAA Ready</Badge>
-            <Badge>Encryption at Rest</Badge>
-            <Badge>Encryption in Transit</Badge>
+            <Badge>SOC 2 program — incomplete</Badge>
+            <Badge>Regulatory scope — deployment review</Badge>
+            <Badge>Tenant isolation checks</Badge>
             <Badge>Audit Logging</Badge>
           </div>
           <p className="text-sm text-muted-foreground">
-            All customer data is encrypted, access is logged, and compliance certifications are
-            maintained. Regular security audits and penetration testing ensure ongoing protection.
+            Security controls are described by their verification evidence. No certification or
+            regulatory attestation is represented as complete on this page.
           </p>
         </CardContent>
       </Card>

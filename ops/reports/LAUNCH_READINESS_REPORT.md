@@ -1,87 +1,57 @@
-# Launch Readiness Report
+# Launch Readiness Evidence Index
 
-**Generated:** ${new Date().toISOString()}
+**Last reviewed:** 2026-09-21
 
-## ✅ Pre-Launch Checklist - COMPLETE
+**Status:** Conditional — core static gates pass; deployment-specific enterprise and runtime
+evidence remains required before a production go-live claim.
 
-### 1. TypeScript & Code Quality ✅
+This document is an evidence index, not a permanent declaration that every deployment is ready.
+The latest executable results in `artifacts/verification/` are authoritative.
 
-- ✅ **0 TypeScript errors** across all packages
-- ✅ **All unused imports removed**
-- ✅ **Code quality audit script** (`npm run ops:audit`)
-- ✅ **CLI lint warnings resolved** (downgraded to warnings for Commander.js type issues)
+## Current Evidence
 
-### 2. Security Hardening ✅
+| Area                 | Evidence                              | Current result                                           |
+| -------------------- | ------------------------------------- | -------------------------------------------------------- |
+| Fast release gate    | `pnpm verify:fast`                    | Passed on 2026-09-21                                     |
+| OSS marketing claims | `pnpm run verify:claims`              | Passed on 2026-09-21                                     |
+| Launch artifacts     | `pnpm run verify:artifacts`           | 12 artifacts verified; fallback capture manifest         |
+| SCIM posture         | `pnpm run verify:scim-posture`        | Not implemented; buyer and operator surfaces must say so |
+| OIDC posture         | `pnpm run verify:enterprise-identity` | Config-gated; no local IdP contract was complete         |
+| Helm packaging       | `pnpm run verify:helm-packaging`      | Not verified locally because Helm was unavailable        |
 
-- ✅ **0 dependency vulnerabilities** (all resolved via `npm audit fix`)
-- ✅ **Next.js updated** to v14.2.35 (patched security vulnerabilities)
-- ✅ **jws vulnerability resolved** (updated via audit fix)
-- ✅ **No hardcoded secrets** in production code
-- ✅ **Environment variable validation** in place
-- ✅ **Tenant isolation** via RLS policies
-- ✅ **Billing checks** enforce subscription requirements
+The most recent fast-gate artifact at review time is
+`artifacts/verification/2026-09-21T16-45-10-523Z/summary.md`.
 
-### 3. Dependencies ✅
+## Go-Live Gate
 
-- ✅ **Next.js**: Updated from ^14.0.4 to ^14.2.35
-- ✅ **jws**: Updated via npm audit fix
-- ✅ **All vulnerabilities**: 0 found
+Before production launch, capture fresh evidence for:
 
-### 4. TODO Comments ✅
+1. `pnpm verify`
+2. `pnpm run verify:security:fast`
+3. `pnpm run verify:determinism`
+4. `pnpm run verify:replay`
+5. `pnpm run verify:routes`
+6. Deployment health, authentication, billing webhook, and rollback smoke tests in the target
+   environment
 
-- ✅ **138 TODO comments** reviewed
-- ✅ **Critical TODOs identified**:
-  - Security: API log analysis for threats (documented)
-  - Currency conversion: Exchange rate API integration (future enhancement)
-  - Fault tolerance: Fix-forward logic (future enhancement)
-- ✅ **All TODOs are acceptable** (future work items, not blocking)
+Any missing tool, credential, or target-environment check is a documented limitation—not a pass.
+Investor, buyer, and launch materials must distinguish repository capability, configured
+deployment capability, and demonstrated customer traction.
 
-### 5. Operational Readiness ✅
+## Known Boundaries
 
-- ✅ **Daily/Weekly reports** automated via GitHub Actions
-- ✅ **Health checks** (`/status`, `/api/admin/health`)
-- ✅ **Smoke tests** (`npm run qa:smoke`)
-- ✅ **Ops doctor** (`npm run ops:doctor`)
-- ✅ **Billing evidence** (`npm run ops:billing:evidence`)
-- ✅ **Procurement packs** (`npm run ops:procurement:pack`)
+- SCIM lifecycle provisioning is not shipped.
+- OIDC contracts exist but require provider-specific configuration and runtime proof.
+- Self-hosted packaging does not prove a successful cluster deployment.
+- Fallback launch screenshots prove artifact completeness, not live application behavior.
+- SOC 2 readiness work is not certification.
 
-## 📊 Final Metrics
+## Claim Policy
 
-- **TypeScript Errors**: 0
-- **Dependency Vulnerabilities**: 0
-- **Build Status**: ✅ Passing
-- **Test Status**: ✅ Passing
-- **Lint Status**: ✅ Warnings only (acceptable)
-- **Security**: ✅ Hardened
+Use evidence-qualified language:
 
-## 🚀 Launch Status
-
-**STATUS: ✅ READY FOR LAUNCH**
-
-All critical issues resolved:
-
-1. ✅ TypeScript compilation errors: 0
-2. ✅ Security vulnerabilities: 0
-3. ✅ Dependency updates: Complete
-4. ✅ Code quality: Production-ready
-5. ✅ Operational tooling: Complete
-
-## 📝 Post-Launch Monitoring
-
-1. **Monitor Health**: Check `/api/admin/health` daily
-2. **Review Reports**: Daily/weekly reports via GitHub Actions
-3. **Track Metrics**: Activation funnel, billing health, error rates
-4. **Security**: Regular `npm audit` checks
-5. **Performance**: Monitor query performance via operational reports
-
-## 🎯 Next Steps
-
-1. ✅ **Pre-launch checks**: Complete
-2. ✅ **Security audit**: Complete
-3. ✅ **Dependency updates**: Complete
-4. ✅ **Code quality**: Complete
-5. 🚀 **Ready for production deployment**
-
----
-
-**Final Status**: All pre-launch requirements met. Codebase is production-ready and hardened.
+- Say **verified by the named gate** when the gate has a fresh passing artifact.
+- Say **implemented, configuration-gated** when code exists but deployment proof does not.
+- Say **planned** or **not shipped** when the runtime surface is absent.
+- Do not translate repository features into customer traction without separate, confidential
+  commercial evidence.

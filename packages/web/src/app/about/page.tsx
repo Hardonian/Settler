@@ -55,7 +55,7 @@ const milestones = [
   {
     label: "Enterprise Readiness",
     description:
-      "Tenant isolation, RBAC, SOC 2 readiness, and governance boundary controls completed.",
+      "Tenant isolation and RBAC are verification-gated; SOC 2 remains an incomplete readiness program.",
   },
   {
     label: "Open Source",

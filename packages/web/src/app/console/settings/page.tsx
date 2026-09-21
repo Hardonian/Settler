@@ -58,10 +58,10 @@ const settingsCards = [
     icon: CreditCard,
   },
   {
-    title: "Enterprise Security",
-    description: "Configure SAML SSO, OIDC, and SCIM directory provisioning for your workspace.",
+    title: "Enterprise Identity",
+    description: "Review verified SSO availability and identity provisioning boundaries.",
     href: "/console/settings/security",
-    label: "Manage SSO & SCIM",
+    label: "Review Identity Controls",
     icon: Shield,
   },
 ];

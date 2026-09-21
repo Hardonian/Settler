@@ -9,7 +9,7 @@ export const metadata: Metadata = generateMetadata({
   keywords: [
     "enterprise reconciliation",
     "enterprise API",
-    "SOC 2 compliance",
+    "SOC 2 readiness",
     "enterprise security",
     "on-premise reconciliation",
     "custom reconciliation",

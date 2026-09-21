@@ -16,16 +16,16 @@ export default function EvidenceHubPage() {
       description:
         "Continuous compliance control mapping, automated Trust Services Criteria telemetry, and auditor bundle generation.",
       href: "/console/evidence/soc2",
-      badge: "Certified 100%",
-      badgeColor: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20",
+      badge: "Evidence mapping",
+      badgeColor: "bg-amber-500/10 text-amber-700 dark:text-amber-300 border-amber-500/20",
       icon: ShieldCheck,
     },
     {
       title: "SIEM & Security Telemetry",
       description:
-        "Immutable journal event stream, Splunk/Datadog syslog forwarding, and tamper-evident administrative action logs.",
+        "Journal event export, downstream SIEM handoff, and tamper-evident administrative action logs.",
       href: "/console/evidence/siem",
-      badge: "Realtime Active",
+      badge: "Deployment validation",
       badgeColor: "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20",
       icon: Activity,
     },
@@ -53,7 +53,7 @@ export default function EvidenceHubPage() {
     <div className="space-y-8">
       <ConsolePageHeader
         title="Evidence & Compliance Hub"
-        description="Audit-ready cryptographic proofpacks, continuous SOC 2 control monitoring, and tamper-evident security telemetry."
+        description="Cryptographic proofpacks, compliance evidence mapping, and tamper-evident security telemetry."
         breadcrumbs={[{ label: "Console", href: "/console" }, { label: "Evidence" }]}
         actions={
           <Button asChild>
@@ -75,55 +75,55 @@ export default function EvidenceHubPage() {
         <Card className="border-border/60">
           <CardHeader className="pb-2">
             <CardDescription className="text-xs uppercase font-semibold">
-              Audit Posture
+              Certification posture
             </CardDescription>
             <CardTitle className="text-2xl font-extrabold text-emerald-600 dark:text-emerald-400 flex items-center gap-2">
               <ShieldCheck className="h-6 w-6" />
-              100% Compliant
+              Program in progress
             </CardTitle>
           </CardHeader>
           <CardContent className="text-xs text-muted-foreground">
-            SOC 2 Type II &amp; SOX 404 controls verified
+            Evidence collection supports audit preparation; it is not certification
           </CardContent>
         </Card>
 
         <Card className="border-border/60">
           <CardHeader className="pb-2">
             <CardDescription className="text-xs uppercase font-semibold">
-              Merkle Roots Sealed
+              Proof verification
             </CardDescription>
-            <CardTitle className="text-2xl font-extrabold text-foreground">4,891 Runs</CardTitle>
+            <CardTitle className="text-2xl font-extrabold text-foreground">Deterministic</CardTitle>
           </CardHeader>
           <CardContent className="text-xs text-muted-foreground">
-            0% floating point variance detected
+            Verify current proofpacks with the shipped verification path
           </CardContent>
         </Card>
 
         <Card className="border-border/60">
           <CardHeader className="pb-2">
             <CardDescription className="text-xs uppercase font-semibold">
-              SIEM Ingestion Rate
+              SIEM handoff
             </CardDescription>
             <CardTitle className="text-2xl font-extrabold text-blue-600 dark:text-blue-400">
-              42.8k ops/sec
+              Validate target
             </CardTitle>
           </CardHeader>
           <CardContent className="text-xs text-muted-foreground">
-            Sub-second live security telemetry
+            Export mappings and throughput vary by deployment
           </CardContent>
         </Card>
 
         <Card className="border-border/60">
           <CardHeader className="pb-2">
             <CardDescription className="text-xs uppercase font-semibold">
-              WASM Verify Latency
+              Browser verifier
             </CardDescription>
             <CardTitle className="text-2xl font-extrabold text-purple-600 dark:text-purple-400">
-              0.84 ms
+              Available
             </CardTitle>
           </CardHeader>
           <CardContent className="text-xs text-muted-foreground">
-            Client-side browser verification
+            Measure latency against the target proofpack and browser
           </CardContent>
         </Card>
       </motion.div>

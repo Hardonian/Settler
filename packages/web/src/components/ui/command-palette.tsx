@@ -47,9 +47,9 @@ export function CommandPalette() {
       action: () => router.push("/console/close"),
     },
     {
-      id: "sso-scim",
+      id: "enterprise-identity",
       icon: <CreditCard className="text-emerald-400" />,
-      label: "Enterprise Security (SSO/SCIM)",
+      label: "Enterprise Identity Status",
       action: () => router.push("/console/settings/security"),
     },
   ];

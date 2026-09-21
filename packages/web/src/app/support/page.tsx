@@ -107,7 +107,7 @@ export default function Support() {
         "Priority Email Support (4 hour response)",
         "Advanced Integration Help",
         "Bug Reports & Feature Requests",
-        "SOC 2 Compliance",
+        "Security evidence support",
       ],
       responseTime: "4 hours",
     },
@@ -209,7 +209,7 @@ export default function Support() {
     {
       question: "What security certifications do you have?",
       answer:
-        "We have SOC 2 Type II infrastructure ready. Certification planned Q3 2026. GDPR compliant, PCI-DSS ready. All data is encrypted at rest and in transit using AES-256-GCM. Enterprise customers get additional security features including SSO, RBAC, and dedicated security reviews.",
+        "Settler does not currently represent SOC 2, PCI DSS, HIPAA, or GDPR certification as complete. The product includes tenant-isolation, audit-logging, and data-protection controls, while certification and regulatory scope must be validated for each deployment during diligence.",
     },
     {
       question: "How do I handle unmatched records?",

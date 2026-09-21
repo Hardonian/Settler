@@ -1,6 +1,17 @@
 {
   "forbiddenTermsByMode": {
-    "oss": ["SLA-backed", "dedicated VPC", "enterprise SSO", "private cloud"],
+    "oss": [
+      "SLA-backed",
+      "dedicated VPC",
+      "enterprise SSO",
+      "private cloud",
+      "SOC 2 Type II infrastructure ready",
+      "GDPR Compliant",
+      "HIPAA Ready",
+      "Certified 100%",
+      "100% Compliant",
+      "SOC 2 Type II & SOX 404 controls verified"
+    ],
     "enterprise": ["fully open-core replacement"]
   },
   "allowedTermsByMode": {
