@@ -62,6 +62,8 @@ Thumbs.db
 
 # Test/verification artifacts
 artifacts/
+playwright-report/
+test-results/
 
 # Vercel
 .vercel
