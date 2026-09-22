@@ -20,9 +20,14 @@ describe("tracing", () => {
   }));
 
   beforeAll(async () => {
+    process.env.OTEL_ENABLE_TESTS = "true";
     // We need to wait for the dynamic imports to resolve
     initializeTracing();
     await delay(500); // Wait enough time for async imports
+  });
+
+  afterAll(() => {
+    delete process.env.OTEL_ENABLE_TESTS;
   });
 
   beforeEach(() => {

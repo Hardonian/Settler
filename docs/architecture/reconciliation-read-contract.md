@@ -66,7 +66,7 @@ List JSON (no `id` query) is built via **`buildConsoleReconciliationListBody`** 
 With PostgreSQL containing `public.recon_jobs` and `public.reconciliation_runs` (golden schema), run:
 
 ```bash
-RUN_DB_TESTS=true RUN_RECON_MERGED_LIST_DB=1 pnpm --filter @settler/api exec jest src/__tests__/integration/reconciliation-merged-list.db.test.ts --runInBand --forceExit
+RUN_DB_TESTS=true RUN_RECON_MERGED_LIST_DB=1 pnpm --filter @settler/api exec jest src/__tests__/integration/reconciliation-merged-list.db.test.ts --runInBand
 ```
 
 `RUN_RECON_MERGED_LIST_DB=1` is required in addition to `RUN_DB_TESTS=true` so generic DB suites do not fail when those tables are absent.
@@ -97,7 +97,7 @@ pnpm --filter @settler/reconciliation-core build
 cd packages/reconciliation-core && pnpm exec jest --runInBand --forceExit
 pnpm --filter @settler/web typecheck:ci
 pnpm --filter @settler/api typecheck
-pnpm --filter @settler/api exec jest src/__tests__/routes/reconciliation-runtime-config-route.test.ts src/__tests__/routes/reconciliation-v1-contract.test.ts --runInBand --forceExit
+pnpm --filter @settler/api exec jest src/__tests__/routes/reconciliation-runtime-config-route.test.ts src/__tests__/routes/reconciliation-v1-contract.test.ts --runInBand
 # Optional merged-list DB proof (requires DB + both tables):
 # RUN_DB_TESTS=true RUN_RECON_MERGED_LIST_DB=1 pnpm --filter @settler/api run test:recon-merged-db
 ```

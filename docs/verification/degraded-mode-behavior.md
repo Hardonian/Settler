@@ -29,4 +29,4 @@ Date: 2026-03-12
 ## Follow-up Recommendation
 
 1. Provide minimal CI-safe env fixture for Playwright reality gates (stub `DATABASE_URL`/`NEXT_PUBLIC_SUPABASE_URL`) so degraded-mode browser assertions can run deterministically.
-2. Add explicit `--forceExit` (or open-handle cleanup) in web test runner path used by root `pnpm test` to avoid post-pass hangs.
+2. Keep test runners free of `--forceExit`; resource owners must expose and exercise explicit lifecycle cleanup so post-pass hangs fail visibly.
