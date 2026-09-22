@@ -2,14 +2,14 @@
   "execution_id": "budget-fail",
   "tenant_id": "tenant",
   "trace_id": "budget-fail",
-  "timestamp": "2026-09-21T23:01:01.281Z",
+  "timestamp": "2026-09-22T01:31:10.917Z",
   "policy_version": "1.0.0",
   "input_hash": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
   "output_hash": "",
   "status": "failed",
-  "duration": 6,
+  "duration": 7,
   "initiator": "worker",
   "tool_calls": [],
-  "previous_execution_hash": "b3ba1f7d99493143aa5b088809ff20737ffa63e384b8d797a93ca48055a44f02",
-  "execution_hash": "e68568fa2015b9b50b86948dc30f56f22ad5bdd5cba5dddc7e83ce312b648885"
+  "previous_execution_hash": "e68568fa2015b9b50b86948dc30f56f22ad5bdd5cba5dddc7e83ce312b648885",
+  "execution_hash": "5b3b47d508ad3f1c51134ef24fcb4bde852289d4ecbc5fd42fb09d51aa076eae"
 }

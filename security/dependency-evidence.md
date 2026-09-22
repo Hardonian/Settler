@@ -3,7 +3,7 @@
 - evidenceCompleteness: degraded
 - mode: standard
 - ecosystems: cargo, npm
-- localAuditOutcome: warn-findings
+- localAuditOutcome: passed
 - advisoryStatus: unauthenticated
 
 ## Environment constraints
