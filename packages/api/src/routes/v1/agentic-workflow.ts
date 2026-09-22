@@ -170,7 +170,7 @@ router.get(
           suggested: false,
           humanControlled: ["assignment", "resolution"],
           governance:
-            "Priority scores are deterministic calculations; assignment remains human-controlled",
+            "Priority scores retain a deterministic base; configured Jev signals can only add a bounded review-urgency adjustment. Assignment and resolution remain human-controlled",
         },
       });
     } catch (error: unknown) {

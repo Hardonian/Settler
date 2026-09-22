@@ -15,6 +15,7 @@ export type RuntimeEventType =
   | "replay_execution_completed"
   | "replay_execution_failed"
   | "policy_simulation_executed"
+  | "decision_intelligence_evaluated"
   | "error_thrown"
   | "support_intake_submitted";
 

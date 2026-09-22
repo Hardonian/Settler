@@ -29,6 +29,32 @@
 import { Prisma } from "@prisma/client";
 import { createHash } from "node:crypto";
 import { prisma } from "../../infrastructure/db/prisma";
+import { jevDecisionProvider } from "../jev/jev-decision-provider";
+import type {
+  JevBatchAssessment,
+  JevDecisionEvidence,
+  JevDecisionProvider,
+  JevExceptionAssessment,
+  JevExceptionContext,
+  JevTriageAction,
+} from "../jev/types";
+
+export interface DecisionIntelligence {
+  provider: "typesafe-jev";
+  mode: "off" | "shadow" | "recommend";
+  status: "shadow" | "applied" | "guarded" | "below_threshold" | "unavailable";
+  reason?: string;
+  recommendedAction?: JevTriageAction;
+  actionConfidence?: number;
+  signals?: {
+    operationalRisk: number;
+    operationalRiskConfidence: number;
+    ambiguityProbability: number;
+    urgentReviewProbability: number;
+  };
+  semanticPriorityAdjustment?: number;
+  evidence?: JevDecisionEvidence;
+}
 
 export interface TriageSuggestion {
   exceptionId: string;
@@ -43,6 +69,7 @@ export interface TriageSuggestion {
   }>;
   degraded: boolean;
   degradedReasons: string[];
+  decisionIntelligence?: DecisionIntelligence;
 }
 
 export interface QueuePriorityScore {
@@ -54,8 +81,10 @@ export interface QueuePriorityScore {
     unassigned: number;
     recurrence: number;
     evidenceGaps: number;
+    semanticRisk?: number;
   };
   rationale: string;
+  decisionIntelligence?: DecisionIntelligence;
 }
 
 export interface StaleEscalationResult {
@@ -100,9 +129,16 @@ export interface WorkflowAutomationState {
   autoAssignmentEnabled: boolean;
   policyProposalEnabled: boolean;
   lastEscalationRun: string | null;
+  decisionIntelligence: {
+    provider: "typesafe-jev";
+    mode: "off" | "shadow" | "recommend";
+    enabled: boolean;
+    reason?: string;
+  };
 }
 
 const STALE_THRESHOLD_HOURS_DEFAULT = 72;
+const JEV_PRIORITY_CANDIDATE_LIMIT = 20;
 const PRIORITY_WEIGHTS = {
   severity: 0.35,
   age: 0.25,
@@ -130,6 +166,8 @@ function signatureFromMatch(match: {
 }
 
 export class AgenticWorkflowService {
+  constructor(private readonly decisionProvider: JevDecisionProvider = jevDecisionProvider) {}
+
   async getAutomationState(tenantId: string): Promise<WorkflowAutomationState> {
     const tenant = await prisma.tenant.findUnique({
       where: { id: tenantId },
@@ -147,6 +185,12 @@ export class AgenticWorkflowService {
       autoAssignmentEnabled: (metadataJson.autoAssignmentEnabled as boolean) ?? false,
       policyProposalEnabled: (metadataJson.policyProposalEnabled as boolean) ?? true,
       lastEscalationRun: (metadataJson.lastEscalationRun as string) ?? null,
+      decisionIntelligence: this.decisionProvider.getStatus?.(tenantId) ?? {
+        provider: "typesafe-jev",
+        mode: "off",
+        enabled: false,
+        reason: "provider_status_unavailable",
+      },
     };
   }
 
@@ -186,6 +230,7 @@ export class AgenticWorkflowService {
     exceptionIds: string[]
   ): Promise<TriageSuggestion[]> {
     const suggestions: TriageSuggestion[] = [];
+    const jevContexts: JevExceptionContext[] = [];
 
     const exceptions = await prisma.reconciliationMatch.findMany({
       where: {
@@ -227,6 +272,7 @@ export class AgenticWorkflowService {
 
       let suggestedAction: TriageSuggestion["suggestedAction"] = "manual_review";
       let confidence = 0.5;
+      let historicalResolutionRate: number | undefined;
       const basis: string[] = [];
       const degradedReasons: string[] = [];
 
@@ -235,6 +281,7 @@ export class AgenticWorkflowService {
           (c) => c.resolution === "matched" || c.resolution === "manual"
         ).length;
         const resolutionRate = resolvedCount / similarCases.length;
+        historicalResolutionRate = resolutionRate;
 
         if (resolutionRate >= 0.7) {
           suggestedAction = "auto_match_candidate";
@@ -274,8 +321,26 @@ export class AgenticWorkflowService {
         degraded: degradedReasons.length > 0,
         degradedReasons,
       });
+      jevContexts.push({
+        reference: exception.id,
+        matchType: exception.matchType,
+        reason: exception.matchReason,
+        severity: exception.severity,
+        ageHours: Math.max(0, (Date.now() - exception.createdAt.getTime()) / (1000 * 60 * 60)),
+        assigned: Boolean(exception.assignedTo),
+        archetypeCodes: exception.archetypeClassifications.map(
+          (classification) => classification.archetype.code
+        ),
+        historicalCaseCount: similarCases.length,
+        historicalResolutionRate,
+        deterministicAction: suggestedAction,
+        evidenceGap: exception.archetypeClassifications.length === 0,
+        recurrenceCount: similarCases.length,
+      });
     }
 
+    const jevResult = await this.decisionProvider.assessExceptions(tenantId, jevContexts);
+    this.mergeTriageIntelligence(suggestions, jevResult);
     return suggestions;
   }
 
@@ -306,6 +371,7 @@ export class AgenticWorkflowService {
 
     const now = Date.now();
     const priorityScores: QueuePriorityScore[] = [];
+    const jevContexts: JevExceptionContext[] = [];
 
     for (const exception of activeExceptions) {
       const createdAtMs = exception.createdAt.getTime();
@@ -361,9 +427,157 @@ export class AgenticWorkflowService {
         },
         rationale: rationaleParts.length > 0 ? rationaleParts.join("; ") : "standard_priority",
       });
+      jevContexts.push({
+        reference: exception.id,
+        matchType: exception.matchType,
+        reason: exception.matchReason,
+        severity: exception.severity,
+        ageHours,
+        assigned: Boolean(exception.assignedTo),
+        // The priority query does not load archetype records; never send UUIDs as semantic labels.
+        archetypeCodes: [],
+        historicalCaseCount: 0,
+        deterministicAction: "manual_review",
+        evidenceGap: hasEvidenceGap,
+        recurrenceCount: signatureCount,
+      });
     }
 
+    const highestPriorityIds = new Set(
+      [...priorityScores]
+        .sort((left, right) => right.priorityScore - left.priorityScore)
+        .slice(0, JEV_PRIORITY_CANDIDATE_LIMIT)
+        .map((priority) => priority.exceptionId)
+    );
+    const priorityContexts = jevContexts.filter((context) =>
+      highestPriorityIds.has(context.reference)
+    );
+    const jevResult = await this.decisionProvider.assessExceptions(tenantId, priorityContexts);
+    this.mergePriorityIntelligence(priorityScores, jevResult);
     return priorityScores.sort((a, b) => b.priorityScore - a.priorityScore);
+  }
+
+  private mergeTriageIntelligence(
+    suggestions: TriageSuggestion[],
+    result: JevBatchAssessment
+  ): void {
+    const byReference = new Map(
+      result.assessments.map((assessment) => [assessment.reference, assessment])
+    );
+
+    for (const suggestion of suggestions) {
+      const assessment = byReference.get(suggestion.exceptionId);
+      if (!assessment) {
+        if (result.status === "unavailable" || result.status === "partial") {
+          suggestion.decisionIntelligence = {
+            provider: "typesafe-jev",
+            mode: result.mode,
+            status: "unavailable",
+            reason: result.reason,
+          };
+        }
+        continue;
+      }
+
+      const meetsThreshold = assessment.actionConfidence >= assessment.confidenceThreshold;
+      let status: DecisionIntelligence["status"] =
+        result.mode === "shadow" ? "shadow" : meetsThreshold ? "guarded" : "below_threshold";
+
+      if (result.mode === "recommend" && meetsThreshold) {
+        const currentAction = suggestion.suggestedAction;
+        const nextAction = assessment.recommendedAction;
+        const preservesSafety =
+          currentAction !== "escalate" &&
+          (nextAction !== "auto_match_candidate" || currentAction === "auto_match_candidate");
+
+        if (preservesSafety) {
+          suggestion.suggestedAction = nextAction;
+          suggestion.confidence = Number(assessment.actionConfidence.toFixed(2));
+          suggestion.basis.push(`jev_recommendation=${nextAction}`);
+          suggestion.basis.push(`jev_confidence=${assessment.actionConfidence.toFixed(2)}`);
+          status = "applied";
+        }
+      }
+
+      suggestion.decisionIntelligence = this.toDecisionIntelligence(
+        assessment,
+        result.mode,
+        status
+      );
+    }
+  }
+
+  private mergePriorityIntelligence(
+    priorities: QueuePriorityScore[],
+    result: JevBatchAssessment
+  ): void {
+    const byReference = new Map(
+      result.assessments.map((assessment) => [assessment.reference, assessment])
+    );
+
+    for (const priority of priorities) {
+      const assessment = byReference.get(priority.exceptionId);
+      if (!assessment) {
+        if (result.status === "unavailable" || result.status === "partial") {
+          priority.decisionIntelligence = {
+            provider: "typesafe-jev",
+            mode: result.mode,
+            status: "unavailable",
+            reason: result.reason,
+          };
+        }
+        continue;
+      }
+
+      const riskAdjustment =
+        assessment.operationalRiskConfidence >= assessment.confidenceThreshold
+          ? (assessment.operationalRiskScore / 4) * 0.07
+          : 0;
+      const urgencyAdjustment = Math.max(0, assessment.urgentReviewProbability - 0.5) * 2 * 0.05;
+      const ambiguityAdjustment = Math.max(0, assessment.ambiguityProbability - 0.5) * 2 * 0.03;
+      const semanticAdjustment = Number(
+        Math.min(0.15, riskAdjustment + urgencyAdjustment + ambiguityAdjustment).toFixed(3)
+      );
+      const applied = result.mode === "recommend" && semanticAdjustment > 0;
+
+      if (applied) {
+        priority.priorityScore = Number(
+          Math.min(1, priority.priorityScore + semanticAdjustment).toFixed(3)
+        );
+        priority.factors.semanticRisk = semanticAdjustment;
+        priority.rationale = `${priority.rationale}; jev_semantic_adjustment=${semanticAdjustment.toFixed(3)}`;
+      }
+
+      priority.decisionIntelligence = {
+        ...this.toDecisionIntelligence(
+          assessment,
+          result.mode,
+          result.mode === "shadow" ? "shadow" : applied ? "applied" : "below_threshold"
+        ),
+        semanticPriorityAdjustment: semanticAdjustment,
+      };
+    }
+  }
+
+  private toDecisionIntelligence(
+    assessment: JevExceptionAssessment,
+    mode: "off" | "shadow" | "recommend",
+    status: DecisionIntelligence["status"]
+  ): DecisionIntelligence {
+    return {
+      provider: "typesafe-jev",
+      mode,
+      status,
+      recommendedAction: assessment.recommendedAction,
+      actionConfidence: Number(assessment.actionConfidence.toFixed(3)),
+      signals: {
+        operationalRisk: Number((assessment.operationalRiskScore / 4).toFixed(3)),
+        operationalRiskConfidence: Number(assessment.operationalRiskConfidence.toFixed(3)),
+        ambiguityProbability: Number(assessment.ambiguityProbability.toFixed(3)),
+        urgentReviewProbability: Number(assessment.urgentReviewProbability.toFixed(3)),
+      },
+      evidence: assessment.evidence,
+    };
   }
 
   async escalateStaleExceptions(

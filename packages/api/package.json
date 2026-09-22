@@ -122,6 +122,7 @@
     "@settler/support-intake": "workspace:*",
     "@settler/types": "workspace:*",
     "@supabase/supabase-js": "^2.116.0",
+    "@typesafe-ai/sdk": "0.6.0",
     "@upstash/redis": "^1.38.4",
     "ai": "^7.0.99",
     "ajv": "^8.20.0",

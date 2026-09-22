@@ -100,6 +100,121 @@ describe("AgenticWorkflowService", () => {
   });
 
   describe("getTriageSuggestions", () => {
+    it("applies a high-confidence safer Jev recommendation in recommend mode", async () => {
+      const exceptionId = "22222222-2222-4222-8222-222222222222";
+      const decisionProvider = {
+        assessExceptions: jest.fn().mockResolvedValue({
+          status: "success",
+          mode: "recommend",
+          assessments: [
+            {
+              reference: exceptionId,
+              recommendedAction: "escalate",
+              actionConfidence: 0.93,
+              operationalRiskScore: 4,
+              operationalRiskConfidence: 0.9,
+              ambiguityProbability: 0.8,
+              urgentReviewProbability: 0.9,
+              confidenceThreshold: 0.82,
+              evidence: {
+                provider: "typesafe-jev",
+                providerVersion: "system-one",
+                mode: "recommend",
+                model: "jev-1.13",
+                requestDigest: "request-digest",
+                responseDigest: "response-digest",
+                latencyMs: 20,
+                inputTokens: 10,
+                outputTokens: 5,
+              },
+            },
+          ],
+        }),
+      };
+      service = new AgenticWorkflowService(decisionProvider);
+      mockPrisma.reconciliationMatch.findMany.mockResolvedValue([
+        {
+          id: exceptionId,
+          matchType: "unmatched",
+          matchReason: "Unusual evidence conflict",
+          metadata: {},
+          createdAt: new Date(),
+          severity: "high",
+          reviewed: false,
+          assignedTo: "operator-1",
+          sourceTransaction: { source: { id: "src1", name: "Test Source" } },
+          archetypeClassifications: [],
+        },
+      ]);
+      mockPrisma.exceptionAdjudicationMemory.findMany.mockResolvedValue([]);
+
+      const suggestions = await service.getTriageSuggestions(tenantId, [exceptionId]);
+
+      expect(suggestions[0]).toMatchObject({
+        suggestedAction: "escalate",
+        confidence: 0.93,
+        decisionIntelligence: { status: "applied", provider: "typesafe-jev" },
+      });
+    });
+
+    it("never lets Jev downgrade a deterministic escalation", async () => {
+      const exceptionId = "22222222-2222-4222-8222-222222222222";
+      const decisionProvider = {
+        assessExceptions: jest.fn().mockResolvedValue({
+          status: "success",
+          mode: "recommend",
+          assessments: [
+            {
+              reference: exceptionId,
+              recommendedAction: "auto_match_candidate",
+              actionConfidence: 0.99,
+              operationalRiskScore: 0,
+              operationalRiskConfidence: 0.99,
+              ambiguityProbability: 0,
+              urgentReviewProbability: 0,
+              confidenceThreshold: 0.82,
+              evidence: {
+                provider: "typesafe-jev",
+                providerVersion: "system-one",
+                mode: "recommend",
+                model: "jev-1.13",
+                requestDigest: "request-digest",
+                responseDigest: "response-digest",
+                latencyMs: 20,
+                inputTokens: 10,
+                outputTokens: 5,
+              },
+            },
+          ],
+        }),
+      };
+      service = new AgenticWorkflowService(decisionProvider);
+      mockPrisma.reconciliationMatch.findMany.mockResolvedValue([
+        {
+          id: exceptionId,
+          matchType: "unmatched",
+          matchReason: "Amount mismatch",
+          metadata: {},
+          createdAt: new Date(),
+          severity: "medium",
+          reviewed: false,
+          assignedTo: null,
+          sourceTransaction: { source: { id: "src1", name: "Test Source" } },
+          archetypeClassifications: [],
+        },
+      ]);
+      mockPrisma.exceptionAdjudicationMemory.findMany.mockResolvedValue([
+        { exceptionId: "old-1", resolution: "matched", createdAt: new Date(), archetypeId: null },
+      ]);
+
+      const suggestions = await service.getTriageSuggestions(tenantId, [exceptionId]);
+
+      expect(suggestions[0]).toMatchObject({
+        suggestedAction: "escalate",
+        decisionIntelligence: { status: "guarded" },
+      });
+    });
+
     it("returns degraded suggestions when no historical data exists", async () => {
       const exceptionId = "22222222-2222-4222-8222-222222222222";
 

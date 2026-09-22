@@ -18,3 +18,32 @@ Narrow, policy-governed actions are suggested:
 - `clear_stale_queue_locks` (max retries: 1)
 
 These are recommendations, not blind execution. Action runners must enforce policy approval, audit logging, and tenant boundary checks.
+
+## Jev decision intelligence
+
+TypeSafe AI Jev is an optional semantic decision layer for exception operations. It is deliberately outside the deterministic reconciliation, ledger, replay, and proof boundaries.
+
+Jev is used for two bounded tasks:
+
+- recommend an operator triage posture for an unresolved exception
+- add up to `0.15` of semantic urgency to the deterministic queue score
+
+It cannot create or confirm a match, resolve an exception, mutate policy, post a ledger entry, or generate proof evidence. A deterministic escalation cannot be downgraded. Jev cannot introduce an `auto_match_candidate`; it may only preserve one already supported by deterministic history.
+
+### Data boundary
+
+Requests contain compact operational categories: match type, sanitized reason, severity, age bucket, assignment state, archetype code, aggregate history buckets, evidence-gap state, and recurrence bucket. Tenant IDs, exception IDs, transaction descriptions, source names, amounts, account identifiers, email addresses, URLs, credentials, and long numeric sequences are excluded or redacted. Request and response payloads are represented in evidence by SHA-256 digests rather than stored raw.
+
+### Rollout
+
+`JEV_MODE` controls the server-side rollout:
+
+- `off`: no client construction or external request
+- `shadow`: call Jev and return evidence/signals without changing the deterministic result
+- `recommend`: apply only confidence-gated, safety-preserving triage changes and bounded upward priority adjustments
+
+`JEV_TENANT_ALLOWLIST` limits the rollout to named tenant UUIDs. An empty allowlist disables all tenants; `*` is the explicit global opt-in. Production rollout should begin with a narrow allowlist. `TYPESAFE_API_KEY` remains server-only. Missing credentials, timeouts, invalid responses, rate limits, or an open circuit degrade to the deterministic result. Queue intelligence is limited to the 20 highest deterministic priorities per request to bound latency and spend.
+
+Every completed or failed provider batch emits a tenant-scoped `decision_intelligence_evaluated` runtime event containing the mode, model, latency, token counts, request/response digests, and provider request ID where available. Raw exception state is not logged.
+
+Promote a tenant from shadow to recommend only after replaying representative exceptions and measuring operator agreement, unsafe-downgrade count (must remain zero), latency, error rate, and cost per reviewed exception. Jev is not suitable for arithmetic, precise date comparison, cryptographic decisions, or adversarial free-form state; those remain deterministic code paths.
