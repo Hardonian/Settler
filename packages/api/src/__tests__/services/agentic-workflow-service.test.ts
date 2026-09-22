@@ -305,6 +305,63 @@ describe("AgenticWorkflowService", () => {
   });
 
   describe("calculateQueuePriorities", () => {
+    it("applies only a bounded upward Jev adjustment in recommend mode", async () => {
+      const decisionProvider = {
+        assessExceptions: jest.fn().mockResolvedValue({
+          status: "success",
+          mode: "recommend",
+          assessments: [
+            {
+              reference: "test-ex",
+              recommendedAction: "escalate",
+              actionConfidence: 0.94,
+              operationalRiskScore: 4,
+              operationalRiskConfidence: 0.94,
+              ambiguityProbability: 1,
+              urgentReviewProbability: 1,
+              confidenceThreshold: 0.82,
+              evidence: {
+                provider: "typesafe-jev",
+                providerVersion: "system-one",
+                mode: "recommend",
+                model: "jev-1.13",
+                requestDigest: "request-digest",
+                responseDigest: "response-digest",
+                latencyMs: 20,
+                inputTokens: 10,
+                outputTokens: 5,
+              },
+            },
+          ],
+        }),
+      };
+      service = new AgenticWorkflowService(decisionProvider);
+      mockPrisma.reconciliationMatch.findMany.mockResolvedValue([
+        {
+          id: "test-ex",
+          matchType: "unmatched",
+          matchReason: "Missing evidence",
+          metadata: {},
+          createdAt: new Date(),
+          severity: "low",
+          assignedTo: "operator-1",
+          sourceTransaction: { description: "" },
+          archetypeClassifications: [],
+          status: "open",
+          reviewed: false,
+        },
+      ]);
+
+      const priorities = await service.calculateQueuePriorities(tenantId);
+
+      expect(priorities[0]!.factors.semanticRisk).toBe(0.15);
+      expect(priorities[0]!.decisionIntelligence).toMatchObject({
+        status: "applied",
+        semanticPriorityAdjustment: 0.15,
+      });
+      expect(priorities[0]!.priorityScore).toBeLessThanOrEqual(1);
+    });
+
     it("returns priority scores sorted by descending priority", async () => {
       const now = new Date();
       const oldDate = new Date(now.getTime() - 100 * 60 * 60 * 1000);

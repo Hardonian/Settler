@@ -450,6 +450,15 @@ export class TypeSafeJevDecisionProvider implements JevDecisionProvider {
             inputTokens: response.result.usage.input_tokens,
             outputTokens: response.result.usage.output_tokens,
             requestId: response.requestId,
+            decisions: parsed.map((assessment) => ({
+              exceptionId: assessment.reference,
+              recommendedAction: assessment.recommendedAction,
+              actionConfidence: assessment.actionConfidence,
+              operationalRiskScore: assessment.operationalRiskScore,
+              operationalRiskConfidence: assessment.operationalRiskConfidence,
+              ambiguityProbability: assessment.ambiguityProbability,
+              urgentReviewProbability: assessment.urgentReviewProbability,
+            })),
           },
         });
         logInfo("jev_decision_intelligence_completed", {

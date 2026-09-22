@@ -911,7 +911,7 @@ export const ENV_VAR_SCHEMA: EnvVarSpec[] = [
     scope: "runtime",
     exposure: "server-only",
     criticality: "required-for-feature",
-    environments: ["development", "preview", "staging", "production"],
+    environments: ["local", "development", "preview", "staging", "production"],
     format: "TypeSafe AI API key",
     secret: true,
     platforms: ["github", "vercel", "local"],

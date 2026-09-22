@@ -100,10 +100,11 @@ describe("TypeSafeJevDecisionProvider", () => {
 
   it("keeps tenant and exception identifiers out of provider state", async () => {
     const transport = successfulTransport();
+    const auditSink = jest.fn().mockResolvedValue(undefined);
     const provider = new TypeSafeJevDecisionProvider({
       config: config(),
       transport,
-      auditSink: jest.fn().mockResolvedValue(undefined),
+      auditSink,
     });
 
     const result = await provider.assessExceptions(tenantId, [exception()]);
@@ -121,6 +122,17 @@ describe("TypeSafeJevDecisionProvider", () => {
     expect(serializedState).not.toContain(exceptionId);
     expect(serializedState).not.toContain("jane@example.com");
     expect(serializedState).not.toContain("4242424242424242");
+    expect(auditSink).toHaveBeenCalledWith(
+      expect.objectContaining({
+        tenantId,
+        status: "success",
+        metadata: expect.objectContaining({
+          requestDigest: expect.any(String),
+          responseDigest: expect.any(String),
+          decisions: [expect.objectContaining({ exceptionId, recommendedAction: "escalate" })],
+        }),
+      })
+    );
   });
 
   it("does not call the provider when rollout is off", async () => {

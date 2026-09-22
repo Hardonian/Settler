@@ -44,6 +44,6 @@ Requests contain compact operational categories: match type, sanitized reason, s
 
 `JEV_TENANT_ALLOWLIST` limits the rollout to named tenant UUIDs. An empty allowlist disables all tenants; `*` is the explicit global opt-in. Production rollout should begin with a narrow allowlist. `TYPESAFE_API_KEY` remains server-only. Missing credentials, timeouts, invalid responses, rate limits, or an open circuit degrade to the deterministic result. Queue intelligence is limited to the 20 highest deterministic priorities per request to bound latency and spend.
 
-Every completed or failed provider batch emits a tenant-scoped `decision_intelligence_evaluated` runtime event containing the mode, model, latency, token counts, request/response digests, and provider request ID where available. Raw exception state is not logged.
+Every completed or failed provider batch emits a tenant-scoped `decision_intelligence_evaluated` runtime event containing the mode, model, latency, token counts, request/response digests, provider request ID where available, and structured decision summaries tied to the internal exception IDs. Raw exception state and provider payloads are not logged.
 
 Promote a tenant from shadow to recommend only after replaying representative exceptions and measuring operator agreement, unsafe-downgrade count (must remain zero), latency, error rate, and cost per reviewed exception. Jev is not suitable for arithmetic, precise date comparison, cryptographic decisions, or adversarial free-form state; those remain deterministic code paths.
