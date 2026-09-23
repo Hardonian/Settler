@@ -44,7 +44,7 @@
   },
   "devDependencies": {
     "@types/node": "^26.5.1",
-    "@vitest/coverage-v8": "^4.1.11",
+    "@vitest/coverage-v8": "^5.0.1",
     "jest": "^30.5.1",
     "ts-jest": "^29.4.12",
     "tsx": "^4.23.13",

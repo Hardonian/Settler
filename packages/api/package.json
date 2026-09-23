@@ -187,7 +187,7 @@
     "@types/xml2js": "^0.4.14",
     "@typescript-eslint/eslint-plugin": "^8.70.0",
     "@typescript-eslint/parser": "^8.70.0",
-    "@vitest/coverage-v8": "^4.1.11",
+    "@vitest/coverage-v8": "^5.0.1",
     "eslint": "^9.39.4",
     "eslint-config-prettier": "^10.1.8",
     "ioredis-mock": "^8.13.1",
