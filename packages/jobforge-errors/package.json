@@ -13,7 +13,7 @@
   },
   "devDependencies": {
     "@jobforge/typescript-config": "workspace:*",
-    "@types/node": "^26.5.1",
+    "@types/node": "^26.6.2",
     "@vitest/coverage-v8": "^4.1.11",
     "eslint": "^9.39.4",
     "typescript": "^6.0.3",
@@ -21,7 +21,7 @@
     "vitest": "^4.1.11"
   },
   "dependencies": {
-    "@ai-sdk/openai": "^4.0.66",
-    "ai": "^7.0.99"
+    "@ai-sdk/openai": "^4.0.71",
+    "ai": "^7.0.107"
   }
 }
