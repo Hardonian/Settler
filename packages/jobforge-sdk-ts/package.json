@@ -23,15 +23,15 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@ai-sdk/openai": "^4.0.66",
+    "@ai-sdk/openai": "^4.0.71",
     "@jobforge/shared": "workspace:*",
     "@supabase/supabase-js": "^2.116.0",
-    "ai": "^7.0.99",
-    "zod": "^4.6.4"
+    "ai": "^7.0.107",
+    "zod": "^4.6.5"
   },
   "devDependencies": {
     "@jobforge/typescript-config": "workspace:*",
-    "@types/node": "^26.5.1",
+    "@types/node": "^26.6.2",
     "@vitest/coverage-v8": "^4.1.11",
     "eslint": "^9.39.4",
     "typescript": "^6.0.3",

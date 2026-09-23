@@ -368,7 +368,7 @@
     "@prisma/client": "7.10.0",
     "@supabase/supabase-js": "^2.116.0",
     "@types/jest": "^30.0.0",
-    "@types/node": "^26.5.1",
+    "@types/node": "^26.6.2",
     "@types/pg": "8.23.1",
     "@typescript-eslint/eslint-plugin": "^8.70.0",
     "@typescript-eslint/parser": "^8.70.0",
@@ -378,20 +378,20 @@
     "eslint-config-prettier": "^10.1.8",
     "glob": "^13.0.6",
     "husky": "^8.0.3",
-    "jest": "^30.5.1",
+    "jest": "^30.5.2",
     "lint-staged": "^17.5.1",
     "pg": "^8.23.0",
-    "prettier": "^3.9.6",
+    "prettier": "^3.9.8",
     "prisma": "7.10.0",
     "sharp": "^0.35.4",
     "ts-jest": "^29.4.12",
-    "tsx": "^4.23.13",
+    "tsx": "^4.23.15",
     "typescript": "^6.0.3",
-    "zod": "^4.6.4"
+    "zod": "^4.6.5"
   },
   "dependencies": {
     "@upstash/redis": "^1.38.4",
-    "turbo": "^2.10.12"
+    "turbo": "^2.11.2"
   },
   "resolutions": {
     "prisma": "7.10.0",
