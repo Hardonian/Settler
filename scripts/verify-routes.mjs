@@ -1,5 +1,5 @@
 import { existsSync } from "node:fs";
-import { spawn } from "node:child_process";
+import { spawn, spawnSync } from "node:child_process";
 import path from "node:path";
 import dotenv from "dotenv";
 
@@ -39,20 +39,21 @@ function startWebServer() {
   const hasBuild =
     existsSync("packages/web/.next/BUILD_ID") &&
     existsSync("packages/web/.next/prerender-manifest.json");
-  const args = hasBuild
-    ? ["--filter", "@settler/web", "run", "start", "-p", String(port)]
-    : [
-        "--filter",
-        "@settler/web",
-        "run",
-        "dev",
-        "-p",
-        String(port),
-        "--hostname",
-        "127.0.0.1",
-        "--",
-        "--no-turbopack",
-      ];
+
+  if (!hasBuild) {
+    console.log("📦 No production build found — building @settler/web first...");
+    const buildResult = spawnSync("pnpm", ["--filter", "@settler/web", "run", "build"], {
+      stdio: "inherit",
+      env: { ...process.env, SKIP_ENV_VALIDATION: "true" },
+      shell: true,
+    });
+    if (buildResult.status !== 0) {
+      console.error("❌ Web build failed — cannot start production server");
+      process.exit(1);
+    }
+  }
+
+  const args = ["--filter", "@settler/web", "run", "start", "-p", String(port)];
 
   const isWindows = process.platform === "win32";
   const command = isWindows ? "npx" : "pnpm";

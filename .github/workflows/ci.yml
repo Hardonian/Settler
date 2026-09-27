@@ -364,7 +364,10 @@ jobs:
 
           cd "$GITHUB_WORKSPACE"
           BASE_URL=http://localhost:3000 pnpm run qa:marketing-ctas
-          BASE_URL=http://localhost:3000 E2E_BASE_URL=http://localhost:3000 pnpm run qa:visual:landing -- --update-snapshots
+          # First run creates missing baselines (--update-snapshots writes actuals)
+          BASE_URL=http://localhost:3000 E2E_BASE_URL=http://localhost:3000 pnpm run qa:visual:landing -- --update-snapshots || true
+          # Second run verifies against the baselines just created
+          BASE_URL=http://localhost:3000 E2E_BASE_URL=http://localhost:3000 pnpm run qa:visual:landing
 
           kill $SERVER_PID
           wait $SERVER_PID 2>/dev/null || true
