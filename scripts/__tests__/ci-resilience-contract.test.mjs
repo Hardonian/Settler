@@ -68,6 +68,19 @@ test("security evidence jobs are bounded and use managed process trees", () => {
   assert.match(read("scripts/verify-routes.mjs"), /spawnManagedProcess/);
 });
 
+test("Helm packaging discovers every required chart secret", () => {
+  const verifier = read("scripts/verify-helm-packaging.mjs");
+
+  assert.match(verifier, /readFileSync\(secretTemplatePath/);
+  assert.match(verifier, /\.Values\\\.secrets\\\.\(\[A-Z0-9_\]\+\)/);
+  assert.match(verifier, /requiredSecretKeys\.flatMap/);
+  assert.match(verifier, /["']lint["'], chartDir, \.\.\.secretArgs/);
+  assert.match(
+    verifier,
+    /["']template["'], ["']settler-packaging-smoke["'], chartDir, \.\.\.secretArgs/
+  );
+});
+
 test("browser gates use production parity and bounded route probes", () => {
   const e2e = read(".github/workflows/e2e.yml");
 
