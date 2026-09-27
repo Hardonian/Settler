@@ -76,8 +76,21 @@ jobs:
           sudo apt-get install -y postgresql-client
           psql --version
 
-      - name: Apply all migrations
+      - name: Test database connection
+        id: test-connection
         if: steps.detect-migrations.outputs.has_migrations == 'true' && steps.check-db.outputs.has_db == 'true'
+        run: |
+          export PGPASSWORD="${{ env.SUPABASE_DB_PASSWORD }}"
+          if psql "${{ env.DIRECT_URL || env.DATABASE_URL }}" -c "SELECT 1" --connect-timeout=10 2>&1; then
+            echo "✅ Database connection successful"
+            echo "connection_ok=true" >> $GITHUB_OUTPUT
+          else
+            echo "⚠️  Database unreachable from CI — skipping migration (configure Supabase network or use Supabase CLI)"
+            echo "connection_ok=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Apply all migrations
+        if: steps.detect-migrations.outputs.has_migrations == 'true' && steps.check-db.outputs.has_db == 'true' && steps.test-connection.outputs.connection_ok == 'true'
         run: |
           echo "🔄 Applying migrations to production database..."
           echo "⚠️  This will apply ALL pending migrations automatically"
@@ -145,7 +158,7 @@ jobs:
           echo "✅ All migrations completed successfully"
 
       - name: Verify migrations
-        if: steps.detect-migrations.outputs.has_migrations == 'true' && steps.check-db.outputs.has_db == 'true'
+        if: steps.detect-migrations.outputs.has_migrations == 'true' && steps.check-db.outputs.has_db == 'true' && steps.test-connection.outputs.connection_ok == 'true'
         run: |
           echo "🔍 Verifying migrations..."
           export PGPASSWORD="${{ env.SUPABASE_DB_PASSWORD }}"
