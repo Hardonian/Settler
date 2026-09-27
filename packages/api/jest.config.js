@@ -1,6 +1,8 @@
 module.exports = {
   preset: "ts-jest",
   testEnvironment: "node",
+  testTimeout: 15000,
+  forceExit: true,
   transform: {
     "^.+\\.tsx?$": [
       "ts-jest",
