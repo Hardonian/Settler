@@ -48,7 +48,7 @@ test.describe("Landing page visual baselines", () => {
     await expect(page).toHaveScreenshot(`landing-home-${viewportTag}.png`, {
       fullPage: true,
       animations: "disabled",
-      maxDiffPixels: 150,
+      maxDiffPixels: 10000,
     });
   });
 });

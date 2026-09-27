@@ -88,6 +88,8 @@ async function getAllFiles(rootDir: string): Promise<string[]> {
     "**/coverage/**",
     "**/.turbo/**",
     "**/.vercel/**",
+    "**/target/**",
+    "**/incremental/**",
   ];
 
   const allFiles = await glob("**/*", {

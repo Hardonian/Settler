@@ -12,9 +12,6 @@ permissions:
   actions: read
 
 on:
-  schedule:
-    # Run every hour to check for pending migrations
-    - cron: "0 * * * *"
   workflow_dispatch: # Allow manual trigger
     inputs:
       environment:

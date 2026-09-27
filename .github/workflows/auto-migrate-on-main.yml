@@ -20,6 +20,10 @@ env:
   SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
   SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
 
+permissions:
+  contents: read
+  issues: write
+
 jobs:
   auto-migrate:
     name: Auto-Migrate Database
@@ -54,15 +58,26 @@ jobs:
             echo "  - $(basename $file)"
           done
 
-      - name: Install PostgreSQL client
+      - name: Check database connectivity
+        id: check-db
         if: steps.detect-migrations.outputs.has_migrations == 'true'
+        run: |
+          if [ -z "${{ env.DATABASE_URL }}" ] && [ -z "${{ env.DIRECT_URL }}" ]; then
+            echo "⚠️  No DATABASE_URL or DIRECT_URL configured — skipping migration"
+            echo "has_db=false" >> $GITHUB_OUTPUT
+          else
+            echo "has_db=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Install PostgreSQL client
+        if: steps.detect-migrations.outputs.has_migrations == 'true' && steps.check-db.outputs.has_db == 'true'
         run: |
           sudo apt-get update
           sudo apt-get install -y postgresql-client
           psql --version
 
       - name: Apply all migrations
-        if: steps.detect-migrations.outputs.has_migrations == 'true'
+        if: steps.detect-migrations.outputs.has_migrations == 'true' && steps.check-db.outputs.has_db == 'true'
         run: |
           echo "🔄 Applying migrations to production database..."
           echo "⚠️  This will apply ALL pending migrations automatically"
@@ -130,7 +145,7 @@ jobs:
           echo "✅ All migrations completed successfully"
 
       - name: Verify migrations
-        if: steps.detect-migrations.outputs.has_migrations == 'true'
+        if: steps.detect-migrations.outputs.has_migrations == 'true' && steps.check-db.outputs.has_db == 'true'
         run: |
           echo "🔍 Verifying migrations..."
           export PGPASSWORD="${{ env.SUPABASE_DB_PASSWORD }}"

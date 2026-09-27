@@ -47,6 +47,9 @@ jobs:
       - name: Run cross-tenant runtime tests
         run: pnpm run test:cross-tenant
 
+      - name: Generate cross-tenant security artifact
+        run: node scripts/security/cross-tenant-runner.mjs
+
       - name: Verify security controls
         run: node scripts/verify-security.mjs
 

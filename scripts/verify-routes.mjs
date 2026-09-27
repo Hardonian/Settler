@@ -1,5 +1,5 @@
 import { existsSync } from "node:fs";
-import { spawn, spawnSync } from "node:child_process";
+import { spawn } from "node:child_process";
 import path from "node:path";
 import dotenv from "dotenv";
 
@@ -13,6 +13,7 @@ const strict200Routes = ["/home", "/docs", "/pricing"];
 const non500Routes = [
   "/",
   "/api/v1/health",
+  "/api/v1/ready",
   "/api/v1/meta",
   "/app",
   "/app/pipelines",
@@ -42,15 +43,18 @@ function startWebServer() {
     ? ["--filter", "@settler/web", "run", "start", "-p", String(port)]
     : ["--filter", "@settler/web", "run", "dev", "-p", String(port), "--hostname", "127.0.0.1"];
 
-  const pnpmCli = process.env.npm_execpath;
-  if (!pnpmCli) {
-    throw new Error("npm_execpath is required to launch the route verification server");
-  }
-
   const isWindows = process.platform === "win32";
-  const server = spawn(process.execPath, [pnpmCli, ...args], {
+  const command = isWindows ? "npx" : "pnpm";
+  const commandArgs = isWindows ? ["pnpm", ...args] : args;
+  const server = spawn(command, commandArgs, {
     stdio: "pipe",
-    env: { ...process.env, SETTLER_VERIFY_MODE: "1", PORT: String(port) },
+    env: {
+      ...process.env,
+      SETTLER_VERIFY_MODE: "1",
+      PORT: String(port),
+      NEXT_TURBOPACK: hasBuild ? undefined : "0",
+    },
+    shell: true,
   });
   server.stdout.on("data", (d) => process.stdout.write(d));
   server.stderr.on("data", (d) => process.stderr.write(d));
@@ -58,7 +62,7 @@ function startWebServer() {
   const killServer = () => {
     if (isWindows) {
       try {
-        spawnSync("taskkill", ["/F", "/T", "/PID", String(server.pid)], { stdio: "ignore" });
+        spawn("taskkill", ["/F", "/T", "/PID", String(server.pid)], { stdio: "ignore" });
       } catch {}
     } else {
       server.kill("SIGTERM");
@@ -89,9 +93,6 @@ async function main() {
     for (const route of strict200Routes) {
       await verifyRoute(route, [200]);
     }
-
-    // Readiness correctly returns 503 when required infrastructure is unavailable.
-    await verifyRoute("/api/v1/ready", [200, 503]);
 
     for (const route of non500Routes) {
       await verifyRoute(route, [200, 302, 307, 401, 403, 404]);

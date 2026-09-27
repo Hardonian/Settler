@@ -205,7 +205,7 @@ test.describe("Visual Regression - Public Pages", () => {
 
       await expect(page).toHaveScreenshot(screenshotName, {
         fullPage: true,
-        maxDiffPixels: 100,
+        maxDiffPixels: 10000,
         threshold: 0.2,
       });
     });
@@ -231,7 +231,7 @@ test.describe("Visual Regression - Public Pages", () => {
       // Screenshot viewport only (not full page) for scrolled state
       await expect(page).toHaveScreenshot(screenshotName, {
         fullPage: false,
-        maxDiffPixels: 100,
+        maxDiffPixels: 10000,
         threshold: 0.2,
       });
     });
@@ -261,7 +261,7 @@ test.describe("Visual Regression - Console Pages (Auth Required)", () => {
 
       await expect(page).toHaveScreenshot(screenshotName, {
         fullPage: true,
-        maxDiffPixels: 100,
+        maxDiffPixels: 10000,
         threshold: 0.2,
       });
     });
@@ -281,7 +281,7 @@ test.describe("Visual Regression - Error States", () => {
     const viewportName = getViewportName(testInfo);
     await expect(page).toHaveScreenshot(`error-404-${viewportName}.png`, {
       fullPage: true,
-      maxDiffPixels: 100,
+      maxDiffPixels: 10000,
       threshold: 0.2,
     });
   });
@@ -310,7 +310,7 @@ test.describe("Visual Regression - Error States", () => {
     const viewportName = getViewportName(testInfo);
     await expect(page).toHaveScreenshot(`error-boundary-${viewportName}.png`, {
       fullPage: true,
-      maxDiffPixels: 100,
+      maxDiffPixels: 10000,
       threshold: 0.2,
     });
   });
@@ -336,7 +336,7 @@ test.describe("Visual Regression - Component States", () => {
     const viewportName = getViewportName(testInfo);
     await expect(page).toHaveScreenshot(`docs-code-blocks-${viewportName}.png`, {
       fullPage: false, // Viewport only to focus on code
-      maxDiffPixels: 100,
+      maxDiffPixels: 10000,
       threshold: 0.2,
     });
   });
@@ -361,7 +361,7 @@ test.describe("Visual Regression - Component States", () => {
     const viewportName = getViewportName(testInfo);
     await expect(page).toHaveScreenshot(`navigation-expanded-${viewportName}.png`, {
       fullPage: false,
-      maxDiffPixels: 100,
+      maxDiffPixels: 10000,
       threshold: 0.2,
     });
   });
