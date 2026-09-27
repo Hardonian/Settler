@@ -106,6 +106,9 @@ jobs:
             echo "No authenticated Dependabot export secret provided, skipping."
           fi
 
+      - name: Generate cross-tenant security artifact
+        run: node scripts/security/cross-tenant-runner.mjs
+
       - name: Generate layered security evidence (full mode)
         env:
           SECURITY_AUDIT_MODE: strict
