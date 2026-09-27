@@ -73,11 +73,11 @@
 ## Testing Commands
 
 ```bash
-# Run accessibility tests
-npm run qa:a11y
+# Run the UI audit (includes accessibility checks)
+pnpm run qa:ui-audit
 
 # Visual regression tests include accessibility checks
-npm run qa:visual
+pnpm run qa:visual
 ```
 
 ## Date Verified

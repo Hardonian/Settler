@@ -109,8 +109,7 @@ The repository has a **solid foundation** for CI/CD with GitHub Actions workflow
 
 **Existing Tests:**
 
-- `example.spec.ts` - Basic API health checks
-- `reconciliation-flow.spec.ts` - Full reconciliation workflow
+- `ci-critical.spec.ts` - Release-blocking route, header, health, and authorization contract
 
 **Coverage:**
 

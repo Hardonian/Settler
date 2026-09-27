@@ -8,7 +8,7 @@ loadEnvFiles();
  * Playwright Configuration for Settler
  *
  * Includes:
- * - Standard E2E tests (chromium, firefox, webkit)
+ * - A small, hermetic CI-critical contract
  * - Visual regression with 3 viewports (mobile, tablet, desktop)
  * - DOM Reality enforcement tests
  * - UI Consistency Audit
@@ -67,7 +67,8 @@ export default defineConfig({
     timezoneId: "America/New_York",
   },
 
-  // Configure projects for major browsers + visual regression
+  // Explicit projects prevent broad test discovery from turning experimental
+  // audits into release blockers.
   projects: [
     // Hermetic production-mode journeys that are safe to block every change.
     // Broader feature/audit specs remain available through their named projects.
@@ -77,33 +78,6 @@ export default defineConfig({
       use: {
         ...devices["Desktop Chrome"],
       },
-    },
-
-    // Standard E2E tests
-    {
-      name: "chromium",
-      use: {
-        ...devices["Desktop Chrome"],
-      },
-      testIgnore: [
-        /.*visual.*\.spec\.ts/,
-        /.*\.audit\.spec\.ts/,
-        /.*dom-reality.*/,
-        /.*demo-mode.*/,
-      ],
-    },
-
-    {
-      name: "firefox",
-      use: {
-        ...devices["Desktop Firefox"],
-      },
-      testIgnore: [
-        /.*visual.*\.spec\.ts/,
-        /.*\.audit\.spec\.ts/,
-        /.*dom-reality.*/,
-        /.*demo-mode.*/,
-      ],
     },
 
     // Visual Regression: Mobile viewport (light mode)

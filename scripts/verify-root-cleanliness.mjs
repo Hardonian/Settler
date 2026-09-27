@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import { readFileSync, readdirSync } from "node:fs";
+import { spawnSync } from "node:child_process";
 import path from "node:path";
 
 const repoRoot = process.cwd();
@@ -35,6 +36,13 @@ function rootEntries() {
   return readdirSync(repoRoot, { withFileTypes: true })
     .map((entry) => entry.name)
     .filter((name) => name !== ".git" && name !== "node_modules")
+    .filter(
+      (name) =>
+        spawnSync("git", ["check-ignore", "-q", "--", name], {
+          cwd: repoRoot,
+          stdio: "ignore",
+        }).status !== 0
+    )
     .sort((a, b) => a.localeCompare(b));
 }
 
@@ -79,8 +87,7 @@ function main() {
     console.log(JSON.stringify(payload, null, 2));
   }
 
-  // Clutter entries are local/generated files (e.g. .env.local, target/) that are
-  // gitignored and should not block CI or push — warn only.
+  // Non-ignored clutter is reported separately from an unknown durable entry.
   if (clutter.length) {
     console.warn(formatList("⚠️  Local clutter detected (gitignored, non-blocking):", clutter));
   }

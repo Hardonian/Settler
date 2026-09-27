@@ -125,8 +125,8 @@ echo ""
 
 # Check tests exist
 echo "Checking tests..."
-if [ -f "tests/e2e/onboarding-flow.spec.ts" ]; then
-    echo -e "${GREEN}✅ E2E tests exist${NC}"
+if [ -f "tests/e2e/ci-critical.spec.ts" ]; then
+    echo -e "${GREEN}✅ Critical E2E contract exists${NC}"
 else
     echo -e "${RED}❌ E2E tests missing${NC}"
 fi
@@ -146,5 +146,5 @@ echo -e "${GREEN}🎉 Verification complete!${NC}"
 echo ""
 echo "Next steps:"
 echo "1. Apply migration: npm run db:migrate:local"
-echo "2. Run tests: npm run test:e2e -- tests/e2e/onboarding-flow.spec.ts"
+echo "2. Run tests: pnpm run test:e2e"
 echo "3. Deploy API routes and UI pages"

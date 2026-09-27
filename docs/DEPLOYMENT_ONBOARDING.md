@@ -115,24 +115,15 @@ npx playwright install
 ### Run E2E Tests
 
 ```bash
-# Run all onboarding tests
-npm run test:e2e -- tests/e2e/onboarding-flow.spec.ts
-
-# Run with UI
-npx playwright test tests/e2e/onboarding-flow.spec.ts --ui
-
-# Run in headed mode
-npx playwright test tests/e2e/onboarding-flow.spec.ts --headed
+# Run the release-blocking browser contract
+pnpm run test:e2e
 ```
 
 ### Expected Test Results
 
-- ✅ Complete onboarding wizard in <3 minutes
-- ✅ Show activation checklist on console
-- ✅ Allow workspace creation with valid slug
-- ✅ Reject duplicate workspace slug
-- ✅ Track onboarding events with trace_id
-- ✅ Handle errors gracefully
+- ✅ Public product routes render without server errors
+- ✅ Security headers are present
+- ✅ API and console endpoints reject unauthenticated access with typed errors
 
 ## Step 6: Verify Deployment
 

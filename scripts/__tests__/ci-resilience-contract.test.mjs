@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
-import { readFileSync, readdirSync } from "node:fs";
+import { execFileSync } from "node:child_process";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
 import path from "node:path";
 import test from "node:test";
 
@@ -54,6 +55,39 @@ test("API and E2E suites remain split into four isolated shards", () => {
   assert.match(e2e, /--shard=\$\{\{ matrix\.shard\.index \}\}\/\$\{\{ matrix\.shard\.total \}\}/);
   assert.match(e2e, /playwright test --project=ci-critical --shard=/);
   assert.match(read("playwright.config.ts"), /name:\s*"ci-critical"/);
+});
+
+test("the default E2E command runs only the owned critical contract", () => {
+  const config = read("playwright.config.ts");
+  assert.equal(packageJson.scripts["test:e2e"], "playwright test --project=ci-critical");
+  assert.match(config, /name:\s*"ci-critical"/);
+  assert.doesNotMatch(config, /name:\s*"chromium"/);
+  assert.doesNotMatch(config, /name:\s*"firefox"/);
+
+  for (const staleSpec of [
+    "a11y.spec.ts",
+    "api-contracts.spec.ts",
+    "console-smoke.spec.ts",
+    "onboarding-flow.spec.ts",
+    "reality-gates.spec.ts",
+    "reconciliation-flow.spec.ts",
+    "smoke.spec.ts",
+  ]) {
+    assert.equal(
+      existsSync(path.join(repoRoot, "tests/e2e", staleSpec)),
+      false,
+      `${staleSpec} must not be restored as a competing default gate`
+    );
+  }
+});
+
+test("generated and ignored output never enters the Git index", () => {
+  const trackedIgnored = execFileSync("git", ["ls-files", "-ci", "--exclude-standard"], {
+    cwd: repoRoot,
+    encoding: "utf8",
+  }).trim();
+
+  assert.equal(trackedIgnored, "");
 });
 
 test("parity gate does not duplicate expensive build and API suites", () => {

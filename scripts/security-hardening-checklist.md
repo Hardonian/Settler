@@ -55,7 +55,7 @@
 
 ### Testing
 
-- ✅ Smoke tests (`npm run qa:smoke`)
+- ✅ Critical browser contract (`pnpm run test:e2e`)
 - ✅ Type checking (`npm run typecheck`)
 - ✅ Linting (`npm run lint`)
 

@@ -17,7 +17,7 @@ The QA system validates real behavior across API, CLI, execution, replay, proof 
    - execution status fidelity
    - replay consistency and divergence detection
 4. **UI/UX verification**
-   - smoke tests
+   - release-blocking browser contract
    - accessibility and visual audits
 
 ## Key Commands
@@ -25,9 +25,9 @@ The QA system validates real behavior across API, CLI, execution, replay, proof 
 - `pnpm run test:ci:verify`
 - `pnpm run verify:tenant`
 - `pnpm run test:cross-tenant`
-- `pnpm run qa:smoke`
+- `pnpm run test:e2e`
 - `pnpm run qa:ui-audit`
-- `pnpm run qa:a11y`
+- `pnpm run qa:dom-reality`
 
 ## QA Dashboard Contract
 

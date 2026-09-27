@@ -65,9 +65,9 @@ Verify all required environment variables are set in Vercel:
    npm run build
    ```
 
-4. **Run smoke tests:**
+4. **Run the critical browser contract:**
    ```bash
-   npm run test:smoke:console
+   pnpm run test:e2e
    ```
 
 ## Deployment Steps

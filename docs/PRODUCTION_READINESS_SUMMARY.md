@@ -31,7 +31,7 @@ All 7 phases have been successfully implemented:
 
 - **Link Crawler**: Already exists (`npm run qa:crawl`)
 - **Smoke Tests**: Playwright tests (`npm run test:smoke`)
-- **Contract Tests**: Zod schema validation (`tests/e2e/api-contracts.spec.ts`)
+- **Browser Contract**: Critical route, security-header, and authorization checks (`tests/e2e/ci-critical.spec.ts`)
 
 ### ✅ Phase 5: Security
 

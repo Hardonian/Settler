@@ -52,6 +52,7 @@ terraform.tfvars
 !.vscode/settings.json
 !.vscode/extensions.json
 .idea/
+.kilo/
 
 # OS
 .DS_Store
@@ -62,6 +63,11 @@ Thumbs.db
 
 # Test/verification artifacts
 artifacts/
+qa-artifacts/
+recon_mismatch/
+recon_output/
+scratch/
+pnpm-audit-results.json
 playwright-report/
 test-results/
 

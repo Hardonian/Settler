@@ -76,7 +76,7 @@ async function main() {
     },
     {
       name: "smoke-routes",
-      command: "npm run qa:smoke",
+      command: "pnpm run test:e2e",
       description: "Smoke test key routes (no hard 500s)",
       required: false, // Optional - requires full environment
       skipIf: () => !process.env.BASE_URL && !process.env.E2E_BASE_URL,

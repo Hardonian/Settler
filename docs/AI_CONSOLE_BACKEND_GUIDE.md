@@ -683,13 +683,13 @@ npm run diagnose:console
 ### 6. Smoke Tests
 
 ```bash
-npm run test:smoke:console
+pnpm run test:e2e
 ```
 
 **Expected:**
 
 - All tests pass
-- Console route test passes
+- Console authorization contract passes
 
 ## Diagnostic Checklist
 

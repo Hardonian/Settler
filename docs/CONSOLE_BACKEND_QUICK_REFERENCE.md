@@ -15,8 +15,8 @@ curl -I https://your-domain.com/console
 # Test API route (should return 401)
 curl https://your-domain.com/api/console/api-keys
 
-# Run smoke tests
-npm run test:smoke:console
+# Run the critical browser contract
+pnpm run test:e2e
 ```
 
 ## Most Common 500 Error Causes
@@ -83,7 +83,7 @@ export async function GET(request: NextRequest) {
 - [ ] API routes return 401 when unauthenticated (not 500)
 - [ ] API routes return 200 when authenticated (not 500)
 - [ ] Diagnostic script passes: `npm run diagnose:console`
-- [ ] Smoke tests pass: `npm run test:smoke:console`
+- [ ] Critical browser contract passes: `pnpm run test:e2e`
 
 ## Full Documentation
 
