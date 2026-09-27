@@ -119,13 +119,11 @@ jobs:
       - name: Doctor
         run: pnpm run doctor -- --fast
 
-      - name: Build web and missing workspace deps
-        run: |
-          pnpm --filter @settler/adapters run build 2>/dev/null || true
-          pnpm --filter @settler/react-settler run build 2>/dev/null || true
-          pnpm --filter @settler/web run build
+      - name: Build web and its workspace deps
+        run: pnpm run build
         env:
           SKIP_ENV_VALIDATION: "true"
+          NODE_ENV: "production"
 
       - name: Verify contract and release gates
         run: pnpm run verify:ci:contracts
