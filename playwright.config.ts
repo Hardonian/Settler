@@ -69,6 +69,16 @@ export default defineConfig({
 
   // Configure projects for major browsers + visual regression
   projects: [
+    // Hermetic production-mode journeys that are safe to block every change.
+    // Broader feature/audit specs remain available through their named projects.
+    {
+      name: "ci-critical",
+      testMatch: /.*ci-critical\.spec\.ts/,
+      use: {
+        ...devices["Desktop Chrome"],
+      },
+    },
+
     // Standard E2E tests
     {
       name: "chromium",

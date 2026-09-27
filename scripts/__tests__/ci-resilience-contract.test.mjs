@@ -52,6 +52,8 @@ test("API and E2E suites remain split into four isolated shards", () => {
 
   assert.match(ci, /--shard=\$\{\{ matrix\.shard\.index \}\}\/\$\{\{ matrix\.shard\.total \}\}/);
   assert.match(e2e, /--shard=\$\{\{ matrix\.shard\.index \}\}\/\$\{\{ matrix\.shard\.total \}\}/);
+  assert.match(e2e, /playwright test --project=ci-critical --shard=/);
+  assert.match(read("playwright.config.ts"), /name:\s*"ci-critical"/);
 });
 
 test("parity gate does not duplicate expensive build and API suites", () => {

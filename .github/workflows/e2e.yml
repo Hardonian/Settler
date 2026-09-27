@@ -105,16 +105,6 @@ jobs:
           JWT_SECRET: test-secret-min-32-chars-long-for-testing
           ENCRYPTION_KEY: test-encryption-key-32-chars-long!!
 
-      - name: Seed test data
-        run: |
-          # Seed test data for E2E tests
-          cd packages/api
-          npm run seed || echo "⚠️  Seed script not found, skipping"
-        env:
-          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/settler_test
-          NODE_ENV: test
-        continue-on-error: true
-
       - name: Start API server
         run: |
           nohup pnpm --dir packages/api start >/tmp/settler-api.log 2>&1 &
@@ -145,7 +135,7 @@ jobs:
           SUPABASE_SERVICE_ROLE_KEY: test-service-role-key-for-e2e
 
       - name: Run E2E tests
-        run: pnpm exec playwright test --project=chromium --shard=${{ matrix.shard.index }}/${{ matrix.shard.total }}
+        run: pnpm exec playwright test --project=ci-critical --shard=${{ matrix.shard.index }}/${{ matrix.shard.total }}
 
       - name: Upload E2E test results
         uses: actions/upload-artifact@v7
