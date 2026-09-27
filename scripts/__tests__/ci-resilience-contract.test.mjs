@@ -1,0 +1,77 @@
+import assert from "node:assert/strict";
+import { readFileSync, readdirSync } from "node:fs";
+import path from "node:path";
+import test from "node:test";
+
+const repoRoot = path.resolve(import.meta.dirname, "../..");
+const read = (relativePath) => readFileSync(path.join(repoRoot, relativePath), "utf8");
+const packageJson = JSON.parse(read("package.json"));
+const criticalWorkflows = [
+  ".github/workflows/ci.yml",
+  ".github/workflows/e2e.yml",
+  ".github/workflows/security.yml",
+];
+const workflowPaths = readdirSync(path.join(repoRoot, ".github/workflows"))
+  .filter((name) => name.endsWith(".yml"))
+  .map((name) => `.github/workflows/${name}`);
+
+test("Linux workflows pin the runner image and avoid Node 20 cache actions", () => {
+  for (const workflow of workflowPaths) {
+    const source = read(workflow);
+    assert.doesNotMatch(source, /runs-on:\s*ubuntu-latest/, workflow);
+    assert.doesNotMatch(source, /actions\/cache@v4/, workflow);
+  }
+});
+
+test("packageManager is the single pnpm version authority", () => {
+  assert.equal(packageJson.packageManager, "pnpm@10.13.1");
+
+  for (const workflow of criticalWorkflows) {
+    const lines = read(workflow).split(/\r?\n/);
+    for (let index = 0; index < lines.length; index += 1) {
+      if (!lines[index].includes("uses: pnpm/action-setup@")) continue;
+      const step = [];
+      for (let next = index + 1; next < lines.length; next += 1) {
+        if (/^\s{6}-\s/.test(lines[next])) break;
+        step.push(lines[next]);
+      }
+      assert.doesNotMatch(step.join("\n"), /^\s+version:/m, workflow);
+    }
+  }
+});
+
+test("API and E2E suites remain split into four isolated shards", () => {
+  const ci = read(".github/workflows/ci.yml");
+  const e2e = read(".github/workflows/e2e.yml");
+
+  for (let index = 1; index <= 4; index += 1) {
+    const shard = new RegExp(`\\{ index: ${index}, total: 4 \\}`);
+    assert.match(ci, shard, `missing API shard ${index}/4`);
+    assert.match(e2e, shard, `missing E2E shard ${index}/4`);
+  }
+
+  assert.match(ci, /--shard=\$\{\{ matrix\.shard\.index \}\}\/\$\{\{ matrix\.shard\.total \}\}/);
+  assert.match(e2e, /--shard=\$\{\{ matrix\.shard\.index \}\}\/\$\{\{ matrix\.shard\.total \}\}/);
+});
+
+test("parity gate does not duplicate expensive build and API suites", () => {
+  const command = packageJson.scripts["verify:ci:contracts"];
+  assert.ok(command, "verify:ci:contracts must be registered");
+  assert.doesNotMatch(command, /test:ci:verify|pnpm run build|pnpm run lint|pnpm run typecheck/);
+});
+
+test("security evidence jobs are bounded and use managed process trees", () => {
+  const security = read(".github/workflows/security.yml");
+  assert.match(security, /dependency-audit:[\s\S]*?timeout-minutes:\s*20/);
+  assert.match(read("scripts/security/header-probe.mjs"), /spawnManagedProcess/);
+  assert.match(read("scripts/security/runtime-smoke.mjs"), /spawnManagedProcess/);
+});
+
+test("browser gates use production parity and bounded route probes", () => {
+  assert.match(read("playwright.config.ts"), /NODE_ENV:\s*process\.env\.CI\s*\?\s*"production"/);
+  assert.match(read("scripts/marketing-cta-smoke.mjs"), /AbortSignal\.timeout\(10_000\)/);
+  assert.doesNotMatch(
+    read("tests/e2e/landing-home.visual.spec.ts"),
+    /Institutional Strategic Value Proposition/
+  );
+});

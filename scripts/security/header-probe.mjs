@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { mkdirSync, readFileSync, writeFileSync, existsSync } from "node:fs";
 import path from "node:path";
-import { spawn, spawnSync } from "node:child_process";
+import { spawnManagedProcess, stopManagedProcess } from "../lib/managed-child-process.mjs";
 
 const repoRoot = process.cwd();
 const runId = process.env.GITHUB_RUN_ID || new Date().toISOString().replace(/[:.]/g, "-");
@@ -115,7 +115,7 @@ async function maybeStartServer() {
     : process.platform === "win32"
       ? [process.env.ComSpec || "cmd.exe", ["/d", "/s", "/c", "pnpm.cmd", ...pnpmArgs]]
       : ["pnpm", pnpmArgs];
-  const child = spawn(pnpmCommand[0], pnpmCommand[1], {
+  const child = spawnManagedProcess(pnpmCommand[0], pnpmCommand[1], {
     cwd: repoRoot,
     env: process.env,
     stdio: ["ignore", "pipe", "pipe"],
@@ -134,22 +134,7 @@ async function maybeStartServer() {
 }
 
 async function stopServer(child) {
-  if (!child || child.exitCode !== null) return;
-  if (process.platform === "win32") {
-    spawnSync("taskkill", ["/F", "/T", "/PID", String(child.pid)], { stdio: "ignore" });
-    return;
-  }
-  await new Promise((resolve) => {
-    const timeout = setTimeout(() => {
-      if (child.exitCode === null) child.kill("SIGKILL");
-      resolve();
-    }, 3_000);
-    child.once("exit", () => {
-      clearTimeout(timeout);
-      resolve();
-    });
-    child.kill("SIGTERM");
-  });
+  await stopManagedProcess(child);
 }
 
 function hasNonce(csp) {

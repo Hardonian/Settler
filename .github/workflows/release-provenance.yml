@@ -37,7 +37,7 @@ env:
 jobs:
   generate-bundle:
     name: Generate Release Evidence Bundle
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     # Required permissions for artifact attestation (Sigstore OIDC signing)
     permissions:

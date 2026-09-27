@@ -23,7 +23,7 @@ env:
 jobs:
   auto-migrate:
     name: Auto-Migrate Database
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     environment: production
 
     steps:

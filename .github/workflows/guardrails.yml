@@ -9,7 +9,7 @@ on:
 jobs:
   check-pricing-links:
     name: Check Pricing Links
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7
 
@@ -37,7 +37,7 @@ jobs:
 
   check-env-vars:
     name: Check Required Env Vars
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7
 
@@ -59,7 +59,7 @@ jobs:
 
   check-hard-500-routes:
     name: Check for Hard 500 Routes
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7
 
@@ -115,7 +115,7 @@ jobs:
 
   check-unverified-claims:
     name: Check for Unverified Claims
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7
 
@@ -152,7 +152,7 @@ jobs:
 
   check-docs-alignment:
     name: Check Documentation Alignment
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7
 
@@ -182,7 +182,7 @@ jobs:
 
   lint-and-typecheck:
     name: Lint & Type Check
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7
 

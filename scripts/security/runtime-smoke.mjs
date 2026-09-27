@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { mkdirSync, writeFileSync, existsSync } from "node:fs";
 import path from "node:path";
-import { spawn, spawnSync } from "node:child_process";
+import { spawnManagedProcess, stopManagedProcess } from "../lib/managed-child-process.mjs";
 
 const repoRoot = process.cwd();
 const runId = new Date().toISOString().replace(/[:.]/g, "-");
@@ -71,7 +71,7 @@ async function maybeStartServer(config, logs) {
     : process.platform === "win32"
       ? [process.env.ComSpec || "cmd.exe", ["/d", "/s", "/c", "pnpm.cmd", ...pnpmArgs]]
       : ["pnpm", pnpmArgs];
-  const child = spawn(pnpmCommand[0], pnpmCommand[1], {
+  const child = spawnManagedProcess(pnpmCommand[0], pnpmCommand[1], {
     cwd: repoRoot,
     env: process.env,
     stdio: ["ignore", "pipe", "pipe"],
@@ -90,27 +90,7 @@ async function maybeStartServer(config, logs) {
 }
 
 async function stopServer(child) {
-  if (!child) return;
-  if (child.exitCode !== null || child.killed) return;
-  if (process.platform === "win32") {
-    spawnSync("taskkill", ["/F", "/T", "/PID", String(child.pid)], { stdio: "ignore" });
-    return;
-  }
-  child.kill("SIGTERM");
-  await new Promise((resolve) => {
-    const timer = setTimeout(() => {
-      if (child.exitCode === null) child.kill("SIGKILL");
-      resolve();
-    }, 5_000);
-
-    const done = () => {
-      clearTimeout(timer);
-      resolve();
-    };
-
-    child.once("exit", done);
-    child.once("close", done);
-  });
+  await stopManagedProcess(child, { graceMs: 5_000 });
 }
 
 function isJsonProblem(contentType) {

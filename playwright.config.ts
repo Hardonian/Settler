@@ -206,7 +206,7 @@ export default defineConfig({
     timeout: 120 * 1000,
     env: {
       ...process.env,
-      NODE_ENV: process.env.NODE_ENV || "development",
+      NODE_ENV: process.env.CI ? "production" : process.env.NODE_ENV || "development",
       // Ensure deterministic behavior for tests
       NEXT_PUBLIC_TEST_MODE: "1",
     },

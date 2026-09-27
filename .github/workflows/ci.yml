@@ -35,7 +35,7 @@ concurrency:
 
 jobs:
   conflict-markers:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
 
     steps:
@@ -55,9 +55,12 @@ jobs:
       - name: Detect unresolved conflict markers
         run: pnpm run verify:conflict-markers
 
+      - name: Verify CI resilience contracts
+        run: pnpm run verify:ci:workflows
+
   parity:
     needs: conflict-markers
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 30
     services:
       postgres:
@@ -116,11 +119,8 @@ jobs:
       - name: Doctor
         run: pnpm run doctor -- --fast
 
-      - name: Verify
-        run: pnpm run verify
-
-      - name: Verify surface docs drift gate
-        run: pnpm run verify:surface-docs && pnpm run verify:route-classes-doc && pnpm run verify:api-family-docs
+      - name: Verify contract and release gates
+        run: pnpm run verify:ci:contracts
 
       - name: Install Helm (packaging verification)
         uses: azure/setup-helm@v5
@@ -130,10 +130,19 @@ jobs:
       - name: Enterprise packaging boundary (SCIM + Helm)
         run: pnpm run verify:scim-posture && pnpm run verify:helm-packaging
 
-  api-tests-serial:
+  api-tests:
     needs: conflict-markers
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
+    name: api-tests (${{ matrix.shard.index }}/${{ matrix.shard.total }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        shard:
+          - { index: 1, total: 4 }
+          - { index: 2, total: 4 }
+          - { index: 3, total: 4 }
+          - { index: 4, total: 4 }
     services:
       postgres:
         image: postgres:16
@@ -185,12 +194,20 @@ jobs:
       - name: Build workspace packages (produces dist consumed by tests)
         run: pnpm run build
 
-      - name: API tests (serial, force exit)
-        run: pnpm run test:ci:verify
+      - name: API tests (isolated shard)
+        run: pnpm --filter @settler/api exec jest --runInBand --silent --shard=${{ matrix.shard.index }}/${{ matrix.shard.total }}
+
+  api-tests-serial:
+    name: api-tests-serial
+    needs: [conflict-markers, api-tests]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 2
+    steps:
+      - run: echo "All isolated API test shards passed."
 
   web-tests-sharded:
     needs: conflict-markers
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 30
     strategy:
       fail-fast: false
@@ -260,7 +277,7 @@ jobs:
 
   marketing-landing-gates:
     needs: conflict-markers
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 30
     services:
       postgres:
@@ -286,7 +303,7 @@ jobs:
           --health-timeout 5s
           --health-retries 5
     env:
-      NODE_ENV: test
+      NODE_ENV: production
       NEXT_PUBLIC_SITE_URL: http://localhost:3000
       NEXT_PUBLIC_APP_URL: http://localhost:3000
       NEXT_PUBLIC_SUPABASE_URL: https://dummy.supabase.co
@@ -354,7 +371,7 @@ jobs:
 
   determinism-checks:
     needs: conflict-markers
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 30
     services:
       postgres:

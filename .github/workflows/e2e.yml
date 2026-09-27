@@ -31,9 +31,17 @@ env:
 
 jobs:
   e2e:
-    name: E2E Tests
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
+    name: E2E Tests (${{ matrix.shard.index }}/${{ matrix.shard.total }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        shard:
+          - { index: 1, total: 4 }
+          - { index: 2, total: 4 }
+          - { index: 3, total: 4 }
+          - { index: 4, total: 4 }
     services:
       postgres:
         image: postgres:15-alpine
@@ -123,7 +131,7 @@ jobs:
           SUPABASE_SERVICE_ROLE_KEY: test-service-role-key-for-e2e
 
       - name: Run E2E tests
-        run: pnpm exec playwright test --project=chromium
+        run: pnpm exec playwright test --project=chromium --shard=${{ matrix.shard.index }}/${{ matrix.shard.total }}
         env:
           E2E_API_KEY: test-api-key
           E2E_BASE_URL: http://localhost:3000
@@ -133,15 +141,23 @@ jobs:
         uses: actions/upload-artifact@v7
         if: always()
         with:
-          name: e2e-test-results
+          name: e2e-test-results-${{ matrix.shard.index }}
           path: |
             playwright-report/
             test-results/
           retention-days: 7
 
+  e2e-complete:
+    name: E2E Tests
+    needs: e2e
+    runs-on: ubuntu-24.04
+    timeout-minutes: 2
+    steps:
+      - run: echo "All isolated E2E shards passed."
+
   demo-mode:
     name: Demo Mode Tests
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v7
@@ -186,9 +202,9 @@ jobs:
 
   visual-regression:
     name: Visual Regression Tests
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 20
-    needs: [e2e]
+    needs: [e2e-complete]
     if: github.event_name == 'pull_request' || github.ref == 'refs/heads/main'
     services:
       postgres:

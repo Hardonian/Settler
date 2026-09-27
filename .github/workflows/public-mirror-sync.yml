@@ -68,7 +68,7 @@ jobs:
   sync-public-mirror:
     name: Verify & Synchronize OSS Mirror
     if: github.repository == 'Hardonian/Settler'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
 
     steps:

@@ -26,7 +26,7 @@ jobs:
   sync-to-oss:
     # Superseded by .github/workflows/public-mirror-sync.yml (#96)
     if: false
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       contents: write
 
@@ -45,7 +45,7 @@ jobs:
           node-version-file: ".nvmrc"
 
       - name: Cache pnpm store
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: |
             ~/.pnpm-store

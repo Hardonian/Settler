@@ -14,7 +14,7 @@ on:
 jobs:
   pre-merge-checks:
     name: Pre-Merge Safety Checks
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE22: true
     if: github.event.pull_request.draft == false
@@ -110,7 +110,7 @@ jobs:
 
   auto-merge-dependabot:
     name: Auto-merge safe Dependabot updates
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE22: true
     needs: [pre-merge-checks]

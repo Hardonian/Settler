@@ -63,7 +63,7 @@ env:
 jobs:
   detect-migrations:
     name: Detect Migration Changes
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     outputs:
       has_migrations: ${{ steps.check.outputs.has_migrations }}
       migration_files: ${{ steps.check.outputs.migration_files }}
@@ -128,7 +128,7 @@ jobs:
 
   migration-guardian:
     name: Run Migration Guardian
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 25
     needs: [detect-migrations]
     if: |
@@ -371,7 +371,7 @@ jobs:
 
   apply-staging-migrations:
     name: Apply Migrations to Staging
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: [detect-migrations, migration-guardian]
     if: |
       success() &&
@@ -419,7 +419,7 @@ jobs:
 
   apply-production-migrations:
     name: Apply Migrations to Production
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: [apply-staging-migrations]
     if: success()
     environment: production # Requires approval

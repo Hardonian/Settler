@@ -11,7 +11,7 @@ on:
 jobs:
   rust-verify:
     name: Rust Verify (fmt, clippy, test, deny, audit)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
       - name: Checkout code
@@ -25,7 +25,7 @@ jobs:
           targets: wasm32-unknown-unknown
 
       - name: Cache cargo
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: |
             ~/.cargo/bin/
@@ -66,7 +66,7 @@ jobs:
 
   cargo-outdated:
     name: Check for Outdated Dependencies
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
       - name: Checkout code

@@ -24,27 +24,40 @@ const requiredRoutes = [
 
 async function check(path) {
   const url = new URL(path, baseUrl).toString();
-  const response = await fetch(url, { redirect: "follow" });
-  return {
-    path,
-    status: response.status,
-    ok: response.status >= 200 && response.status < 500,
-  };
+  try {
+    const response = await fetch(url, {
+      redirect: "follow",
+      signal: AbortSignal.timeout(10_000),
+    });
+    return {
+      path,
+      status: response.status,
+      ok: response.status >= 200 && response.status < 500,
+      error: null,
+    };
+  } catch (error) {
+    return {
+      path,
+      status: null,
+      ok: false,
+      error: error instanceof Error ? error.message : String(error),
+    };
+  }
 }
 
 async function run() {
   console.log(`🔎 Marketing CTA smoke against ${baseUrl}`);
   const failures = [];
 
-  for (const route of requiredRoutes) {
-    const result = await check(route);
+  const results = await Promise.all(requiredRoutes.map(check));
+  for (const result of results) {
     if (!result.ok) {
       failures.push(result);
-      console.error(`❌ ${route} -> ${result.status}`);
+      console.error(`❌ ${result.path} -> ${result.status ?? result.error}`);
       continue;
     }
 
-    console.log(`✅ ${route} -> ${result.status}`);
+    console.log(`✅ ${result.path} -> ${result.status}`);
   }
 
   if (failures.length > 0) {

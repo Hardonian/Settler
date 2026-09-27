@@ -1,7 +1,5 @@
 import { expect, test } from "@playwright/test";
 
-const BASE_URL = process.env.BASE_URL || "http://localhost:3000";
-
 function allowProject(projectName: string): boolean {
   return projectName === "visual-desktop-light" || projectName === "visual-mobile-light";
 }
@@ -10,7 +8,7 @@ test.describe("Landing page visual baselines", () => {
   test("/ baseline", async ({ page }, testInfo) => {
     test.skip(!allowProject(testInfo.project.name), "Only desktop/mobile light visual projects.");
 
-    const response = await page.goto(`${BASE_URL}/`, {
+    const response = await page.goto("/", {
       waitUntil: "domcontentloaded",
       timeout: 60000,
     });
@@ -28,12 +26,21 @@ test.describe("Landing page visual baselines", () => {
       `,
     });
 
-    await expect(page.getByText("The Institutional Strategic Value Proposition")).toBeVisible({
-      timeout: 30000,
-    });
+    await expect(
+      page.getByRole("heading", {
+        level: 1,
+        name: "Deterministic reconciliation. Verifiable audit evidence.",
+      })
+    ).toBeVisible({ timeout: 10_000 });
+    await expect(page.locator("main#main-content")).toBeVisible();
     await page.evaluate(() => document.fonts.ready);
-    await page.waitForFunction(() =>
-      Array.from(document.images).every((image) => image.complete && image.naturalWidth > 0)
+    await page.waitForFunction(
+      () =>
+        Array.from(document.images)
+          .filter((image) => image.getClientRects().length > 0)
+          .every((image) => image.complete && image.naturalWidth > 0),
+      undefined,
+      { timeout: 15_000 }
     );
     await page.waitForTimeout(300);
 

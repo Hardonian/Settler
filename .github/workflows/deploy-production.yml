@@ -32,7 +32,7 @@ env:
 jobs:
   validate:
     name: Validate Before Deployment
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7
         with:
@@ -56,7 +56,7 @@ jobs:
 
   test:
     name: Run Tests
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: [validate]
     if: github.event.inputs.skip_tests != 'true'
     services:
@@ -116,7 +116,7 @@ jobs:
 
   build:
     name: Build Application
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: [test]
     steps:
       - uses: actions/checkout@v7
@@ -145,7 +145,7 @@ jobs:
 
   deploy:
     name: Deploy to Production
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: [build]
     environment: production
     steps:
@@ -179,7 +179,7 @@ jobs:
 
   verify:
     name: Verify Deployment
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: [deploy]
     env:
       PRODUCTION_URL: ${{ secrets.PRODUCTION_URL }}
@@ -212,7 +212,7 @@ jobs:
 
   notify:
     name: Notify on Failure
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: [verify]
     if: failure()
     steps:
