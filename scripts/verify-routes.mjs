@@ -41,7 +41,18 @@ function startWebServer() {
     existsSync("packages/web/.next/prerender-manifest.json");
   const args = hasBuild
     ? ["--filter", "@settler/web", "run", "start", "-p", String(port)]
-    : ["--filter", "@settler/web", "run", "dev", "-p", String(port), "--hostname", "127.0.0.1"];
+    : [
+        "--filter",
+        "@settler/web",
+        "run",
+        "dev",
+        "-p",
+        String(port),
+        "--hostname",
+        "127.0.0.1",
+        "--",
+        "--no-turbopack",
+      ];
 
   const isWindows = process.platform === "win32";
   const command = isWindows ? "npx" : "pnpm";
