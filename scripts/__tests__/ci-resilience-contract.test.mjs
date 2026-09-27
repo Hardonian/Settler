@@ -65,11 +65,16 @@ test("security evidence jobs are bounded and use managed process trees", () => {
   assert.match(security, /dependency-audit:[\s\S]*?timeout-minutes:\s*20/);
   assert.match(read("scripts/security/header-probe.mjs"), /spawnManagedProcess/);
   assert.match(read("scripts/security/runtime-smoke.mjs"), /spawnManagedProcess/);
+  assert.match(read("scripts/verify-routes.mjs"), /spawnManagedProcess/);
 });
 
 test("browser gates use production parity and bounded route probes", () => {
+  const e2e = read(".github/workflows/e2e.yml");
+
   assert.match(read("playwright.config.ts"), /NODE_ENV:\s*process\.env\.CI\s*\?\s*"production"/);
   assert.match(read("scripts/marketing-cta-smoke.mjs"), /AbortSignal\.timeout\(10_000\)/);
+  assert.match(e2e, /e2e:[\s\S]*?env:[\s\S]*?DATABASE_URL:[\s\S]*?INTERNAL_API_URL:/);
+  assert.match(e2e, /visual-regression:[\s\S]*?env:[\s\S]*?DATABASE_URL:[\s\S]*?INTERNAL_API_URL:/);
   assert.doesNotMatch(
     read("tests/e2e/landing-home.visual.spec.ts"),
     /Institutional Strategic Value Proposition/

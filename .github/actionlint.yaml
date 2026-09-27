@@ -1,6 +1,6 @@
 config-variables:
-  - "ENABLE_AUTO_SYNC"
-  - ".*"
+  - "DOMAIN"
+  - "SUPABASE_DB_REGION"
 
 secrets:
   - "PUBLIC_MIRROR_GIT_USERNAME"
@@ -27,4 +27,3 @@ secrets:
   - "UPSTASH_REDIS_REST_URL"
   - "UPSTASH_REDIS_REST_TOKEN"
   - "GITHUB_TOKEN"
-  - ".*"

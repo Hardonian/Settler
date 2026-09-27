@@ -34,6 +34,20 @@ jobs:
     name: E2E Tests (${{ matrix.shard.index }}/${{ matrix.shard.total }})
     runs-on: ubuntu-24.04
     timeout-minutes: 20
+    env:
+      API_URL: http://localhost:4000
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/settler_test
+      E2E_API_KEY: test-api-key
+      E2E_BASE_URL: http://localhost:3000
+      ENCRYPTION_KEY: test-encryption-key-32-chars-long!!
+      INTERNAL_API_URL: http://localhost:4000
+      JWT_SECRET: test-secret-min-32-chars-long-for-testing
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: test-anon-key-for-e2e
+      NEXT_PUBLIC_SUPABASE_URL: http://localhost:54321
+      REDIS_URL: redis://localhost:6379
+      SUPABASE_ANON_KEY: test-anon-key-for-e2e
+      SUPABASE_SERVICE_ROLE_KEY: test-service-role-key-for-e2e
+      SUPABASE_URL: http://localhost:54321
     strategy:
       fail-fast: false
       matrix:
@@ -132,10 +146,6 @@ jobs:
 
       - name: Run E2E tests
         run: pnpm exec playwright test --project=chromium --shard=${{ matrix.shard.index }}/${{ matrix.shard.total }}
-        env:
-          E2E_API_KEY: test-api-key
-          E2E_BASE_URL: http://localhost:3000
-          API_URL: http://localhost:4000
 
       - name: Upload E2E test results
         uses: actions/upload-artifact@v7
@@ -206,6 +216,20 @@ jobs:
     timeout-minutes: 20
     needs: [e2e-complete]
     if: github.event_name == 'pull_request' || github.ref == 'refs/heads/main'
+    env:
+      API_URL: http://localhost:4000
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/settler_test
+      E2E_API_KEY: test-api-key
+      E2E_BASE_URL: http://localhost:3000
+      ENCRYPTION_KEY: test-encryption-key-32-chars-long!!
+      INTERNAL_API_URL: http://localhost:4000
+      JWT_SECRET: test-secret-min-32-chars-long-for-testing
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: test-anon-key-for-e2e
+      NEXT_PUBLIC_SUPABASE_URL: http://localhost:54321
+      REDIS_URL: redis://localhost:6379
+      SUPABASE_ANON_KEY: test-anon-key-for-e2e
+      SUPABASE_SERVICE_ROLE_KEY: test-service-role-key-for-e2e
+      SUPABASE_URL: http://localhost:54321
     services:
       postgres:
         image: postgres:15-alpine
@@ -297,9 +321,6 @@ jobs:
         run: pnpm run test:visual || echo "⚠️  Visual tests not configured yet"
         continue-on-error: true
         env:
-          E2E_API_KEY: test-api-key
-          E2E_BASE_URL: http://localhost:3000
-          API_URL: http://localhost:4000
           WEB_BASE_URL: http://localhost:3000
 
       - name: Upload visual test results

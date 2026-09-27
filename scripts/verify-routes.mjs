@@ -1,7 +1,8 @@
 import { existsSync } from "node:fs";
-import { spawn, spawnSync } from "node:child_process";
+import { spawnSync } from "node:child_process";
 import path from "node:path";
 import dotenv from "dotenv";
+import { spawnManagedProcess, stopManagedProcess } from "./lib/managed-child-process.mjs";
 
 dotenv.config({ path: path.resolve(process.cwd(), ".env.local") });
 dotenv.config();
@@ -13,7 +14,6 @@ const strict200Routes = ["/home", "/docs", "/pricing"];
 const non500Routes = [
   "/",
   "/api/v1/health",
-  "/api/v1/ready",
   "/api/v1/meta",
   "/app",
   "/app/pipelines",
@@ -36,17 +36,23 @@ async function waitForServer(timeoutMs = 90000) {
 }
 
 function startWebServer() {
+  const pnpmCommand = process.platform === "win32" ? (process.env.ComSpec ?? "cmd.exe") : "pnpm";
+  const pnpmArgs = (args) =>
+    process.platform === "win32" ? ["/d", "/s", "/c", "pnpm", ...args] : args;
   const hasBuild =
     existsSync("packages/web/.next/BUILD_ID") &&
     existsSync("packages/web/.next/prerender-manifest.json");
 
   if (!hasBuild) {
     console.log("📦 No production build found — building @settler/web first...");
-    const buildResult = spawnSync("pnpm", ["--filter", "@settler/web", "run", "build"], {
-      stdio: "inherit",
-      env: { ...process.env, SKIP_ENV_VALIDATION: "true" },
-      shell: true,
-    });
+    const buildResult = spawnSync(
+      pnpmCommand,
+      pnpmArgs(["--filter", "@settler/web", "run", "build"]),
+      {
+        stdio: "inherit",
+        env: { ...process.env, SKIP_ENV_VALIDATION: "true" },
+      }
+    );
     if (buildResult.status !== 0) {
       console.error("❌ Web build failed — cannot start production server");
       process.exit(1);
@@ -55,10 +61,7 @@ function startWebServer() {
 
   const args = ["--filter", "@settler/web", "run", "start", "-p", String(port)];
 
-  const isWindows = process.platform === "win32";
-  const command = isWindows ? "npx" : "pnpm";
-  const commandArgs = isWindows ? ["pnpm", ...args] : args;
-  const server = spawn(command, commandArgs, {
+  const server = spawnManagedProcess(pnpmCommand, pnpmArgs(args), {
     stdio: "pipe",
     env: {
       ...process.env,
@@ -66,27 +69,16 @@ function startWebServer() {
       PORT: String(port),
       NEXT_TURBOPACK: hasBuild ? undefined : "0",
     },
-    shell: true,
   });
   server.stdout.on("data", (d) => process.stdout.write(d));
   server.stderr.on("data", (d) => process.stderr.write(d));
 
-  const killServer = () => {
-    if (isWindows) {
-      try {
-        spawn("taskkill", ["/F", "/T", "/PID", String(server.pid)], { stdio: "ignore" });
-      } catch {}
-    } else {
-      server.kill("SIGTERM");
-    }
-  };
-  process.on("exit", killServer);
-  process.on("SIGINT", () => {
-    killServer();
+  process.on("SIGINT", async () => {
+    await stopManagedProcess(server);
     process.exit(1);
   });
 
-  return { server, killServer };
+  return server;
 }
 
 async function verifyRoute(route, allowedStatuses) {
@@ -98,7 +90,7 @@ async function verifyRoute(route, allowedStatuses) {
 }
 
 async function main() {
-  const { server, killServer } = startWebServer();
+  const server = startWebServer();
   try {
     await waitForServer();
 
@@ -110,9 +102,13 @@ async function main() {
       await verifyRoute(route, [200, 302, 307, 401, 403, 404]);
     }
 
+    // A readiness endpoint is healthy as a route even when it truthfully
+    // reports unavailable local dependencies.
+    await verifyRoute("/api/v1/ready", [200, 503]);
+
     console.log("✅ Route verification completed without hard-500 responses on critical routes");
   } finally {
-    killServer();
+    await stopManagedProcess(server);
   }
 }
 

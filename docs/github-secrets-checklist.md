@@ -194,11 +194,10 @@
 
 ## Mirror/OSS Publishing
 
-| Variable                     | Status | Required | Description                  | Notes                                         |
-| ---------------------------- | ------ | -------- | ---------------------------- | --------------------------------------------- |
-| `PUBLIC_MIRROR_REPO_URL`     | ✅     | No       | Public mirror repository URL | Used in publish-mirror.yml, auto-sync-oss.yml |
-| `PUBLIC_MIRROR_GIT_TOKEN`    | ✅     | No       | Git token for mirror repo    | Used in publish-mirror.yml, auto-sync-oss.yml |
-| `PUBLIC_MIRROR_GIT_USERNAME` | ✅     | No       | Git username for mirror repo | Used in publish-mirror.yml, auto-sync-oss.yml |
+| Variable                  | Status | Required | Description                  | Notes                          |
+| ------------------------- | ------ | -------- | ---------------------------- | ------------------------------ |
+| `PUBLIC_MIRROR_REPO_URL`  | ✅     | No       | Public mirror repository URL | Used in public-mirror-sync.yml |
+| `PUBLIC_MIRROR_GIT_TOKEN` | ✅     | No       | Git token for mirror repo    | Used in public-mirror-sync.yml |
 
 ---
 
