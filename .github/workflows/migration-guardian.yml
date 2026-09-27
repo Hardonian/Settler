@@ -132,7 +132,6 @@ jobs:
     timeout-minutes: 25
     needs: [detect-migrations]
     if: |
-      github.event_name == 'schedule' ||
       github.event_name == 'workflow_dispatch' ||
       (needs.detect-migrations.outputs.has_migrations == 'true' && github.event_name == 'push') ||
       (needs.detect-migrations.outputs.has_migrations == 'true' && github.event.pull_request.merged == true)
@@ -180,6 +179,7 @@ jobs:
               parsed.port = '5432';
               parsed.username = `postgres.${projectRef}`;
               parsed.searchParams.set('sslmode', 'require');
+              parsed.searchParams.set('sslaccept', 'strict_certificate');
               databaseUrl = parsed.toString();
               console.log('✅ Routed direct Supabase DSN through the IPv4 session pooler');
             }

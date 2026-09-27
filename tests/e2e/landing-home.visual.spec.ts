@@ -28,7 +28,7 @@ test.describe("Landing page visual baselines", () => {
       `,
     });
 
-    await expect(page.getByText("Bit-Perfect Reproducibility at Institutional Scale")).toBeVisible({
+    await expect(page.getByText("The Institutional Strategic Value Proposition")).toBeVisible({
       timeout: 30000,
     });
     await page.evaluate(() => document.fonts.ready);
