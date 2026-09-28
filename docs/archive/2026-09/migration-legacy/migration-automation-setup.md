@@ -1,4 +1,6 @@
-# Migration Automation Setup
+# Archived: Migration Automation Setup
+
+> Superseded by `docs/MIGRATIONS.md`. Commands below are retained only as historical context.
 
 This document explains how to use the automated migration system.
 

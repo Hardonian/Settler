@@ -55,7 +55,7 @@ JWT_SECRET=...
 
 ```bash
 # Run migrations
-npm run db:migrate:prod
+# Production migrations are applied by .github/workflows/auto-migrate-on-main.yml
 
 # Generate Prisma client
 npm run prisma:generate

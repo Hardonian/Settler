@@ -108,7 +108,7 @@ async function checkSetup() {
   } else {
     console.log("❌ Critical components missing. Please:");
     console.log("   1. Set Supabase credentials");
-    console.log("   2. Run migrations: npm run db:push");
+    console.log("   2. Apply reviewed migrations through the database migration workflow");
     console.log("   3. Seed add-ons: npm run billing:seed");
   }
 }

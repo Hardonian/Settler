@@ -24,10 +24,10 @@ supabase db push
 
 ```bash
 # Using the TypeScript migration runner
-npm run db:migrate:auto
+pnpm exec prisma migrate dev
 
 # Or using the bash script (requires psql)
-bash scripts/apply-migrations.sh staging
+# Staging and production schema changes use the reviewed migration workflow.
 ```
 
 ### Option C: Manual Application

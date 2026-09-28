@@ -107,7 +107,7 @@ After deployment, migrations should run automatically if configured, or run manu
 ```bash
 # Via Vercel CLI (if you have access)
 vercel env pull .env.production
-npm run db:migrate:pending
+# Production migrations are applied by .github/workflows/auto-migrate-on-main.yml
 ```
 
 ## Environment Variables Checklist

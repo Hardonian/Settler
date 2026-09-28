@@ -1,4 +1,6 @@
-# Supabase Auto-Migration Setup Guide
+# Archived: Supabase Auto-Migration Setup Guide
+
+> Superseded by `docs/MIGRATIONS.md`. Commands below are retained only as historical context.
 
 This document describes the automated Supabase migration pipeline configured for this repository.
 

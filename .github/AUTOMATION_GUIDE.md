@@ -226,22 +226,10 @@ Migrations run automatically if:
 
 ### Migration Execution
 
-**Staging:**
-
-```bash
-cd packages/api
-npm run migrate:prod
-# Uses STAGING_DATABASE_URL from GitHub secrets
-```
-
-**Production:**
-
-```bash
-cd packages/api
-npm run migrate:prod
-# Uses DATABASE_URL from GitHub secrets
-# Requires manual approval
-```
+Pull requests are validated by `migration-guardian.yml`. Production is mutated
+only by `auto-migrate-on-main.yml`, which serializes changes, applies Prisma via
+the IPv4 session pooler, and applies Supabase SQL through its checksum ledger.
+See `docs/MIGRATIONS.md` for the operating contract.
 
 ## Monitoring & Notifications
 

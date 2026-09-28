@@ -121,8 +121,8 @@ spec:
 
 ### Migrations
 
-- **Local Development**: `npm run db:migrate:local`
-- **Production**: `npm run db:migrate:prod`
+- **Local Development**: `pnpm exec prisma migrate dev`
+- **Production**: `.github/workflows/auto-migrate-on-main.yml`
 - **Verification**: `npm run db:verify`
 
 **Migration Best Practices:**

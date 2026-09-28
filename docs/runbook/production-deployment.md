@@ -36,7 +36,7 @@ Verify all required environment variables are set in Vercel:
 2. **Apply migrations if needed:**
 
    ```bash
-   npm run db:migrate:prod
+   # Merge a reviewed migration and monitor auto-migrate-on-main.yml.
    ```
 
 3. **Verify critical tables exist:**

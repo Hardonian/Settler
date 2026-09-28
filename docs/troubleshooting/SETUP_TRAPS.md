@@ -182,14 +182,14 @@ pnpm prisma:push
 
 ```bash
 # Run migrations
-pnpm db:migrate:local
-
-# Or push schema
-pnpm db:push
+pnpm exec prisma migrate dev
 
 # Check status
 pnpm prisma:status
 ```
+
+For production, verify the serialized database migration workflow; never push
+the schema directly.
 
 ---
 

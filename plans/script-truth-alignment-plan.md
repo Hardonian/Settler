@@ -163,10 +163,10 @@ After cleanup, the recommended commands for developers:
 
 ### Database
 
-- `db:push` - Push schema
-- `db:reset` - Reset database
-- `db:migrate:local` - Run migrations locally
-- `db:migrate:prod` - Run migrations in production
+- `db:new` - Create a timestamped Supabase SQL migration
+- `db:verify:migrations` - Test the Supabase migration contract
+- `prisma:migrate` - Apply pending Prisma migrations to the configured database
+- Production changes - Merge reviewed migrations and verify the serialized GitHub Actions workflow
 
 ### Operations
 

@@ -46,7 +46,7 @@
 
 #### Database Setup
 
-- `scripts/run-migrations-remote.ts` - Remote migration execution
+- `scripts/supabase-migration-contract.mjs` - Validated, checksum-locked Supabase migration execution
 - `scripts/configure-super-admin.ts` - Super admin configuration
 - `scripts/test-setup.ts` - Setup verification
 - `scripts/check-schema.ts` - Schema validation

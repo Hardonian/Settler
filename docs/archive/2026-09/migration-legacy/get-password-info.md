@@ -1,4 +1,7 @@
-# Database Password Required
+# Archived: Database Password Instructions
+
+> Superseded in September 2026. Production migrations do not use an exposed
+> direct database password. See `.github/MIGRATION_SECRETS_SETUP.md`.
 
 To run migrations, I need your Supabase database password.
 

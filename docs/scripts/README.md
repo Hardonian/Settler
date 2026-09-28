@@ -2,11 +2,11 @@
 
 This directory contains utility scripts for development, testing, deployment, and maintenance.
 
-## Setup & Migration Scripts
+## Setup & Database Scripts
 
 ### Database Setup
 
-- `run-migrations-remote.ts` - Run database migrations via remote connection
+- `supabase-migration-contract.mjs` - Validate and deploy checksum-locked Supabase migrations
 - `configure-super-admin.ts` - Configure super admin access
 - `test-setup.ts` - Verify database setup
 - `check-schema.ts` - Check database schema
@@ -22,12 +22,13 @@ This directory contains utility scripts for development, testing, deployment, an
 
 ## Usage
 
-### Run Migrations
+### Validate Supabase Migrations
 
 ```bash
-export DATABASE_URL="your-connection-string"
-npx tsx scripts/run-migrations-remote.ts
+pnpm run db:verify:migrations
 ```
+
+Production deployment is owned by `.github/workflows/auto-migrate-on-main.yml`.
 
 ### Configure Super Admin
 

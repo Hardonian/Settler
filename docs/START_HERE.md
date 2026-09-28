@@ -7,7 +7,8 @@ If you are new to Settler, follow this sequence.
 ```bash
 pnpm install
 cp .env.example .env
-pnpm exec tsx scripts/run-migrations-remote.ts
+pnpm tb:start
+pnpm exec prisma migrate dev
 pnpm --filter @settler/web dev
 pnpm demo
 pnpm settler:replay examples/demo-output/evidence.json

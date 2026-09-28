@@ -79,8 +79,8 @@ async function checkConnection() {
   try {
     await pool.query("SELECT 1");
     console.log("✅ Connection successful!\n");
-    console.log("🚀 You can now run migrations with:");
-    console.log("   npm run db:migrate:auto\n");
+    console.log("🚀 Connection is ready for local development.");
+    console.log("   Run: pnpm exec prisma migrate dev\n");
     await pool.end();
     process.exit(0);
   } catch (error: any) {
@@ -98,7 +98,7 @@ async function checkConnection() {
       console.log("Option 2: Local Supabase");
       console.log("   1. Install Supabase CLI: https://supabase.com/docs/guides/cli");
       console.log("   2. Run: supabase start");
-      console.log("   3. Then run: npm run db:migrate:auto\n");
+      console.log("   3. Then run: pnpm exec prisma migrate dev\n");
 
       console.log("Option 3: Custom PostgreSQL");
       console.log("   Set DATABASE_URL environment variable:\n");

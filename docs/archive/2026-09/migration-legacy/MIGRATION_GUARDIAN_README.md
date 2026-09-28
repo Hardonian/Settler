@@ -1,4 +1,6 @@
-# Migration Guardian – Supabase + Prisma + Upstash
+# Archived: Migration Guardian – Supabase + Prisma + Upstash
+
+> Superseded by `docs/MIGRATIONS.md`. Commands below are retained only as historical context.
 
 ## Overview
 

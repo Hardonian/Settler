@@ -49,7 +49,7 @@ The JobForge migration has been integrated into Settler's migration system:
 supabase db push
 
 # OR manually via migration script
-npm run db:migrate:apply
+pnpm exec prisma migrate dev
 ```
 
 This creates:

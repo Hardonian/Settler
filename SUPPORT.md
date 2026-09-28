@@ -63,7 +63,7 @@ Common causes:
 
 - Missing or malformed `DATABASE_URL` in `.env`
 - Supabase project not running or URL incorrect
-- Migrations not applied — run `pnpm exec tsx scripts/run-migrations-remote.ts`
+- Migrations not applied — follow `docs/MIGRATIONS.md`; production changes run only through the migration workflow
 
 ### TypeScript errors in development
 

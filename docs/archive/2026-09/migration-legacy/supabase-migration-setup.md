@@ -1,4 +1,8 @@
-# Supabase Auto-Migration Setup Guide
+# Archived: Supabase Auto-Migration Setup Guide
+
+> Superseded in September 2026. Do not follow the commands in this document.
+> See `docs/MIGRATIONS.md` and `.github/MIGRATION_SECRETS_SETUP.md` for the
+> current migration contract.
 
 This document describes the automated Supabase migration pipeline configured for this repository.
 

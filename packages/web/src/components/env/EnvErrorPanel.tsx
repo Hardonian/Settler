@@ -61,9 +61,9 @@ export function EnvErrorPanel({ missingVars, isFirstRun = false }: EnvErrorPanel
                     </li>
                     <li>Add your Supabase credentials</li>
                     <li>
-                      Run{" "}
+                      For local development, run{" "}
                       <code className="bg-blue-100 dark:bg-blue-900 px-1 rounded">
-                        pnpm db:push
+                        pnpm exec prisma migrate dev
                       </code>{" "}
                       to set up the database
                     </li>

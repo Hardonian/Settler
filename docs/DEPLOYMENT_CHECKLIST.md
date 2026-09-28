@@ -52,12 +52,11 @@
    - SUPABASE_SERVICE_ROLE_KEY (server only)
    ```
 
-2. **Run Migrations** (if not already done)
+2. **Verify Migrations**
 
-   ```bash
-   export DATABASE_URL="your-connection-string"
-   npx tsx scripts/run-migrations-remote.ts
-   ```
+   Confirm the `Database Migrations` GitHub Actions workflow succeeded for the
+   deployed commit. See [MIGRATIONS.md](./MIGRATIONS.md); do not run ad-hoc SQL
+   against production.
 
 3. **Configure Super Admin** (if not already done)
 

@@ -10,7 +10,7 @@ All deployment scripts, monitoring tools, and documentation have been created an
 
 - **File:** `supabase/migrations/20260127000000_autonomous_agents_schema.sql`
 - **Status:** Ready to deploy
-- **Command:** `supabase db push` or `npm run db:push`
+- **Deployment:** Merge the reviewed migration and verify the serialized database migration workflow
 
 ### 2. ✅ All Edge Functions Created
 

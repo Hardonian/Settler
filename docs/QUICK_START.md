@@ -20,9 +20,11 @@ Update `.env` with your Postgres/Supabase credentials.
 ## Run Migrations
 
 ```bash
-export DATABASE_URL="postgresql://USER:PASSWORD@HOST:PORT/DB"
-pnpm exec tsx scripts/run-migrations-remote.ts
+pnpm tb:start
+pnpm exec prisma migrate dev
 ```
+
+Production migrations are applied only by the serialized GitHub Actions workflow described in [MIGRATIONS.md](./MIGRATIONS.md).
 
 ## Start the Web Console
 

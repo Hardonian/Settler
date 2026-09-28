@@ -23,7 +23,7 @@ pnpm run test:e2e
 
 1. **Missing DATABASE_URL** → Set in Vercel environment variables
 2. **Prisma client not generated** → Run `npm run prisma:generate`
-3. **Missing database tables** → Run migrations: `npm run db:migrate:auto`
+3. **Missing database tables** → Follow the explicit migration workflow in [`MIGRATIONS.md`](./MIGRATIONS.md)
 4. **RLS policies missing** → Check migration: `supabase/migrations/20260125000000_console_rls_fixes.sql`
 5. **Supabase URL/key incorrect** → Verify in Vercel dashboard
 

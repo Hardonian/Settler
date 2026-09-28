@@ -1,4 +1,6 @@
-# Database Migration Guide
+# Archived: Database Migration Guide
+
+> Superseded by `docs/MIGRATIONS.md`. Commands below are retained only as historical context.
 
 This guide covers applying the onboarding migration and regenerating Supabase types.
 

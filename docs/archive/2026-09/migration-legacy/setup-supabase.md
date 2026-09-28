@@ -1,4 +1,7 @@
-# Supabase Database Setup Guide
+# Archived: Supabase Database Setup Guide
+
+> Superseded in September 2026. See `docs/MIGRATIONS.md` and
+> `.github/MIGRATION_SECRETS_SETUP.md` for the current workflow.
 
 This guide will help you set up and migrate your Supabase database automatically.
 

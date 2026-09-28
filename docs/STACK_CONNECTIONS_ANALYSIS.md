@@ -143,7 +143,7 @@ This document analyzes the connections between different layers of the Settler E
 - **Solution:** Add schema validation on startup
 - **Files to Check:**
   - `packages/api/src/db/`
-  - `scripts/check-migration-status.sh`
+  - `scripts/supabase-migration-contract.mjs`
 
 #### Missing: Connection Pooling Configuration
 

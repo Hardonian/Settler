@@ -320,7 +320,7 @@ AND table_name IN ('billing_accounts', 'api_keys', 'receipts', 'usage_events');
 
 ```bash
 # Run migrations
-npm run db:migrate:auto
+pnpm exec prisma migrate dev
 
 # Or manually
 psql $DATABASE_URL -f supabase/migrations/[LATEST].sql

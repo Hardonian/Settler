@@ -451,7 +451,7 @@ async function startServer() {
     }
 
     await initDatabase();
-    logInfo("Database initialized");
+    logInfo("Database connection verified");
 
     setReconciliationCollisionLogger((entry: UuidCollisionLogInput) => {
       logWarn("reconciliation_uuid_collision", {

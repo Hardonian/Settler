@@ -53,7 +53,7 @@ supabase db push
 psql $DATABASE_URL -f supabase/migrations/20260124000000_postgres_scaling_optimization.sql
 
 # Option 3: Using npm script
-npm run db:migrate:apply
+pnpm exec prisma migrate dev
 ```
 
 #### C. Verify Indexes Were Created

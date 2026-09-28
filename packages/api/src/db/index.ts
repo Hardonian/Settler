@@ -1,11 +1,9 @@
-import fs from "node:fs";
-import path from "node:path";
 import { Pool, PoolClient } from "pg";
 
 /** Re-export so Prisma adapter wiring shares the same `Pool` type identity as this module. */
 export { Pool, PoolClient };
 import { config } from "../config";
-import { logError, logWarn } from "../utils/logger";
+import { logError } from "../utils/logger";
 import { TenantContext } from "../infrastructure/tenancy/TenantContext";
 
 // Database connection pool with proper configuration
@@ -280,58 +278,8 @@ export async function transactionWithTenant<T>(
   }
 }
 
-// Initialize database schema
+// Verify database readiness. Schema changes are release operations and must never
+// run implicitly during process startup.
 export async function initDatabase(): Promise<void> {
-  const migrationModule = await import("./migrate").catch((error: unknown) => {
-    const message = error instanceof Error ? error.message : "Unknown error";
-    logWarn("Migration runner failed, falling back to basic schema", { message });
-    return null;
-  });
-
-  if (migrationModule?.runMigrations) {
-    try {
-      // Run all migrations in order
-      await migrationModule.runMigrations();
-      return;
-    } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : "Unknown error";
-      logWarn("Migration runner failed, falling back to basic schema", { message });
-    }
-  }
-
-  // Fallback to basic schema if migration runner fails
-  // Run consolidated initial schema migration
-  const migrationPath = path.join(__dirname, "migrations", "001-initial-schema.sql");
-  if (fs.existsSync(migrationPath)) {
-    const migrationSQL = fs.readFileSync(migrationPath, "utf8");
-    // Split by semicolon and execute each statement
-    const statements = migrationSQL.split(";").filter((s: string) => s.trim().length > 0);
-    for (const statement of statements) {
-      if (statement.trim() && !statement.trim().startsWith("--")) {
-        try {
-          await query(statement);
-        } catch (error: unknown) {
-          // Ignore "already exists" errors (idempotent migration)
-          const errorMessage = error instanceof Error ? error.message : String(error);
-          if (
-            !errorMessage.includes("already exists") &&
-            !errorMessage.includes("duplicate") &&
-            !errorMessage.includes("already enabled")
-          ) {
-            logWarn("Migration warning", { errorMessage });
-          }
-        }
-      }
-    }
-  } else {
-    // Legacy custom migrations have been replaced by Prisma.
-    // Use Prisma for database schema management:
-    //   npx prisma migrate deploy
-    //   npx prisma db push
-    logWarn(
-      "No legacy migration files found. Database schema is now managed via Prisma. " +
-        "Run 'npx prisma migrate deploy' or 'npx prisma db push' to set up the database.",
-      { migrationPath }
-    );
-  }
+  await pool.query("SELECT 1");
 }

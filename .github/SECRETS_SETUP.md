@@ -10,7 +10,8 @@ This document describes the required GitHub repository secrets for Receipt Conso
   - PostgreSQL connection string with password
   - Format: `postgresql://user:password@host:port/database?schema=public`
   - Example: `postgresql://postgres:your-password@db.xxxxx.supabase.co:5432/postgres`
-  - **Auto-injected on commit** - Used by all workflows for database operations
+  - Used by application and direct-database validation workflows
+  - Not used by `auto-migrate-on-main.yml`, which deploys through the Supabase Management API
 
 ### Supabase Credentials
 
@@ -28,13 +29,17 @@ This document describes the required GitHub repository secrets for Receipt Conso
   - Found in Supabase Dashboard > Settings > API
   - **Keep this secret** - Never expose to client
 
-- **`SUPABASE_ACCESS_TOKEN`** (Optional, for migrations)
+- **`SUPABASE_ACCESS_TOKEN`** (Required for production migrations)
   - Supabase access token for CLI operations
   - Generate at: https://supabase.com/dashboard/account/tokens
 
-- **`SUPABASE_PROJECT_REF`** (Optional, for migrations)
+- **`SUPABASE_PROJECT_REF`** (Required for production migrations)
   - Your Supabase project reference ID
   - Found in project URL or dashboard
+
+- **`SUPABASE_POOLER_URL`** (Required for Prisma production migrations)
+  - Supabase Session pooler URI on port `5432` with `sslmode=require`
+  - Must use the `*.pooler.supabase.com` host copied from the Dashboard Connect panel
 
 ### E2E Testing (Optional)
 
@@ -81,9 +86,9 @@ This document describes the required GitHub repository secrets for Receipt Conso
 4. **Limit secret access** - Only grant access to workflows that need them
 5. **Audit secret usage** - Regularly review which workflows use which secrets
 
-## Database Password Auto-Injection
+## Database credentials and migration transport
 
-The workflows automatically inject `DATABASE_URL` from GitHub secrets on every commit. The password is included in the connection string and is never exposed in logs or build outputs.
+Workflows that need direct Postgres access inject `DATABASE_URL` explicitly. Production Supabase SQL uses `SUPABASE_ACCESS_TOKEN` and `SUPABASE_PROJECT_REF` through the Management API. Prisma migrations use only `SUPABASE_POOLER_URL`, which is validated as an IPv4 session pooler URI before use.
 
 ### Example Usage in Workflow
 
@@ -118,8 +123,8 @@ After adding secrets, verify they work by:
 
 - Verify `DATABASE_URL` format is correct
 - Check that database password is correct
-- Ensure database allows connections from GitHub Actions IPs
 - Check firewall/network settings
+- For `auto-migrate-on-main.yml`, validate `SUPABASE_ACCESS_TOKEN`, `SUPABASE_PROJECT_REF`, and `SUPABASE_POOLER_URL`; do not add a single GitHub-hosted runner CIDR to the database allowlist
 
 ### "Permission denied" error
 

@@ -84,7 +84,7 @@
 
    ```bash
    npm run db:reset
-   npm run db:migrate:local
+   pnpm exec prisma migrate dev
    ```
 
 3. **Apply to Production**
@@ -616,7 +616,7 @@ npm run db:verify
 npm run db:check
 
 # Run migrations
-npm run db:migrate:prod
+# Production migrations are applied by .github/workflows/auto-migrate-on-main.yml
 ```
 
 ### Monitoring

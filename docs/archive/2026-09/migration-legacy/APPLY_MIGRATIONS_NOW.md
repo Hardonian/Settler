@@ -1,4 +1,6 @@
-# Apply All Migrations to Supabase
+# Archived: Apply All Migrations to Supabase
+
+> Superseded by `docs/MIGRATIONS.md`. Commands below are retained only as historical context.
 
 **Status:** DATABASE_URL configured - Ready to apply migrations
 

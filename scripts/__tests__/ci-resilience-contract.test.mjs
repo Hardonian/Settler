@@ -129,3 +129,42 @@ test("browser gates use production parity and bounded route probes", () => {
     /Institutional Strategic Value Proposition/
   );
 });
+
+test("database migrations have one serialized fail-closed production owner", () => {
+  const workflow = read(".github/workflows/auto-migrate-on-main.yml");
+  const guardian = read(".github/workflows/migration-guardian.yml");
+  const database = read("packages/api/src/db/index.ts");
+
+  assert.match(workflow, /uses: supabase\/setup-cli@v3[\s\S]*?version: 2\.118\.0/);
+  assert.match(workflow, /group: settler-production-database-migrations/);
+  assert.match(workflow, /cancel-in-progress: false/);
+  assert.match(workflow, /prisma migrate deploy/);
+  assert.match(workflow, /supabase-migration-contract\.mjs deploy/);
+  assert.match(workflow, /\.pooler\.supabase\.com/);
+  assert.match(workflow, /SUPABASE_ACCESS_TOKEN and SUPABASE_PROJECT_REF are required/);
+  assert.doesNotMatch(workflow, /^env:/m, "database credentials must not be job-wide");
+  assert.match(
+    workflow,
+    /name: Apply Prisma migrations[\s\S]*?DATABASE_URL: \$\{\{ secrets\.SUPABASE_POOLER_URL \}\}/
+  );
+  assert.doesNotMatch(workflow, /^\s+psql\s|secrets\.(?:DATABASE_URL|DIRECT_URL)/m);
+  assert.doesNotMatch(workflow, /connection_ok=false|skipping migration/);
+
+  assert.match(guardian, /supabase-migration-contract\.mjs validate/);
+  assert.doesNotMatch(guardian, /secrets\.|prisma migrate deploy|environment: production/);
+  assert.doesNotMatch(database, /import\("\.\/migrate"\)|readFileSync\(migrationPath/);
+  assert.match(database, /export async function initDatabase[\s\S]*?SELECT 1/);
+
+  for (const removedScript of [
+    "db:migrate:auto",
+    "db:migrate:all",
+    "db:migrate:pending",
+    "migration:guardian",
+  ]) {
+    assert.equal(
+      packageJson.scripts[removedScript],
+      undefined,
+      `${removedScript} must stay removed`
+    );
+  }
+});

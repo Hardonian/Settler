@@ -2,274 +2,240 @@ name: Auto-Migrate on Main
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
     paths:
+      - "prisma/migrations/**"
+      - "prisma/schema.prisma"
       - "supabase/migrations/**"
+      - "scripts/supabase-migration-contract.mjs"
       - ".github/workflows/auto-migrate-on-main.yml"
   workflow_dispatch:
+    inputs:
+      apply_prisma:
+        description: "Apply pending Prisma migrations"
+        required: true
+        default: true
+        type: boolean
 
-env:
-  SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
-  SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
-  SUPABASE_PROJECT_ID: ${{ secrets.SUPABASE_PROJECT_ID }}
-  SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
-  DATABASE_URL: ${{ secrets.DATABASE_URL }}
-  DIRECT_URL: ${{ secrets.DIRECT_URL }}
-  SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-  SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
-  SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+concurrency:
+  group: settler-production-database-migrations
+  cancel-in-progress: false
 
 permissions:
   contents: read
   issues: write
 
 jobs:
-  auto-migrate:
-    name: Auto-Migrate Database
+  migrate:
+    name: Migrate Production Database
     runs-on: ubuntu-24.04
+    timeout-minutes: 30
     environment: production
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
         with:
-          fetch-depth: 1
+          fetch-depth: 0
 
-      - name: Detect migration files
-        id: detect-migrations
+      - name: Detect migration changes
+        id: changes
+        env:
+          REQUESTED_PRISMA: ${{ inputs.apply_prisma }}
         run: |
-          echo "🔍 Detecting migration files..."
-          MIGRATIONS=$(ls -1 supabase/migrations/*.sql 2>/dev/null | sort || echo "")
-          if [ -z "$MIGRATIONS" ]; then
-            echo "⚠️  No migration files found"
-            echo "has_migrations=false" >> $GITHUB_OUTPUT
-            exit 0
-          fi
-
-          MIGRATION_COUNT=$(echo "$MIGRATIONS" | wc -l)
-          echo "Found $MIGRATION_COUNT migration file(s)"
-          echo "has_migrations=true" >> $GITHUB_OUTPUT
-          echo "migration_count=$MIGRATION_COUNT" >> $GITHUB_OUTPUT
-
-          echo ""
-          echo "Migration files to apply:"
-          echo "$MIGRATIONS" | while read -r file; do
-            echo "  - $(basename $file)"
-          done
-
-      - name: Check database connectivity
-        id: check-db
-        if: steps.detect-migrations.outputs.has_migrations == 'true'
-        run: |
-          if [ -z "${{ env.DATABASE_URL }}" ] && [ -z "${{ env.DIRECT_URL }}" ]; then
-            echo "⚠️  No DATABASE_URL or DIRECT_URL configured — skipping migration"
-            echo "has_db=false" >> $GITHUB_OUTPUT
-          else
-            echo "has_db=true" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Install PostgreSQL client
-        if: steps.detect-migrations.outputs.has_migrations == 'true' && steps.check-db.outputs.has_db == 'true'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y postgresql-client
-          psql --version
-
-      - name: Test database connection
-        id: test-connection
-        if: steps.detect-migrations.outputs.has_migrations == 'true' && steps.check-db.outputs.has_db == 'true'
-        run: |
-          export PGPASSWORD="${{ env.SUPABASE_DB_PASSWORD }}"
-          if psql "${{ env.DIRECT_URL || env.DATABASE_URL }}" -c "SELECT 1" --connect-timeout=10 2>&1; then
-            echo "✅ Database connection successful"
-            echo "connection_ok=true" >> $GITHUB_OUTPUT
-          else
-            echo "⚠️  Database unreachable from CI — skipping migration (configure Supabase network or use Supabase CLI)"
-            echo "connection_ok=false" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Apply all migrations
-        if: steps.detect-migrations.outputs.has_migrations == 'true' && steps.check-db.outputs.has_db == 'true' && steps.test-connection.outputs.connection_ok == 'true'
-        run: |
-          echo "🔄 Applying migrations to production database..."
-          echo "⚠️  This will apply ALL pending migrations automatically"
-
-          export PGPASSWORD="${{ env.SUPABASE_DB_PASSWORD }}"
-
-          # Get list of migration files sorted by name
-          MIGRATIONS=$(ls -1 supabase/migrations/*.sql 2>/dev/null | sort)
-
-          if [ -z "$MIGRATIONS" ]; then
-            echo "⚠️  No migration files found"
-            exit 0
-          fi
-
-          echo ""
-          echo "Applying migrations in order:"
-          echo "$MIGRATIONS" | while read -r file; do
-            echo "  - $(basename $file)"
-          done
-          echo ""
-
-          # Track applied migrations
-          APPLIED_COUNT=0
-          FAILED_COUNT=0
-
-          # Apply each migration
-          for migration in $MIGRATIONS; do
-            migration_name=$(basename $migration)
-            echo ""
-            echo "📦 Applying: $migration_name"
-            
-            # Check if migration has already been applied (optional check)
-            # This assumes you have a migrations tracking table
-            # For now, we'll apply all migrations and let PostgreSQL handle duplicates
-            
-            # Apply migration with error handling
-            if psql "${{ env.DATABASE_URL }}" -v ON_ERROR_STOP=1 -f "$migration" 2>&1; then
-              echo "✅ Successfully applied: $migration_name"
-              APPLIED_COUNT=$((APPLIED_COUNT + 1))
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            SUPABASE_MIGRATIONS=""
+            if [ "$REQUESTED_PRISMA" = "true" ]; then
+              HAS_PRISMA=true
             else
-              EXIT_CODE=$?
-              if [ $EXIT_CODE -eq 0 ]; then
-                # Migration may have already been applied (non-fatal)
-                echo "⚠️  Migration may have already been applied: $migration_name"
-                APPLIED_COUNT=$((APPLIED_COUNT + 1))
-              else
-                echo "❌ Failed to apply: $migration_name"
-                FAILED_COUNT=$((FAILED_COUNT + 1))
-                echo "Migration failed with exit code: $EXIT_CODE"
-                exit 1
-              fi
+              HAS_PRISMA=false
             fi
-          done
+          else
+            BEFORE_SHA="${{ github.event.before }}"
+            CURRENT_SHA="${{ github.sha }}"
+            if [[ "$BEFORE_SHA" =~ ^0+$ ]]; then
+              ALL_CHANGES=$(git diff-tree --root --no-commit-id --name-only -r "$CURRENT_SHA")
+              ADDED_CHANGES=$(git diff-tree --root --no-commit-id --name-only --diff-filter=A -r "$CURRENT_SHA")
+              IMMUTABLE_CANDIDATES=$(git diff-tree --root --no-commit-id --name-only --diff-filter=MDR -r "$CURRENT_SHA")
+            else
+              ALL_CHANGES=$(git diff --name-only "$BEFORE_SHA" "$CURRENT_SHA")
+              ADDED_CHANGES=$(git diff --name-only --diff-filter=A "$BEFORE_SHA" "$CURRENT_SHA")
+              IMMUTABLE_CANDIDATES=$(git diff --name-only --diff-filter=MDR "$BEFORE_SHA" "$CURRENT_SHA")
+            fi
 
-          echo ""
-          echo "✅ Migration Summary:"
-          echo "   Applied: $APPLIED_COUNT"
-          echo "   Failed: $FAILED_COUNT"
+            IMMUTABLE_CHANGES=$(echo "$IMMUTABLE_CANDIDATES" \
+              | grep -E '^(prisma/migrations/.+/migration\.sql|supabase/migrations/[^/]+\.sql)$' || true)
+            if [ -n "$IMMUTABLE_CHANGES" ]; then
+              echo "::error::Applied migration files are immutable; add a new migration instead"
+              echo "$IMMUTABLE_CHANGES"
+              exit 1
+            fi
 
-          if [ $FAILED_COUNT -gt 0 ]; then
-            echo "❌ Some migrations failed"
-            exit 1
+            SUPABASE_MIGRATIONS=$(echo "$ADDED_CHANGES" \
+              | grep -E '^supabase/migrations/[^/]+\.sql$' \
+              | sort || true)
+            PRISMA_MIGRATIONS=$(echo "$ADDED_CHANGES" \
+              | grep -E '^prisma/migrations/[0-9]{14}_[^/]+/migration\.sql$' \
+              | sort || true)
+            PRISMA_SCHEMA_CHANGED=$(echo "$ALL_CHANGES" | grep -Fx 'prisma/schema.prisma' || true)
+
+            if [ -n "$PRISMA_SCHEMA_CHANGED" ] && [ -z "$PRISMA_MIGRATIONS" ]; then
+              echo "::error file=prisma/schema.prisma::Schema changed without a new Prisma migration"
+              exit 1
+            fi
+            if [ -n "$PRISMA_MIGRATIONS" ]; then HAS_PRISMA=true; else HAS_PRISMA=false; fi
           fi
 
-          echo "✅ All migrations completed successfully"
+          if [ -n "$SUPABASE_MIGRATIONS" ]; then HAS_SUPABASE=true; else HAS_SUPABASE=false; fi
+          echo "has_prisma=$HAS_PRISMA" >> "$GITHUB_OUTPUT"
+          echo "has_supabase=$HAS_SUPABASE" >> "$GITHUB_OUTPUT"
+          {
+            echo "supabase_files<<EOF"
+            echo "$SUPABASE_MIGRATIONS"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
 
-      - name: Verify migrations
-        if: steps.detect-migrations.outputs.has_migrations == 'true' && steps.check-db.outputs.has_db == 'true' && steps.test-connection.outputs.connection_ok == 'true'
+          echo "Prisma migrations: $HAS_PRISMA"
+          echo "Supabase migrations: $HAS_SUPABASE"
+          if [ -n "$SUPABASE_MIGRATIONS" ]; then printf '  %s\n' $SUPABASE_MIGRATIONS; fi
+
+      - name: Setup Node.js
+        if: steps.changes.outputs.has_prisma == 'true' || steps.changes.outputs.has_supabase == 'true'
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: ".nvmrc"
+
+      - name: Validate migration credentials
+        if: steps.changes.outputs.has_prisma == 'true' || steps.changes.outputs.has_supabase == 'true'
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
+          SUPABASE_POOLER_URL: ${{ secrets.SUPABASE_POOLER_URL }}
         run: |
-          echo "🔍 Verifying migrations..."
-          export PGPASSWORD="${{ env.SUPABASE_DB_PASSWORD }}"
+          if [ "${{ steps.changes.outputs.has_supabase }}" = "true" ]; then
+            if [ -z "$SUPABASE_ACCESS_TOKEN" ] || [ -z "$SUPABASE_PROJECT_REF" ]; then
+              echo "::error::SUPABASE_ACCESS_TOKEN and SUPABASE_PROJECT_REF are required"
+              exit 1
+            fi
+          fi
 
-          # Verify key tables exist
-          psql "${{ env.DATABASE_URL }}" -c "
-            SELECT 
-              table_name,
-              CASE 
-                WHEN EXISTS (
-                  SELECT FROM information_schema.tables 
-                  WHERE table_schema = 'public' 
-                  AND table_name = t.table_name
-                ) THEN '✓ exists'
-                ELSE '✗ missing'
-              END as status
-            FROM (
-              VALUES 
-                ('receipts'),
-                ('ai_analysis_usage'),
-                ('ai_analyses'),
-                ('support_tickets'),
-                ('billing_accounts'),
-                ('subscriptions')
-            ) AS t(table_name)
-            ORDER BY table_name;
-          " || echo "⚠️  Could not verify tables (non-critical)"
+          if [ "${{ steps.changes.outputs.has_prisma }}" = "true" ]; then
+            node <<'NODE'
+          const value = process.env.SUPABASE_POOLER_URL;
+          if (!value) throw new Error('SUPABASE_POOLER_URL is required for Prisma migrations');
+          const url = new URL(value);
+          if (!url.hostname.endsWith('.pooler.supabase.com') || url.port !== '5432') {
+            throw new Error('SUPABASE_POOLER_URL must be the Supabase IPv4 session pooler URL on port 5432');
+          }
+          if (url.searchParams.get('sslmode') !== 'require') {
+            throw new Error('SUPABASE_POOLER_URL must include sslmode=require');
+          }
+          NODE
+          fi
 
-          # Verify functions exist
-          echo ""
-          echo "Verifying functions..."
-          psql "${{ env.DATABASE_URL }}" -c "
-            SELECT 
-              proname as function_name,
-              CASE 
-                WHEN EXISTS (
-                  SELECT FROM pg_proc 
-                  WHERE proname = f.function_name
-                ) THEN '✓ exists'
-                ELSE '✗ missing'
-              END as status
-            FROM (
-              VALUES 
-                ('set_tenant_context'),
-                ('check_sla_violations')
-            ) AS f(function_name)
-            ORDER BY function_name;
-          " || echo "⚠️  Could not verify functions (non-critical)"
+      - name: Setup pnpm
+        if: steps.changes.outputs.has_prisma == 'true'
+        uses: pnpm/action-setup@v6
 
-          # Check RLS policies
-          echo ""
-          echo "Checking RLS policies for support_tickets..."
-          psql "${{ env.DATABASE_URL }}" -c "
-            SELECT tablename, policyname, permissive, roles, cmd
-            FROM pg_policies 
-            WHERE schemaname = 'public' 
-            AND tablename = 'support_tickets'
-            ORDER BY policyname;
-          " || echo "⚠️  Could not list policies (non-critical)"
+      - name: Install dependencies
+        if: steps.changes.outputs.has_prisma == 'true'
+        run: pnpm install --frozen-lockfile
 
-      - name: Migration Summary
+      - name: Apply Prisma migrations
+        if: steps.changes.outputs.has_prisma == 'true'
+        env:
+          DATABASE_URL: ${{ secrets.SUPABASE_POOLER_URL }}
+        run: |
+          pnpm exec prisma validate
+          pnpm exec prisma migrate deploy
+          pnpm exec prisma migrate status
+
+      - name: Install Supabase CLI
+        if: steps.changes.outputs.has_supabase == 'true'
+        uses: supabase/setup-cli@v3
+        with:
+          version: 2.118.0
+
+      - name: Validate Supabase migrations
+        if: steps.changes.outputs.has_supabase == 'true'
+        env:
+          MIGRATION_FILES: ${{ steps.changes.outputs.supabase_files }}
+        run: |
+          readarray -t files <<< "$MIGRATION_FILES"
+          node scripts/supabase-migration-contract.mjs validate "${files[@]}"
+
+      - name: Apply Supabase migrations
+        if: steps.changes.outputs.has_supabase == 'true'
+        env:
+          MIGRATION_FILES: ${{ steps.changes.outputs.supabase_files }}
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
+        run: |
+          mkdir -p artifacts/migrations
+          readarray -t files <<< "$MIGRATION_FILES"
+          node scripts/supabase-migration-contract.mjs deploy \
+            --project-ref "$SUPABASE_PROJECT_REF" \
+            --commit-sha "${{ github.sha }}" \
+            --evidence artifacts/migrations/production.json \
+            "${files[@]}"
+
+      - name: Upload migration evidence
+        if: always() && steps.changes.outputs.has_supabase == 'true'
+        uses: actions/upload-artifact@v7
+        with:
+          name: production-migration-evidence-${{ github.run_id }}
+          path: artifacts/migrations/production.json
+          if-no-files-found: warn
+          retention-days: 90
+
+      - name: Migration summary
         if: always()
         run: |
-          echo "## 🗄️ Auto-Migration Summary" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**Trigger:** Push to main branch" >> $GITHUB_STEP_SUMMARY
-          echo "**Environment:** Production" >> $GITHUB_STEP_SUMMARY
-          echo "**Status:** ${{ job.status }}" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**Migrations Found:** ${{ steps.detect-migrations.outputs.migration_count || 0 }}" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**Completed At:** $(date -u +'%Y-%m-%d %H:%M:%S UTC')" >> $GITHUB_STEP_SUMMARY
+          {
+            echo "## Production migration summary"
+            echo ""
+            echo "- Commit: \`${{ github.sha }}\`"
+            echo "- Prisma requested: \`${{ steps.changes.outputs.has_prisma || 'false' }}\`"
+            echo "- Supabase requested: \`${{ steps.changes.outputs.has_supabase || 'false' }}\`"
+            echo "- Result: \`${{ job.status }}\`"
+          } >> "$GITHUB_STEP_SUMMARY"
 
-          if [ "${{ job.status }}" == "success" ]; then
-            echo "" >> $GITHUB_STEP_SUMMARY
-            echo "✅ All migrations applied successfully!" >> $GITHUB_STEP_SUMMARY
-          else
-            echo "" >> $GITHUB_STEP_SUMMARY
-            echo "❌ Migration failed. Check logs for details." >> $GITHUB_STEP_SUMMARY
-          fi
-
-      - name: Notify on failure
+      - name: Create or update failure issue
         if: failure()
         uses: actions/github-script@v9
         with:
           script: |
-            const title = `🚨 Auto-Migration Failed: ${context.sha.substring(0, 7)}`
-            const body = `
-            ## Auto-Migration Failure Report
+            const title = '🚨 Production database migration failed';
+            const marker = `<!-- settler-migration-failure:${context.ref} -->`;
+            const body = `${marker}
+            ## Production migration failure
 
-            **Commit:** ${context.sha}
-            **Branch:** ${context.ref}
-            **Workflow:** ${context.workflow}
-            **Run ID:** ${context.runId}
+            - Commit: \`${context.sha}\`
+            - Ref: \`${context.ref}\`
+            - Run: ${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}
 
-            ### Details
-            The automatic migration workflow failed when merging to main.
-
-            **Action Required:**
-            1. Check the workflow logs for error details
-            2. Verify migration files are valid SQL
-            3. Check database connection and permissions
-            4. Manually apply migrations if needed
-
-            [View Workflow Run](${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId})
-            `
-
-            await github.rest.issues.create({
+            The workflow failed closed. No later migration was attempted after the failing step.`;
+            const { data: issues } = await github.rest.issues.listForRepo({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              title: title,
-              body: body,
-              labels: ['bug', 'migration-failure', 'urgent', 'production']
-            })
+              state: 'open',
+              labels: 'migration-failure',
+              per_page: 20,
+            });
+            const existing = issues.find((issue) => (issue.body || '').includes(marker));
+            if (existing) {
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: existing.number,
+                body,
+              });
+            } else {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title,
+                body,
+                labels: ['bug', 'migration-failure', 'urgent', 'production'],
+              });
+            }

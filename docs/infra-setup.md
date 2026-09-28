@@ -61,7 +61,7 @@ export SUPABASE_URL=https://your-project.supabase.co
 export SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
 
 # Run migrations via API
-npm run db:migrate:prod
+# Production migrations are applied by .github/workflows/auto-migrate-on-main.yml
 ```
 
 ### Step 4: Configure Storage (Optional)
@@ -294,7 +294,7 @@ SENTRY_TRACES_SAMPLE_RATE=0.1
 npm run db:check
 
 # Test migrations
-npm run db:migrate:local
+pnpm exec prisma migrate dev
 ```
 
 ### Test Redis Connection
