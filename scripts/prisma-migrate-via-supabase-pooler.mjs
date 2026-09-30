@@ -5,7 +5,7 @@ import path from "node:path";
 import { spawnSync } from "node:child_process";
 import { pathToFileURL } from "node:url";
 
-const PROJECT_REF_PATTERN = /^[a-z]{20}$/;
+const PROJECT_REF_PATTERN = /^[a-z0-9]{20}$/;
 
 function normalizeSecret(value) {
   return String(value ?? "")
