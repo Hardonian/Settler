@@ -34,8 +34,7 @@ See [WORKFLOW_TIERS.md](./WORKFLOW_TIERS.md) for the tier classification.
 
 - `SUPABASE_ACCESS_TOKEN` — Supabase Management API token for production migrations
 - `SUPABASE_PROJECT_REF` — Supabase project targeted by production migrations
-- `SUPABASE_POOLER_URL` — IPv4 session pooler URI for Prisma migrations
-- `DATABASE_URL` — Production application database connection string (not used by `auto-migrate-on-main.yml`)
+- `DATABASE_URL` — Production database credential source; migrations replace its endpoint with the linked IPv4 session pooler in memory
 - `JWT_SECRET` — Production JWT secret
 - `ENCRYPTION_KEY` — Production encryption key
 - `VERCEL_TOKEN` — Vercel deployment token
