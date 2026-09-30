@@ -187,6 +187,10 @@ jobs:
       - name: Health check
         run: |
           echo "🔍 Running health checks..."
+          if [ -z "${PRODUCTION_URL}" ]; then
+            echo "⚠️ PRODUCTION_URL secret not set, skipping remote health checks"
+            exit 0
+          fi
           for i in {1..10}; do
             if curl -f ${PRODUCTION_URL}/health && curl -f ${PRODUCTION_URL}/health/detailed; then
               echo "✅ Health check passed (attempt $i)"
@@ -200,6 +204,10 @@ jobs:
       - name: Verify API endpoints
         run: |
           echo "🔍 Verifying API endpoints..."
+          if [ -z "${PRODUCTION_URL}" ]; then
+            echo "⚠️ PRODUCTION_URL secret not set, skipping API endpoint checks"
+            exit 0
+          fi
           curl -f ${PRODUCTION_URL}/api/v1/openapi.json && echo "✅ OpenAPI endpoint OK" || echo "❌ OpenAPI endpoint failed"
           curl -f ${PRODUCTION_URL}/api/v1/health && echo "✅ API health endpoint OK" || echo "❌ API health endpoint failed"
       - name: Create deployment summary

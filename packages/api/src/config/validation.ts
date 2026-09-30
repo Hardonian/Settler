@@ -64,6 +64,7 @@ export const env = cleanEnv(process.env, {
   HOST: host({ default: "0.0.0.0" }),
 
   // Database Configuration
+  DATABASE_URL: url({ default: undefined } as const),
   DB_HOST: host({ default: "localhost" }),
   DB_PORT: port({ default: 5432 }),
   DB_NAME: str({ default: "settler" }),
@@ -188,7 +189,7 @@ if (!isBuild && (env.NODE_ENV === "production" || env.NODE_ENV === "preview")) {
     );
   }
 
-  if (env.DB_PASSWORD === BUILD_PLACEHOLDER) {
+  if (!env.DATABASE_URL && env.DB_PASSWORD === BUILD_PLACEHOLDER) {
     throw new Error(
       `DB_PASSWORD must be set in ${env.NODE_ENV}. Current value: build placeholder (not set)`
     );
@@ -204,17 +205,36 @@ if (!isBuild && (env.NODE_ENV === "production" || env.NODE_ENV === "preview")) {
   }
 }
 
+function parseDatabaseUrl(rawUrl?: string) {
+  if (!rawUrl) return null;
+  try {
+    const parsed = new URL(rawUrl);
+    return {
+      host: parsed.hostname || undefined,
+      port: parsed.port ? Number(parsed.port) : undefined,
+      name: parsed.pathname ? parsed.pathname.replace(/^\//, "") : undefined,
+      user: parsed.username ? decodeURIComponent(parsed.username) : undefined,
+      password: parsed.password ? decodeURIComponent(parsed.password) : undefined,
+    };
+  } catch {
+    return null;
+  }
+}
+
+const parsedDb = parseDatabaseUrl(env.DATABASE_URL);
+
 // Export validated config
 export const validatedConfig = {
   nodeEnv: env.NODE_ENV,
   port: env.PORT,
   host: env.HOST,
   database: {
-    host: env.DB_HOST,
-    port: env.DB_PORT,
-    name: env.DB_NAME,
-    user: env.DB_USER,
-    password: env.DB_PASSWORD,
+    url: env.DATABASE_URL,
+    host: parsedDb?.host || env.DB_HOST,
+    port: parsedDb?.port || env.DB_PORT,
+    name: parsedDb?.name || env.DB_NAME,
+    user: parsedDb?.user || env.DB_USER,
+    password: parsedDb?.password || env.DB_PASSWORD,
     ssl: env.DB_SSL,
     poolMin: env.DB_POOL_MIN,
     poolMax: env.DB_POOL_MAX,

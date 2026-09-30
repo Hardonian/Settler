@@ -127,6 +127,11 @@ jobs:
           NODE_ENV: test
           PORT: 4000
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/settler_test
+          DB_HOST: localhost
+          DB_PORT: 5432
+          DB_NAME: settler_test
+          DB_USER: postgres
+          DB_PASSWORD: postgres
           REDIS_URL: redis://localhost:6379
           JWT_SECRET: test-secret-min-32-chars-long-for-testing
           ENCRYPTION_KEY: test-encryption-key-32-chars-long!!

@@ -8,11 +8,15 @@ import { TenantContext } from "../infrastructure/tenancy/TenantContext";
 
 // Database connection pool with proper configuration
 export const pool = new Pool({
-  host: config.database.host,
-  port: config.database.port,
-  database: config.database.name,
-  user: config.database.user,
-  password: config.database.password,
+  ...(config.database.url
+    ? { connectionString: config.database.url }
+    : {
+        host: config.database.host,
+        port: config.database.port,
+        database: config.database.name,
+        user: config.database.user,
+        password: config.database.password,
+      }),
   max: config.database.poolMax,
   min: config.database.poolMin,
   idleTimeoutMillis: 30000,
