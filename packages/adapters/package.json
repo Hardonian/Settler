@@ -34,8 +34,8 @@
   },
   "devDependencies": {
     "@types/jest": "^30.0.0",
-    "@types/node": "^26.6.3",
-    "@vitest/coverage-v8": "^4.1.11",
+    "@types/node": "^26.6.2",
+    "@vitest/coverage-v8": "^5.0.2",
     "eslint-config-prettier": "^10.1.8",
     "jest": "^30.5.2",
     "ts-jest": "^29.4.14",
