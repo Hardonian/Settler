@@ -4,6 +4,7 @@
   "description": "Settler API Server - Serverless reconciliation service with enterprise-grade operations tooling",
   "author": "Settler.dev",
   "license": "PROPRIETARY",
+  "packageManager": "pnpm@10.13.1",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "exports": {

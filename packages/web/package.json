@@ -5,6 +5,7 @@
   "author": "Settler.dev",
   "license": "PROPRIETARY",
   "private": true,
+  "packageManager": "pnpm@10.13.1",
   "scripts": {
     "dev": "next dev",
     "generate:brand-assets": "node ./scripts/generate-brand-assets.mjs",

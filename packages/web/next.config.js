@@ -91,7 +91,7 @@ const nextConfig = {
     // - Prevents false deployment failures
     // - Faster builds (Next.js incremental checking)
     // - Type errors caught earlier in dev/PR cycle
-    ignoreBuildErrors: true,
+    ignoreBuildErrors: false,
     tsconfigPath: "./tsconfig.json",
   },
   // Configure Turbopack explicitly to avoid dev startup failures
