@@ -10,8 +10,8 @@ This document describes the required GitHub repository secrets for Receipt Conso
   - PostgreSQL connection string with password
   - Format: `postgresql://user:password@host:port/database?schema=public`
   - Example: `postgresql://postgres:your-password@db.xxxxx.supabase.co:5432/postgres`
-  - Used by application and direct-database validation workflows
-  - Not used by `auto-migrate-on-main.yml`, which deploys through the Supabase Management API
+  - Used by the application and as an in-memory password source for Prisma migrations
+  - The migration workflow replaces this endpoint with the linked IPv4 session pooler before connecting
 
 ### Supabase Credentials
 
@@ -36,10 +36,6 @@ This document describes the required GitHub repository secrets for Receipt Conso
 - **`SUPABASE_PROJECT_REF`** (Required for production migrations)
   - Your Supabase project reference ID
   - Found in project URL or dashboard
-
-- **`SUPABASE_POOLER_URL`** (Required for Prisma production migrations)
-  - Supabase Session pooler URI on port `5432` with `sslmode=require`
-  - Must use the `*.pooler.supabase.com` host copied from the Dashboard Connect panel
 
 ### E2E Testing (Optional)
 
@@ -88,7 +84,10 @@ This document describes the required GitHub repository secrets for Receipt Conso
 
 ## Database credentials and migration transport
 
-Workflows that need direct Postgres access inject `DATABASE_URL` explicitly. Production Supabase SQL uses `SUPABASE_ACCESS_TOKEN` and `SUPABASE_PROJECT_REF` through the Management API. Prisma migrations use only `SUPABASE_POOLER_URL`, which is validated as an IPv4 session pooler URI before use.
+Production Supabase SQL uses `SUPABASE_ACCESS_TOKEN` and `SUPABASE_PROJECT_REF`
+through the Management API. Prisma migrations derive an IPv4 session-pooler URI
+from linked, non-secret metadata and the password in `DATABASE_URL`; the direct
+endpoint is never contacted.
 
 ### Example Usage in Workflow
 
@@ -124,7 +123,7 @@ After adding secrets, verify they work by:
 - Verify `DATABASE_URL` format is correct
 - Check that database password is correct
 - Check firewall/network settings
-- For `auto-migrate-on-main.yml`, validate `SUPABASE_ACCESS_TOKEN`, `SUPABASE_PROJECT_REF`, and `SUPABASE_POOLER_URL`; do not add a single GitHub-hosted runner CIDR to the database allowlist
+- For `auto-migrate-on-main.yml`, validate `SUPABASE_ACCESS_TOKEN`, `SUPABASE_PROJECT_REF`, and `DATABASE_URL`; do not add a single GitHub-hosted runner CIDR to the database allowlist
 
 ### "Permission denied" error
 
