@@ -10,10 +10,10 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@ai-sdk/openai": "^4.0.71",
+    "@ai-sdk/openai": "^4.0.78",
     "@jobforge/sdk-ts": "workspace:*",
     "@jobforge/shared": "workspace:*",
-    "ai": "^7.0.107",
+    "ai": "^7.0.118",
     "zod": "^4.6.5"
   },
   "devDependencies": {
