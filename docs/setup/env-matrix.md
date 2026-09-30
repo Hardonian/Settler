@@ -24,7 +24,7 @@ This matrix is the single source of truth for runtime environment variables and 
 | `NODE_ENV`                      | API/web runtime                | Runtime              | Runtime mode (`development`, `test`, `production`)          | Defaults to `development` in local paths                  | internal       |
 | `PORT`                          | API/web runtime                | API/Web              | Service port binding                                        | Defaults to app-defined local port                        | internal       |
 | `HOST`                          | API runtime                    | API                  | Bind host for server process                                | Defaults to `0.0.0.0`                                     | internal       |
-| `DATABASE_URL`                  | API runtime, direct DB tooling | Data plane           | Primary Postgres/Supabase connection                        | No safe production fallback                               | secret         |
+| `DATABASE_URL`                  | API runtime, Prisma migrations | Data plane           | Runtime URI; CI derives the linked IPv4 pooler endpoint     | No safe production fallback                               | secret         |
 | `DIRECT_URL`                    | Prisma/direct DB tooling       | Data plane           | Direct DB path for admin operations                         | Optional; not used by GitHub auto-migrations              | secret         |
 | `SUPABASE_URL`                  | API server-side operations     | Supabase integration | Project URL used by server workflows                        | May fall back to `NEXT_PUBLIC_SUPABASE_URL` in some flows | internal       |
 | `SUPABASE_ANON_KEY`             | API/web bootstrap              | Supabase integration | Anon key for client and low-privilege paths                 | May fall back to `NEXT_PUBLIC_SUPABASE_ANON_KEY`          | public         |
@@ -74,19 +74,19 @@ This matrix is the single source of truth for runtime environment variables and 
 
 ## CI and deployment secrets
 
-| Name                    | Required for                  | Subsystem            | Description                                             | Default behavior                            | Security level |
-| ----------------------- | ----------------------------- | -------------------- | ------------------------------------------------------- | ------------------------------------------- | -------------- |
-| `TURBO_TOKEN`           | Remote cache in CI            | Build infrastructure | Turbo cache authentication token                        | CI builds work without remote cache, slower | secret         |
-| `TURBO_TEAM`            | Remote cache in CI            | Build infrastructure | Turbo cache team identifier                             | Optional depending on cache setup           | internal       |
-| `VERCEL_TOKEN`          | Web deployment pipeline       | Deployment           | Auth token for Vercel deploy API                        | Required for Vercel automation              | secret         |
-| `VERCEL_ORG_ID`         | Web deployment pipeline       | Deployment           | Vercel organization ID                                  | Required for Vercel automation              | internal       |
-| `VERCEL_PROJECT_ID`     | Web deployment pipeline       | Deployment           | Vercel project ID                                       | Required for Vercel automation              | internal       |
-| `SUPABASE_ACCESS_TOKEN` | Supabase CLI deploy workflows | Deployment           | Supabase access token for CI operations                 | Required for automated Supabase workflows   | secret         |
-| `SUPABASE_PROJECT_REF`  | Supabase CLI deploy workflows | Deployment           | Target Supabase project reference                       | Required for automated Supabase workflows   | internal       |
-| `SUPABASE_POOLER_URL`   | Prisma production migrations  | Deployment           | IPv4 session pooler URI on port 5432                    | Required for automated Prisma migrations    | secret         |
-| `SUPABASE_DB_PASSWORD`  | Direct database tooling       | Deployment           | Database password for workflows using Postgres directly | Not used by `auto-migrate-on-main.yml`      | secret         |
-| `PRODUCTION_URL`        | Post-deploy verification      | Deployment           | Target URL for smoke checks                             | Optional unless post-deploy checks enabled  | internal       |
-| `GITHUB_TOKEN`          | Release automation            | CI automation        | GitHub token for release automation tasks               | Required in GitHub Actions contexts         | secret         |
+| Name                    | Required for                  | Subsystem            | Description                                              | Default behavior                            | Security level |
+| ----------------------- | ----------------------------- | -------------------- | -------------------------------------------------------- | ------------------------------------------- | -------------- |
+| `TURBO_TOKEN`           | Remote cache in CI            | Build infrastructure | Turbo cache authentication token                         | CI builds work without remote cache, slower | secret         |
+| `TURBO_TEAM`            | Remote cache in CI            | Build infrastructure | Turbo cache team identifier                              | Optional depending on cache setup           | internal       |
+| `VERCEL_TOKEN`          | Web deployment pipeline       | Deployment           | Auth token for Vercel deploy API                         | Required for Vercel automation              | secret         |
+| `VERCEL_ORG_ID`         | Web deployment pipeline       | Deployment           | Vercel organization ID                                   | Required for Vercel automation              | internal       |
+| `VERCEL_PROJECT_ID`     | Web deployment pipeline       | Deployment           | Vercel project ID                                        | Required for Vercel automation              | internal       |
+| `SUPABASE_ACCESS_TOKEN` | Supabase CLI deploy workflows | Deployment           | Supabase access token for CI operations                  | Required for automated Supabase workflows   | secret         |
+| `SUPABASE_PROJECT_REF`  | Supabase CLI deploy workflows | Deployment           | Target Supabase project reference                        | Required for automated Supabase workflows   | internal       |
+| `DATABASE_URL`          | Runtime and Prisma migrations | Runtime / deployment | Database URI; CI derives the linked IPv4 pooler endpoint | Required for runtime and Prisma migrations  | secret         |
+| `SUPABASE_DB_PASSWORD`  | Direct database tooling       | Deployment           | Database password for workflows using Postgres directly  | Not used by `auto-migrate-on-main.yml`      | secret         |
+| `PRODUCTION_URL`        | Post-deploy verification      | Deployment           | Target URL for smoke checks                              | Optional unless post-deploy checks enabled  | internal       |
+| `GITHUB_TOKEN`          | Release automation            | CI automation        | GitHub token for release automation tasks                | Required in GitHub Actions contexts         | secret         |
 
 ## Local vs CI vs Vercel env resolution
 
