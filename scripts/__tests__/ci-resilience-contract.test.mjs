@@ -138,16 +138,15 @@ test("database migrations have one serialized fail-closed production owner", () 
   assert.match(workflow, /uses: supabase\/setup-cli@v3[\s\S]*?version: 2\.118\.0/);
   assert.match(workflow, /group: settler-production-database-migrations/);
   assert.match(workflow, /cancel-in-progress: false/);
-  assert.match(workflow, /prisma migrate deploy/);
+  assert.match(workflow, /prisma-migrate-via-supabase-pooler\.mjs deploy/);
   assert.match(workflow, /supabase-migration-contract\.mjs deploy/);
-  assert.match(workflow, /\.pooler\.supabase\.com/);
   assert.match(workflow, /SUPABASE_ACCESS_TOKEN and SUPABASE_PROJECT_REF are required/);
   assert.doesNotMatch(workflow, /^env:/m, "database credentials must not be job-wide");
   assert.match(
     workflow,
-    /name: Apply Prisma migrations[\s\S]*?DATABASE_URL: \$\{\{ secrets\.SUPABASE_POOLER_URL \}\}/
+    /name: Apply Prisma migrations[\s\S]*?DATABASE_CREDENTIAL_SOURCE: \$\{\{ secrets\.DATABASE_URL \}\}/
   );
-  assert.doesNotMatch(workflow, /^\s+psql\s|secrets\.(?:DATABASE_URL|DIRECT_URL)/m);
+  assert.doesNotMatch(workflow, /^\s+psql\s|secrets\.DIRECT_URL/m);
   assert.doesNotMatch(workflow, /connection_ok=false|skipping migration/);
 
   assert.match(guardian, /supabase-migration-contract\.mjs validate/);

@@ -24,24 +24,24 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@ai-sdk/openai": "^4.0.71",
+    "@ai-sdk/openai": "^4.0.78",
     "@settler/types": "workspace:*",
-    "@supabase/supabase-js": "^2.116.0",
-    "ai": "^7.0.107",
-    "resend": "^6.28.1",
+    "@supabase/supabase-js": "^2.117.2",
+    "ai": "^7.0.118",
+    "resend": "^6.30.0",
     "stripe": "^22.6.2",
     "zod": "^4.6.5"
   },
   "devDependencies": {
     "@types/jest": "^30.0.0",
     "@types/node": "^26.6.2",
-    "@vitest/coverage-v8": "^4.1.11",
+    "@vitest/coverage-v8": "^5.0.2",
     "eslint-config-prettier": "^10.1.8",
     "jest": "^30.5.2",
-    "ts-jest": "^29.4.12",
+    "ts-jest": "^29.4.14",
     "typescript": "^6.0.3",
     "vite": "^8.2.2",
-    "vitest": "^4.1.11"
+    "vitest": "^5.0.2"
   },
   "license": "MIT"
 }

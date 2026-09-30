@@ -8,6 +8,8 @@ on:
       - "prisma/migrations/**"
       - "prisma/schema.prisma"
       - "supabase/migrations/**"
+      - "scripts/prisma-migrate-via-supabase-pooler.mjs"
+      - "scripts/__tests__/prisma-supabase-pooler.test.mjs"
       - "scripts/supabase-migration-contract.mjs"
       - "scripts/__tests__/supabase-migration-contract.test.mjs"
       - ".github/workflows/migration-guardian.yml"
@@ -17,6 +19,8 @@ on:
       - "prisma/migrations/**"
       - "prisma/schema.prisma"
       - "supabase/migrations/**"
+      - "scripts/prisma-migrate-via-supabase-pooler.mjs"
+      - "scripts/__tests__/prisma-supabase-pooler.test.mjs"
       - "scripts/supabase-migration-contract.mjs"
       - "scripts/__tests__/supabase-migration-contract.test.mjs"
       - ".github/workflows/migration-guardian.yml"
@@ -114,7 +118,10 @@ jobs:
         run: pnpm exec prisma validate
 
       - name: Test migration contract
-        run: node --test scripts/__tests__/supabase-migration-contract.test.mjs
+        run: >-
+          node --test
+          scripts/__tests__/prisma-supabase-pooler.test.mjs
+          scripts/__tests__/supabase-migration-contract.test.mjs
 
       - name: Validate new Supabase migrations
         if: steps.changes.outputs.has_supabase == 'true'

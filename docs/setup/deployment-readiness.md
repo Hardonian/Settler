@@ -33,7 +33,7 @@ This document defines the minimum verifiable path to deploy Settler without hidd
 Ensure secrets are populated only for workflows you intend to run.
 
 - Build/deploy: `TURBO_TOKEN`, `TURBO_TEAM`, `VERCEL_TOKEN`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID`
-- Production migrations: `SUPABASE_ACCESS_TOKEN`, `SUPABASE_PROJECT_REF`, `SUPABASE_POOLER_URL`
+- Production migrations: `SUPABASE_ACCESS_TOKEN`, `SUPABASE_PROJECT_REF`, `DATABASE_URL`
 - Direct database validation/runtime workflows: `SUPABASE_DB_PASSWORD`, `DATABASE_URL` as required by the specific workflow
 - Billing: `STRIPE_SECRET_KEY` (and webhook secret when webhook verification is tested)
 
