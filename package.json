@@ -361,7 +361,7 @@
     "@typescript-eslint/eslint-plugin": "^8.70.1",
     "@typescript-eslint/parser": "^8.70.1",
     "cross-env": "^10.1.0",
-    "dotenv": "^17.4.2",
+    "dotenv": "^18.0.4",
     "eslint": "^9.39.4",
     "eslint-config-prettier": "^10.1.8",
     "glob": "^13.0.6",
