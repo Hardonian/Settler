@@ -5,7 +5,7 @@
 **Reconciliation intelligence & audit operating system**  
 Deterministic transaction matching · Hash-linked evidence · Enterprise-grade tenant isolation
 
-[![CI](https://github.com/Hardonian/Settler/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/Hardonian/Settler/actions/workflows/ci.yml)
+[![CI](https://github.com/Hardonian/Settler/actions/workflows/ci.yml/badge.svg?branch=main&event=push)](https://github.com/Hardonian/Settler/actions/workflows/ci.yml)
 [![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript&logoColor=white)
 ![Node.js](https://img.shields.io/badge/Node.js-24%2B-339933?logo=node.js&logoColor=white)
