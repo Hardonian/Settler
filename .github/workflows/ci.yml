@@ -14,6 +14,7 @@ on:
       - "turbo.json"
       - "tsconfig.json"
       - "vercel.json"
+      - "README.md"
   pull_request:
     branches: [main, develop]
     paths:
@@ -28,6 +29,7 @@ on:
       - "turbo.json"
       - "tsconfig.json"
       - "vercel.json"
+  workflow_dispatch:
 
 concurrency:
   group: ci-${{ github.ref }}
