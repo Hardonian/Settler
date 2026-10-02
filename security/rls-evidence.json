@@ -1,7 +1,7 @@
 {
   "reportVersion": "2026-03-09.1",
-  "generatedAt": "2026-10-02T02:47:42.561Z",
-  "runId": "2026-10-02T02-47-42-556Z",
+  "generatedAt": "2026-10-02T19:57:14.815Z",
+  "runId": "2026-10-02T19-57-14-810Z",
   "status": "PASS_WITH_DEGRADED_EVIDENCE",
   "evidenceState": "DEGRADED",
   "reason": "Runtime RLS verification not executed in this run; only static/policy boundary is available.",
