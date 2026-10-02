@@ -107,10 +107,13 @@ The Hermes reconciliation was reviewed against the live `Settler` project
 - A post-apply advisor rerun has no mutable-function-search-path or
   materialized-view-in-API finding. The two hardening migrations are present in
   the live Supabase migration ledger under the same versions as the repository.
-- `pnpm verify` passed in 488.6 seconds: repository integrity, lint, strict
+- `pnpm verify` passed on the final rebased tree in 534.5 seconds: repository
+  integrity, lint, strict
   TypeScript, full build, 599 API tests (76 skipped), route and documentation
   contracts, policy/replay checks, tenant isolation, and 36 cross-tenant tests
   (11 skipped).
+- `cargo fmt --all -- --check`, workspace clippy with warnings denied, and the
+  full Rust workspace tests also passed (14 tests).
 
 ### Residual live-project backlog (not introduced by the Hermes changes)
 
