@@ -14,17 +14,26 @@ const describeIdempotency = shouldRunDbTests ? describe : describe.skip;
 
 describeIdempotency("Idempotency Integration", () => {
   const idempotencyKey = "idem-test-key";
-  const testEmail = "idempotency-test@example.com";
+  let testTenantId: string;
   let testUserId: string;
   let apiKeyId: string;
   let apiKey: string;
 
   beforeAll(async () => {
-    const users = await query<{ id: string }>(
-      `INSERT INTO users (email, password_hash, role)
-       VALUES ($1, $2, $3)
+    const suffix = `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+    const tenants = await query<{ id: string }>(
+      `INSERT INTO tenants (id, name, slug, tier, status)
+       VALUES (gen_random_uuid(), 'Idem Tenant', $1, 'starter', 'active')
        RETURNING id`,
-      [testEmail, "$2b$10$test", "developer"]
+      [`idem-slug-${suffix}`]
+    );
+    testTenantId = tenants[0]!.id;
+
+    const users = await query<{ id: string }>(
+      `INSERT INTO users (email, password_hash, role, tenant_id)
+       VALUES ($1, $2, $3, $4)
+       RETURNING id`,
+      [`idempotency-${suffix}@example.com`, "$2b$10$test", "developer", testTenantId]
     );
     testUserId = users[0]?.id || "";
 
@@ -34,9 +43,17 @@ describeIdempotency("Idempotency Integration", () => {
     apiKeyId = crypto.randomUUID();
 
     await query(
-      `INSERT INTO api_keys (id, user_id, key_prefix, key_hash, name, scopes, created_at)
-       VALUES ($1, $2, $3, $4, $5, $6, NOW())`,
-      [apiKeyId, testUserId, prefix, keyHash, "idempotency-test", []]
+      `INSERT INTO api_keys (id, user_id, tenant_id, key_prefix, key_hash, name, scopes, created_at)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, NOW())`,
+      [
+        apiKeyId,
+        testUserId,
+        testTenantId,
+        prefix,
+        keyHash,
+        "idempotency-test",
+        ["jobs:read", "jobs:write"],
+      ]
     );
   });
 
@@ -47,6 +64,9 @@ describeIdempotency("Idempotency Integration", () => {
     if (testUserId) {
       await query("DELETE FROM idempotency_keys WHERE user_id = $1", [testUserId]);
       await query("DELETE FROM users WHERE id = $1", [testUserId]);
+    }
+    if (testTenantId) {
+      await query("DELETE FROM tenants WHERE id = $1", [testTenantId]);
     }
   });
 
