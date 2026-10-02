@@ -1,6 +1,30 @@
 {
   "signals": [
     {
+      "type": "feature_in_docs",
+      "description": "Feature \"rate limiting\" mentioned in README but not found in code",
+      "location": "README.md",
+      "severity": "medium"
+    },
+    {
+      "type": "feature_in_docs",
+      "description": "Feature \"access with circuit\" mentioned in README but not found in code",
+      "location": "README.md",
+      "severity": "medium"
+    },
+    {
+      "type": "feature_in_docs",
+      "description": "Feature \"one fuzzy match\" mentioned in README but not found in code",
+      "location": "README.md",
+      "severity": "medium"
+    },
+    {
+      "type": "feature_in_docs",
+      "description": "Feature \"bank connectivity itself\" mentioned in README but not found in code",
+      "location": "README.md",
+      "severity": "medium"
+    },
+    {
       "type": "unused_env",
       "description": "Environment variable \"NODE_ENV\" defined but never used",
       "location": ".env.example",
@@ -410,6 +434,60 @@
     },
     {
       "type": "unused_env",
+      "description": "Environment variable \"JEV_MODE\" defined but never used",
+      "location": ".env.example",
+      "severity": "low"
+    },
+    {
+      "type": "unused_env",
+      "description": "Environment variable \"TYPESAFE_DEFAULT_MODEL\" defined but never used",
+      "location": ".env.example",
+      "severity": "low"
+    },
+    {
+      "type": "unused_env",
+      "description": "Environment variable \"JEV_TIMEOUT_MS\" defined but never used",
+      "location": ".env.example",
+      "severity": "low"
+    },
+    {
+      "type": "unused_env",
+      "description": "Environment variable \"JEV_MAX_RETRIES\" defined but never used",
+      "location": ".env.example",
+      "severity": "low"
+    },
+    {
+      "type": "unused_env",
+      "description": "Environment variable \"JEV_BATCH_SIZE\" defined but never used",
+      "location": ".env.example",
+      "severity": "low"
+    },
+    {
+      "type": "unused_env",
+      "description": "Environment variable \"JEV_MIN_CONFIDENCE\" defined but never used",
+      "location": ".env.example",
+      "severity": "low"
+    },
+    {
+      "type": "unused_env",
+      "description": "Environment variable \"JEV_CIRCUIT_FAILURE_THRESHOLD\" defined but never used",
+      "location": ".env.example",
+      "severity": "low"
+    },
+    {
+      "type": "unused_env",
+      "description": "Environment variable \"JEV_CIRCUIT_RESET_MS\" defined but never used",
+      "location": ".env.example",
+      "severity": "low"
+    },
+    {
+      "type": "unused_env",
+      "description": "Environment variable \"JEV_TENANT_ALLOWLIST\" defined but never used",
+      "location": ".env.example",
+      "severity": "low"
+    },
+    {
+      "type": "unused_env",
       "description": "Environment variable \"DEMO_MODE\" defined but never used",
       "location": ".env.example",
       "severity": "low"
@@ -572,6 +650,32 @@
     }
   ],
   "summary": {
+    "feature_in_docs": [
+      {
+        "type": "feature_in_docs",
+        "description": "Feature \"rate limiting\" mentioned in README but not found in code",
+        "location": "README.md",
+        "severity": "medium"
+      },
+      {
+        "type": "feature_in_docs",
+        "description": "Feature \"access with circuit\" mentioned in README but not found in code",
+        "location": "README.md",
+        "severity": "medium"
+      },
+      {
+        "type": "feature_in_docs",
+        "description": "Feature \"one fuzzy match\" mentioned in README but not found in code",
+        "location": "README.md",
+        "severity": "medium"
+      },
+      {
+        "type": "feature_in_docs",
+        "description": "Feature \"bank connectivity itself\" mentioned in README but not found in code",
+        "location": "README.md",
+        "severity": "medium"
+      }
+    ],
     "unused_env": [
       {
         "type": "unused_env",
@@ -978,6 +1082,60 @@
       {
         "type": "unused_env",
         "description": "Environment variable \"FRONTEND_URL\" defined but never used",
+        "location": ".env.example",
+        "severity": "low"
+      },
+      {
+        "type": "unused_env",
+        "description": "Environment variable \"JEV_MODE\" defined but never used",
+        "location": ".env.example",
+        "severity": "low"
+      },
+      {
+        "type": "unused_env",
+        "description": "Environment variable \"TYPESAFE_DEFAULT_MODEL\" defined but never used",
+        "location": ".env.example",
+        "severity": "low"
+      },
+      {
+        "type": "unused_env",
+        "description": "Environment variable \"JEV_TIMEOUT_MS\" defined but never used",
+        "location": ".env.example",
+        "severity": "low"
+      },
+      {
+        "type": "unused_env",
+        "description": "Environment variable \"JEV_MAX_RETRIES\" defined but never used",
+        "location": ".env.example",
+        "severity": "low"
+      },
+      {
+        "type": "unused_env",
+        "description": "Environment variable \"JEV_BATCH_SIZE\" defined but never used",
+        "location": ".env.example",
+        "severity": "low"
+      },
+      {
+        "type": "unused_env",
+        "description": "Environment variable \"JEV_MIN_CONFIDENCE\" defined but never used",
+        "location": ".env.example",
+        "severity": "low"
+      },
+      {
+        "type": "unused_env",
+        "description": "Environment variable \"JEV_CIRCUIT_FAILURE_THRESHOLD\" defined but never used",
+        "location": ".env.example",
+        "severity": "low"
+      },
+      {
+        "type": "unused_env",
+        "description": "Environment variable \"JEV_CIRCUIT_RESET_MS\" defined but never used",
+        "location": ".env.example",
+        "severity": "low"
+      },
+      {
+        "type": "unused_env",
+        "description": "Environment variable \"JEV_TENANT_ALLOWLIST\" defined but never used",
         "location": ".env.example",
         "severity": "low"
       },
