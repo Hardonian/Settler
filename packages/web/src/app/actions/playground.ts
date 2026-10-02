@@ -94,9 +94,9 @@ const isDemoResult = (value: unknown): value is DemoResult =>
 export async function runDemoSimulation(): Promise<DemoResult> {
   const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
 
-  // Try to hit the API. In dev, if API is on 3001, we might need to adjust.
+  // Try to hit the API (Express runs on port 4000 in Settler).
   // We'll try a few common ports if localhost.
-  const ports = [3000, 3001, 3002, 8080];
+  const ports = [4000, 3000, 3001, 3002, 8080];
 
   for (const port of ports) {
     try {

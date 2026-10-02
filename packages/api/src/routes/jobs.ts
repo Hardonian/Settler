@@ -35,8 +35,9 @@ import { Mutex } from "async-mutex";
 import { JobRouteService } from "../application/services/JobRouteService";
 import { sendSuccess, sendError, sendCreated, sendNoContent } from "../utils/api-response";
 import { handleRouteError } from "../utils/error-handler";
-import { trackEventAsync } from "../utils/event-tracker";
 import { validateAdapterConfig } from "../utils/adapter-config-validator";
+import { trackEventAsync } from "../utils/event-tracker";
+import { runReconciliation } from "../services/ingestion/reconciliation-matcher";
 
 const router: Router = Router();
 const jobService = new JobRouteService();
@@ -391,8 +392,48 @@ router.post(
       // - Job status visibility
       // - Distributed processing
       let jobError: string | null = null;
+      let runId: string | null = null;
       try {
-        // Execute reconciliation logic here
+        const targetIngestionId = (req.body as { ingestionId?: string })?.ingestionId;
+        let effectiveIngestionId: string | null = null;
+
+        if (targetIngestionId && typeof targetIngestionId === "string") {
+          effectiveIngestionId = targetIngestionId;
+        } else {
+          // Look for latest completed ingestion for this tenant
+          const latestIngestion = await queryWithTenant<{ id: string }>(
+            tenantId,
+            `SELECT id FROM ingestions WHERE tenant_id = $1 AND status = 'completed' ORDER BY created_at DESC LIMIT 1`,
+            [tenantId]
+          );
+          if (latestIngestion.length > 0 && latestIngestion[0]) {
+            effectiveIngestionId = latestIngestion[0].id;
+          }
+        }
+
+        if (effectiveIngestionId) {
+          runId = await runReconciliation(
+            effectiveIngestionId,
+            tenantId,
+            userId,
+            id,
+            undefined,
+            (req.body as { config?: any })?.config || {}
+          );
+          logInfo("Job reconciliation executed successfully", {
+            jobId: id,
+            executionId,
+            runId,
+            userId,
+          });
+        } else {
+          logInfo("Job executed without completed ingestion; status marked completed", {
+            jobId: id,
+            executionId,
+            userId,
+          });
+        }
+
         await queryWithTenant(
           tenantId,
           `UPDATE executions SET status = 'completed', completed_at = NOW()
@@ -404,7 +445,7 @@ router.post(
           `UPDATE jobs SET status = 'active', updated_at = NOW() WHERE id = $1`,
           [id]
         );
-        logInfo("Job execution completed", { jobId: id, executionId, userId });
+        logInfo("Job execution completed", { jobId: id, executionId, runId, userId });
       } catch (error) {
         jobError = error instanceof Error ? error.message : "Unknown error";
         logError("Job execution failed", error, { executionId, jobId: id });
@@ -429,6 +470,7 @@ router.post(
         data: {
           id: executionId,
           jobId: id,
+          runId,
           status: finalStatus,
           startedAt: new Date().toISOString(),
           completedAt,

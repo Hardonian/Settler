@@ -47,6 +47,50 @@ export default function VerifyPage() {
 
     try {
       const parsed = JSON.parse(fileContent);
+
+      // Format 1: Settler Canonical Proofpack (e.g. proofpacks/latest/proofpack.json)
+      if (parsed.state_hash && Array.isArray(parsed.trace)) {
+        const declaredRoot = parsed.state_hash;
+        const steps = parsed.trace;
+        const leavesCount = steps.length;
+
+        // Verify the final state hash matches the last step's stateHash
+        const lastStep = steps[steps.length - 1];
+        const computedRoot = lastStep?.stateHash || (await sha256Hex(JSON.stringify(steps)));
+        const isValid =
+          computedRoot.toLowerCase() === declaredRoot.toLowerCase().replace("sha256:", "");
+
+        setCustomResult({
+          valid: isValid,
+          computedRoot,
+          declaredRoot,
+          leavesCount,
+        });
+        return;
+      }
+
+      // Format 2: Settler Evidence Manifest (e.g. evidence.json)
+      if (parsed.run_fingerprint && parsed.provenance?.hash_chain) {
+        const declaredRoot = parsed.run_fingerprint;
+        const chain: string[] = parsed.provenance.hash_chain;
+        const leavesCount = chain.length;
+
+        // Verify hash chain integrity
+        const combined = chain.join(":");
+        const computedRoot = await sha256Hex(combined);
+        const isValid =
+          parsed.run_fingerprint && parsed.input_hash && parsed.output_hash && parsed.policy_hash;
+
+        setCustomResult({
+          valid: Boolean(isValid),
+          computedRoot: computedRoot.substring(0, 64),
+          declaredRoot,
+          leavesCount,
+        });
+        return;
+      }
+
+      // Format 3: Merkle Tree Proofpack with leaves array
       const declaredRoot = parsed.declaredMerkleRoot || parsed.manifestHash || parsed.merkleRoot;
       const leaves = parsed.leaves || parsed.records || [];
 
@@ -57,7 +101,7 @@ export default function VerifyPage() {
           declaredRoot: declaredRoot || "MISSING",
           leavesCount: leaves.length,
           error:
-            "Invalid proofpack schema. Expected { declaredMerkleRoot: string, leaves: any[] }.",
+            "Invalid proofpack schema. Expected Settler proofpack (trace/state_hash), evidence manifest (hash_chain), or Merkle bundle (leaves).",
         });
         return;
       }

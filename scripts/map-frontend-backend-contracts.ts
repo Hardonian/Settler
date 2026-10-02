@@ -49,36 +49,63 @@ function findFiles(dir: string, pattern: RegExp, fileList: string[] = []): strin
   return fileList;
 }
 
-function findFrontendRoutes(): string[] {
-  const routes: string[] = [];
+function findFrontendPages(): Array<{ route: string; filePath: string }> {
+  const pages: Array<{ route: string; filePath: string }> = [];
   const baseDir = path.join(__dirname, "..");
 
   try {
-    // Find Next.js pages
-    const appDir = path.join(baseDir, "packages/web/app");
-    const pagesDir = path.join(baseDir, "packages/web/pages");
+    const candidates = [
+      { dir: path.join(baseDir, "packages/web/src/app"), prefix: "packages/web/src/app" },
+      { dir: path.join(baseDir, "packages/web/app"), prefix: "packages/web/app" },
+      { dir: path.join(baseDir, "packages/web/src/pages"), prefix: "packages/web/src/pages" },
+      { dir: path.join(baseDir, "packages/web/pages"), prefix: "packages/web/pages" },
+    ];
 
-    const appPages = fs.existsSync(appDir) ? findFiles(appDir, /page\.tsx$/) : [];
-    const pagesPages = fs.existsSync(pagesDir) ? findFiles(pagesDir, /\.tsx?$/) : [];
+    for (const { dir, prefix } of candidates) {
+      if (!fs.existsSync(dir)) continue;
+      const found = findFiles(dir, /page\.tsx$|\.tsx?$|\.ts$/);
+      for (const file of found) {
+        const relative = path.relative(baseDir, file).replace(/\\/g, "/");
+        if (
+          relative.includes("/api/") ||
+          relative.includes("/_") ||
+          relative.includes("layout.tsx") ||
+          relative.includes("loading.tsx") ||
+          relative.includes("error.tsx") ||
+          relative.includes("not-found.tsx") ||
+          relative.includes(".d.ts")
+        ) {
+          continue;
+        }
 
-    for (const page of [...appPages, ...pagesPages]) {
-      const relativePath = path.relative(baseDir, page);
-      let route = relativePath
-        .replace(/^packages\/web\/app\//, "/")
-        .replace(/^packages\/web\/pages\//, "/")
-        .replace(/\/page\.tsx$/, "")
-        .replace(/\/index\.tsx$/, "")
-        .replace(/\.tsx$/, "")
-        .replace(/\.ts$/, "");
+        let route = relative
+          .replace(new RegExp(`^${prefix}/`), "/")
+          .replace(/\/page\.tsx$/, "")
+          .replace(/\/index\.tsx$/, "")
+          .replace(/\.tsx$/, "")
+          .replace(/\.ts$/, "");
 
-      if (!route || route === "") route = "/";
-      routes.push(route);
+        // Strip route groups like (dashboard), (marketing)
+        route = route.replace(/\/\([^)]+\)/g, "");
+        if (!route || route === "") route = "/";
+        pages.push({ route, filePath: file });
+      }
     }
   } catch (err) {
     console.warn("⚠️  Error finding frontend routes:", err);
   }
 
-  return [...new Set(routes)];
+  // De-duplicate by route
+  const seen = new Set<string>();
+  const uniquePages: Array<{ route: string; filePath: string }> = [];
+  for (const page of pages) {
+    if (!seen.has(page.route)) {
+      seen.add(page.route);
+      uniquePages.push(page);
+    }
+  }
+
+  return uniquePages;
 }
 
 function extractBackendDependencies(filePath: string): {
@@ -139,39 +166,18 @@ function loadProductionSchema(): {
 function main() {
   console.log("🔍 Mapping frontend routes to backend dependencies...");
 
-  const routes = findFrontendRoutes();
-  console.log(`📋 Found ${routes.length} routes`);
+  const pages = findFrontendPages();
+  console.log(`📋 Found ${pages.length} routes`);
 
   const contracts: RouteContract[] = [];
 
   // Analyze each route
-  for (const route of routes) {
-    // Find the file for this route
-    const possibleFiles = [
-      `packages/web/app${route === "/" ? "" : route}/page.tsx`,
-      `packages/web/pages${route === "/" ? "/index" : route}.tsx`,
-      `packages/web/pages${route === "/" ? "/index" : route}.ts`,
-    ];
-
-    let filePath: string | null = null;
-    for (const file of possibleFiles) {
-      const fullPath = path.join(__dirname, "..", file);
-      if (fs.existsSync(fullPath)) {
-        filePath = fullPath;
-        break;
-      }
-    }
-
-    if (!filePath) {
-      console.warn(`⚠️  Could not find file for route: ${route}`);
-      continue;
-    }
-
-    const deps = extractBackendDependencies(filePath);
+  for (const page of pages) {
+    const deps = extractBackendDependencies(page.filePath);
 
     contracts.push({
-      route,
-      file: filePath.replace(__dirname + "/../", ""),
+      route: page.route,
+      file: page.filePath.replace(path.join(__dirname, "..") + path.sep, "").replace(/\\/g, "/"),
       ...deps,
     });
   }

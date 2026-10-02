@@ -1,20 +1,20 @@
-# Settler × Gemini 3: Cognitive Proposer / Deterministic Verifier Architecture
+# Settler Cognitive Architecture: Heuristic Proposer / Deterministic Verifier
 
 ## Executive Summary
 
-Settler pairs the cognitive fluidity and multimodal reasoning of **Gemini 3** (specifically Gemini 3.8 Flash) with the cryptographic rigor of Settler's **deterministic Rust kernel, Content-Addressable Storage (CAS), and WebAssembly verifier**.
+Settler pairs high-throughput heuristic and statistical statement parsing with the cryptographic rigor of Settler's **deterministic Rust kernel, Content-Addressable Storage (CAS), and zero-float-drift ledger invariants**.
 
-In mission-critical financial infrastructure and treasury management, probabilistic models cannot directly mutate or balance ledgers because a 0.01% hallucination rate on a $10B balance sheet is catastrophic. Settler resolves this fundamental tension by establishing a strict architectural boundary:
+In mission-critical financial infrastructure and treasury management, probabilistic models cannot directly mutate or balance ledgers because any hallucination rate on a multi-billion dollar balance sheet is catastrophic. Settler resolves this fundamental tension by establishing a strict architectural boundary:
 
 ```text
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                   GEMINI 3 COGNITIVE PERIMETER LAYER                        │
+│                   COGNITIVE & HEURISTIC PROPOSER LAYER                      │
 │                                                                             │
-│  - 1M+ Token Multimodal Document & Unstructured Statement Ingestion         │
-│  - Causal Counterfactual Exception Adjudication                             │
+│  - Deterministic Token & Statement Ingestion (CAMT.053, MT940, CSV)        │
+│  - Causal Rule-Based Counterfactual Exception Adjudication                  │
 │  - SOX-404 Dual-Signature Policy Promotion (Maker / Checker Separation)    │
-│  - Zero-Shot Synthetic Connector Synthesis (OpenAPI / PDF docs)             │
-│  - Conversational Big-4 Auditor Copilot (Natural Language → Proof Planning) │
+│  - Zero-Shot Synthetic Connector Synthesis (OpenAPI / schema specs)         │
+│  - Optional External LLM Bridge (Advisory Explanations Only)                │
 │  - Adversarial Metamorphic Attack Vector Fuzzer                             │
 └─────────────────────────────────────┬───────────────────────────────────────┘
                                       │ Proposes typed candidate actions
@@ -32,25 +32,22 @@ In mission-critical financial infrastructure and treasury management, probabilis
 
 ---
 
-## The Seven Cognitive Pillars
+## Core Pillars & Implementation Truth
 
-### 1. Multimodal 1M+ Token Universal Ingestion
-
+### 1. Statement Normalization & Integrity Check
 - **Location:** [`packages/reconciliation-core/src/gemini-cognitive-engine.ts`](../packages/reconciliation-core/src/gemini-cognitive-engine.ts)
 - **API Route:** `POST /api/v1/cognitive/ingest`
 - **Functionality:**
-  - Bypasses legacy, brittle OCR and custom regex scrapers.
-  - Ingests raw unstructured bank statement exports, scanned remittance slips, SWIFT MT940, and CAMT.053 XML files.
-  - Normalizes transactions into strictly typed `NormalizedExtractedRecord` objects with bounding-box provenance.
+  - Ingests raw unstructured bank statement exports, scanned remittance lines, SWIFT MT940, and CAMT.053 XML files using deterministic tokenization.
+  - Normalizes transactions into strictly typed `NormalizedExtractedRecord` objects with byte provenance.
   - Evaluates mathematical net totals against declared statement headers, reporting exact delta breaks if any drift is detected.
 
 ### 2. Autonomous Closed-Loop Exception Adjudication
-
 - **Location:** [`packages/reconciliation-core/src/gemini-cognitive-engine.ts`](../packages/reconciliation-core/src/gemini-cognitive-engine.ts) & [`packages/reconciliation-core/src/pattern-learning-engine.ts`](../packages/reconciliation-core/src/pattern-learning-engine.ts)
 - **API Route:** `POST /api/v1/cognitive/adjudicate`
 - **Functionality:**
   - Performs causal counterfactual reasoning across reconciliation exceptions.
-  - Distinguishes settlement calendar cutoff lags (e.g. UK bank holidays) and micro-cent FX rounding variances from fraudulent leakage.
+  - Distinguishes settlement calendar cutoff lags (e.g. bank holidays) and micro-cent FX rounding variances from fraudulent leakage.
   - Emits cryptographically bounded `SelfHealingPlan` candidates.
   - Simulates proposed plans against historical run data, guaranteeing zero cents of float drift before policies are enacted.
 

@@ -1,6 +1,6071 @@
 {
-  "routes": [],
-  "orphanedTables": [],
-  "orphanedFunctions": [],
-  "routesWithoutBackend": []
+  "routes": [
+    {
+      "route": "/billing",
+      "file": "packages/web/src/app/(dashboard)/billing/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/pulse",
+      "file": "packages/web/src/app/(dashboard)/pulse/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/home",
+      "file": "packages/web/src/app/(marketing)/home/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/about",
+      "file": "packages/web/src/app/about/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/actions/admin",
+      "file": "packages/web/src/app/actions/admin.ts",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/actions/auth",
+      "file": "packages/web/src/app/actions/auth.ts",
+      "tables": ["profiles", "activity_log"],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": true,
+      "requiresTenant": false
+    },
+    {
+      "route": "/actions/experiments",
+      "file": "packages/web/src/app/actions/experiments.ts",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/actions/playground",
+      "file": "packages/web/src/app/actions/playground.ts",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/actions/positioning",
+      "file": "packages/web/src/app/actions/positioning.ts",
+      "tables": ["positioning_feedback"],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": true,
+      "requiresTenant": false
+    },
+    {
+      "route": "/admin/analytics",
+      "file": "packages/web/src/app/admin/analytics/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/admin/audit",
+      "file": "packages/web/src/app/admin/audit/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/admin/branding",
+      "file": "packages/web/src/app/admin/branding/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/admin/database",
+      "file": "packages/web/src/app/admin/database/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": ["get_tables"],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/admin/database/[table]",
+      "file": "packages/web/src/app/admin/database/[table]/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/admin/exceptions",
+      "file": "packages/web/src/app/admin/exceptions/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/admin/exceptions/[id]",
+      "file": "packages/web/src/app/admin/exceptions/[id]/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/admin/experiments/new/NewExperimentForm",
+      "file": "packages/web/src/app/admin/experiments/new/NewExperimentForm.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/admin/experiments/new",
+      "file": "packages/web/src/app/admin/experiments/new/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/admin/experiments",
+      "file": "packages/web/src/app/admin/experiments/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/admin/experiments/[id]/ExperimentDashboardClient",
+      "file": "packages/web/src/app/admin/experiments/[id]/ExperimentDashboardClient.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/admin/experiments/[id]",
+      "file": "packages/web/src/app/admin/experiments/[id]/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/admin/flags",
+      "file": "packages/web/src/app/admin/flags/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/admin/jobforge",
+      "file": "packages/web/src/app/admin/jobforge/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/admin/metrics",
+      "file": "packages/web/src/app/admin/metrics/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": true,
+      "requiresTenant": false
+    },
+    {
+      "route": "/admin/monitoring",
+      "file": "packages/web/src/app/admin/monitoring/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/admin/operator-customization",
+      "file": "packages/web/src/app/admin/operator-customization/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/admin/ops",
+      "file": "packages/web/src/app/admin/ops/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/admin",
+      "file": "packages/web/src/app/admin/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/admin/pages/DeletePageButton",
+      "file": "packages/web/src/app/admin/pages/DeletePageButton.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/admin/pages/new",
+      "file": "packages/web/src/app/admin/pages/new/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/admin/pages",
+      "file": "packages/web/src/app/admin/pages/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/admin/pages/[id]/editor/EditorClient",
+      "file": "packages/web/src/app/admin/pages/[id]/editor/EditorClient.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/admin/pages/[id]/editor",
+      "file": "packages/web/src/app/admin/pages/[id]/editor/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/admin/runs/compare",
+      "file": "packages/web/src/app/admin/runs/compare/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/admin/runs",
+      "file": "packages/web/src/app/admin/runs/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/admin/runs/[runId]",
+      "file": "packages/web/src/app/admin/runs/[runId]/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/admin/settings",
+      "file": "packages/web/src/app/admin/settings/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/admin/webhooks",
+      "file": "packages/web/src/app/admin/webhooks/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": true,
+      "requiresTenant": false
+    },
+    {
+      "route": "/app/alerts",
+      "file": "packages/web/src/app/app/alerts/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/app/audit",
+      "file": "packages/web/src/app/app/audit/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/app/capability-status",
+      "file": "packages/web/src/app/app/capability-status/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/app/connections",
+      "file": "packages/web/src/app/app/connections/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/app/console/intelligence",
+      "file": "packages/web/src/app/app/console/intelligence/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/app/evidence",
+      "file": "packages/web/src/app/app/evidence/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/app/executions",
+      "file": "packages/web/src/app/app/executions/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/app/executions/[id]",
+      "file": "packages/web/src/app/app/executions/[id]/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/app/governance",
+      "file": "packages/web/src/app/app/governance/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/app/integrations",
+      "file": "packages/web/src/app/app/integrations/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/app/metrics",
+      "file": "packages/web/src/app/app/metrics/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/app/mismatches",
+      "file": "packages/web/src/app/app/mismatches/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": true,
+      "requiresTenant": true
+    },
+    {
+      "route": "/app/onboarding",
+      "file": "packages/web/src/app/app/onboarding/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/app/overview",
+      "file": "packages/web/src/app/app/overview/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/app",
+      "file": "packages/web/src/app/app/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/app/pipelines",
+      "file": "packages/web/src/app/app/pipelines/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/app/policies",
+      "file": "packages/web/src/app/app/policies/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/app/proofs",
+      "file": "packages/web/src/app/app/proofs/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/app/proofs/[id]",
+      "file": "packages/web/src/app/app/proofs/[id]/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/app/reconciliation",
+      "file": "packages/web/src/app/app/reconciliation/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/app/reconciliation/[id]",
+      "file": "packages/web/src/app/app/reconciliation/[id]/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/app/replay",
+      "file": "packages/web/src/app/app/replay/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/app/results",
+      "file": "packages/web/src/app/app/results/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/app/review",
+      "file": "packages/web/src/app/app/review/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/app/rules",
+      "file": "packages/web/src/app/app/rules/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/app/runs",
+      "file": "packages/web/src/app/app/runs/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/app/runs/[id]",
+      "file": "packages/web/src/app/app/runs/[id]/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/app/settings",
+      "file": "packages/web/src/app/app/settings/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/app/system-health",
+      "file": "packages/web/src/app/app/system-health/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/app/traces",
+      "file": "packages/web/src/app/app/traces/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/architecture",
+      "file": "packages/web/src/app/architecture/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/astra",
+      "file": "packages/web/src/app/astra/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/auditor",
+      "file": "packages/web/src/app/auditor/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/auth/callback/route",
+      "file": "packages/web/src/app/auth/callback/route.ts",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": true,
+      "requiresTenant": false
+    },
+    {
+      "route": "/benchmarks",
+      "file": "packages/web/src/app/benchmarks/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/billing/success",
+      "file": "packages/web/src/app/billing/success/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/blog",
+      "file": "packages/web/src/app/blog/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/builder/[...page]",
+      "file": "packages/web/src/app/builder/[...page]/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/capabilities",
+      "file": "packages/web/src/app/capabilities/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/categorize",
+      "file": "packages/web/src/app/categorize/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/changelog",
+      "file": "packages/web/src/app/changelog/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/changelog/[slug]",
+      "file": "packages/web/src/app/changelog/[slug]/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/cognitive",
+      "file": "packages/web/src/app/cognitive/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/community/contributors",
+      "file": "packages/web/src/app/community/contributors/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/community",
+      "file": "packages/web/src/app/community/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/compare",
+      "file": "packages/web/src/app/compare/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/components/PositioningFeedbackForm",
+      "file": "packages/web/src/app/components/PositioningFeedbackForm.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/components/RealtimePosts",
+      "file": "packages/web/src/app/components/RealtimePosts.tsx",
+      "tables": ["posts"],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/activity",
+      "file": "packages/web/src/app/console/activity/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/admin/activation",
+      "file": "packages/web/src/app/console/admin/activation/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/console/admin/jobs",
+      "file": "packages/web/src/app/console/admin/jobs/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/console/admin/tenants",
+      "file": "packages/web/src/app/console/admin/tenants/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": true,
+      "requiresTenant": true
+    },
+    {
+      "route": "/console/ai-analysis",
+      "file": "packages/web/src/app/console/ai-analysis/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/alerts-view",
+      "file": "packages/web/src/app/console/alerts-view/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/analytics",
+      "file": "packages/web/src/app/console/analytics/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": true,
+      "requiresTenant": true
+    },
+    {
+      "route": "/console/api-keys",
+      "file": "packages/web/src/app/console/api-keys/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/console/api-logs",
+      "file": "packages/web/src/app/console/api-logs/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": true,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/api-playground/collections",
+      "file": "packages/web/src/app/console/api-playground/collections/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/api-playground",
+      "file": "packages/web/src/app/console/api-playground/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/api-test",
+      "file": "packages/web/src/app/console/api-test/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/approvals",
+      "file": "packages/web/src/app/console/approvals/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/audit-trail",
+      "file": "packages/web/src/app/console/audit-trail/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/audits/lock",
+      "file": "packages/web/src/app/console/audits/lock/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/audits",
+      "file": "packages/web/src/app/console/audits/page.tsx",
+      "tables": ["organization_members"],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": true,
+      "requiresTenant": true
+    },
+    {
+      "route": "/console/billing",
+      "file": "packages/web/src/app/console/billing/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/billing/upgrade",
+      "file": "packages/web/src/app/console/billing/upgrade/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/console/briefings",
+      "file": "packages/web/src/app/console/briefings/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": true,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/bulk-operations",
+      "file": "packages/web/src/app/console/bulk-operations/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/changes",
+      "file": "packages/web/src/app/console/changes/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/close",
+      "file": "packages/web/src/app/console/close/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/control-plane",
+      "file": "packages/web/src/app/console/control-plane/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/costs",
+      "file": "packages/web/src/app/console/costs/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/dashboards/liquidity",
+      "file": "packages/web/src/app/console/dashboards/liquidity/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/developers/schema-registry",
+      "file": "packages/web/src/app/console/developers/schema-registry/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/developers/webhooks",
+      "file": "packages/web/src/app/console/developers/webhooks/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/diagnostics",
+      "file": "packages/web/src/app/console/diagnostics/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/console/docs/glossary",
+      "file": "packages/web/src/app/console/docs/glossary/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/console/docs",
+      "file": "packages/web/src/app/console/docs/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": true,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/evidence",
+      "file": "packages/web/src/app/console/evidence/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/evidence/siem",
+      "file": "packages/web/src/app/console/evidence/siem/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/evidence/soc2",
+      "file": "packages/web/src/app/console/evidence/soc2/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/exceptions",
+      "file": "packages/web/src/app/console/exceptions/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/exceptions/[exceptionId]/components",
+      "file": "packages/web/src/app/console/exceptions/[exceptionId]/components.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/console/exceptions/[exceptionId]/ExceptionProofpackDownload",
+      "file": "packages/web/src/app/console/exceptions/[exceptionId]/ExceptionProofpackDownload.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/exceptions/[exceptionId]",
+      "file": "packages/web/src/app/console/exceptions/[exceptionId]/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/export/gl",
+      "file": "packages/web/src/app/console/export/gl/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": true,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/feature-flags",
+      "file": "packages/web/src/app/console/feature-flags/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/feature-flags-policy",
+      "file": "packages/web/src/app/console/feature-flags-policy/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/ingestion/ai-mapper",
+      "file": "packages/web/src/app/console/ingestion/ai-mapper/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/ingestion/[ingestionId]",
+      "file": "packages/web/src/app/console/ingestion/[ingestionId]/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/insights",
+      "file": "packages/web/src/app/console/insights/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": true,
+      "requiresTenant": true
+    },
+    {
+      "route": "/console/inspector",
+      "file": "packages/web/src/app/console/inspector/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/integrations",
+      "file": "packages/web/src/app/console/integrations/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/integrations/plugins",
+      "file": "packages/web/src/app/console/integrations/plugins/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/intelligence/forecasting",
+      "file": "packages/web/src/app/console/intelligence/forecasting/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/intelligence/fx",
+      "file": "packages/web/src/app/console/intelligence/fx/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/intelligence",
+      "file": "packages/web/src/app/console/intelligence/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/intelligence/rule-discovery",
+      "file": "packages/web/src/app/console/intelligence/rule-discovery/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/multi-source-reconciliation",
+      "file": "packages/web/src/app/console/multi-source-reconciliation/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/onboarding",
+      "file": "packages/web/src/app/console/onboarding/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/operator",
+      "file": "packages/web/src/app/console/operator/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/console/operator-digest",
+      "file": "packages/web/src/app/console/operator-digest/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/ops",
+      "file": "packages/web/src/app/console/ops/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": true,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/organizations",
+      "file": "packages/web/src/app/console/organizations/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/console",
+      "file": "packages/web/src/app/console/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/console/performance",
+      "file": "packages/web/src/app/console/performance/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/playground/cli",
+      "file": "packages/web/src/app/console/playground/cli/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/playground/convert",
+      "file": "packages/web/src/app/console/playground/convert/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/playground/flags",
+      "file": "packages/web/src/app/console/playground/flags/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/playground",
+      "file": "packages/web/src/app/console/playground/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/playground/receipts",
+      "file": "packages/web/src/app/console/playground/receipts/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/playground/reconcile",
+      "file": "packages/web/src/app/console/playground/reconcile/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/policies/auto-resolution",
+      "file": "packages/web/src/app/console/policies/auto-resolution/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/policies",
+      "file": "packages/web/src/app/console/policies/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/console/proof-explorer",
+      "file": "packages/web/src/app/console/proof-explorer/page.tsx",
+      "tables": ["organization_members"],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": true,
+      "requiresTenant": true
+    },
+    {
+      "route": "/console/proofs",
+      "file": "packages/web/src/app/console/proofs/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/reality",
+      "file": "packages/web/src/app/console/reality/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": true,
+      "requiresTenant": true
+    },
+    {
+      "route": "/console/receipt-matching",
+      "file": "packages/web/src/app/console/receipt-matching/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/receipts",
+      "file": "packages/web/src/app/console/receipts/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/receipts-hash",
+      "file": "packages/web/src/app/console/receipts-hash/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/reconciliation",
+      "file": "packages/web/src/app/console/reconciliation/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/reconciliation/[runId]",
+      "file": "packages/web/src/app/console/reconciliation/[runId]/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/reconciliation-view",
+      "file": "packages/web/src/app/console/reconciliation-view/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/reconciliations",
+      "file": "packages/web/src/app/console/reconciliations/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/console/replay",
+      "file": "packages/web/src/app/console/replay/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/console/replay/[executionId]",
+      "file": "packages/web/src/app/console/replay/[executionId]/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/replay-lab",
+      "file": "packages/web/src/app/console/replay-lab/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/report-issue",
+      "file": "packages/web/src/app/console/report-issue/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": true,
+      "requiresTenant": true
+    },
+    {
+      "route": "/console/rules-engine",
+      "file": "packages/web/src/app/console/rules-engine/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/runs",
+      "file": "packages/web/src/app/console/runs/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/console/runs/[runId]/components/RunConfiguration",
+      "file": "packages/web/src/app/console/runs/[runId]/components/RunConfiguration.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/runs/[runId]/components/RunOperatorTruthPanel",
+      "file": "packages/web/src/app/console/runs/[runId]/components/RunOperatorTruthPanel.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/runs/[runId]/components/RunProvenance",
+      "file": "packages/web/src/app/console/runs/[runId]/components/RunProvenance.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/runs/[runId]/components/RunStages",
+      "file": "packages/web/src/app/console/runs/[runId]/components/RunStages.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/runs/[runId]/components/RunStatistics",
+      "file": "packages/web/src/app/console/runs/[runId]/components/RunStatistics.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/runs/[runId]",
+      "file": "packages/web/src/app/console/runs/[runId]/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/console/schedules/components",
+      "file": "packages/web/src/app/console/schedules/components.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/schedules",
+      "file": "packages/web/src/app/console/schedules/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/security/data-residency",
+      "file": "packages/web/src/app/console/security/data-residency/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/settings",
+      "file": "packages/web/src/app/console/settings/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/console/settings/security",
+      "file": "packages/web/src/app/console/settings/security/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/console/setup-check",
+      "file": "packages/web/src/app/console/setup-check/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/console/site/branding",
+      "file": "packages/web/src/app/console/site/branding/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/console/site/experiments",
+      "file": "packages/web/src/app/console/site/experiments/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/site/experiments/[id]",
+      "file": "packages/web/src/app/console/site/experiments/[id]/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/site/navigation",
+      "file": "packages/web/src/app/console/site/navigation/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/console/site",
+      "file": "packages/web/src/app/console/site/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/console/site/pages/[id]",
+      "file": "packages/web/src/app/console/site/pages/[id]/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/console/site/ui-config",
+      "file": "packages/web/src/app/console/site/ui-config/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/console/sla",
+      "file": "packages/web/src/app/console/sla/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/sources",
+      "file": "packages/web/src/app/console/sources/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/support/crm",
+      "file": "packages/web/src/app/console/support/crm/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/support",
+      "file": "packages/web/src/app/console/support/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": true,
+      "requiresTenant": true
+    },
+    {
+      "route": "/console/tables",
+      "file": "packages/web/src/app/console/tables/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": ["get_tables"],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/tables/[table]",
+      "file": "packages/web/src/app/console/tables/[table]/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/trust-score",
+      "file": "packages/web/src/app/console/trust-score/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/console/usage",
+      "file": "packages/web/src/app/console/usage/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/console/webhooks",
+      "file": "packages/web/src/app/console/webhooks/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/workflows/new",
+      "file": "packages/web/src/app/console/workflows/new/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/workflows",
+      "file": "packages/web/src/app/console/workflows/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/workflows/[id]",
+      "file": "packages/web/src/app/console/workflows/[id]/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/contact",
+      "file": "packages/web/src/app/contact/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/cookbook",
+      "file": "packages/web/src/app/cookbook/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/dashboard/addons",
+      "file": "packages/web/src/app/dashboard/addons/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/dashboard/billing/invoices",
+      "file": "packages/web/src/app/dashboard/billing/invoices/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/dashboard/billing",
+      "file": "packages/web/src/app/dashboard/billing/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/dashboard/billing/payment-methods",
+      "file": "packages/web/src/app/dashboard/billing/payment-methods/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/dashboard/integrations",
+      "file": "packages/web/src/app/dashboard/integrations/page.tsx",
+      "tables": ["app_private.memberships", "connectors"],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": true,
+      "requiresTenant": true
+    },
+    {
+      "route": "/dashboard/integrations/[integrationId]/logs",
+      "file": "packages/web/src/app/dashboard/integrations/[integrationId]/logs/page.tsx",
+      "tables": ["app_private.memberships", "connectors", "sync_runs"],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": true,
+      "requiresTenant": true
+    },
+    {
+      "route": "/dashboard/integrations/[integrationId]",
+      "file": "packages/web/src/app/dashboard/integrations/[integrationId]/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/dashboard/jobs",
+      "file": "packages/web/src/app/dashboard/jobs/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/dashboard/jobs/[jobId]/exceptions",
+      "file": "packages/web/src/app/dashboard/jobs/[jobId]/exceptions/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/dashboard/jobs/[jobId]",
+      "file": "packages/web/src/app/dashboard/jobs/[jobId]/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/dashboard",
+      "file": "packages/web/src/app/dashboard/page.tsx",
+      "tables": ["activity_log", "profiles", "posts"],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/dashboard/usage",
+      "file": "packages/web/src/app/dashboard/usage/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/dashboard/user",
+      "file": "packages/web/src/app/dashboard/user/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": true,
+      "requiresTenant": false
+    },
+    {
+      "route": "/demo/console",
+      "file": "packages/web/src/app/demo/console/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/demo/lib/data/deterministic",
+      "file": "packages/web/src/app/demo/lib/data/deterministic.ts",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/demo/lib/data/loader",
+      "file": "packages/web/src/app/demo/lib/data/loader.ts",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/demo/lib/data/types",
+      "file": "packages/web/src/app/demo/lib/data/types.ts",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/demo/lib/matching/engine",
+      "file": "packages/web/src/app/demo/lib/matching/engine.ts",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/demo",
+      "file": "packages/web/src/app/demo/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/demo/receipts",
+      "file": "packages/web/src/app/demo/receipts/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/demo/reconciliation",
+      "file": "packages/web/src/app/demo/reconciliation/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/docs/architecture",
+      "file": "packages/web/src/app/docs/architecture/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/docs/architecture/platform-architecture",
+      "file": "packages/web/src/app/docs/architecture/platform-architecture/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/docs/auth",
+      "file": "packages/web/src/app/docs/auth/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/docs/cli",
+      "file": "packages/web/src/app/docs/cli/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/docs/errors",
+      "file": "packages/web/src/app/docs/errors/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/docs/examples",
+      "file": "packages/web/src/app/docs/examples/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/docs/getting-started",
+      "file": "packages/web/src/app/docs/getting-started/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/docs/integrations",
+      "file": "packages/web/src/app/docs/integrations/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/docs/integrations/[integrationId]",
+      "file": "packages/web/src/app/docs/integrations/[integrationId]/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/docs/launch",
+      "file": "packages/web/src/app/docs/launch/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/docs",
+      "file": "packages/web/src/app/docs/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/docs/pilot",
+      "file": "packages/web/src/app/docs/pilot/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/docs/quickstart",
+      "file": "packages/web/src/app/docs/quickstart/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/docs/replay-lab",
+      "file": "packages/web/src/app/docs/replay-lab/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/docs/sdk/go",
+      "file": "packages/web/src/app/docs/sdk/go/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/docs/sdk/nodejs",
+      "file": "packages/web/src/app/docs/sdk/nodejs/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/docs/sdk",
+      "file": "packages/web/src/app/docs/sdk/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/docs/sdk/python",
+      "file": "packages/web/src/app/docs/sdk/python/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/docs/sdk/ruby",
+      "file": "packages/web/src/app/docs/sdk/ruby/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/docs/status",
+      "file": "packages/web/src/app/docs/status/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/docs/support",
+      "file": "packages/web/src/app/docs/support/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/docs/webhooks",
+      "file": "packages/web/src/app/docs/webhooks/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/document-onboarding",
+      "file": "packages/web/src/app/document-onboarding/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/edge-ai/nodes/new",
+      "file": "packages/web/src/app/edge-ai/nodes/new/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/edge-ai/nodes",
+      "file": "packages/web/src/app/edge-ai/nodes/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/edge-ai/nodes/[nodeId]",
+      "file": "packages/web/src/app/edge-ai/nodes/[nodeId]/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/edge-ai",
+      "file": "packages/web/src/app/edge-ai/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/engine/create-run-pack",
+      "file": "packages/web/src/app/engine/create-run-pack/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/engine/import-results",
+      "file": "packages/web/src/app/engine/import-results/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/engine",
+      "file": "packages/web/src/app/engine/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/engine/view-variances",
+      "file": "packages/web/src/app/engine/view-variances/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/enterprise/dashboard",
+      "file": "packages/web/src/app/enterprise/dashboard/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/enterprise",
+      "file": "packages/web/src/app/enterprise/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/explorer/execution/[id]",
+      "file": "packages/web/src/app/explorer/execution/[id]/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/explorer",
+      "file": "packages/web/src/app/explorer/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/explorer/tenant/[tenant_id]",
+      "file": "packages/web/src/app/explorer/tenant/[tenant_id]/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/exports",
+      "file": "packages/web/src/app/exports/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/faq",
+      "file": "packages/web/src/app/faq/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/feature-flags",
+      "file": "packages/web/src/app/feature-flags/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/forgot-password",
+      "file": "packages/web/src/app/forgot-password/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": true,
+      "requiresTenant": false
+    },
+    {
+      "route": "/founder",
+      "file": "packages/web/src/app/founder/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/future-proof",
+      "file": "packages/web/src/app/future-proof/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/integrations",
+      "file": "packages/web/src/app/integrations/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/integrations/request",
+      "file": "packages/web/src/app/integrations/request/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/intelligence/foundry",
+      "file": "packages/web/src/app/intelligence/foundry/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/intelligence/foundry/runs/[runId]",
+      "file": "packages/web/src/app/intelligence/foundry/runs/[runId]/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/intelligence/foundry/[datasetId]",
+      "file": "packages/web/src/app/intelligence/foundry/[datasetId]/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/investor/proof",
+      "file": "packages/web/src/app/investor/proof/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/investor/reality",
+      "file": "packages/web/src/app/investor/reality/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/invite/[token]",
+      "file": "packages/web/src/app/invite/[token]/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/legal/aup",
+      "file": "packages/web/src/app/legal/aup/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/legal/cookies",
+      "file": "packages/web/src/app/legal/cookies/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/legal/dpa",
+      "file": "packages/web/src/app/legal/dpa/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/legal/license",
+      "file": "packages/web/src/app/legal/license/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/legal",
+      "file": "packages/web/src/app/legal/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/legal/privacy",
+      "file": "packages/web/src/app/legal/privacy/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/legal/subprocessors",
+      "file": "packages/web/src/app/legal/subprocessors/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/legal/terms",
+      "file": "packages/web/src/app/legal/terms/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/login",
+      "file": "packages/web/src/app/login/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": true,
+      "requiresTenant": false
+    },
+    {
+      "route": "/managed",
+      "file": "packages/web/src/app/managed/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/manifest",
+      "file": "packages/web/src/app/manifest.ts",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/mobile",
+      "file": "packages/web/src/app/mobile/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/offline",
+      "file": "packages/web/src/app/offline/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/onboarding",
+      "file": "packages/web/src/app/onboarding/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/open-source",
+      "file": "packages/web/src/app/open-source/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/openapi.json/route",
+      "file": "packages/web/src/app/openapi.json/route.ts",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/operator/incidents",
+      "file": "packages/web/src/app/operator/incidents/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/",
+      "file": "packages/web/src/app/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/parser",
+      "file": "packages/web/src/app/parser/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/platform",
+      "file": "packages/web/src/app/platform/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/playground",
+      "file": "packages/web/src/app/playground/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/policies",
+      "file": "packages/web/src/app/policies/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/pricing/metadata",
+      "file": "packages/web/src/app/pricing/metadata.ts",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/pricing",
+      "file": "packages/web/src/app/pricing/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/privacy",
+      "file": "packages/web/src/app/privacy/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/product",
+      "file": "packages/web/src/app/product/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/proof-explorer",
+      "file": "packages/web/src/app/proof-explorer/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/react-settler-demo",
+      "file": "packages/web/src/app/react-settler-demo/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/realtime-dashboard",
+      "file": "packages/web/src/app/realtime-dashboard/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/receipts",
+      "file": "packages/web/src/app/receipts/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/reconcile/actions",
+      "file": "packages/web/src/app/reconcile/actions.ts",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/reconcile",
+      "file": "packages/web/src/app/reconcile/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/reconcile/[id]/MatchDetailView",
+      "file": "packages/web/src/app/reconcile/[id]/MatchDetailView.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/reconcile/[id]",
+      "file": "packages/web/src/app/reconcile/[id]/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/reconciliation",
+      "file": "packages/web/src/app/reconciliation/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/replay-lab",
+      "file": "packages/web/src/app/replay-lab/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/reset-password",
+      "file": "packages/web/src/app/reset-password/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": true,
+      "requiresTenant": true
+    },
+    {
+      "route": "/revenue-recovery",
+      "file": "packages/web/src/app/revenue-recovery/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/review/polish",
+      "file": "packages/web/src/app/review/polish/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": true,
+      "requiresTenant": true
+    },
+    {
+      "route": "/robots",
+      "file": "packages/web/src/app/robots.ts",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/roi-calculator",
+      "file": "packages/web/src/app/roi-calculator/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/runbooks",
+      "file": "packages/web/src/app/runbooks/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/schematics",
+      "file": "packages/web/src/app/schematics/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/security-and-audit",
+      "file": "packages/web/src/app/security-and-audit/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/sidereal",
+      "file": "packages/web/src/app/sidereal/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/signup",
+      "file": "packages/web/src/app/signup/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": true,
+      "requiresTenant": false
+    },
+    {
+      "route": "/sitemap",
+      "file": "packages/web/src/app/sitemap.ts",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/status",
+      "file": "packages/web/src/app/status/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/support/articles/[articleId]",
+      "file": "packages/web/src/app/support/articles/[articleId]/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/support/category/[categoryId]",
+      "file": "packages/web/src/app/support/category/[categoryId]/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/support/contact",
+      "file": "packages/web/src/app/support/contact/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/support",
+      "file": "packages/web/src/app/support/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/terms",
+      "file": "packages/web/src/app/terms/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/tour",
+      "file": "packages/web/src/app/tour/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/transparency",
+      "file": "packages/web/src/app/transparency/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/use-cases",
+      "file": "packages/web/src/app/use-cases/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/use-cases/[slug]",
+      "file": "packages/web/src/app/use-cases/[slug]/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/ux-playground/events",
+      "file": "packages/web/src/app/ux-playground/events/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/ux-playground",
+      "file": "packages/web/src/app/ux-playground/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/value-proposition",
+      "file": "packages/web/src/app/value-proposition/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/vendor-portal",
+      "file": "packages/web/src/app/vendor-portal/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/verify",
+      "file": "packages/web/src/app/verify/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/verify/verify-client",
+      "file": "packages/web/src/app/verify/verify-client.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/why",
+      "file": "packages/web/src/app/why/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/workspace/bulk-triage",
+      "file": "packages/web/src/app/workspace/bulk-triage/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/workspace/investigate",
+      "file": "packages/web/src/app/workspace/investigate/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/workspace/investigate/[ingestionId]",
+      "file": "packages/web/src/app/workspace/investigate/[ingestionId]/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/workspace",
+      "file": "packages/web/src/app/workspace/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/[slug]",
+      "file": "packages/web/src/app/[slug]/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    }
+  ],
+  "orphanedTables": [
+    "profiles",
+    "activity_log",
+    "positioning_feedback",
+    "posts",
+    "organization_members",
+    "organization_members",
+    "app_private.memberships",
+    "connectors",
+    "app_private.memberships",
+    "connectors",
+    "sync_runs",
+    "activity_log",
+    "profiles",
+    "posts"
+  ],
+  "orphanedFunctions": ["get_tables", "get_tables"],
+  "routesWithoutBackend": [
+    {
+      "route": "/billing",
+      "file": "packages/web/src/app/(dashboard)/billing/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/pulse",
+      "file": "packages/web/src/app/(dashboard)/pulse/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/home",
+      "file": "packages/web/src/app/(marketing)/home/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/about",
+      "file": "packages/web/src/app/about/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/actions/admin",
+      "file": "packages/web/src/app/actions/admin.ts",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/actions/experiments",
+      "file": "packages/web/src/app/actions/experiments.ts",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/actions/playground",
+      "file": "packages/web/src/app/actions/playground.ts",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/admin/analytics",
+      "file": "packages/web/src/app/admin/analytics/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/admin/audit",
+      "file": "packages/web/src/app/admin/audit/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/admin/branding",
+      "file": "packages/web/src/app/admin/branding/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/admin/database/[table]",
+      "file": "packages/web/src/app/admin/database/[table]/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/admin/exceptions",
+      "file": "packages/web/src/app/admin/exceptions/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/admin/exceptions/[id]",
+      "file": "packages/web/src/app/admin/exceptions/[id]/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/admin/experiments/new/NewExperimentForm",
+      "file": "packages/web/src/app/admin/experiments/new/NewExperimentForm.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/admin/experiments/new",
+      "file": "packages/web/src/app/admin/experiments/new/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/admin/experiments",
+      "file": "packages/web/src/app/admin/experiments/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/admin/experiments/[id]/ExperimentDashboardClient",
+      "file": "packages/web/src/app/admin/experiments/[id]/ExperimentDashboardClient.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/admin/experiments/[id]",
+      "file": "packages/web/src/app/admin/experiments/[id]/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/admin/flags",
+      "file": "packages/web/src/app/admin/flags/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/admin/jobforge",
+      "file": "packages/web/src/app/admin/jobforge/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/admin/metrics",
+      "file": "packages/web/src/app/admin/metrics/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": true,
+      "requiresTenant": false
+    },
+    {
+      "route": "/admin/monitoring",
+      "file": "packages/web/src/app/admin/monitoring/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/admin/operator-customization",
+      "file": "packages/web/src/app/admin/operator-customization/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/admin/ops",
+      "file": "packages/web/src/app/admin/ops/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/admin",
+      "file": "packages/web/src/app/admin/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/admin/pages/DeletePageButton",
+      "file": "packages/web/src/app/admin/pages/DeletePageButton.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/admin/pages/new",
+      "file": "packages/web/src/app/admin/pages/new/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/admin/pages",
+      "file": "packages/web/src/app/admin/pages/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/admin/pages/[id]/editor/EditorClient",
+      "file": "packages/web/src/app/admin/pages/[id]/editor/EditorClient.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/admin/pages/[id]/editor",
+      "file": "packages/web/src/app/admin/pages/[id]/editor/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/admin/runs/compare",
+      "file": "packages/web/src/app/admin/runs/compare/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/admin/runs",
+      "file": "packages/web/src/app/admin/runs/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/admin/runs/[runId]",
+      "file": "packages/web/src/app/admin/runs/[runId]/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/admin/settings",
+      "file": "packages/web/src/app/admin/settings/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/admin/webhooks",
+      "file": "packages/web/src/app/admin/webhooks/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": true,
+      "requiresTenant": false
+    },
+    {
+      "route": "/app/alerts",
+      "file": "packages/web/src/app/app/alerts/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/app/audit",
+      "file": "packages/web/src/app/app/audit/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/app/capability-status",
+      "file": "packages/web/src/app/app/capability-status/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/app/connections",
+      "file": "packages/web/src/app/app/connections/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/app/console/intelligence",
+      "file": "packages/web/src/app/app/console/intelligence/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/app/evidence",
+      "file": "packages/web/src/app/app/evidence/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/app/executions",
+      "file": "packages/web/src/app/app/executions/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/app/executions/[id]",
+      "file": "packages/web/src/app/app/executions/[id]/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/app/governance",
+      "file": "packages/web/src/app/app/governance/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/app/integrations",
+      "file": "packages/web/src/app/app/integrations/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/app/metrics",
+      "file": "packages/web/src/app/app/metrics/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/app/mismatches",
+      "file": "packages/web/src/app/app/mismatches/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": true,
+      "requiresTenant": true
+    },
+    {
+      "route": "/app/onboarding",
+      "file": "packages/web/src/app/app/onboarding/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/app/overview",
+      "file": "packages/web/src/app/app/overview/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/app",
+      "file": "packages/web/src/app/app/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/app/pipelines",
+      "file": "packages/web/src/app/app/pipelines/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/app/policies",
+      "file": "packages/web/src/app/app/policies/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/app/proofs",
+      "file": "packages/web/src/app/app/proofs/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/app/proofs/[id]",
+      "file": "packages/web/src/app/app/proofs/[id]/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/app/reconciliation",
+      "file": "packages/web/src/app/app/reconciliation/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/app/reconciliation/[id]",
+      "file": "packages/web/src/app/app/reconciliation/[id]/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/app/replay",
+      "file": "packages/web/src/app/app/replay/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/app/results",
+      "file": "packages/web/src/app/app/results/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/app/review",
+      "file": "packages/web/src/app/app/review/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/app/rules",
+      "file": "packages/web/src/app/app/rules/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/app/runs",
+      "file": "packages/web/src/app/app/runs/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/app/runs/[id]",
+      "file": "packages/web/src/app/app/runs/[id]/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/app/settings",
+      "file": "packages/web/src/app/app/settings/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/app/system-health",
+      "file": "packages/web/src/app/app/system-health/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/app/traces",
+      "file": "packages/web/src/app/app/traces/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/architecture",
+      "file": "packages/web/src/app/architecture/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/astra",
+      "file": "packages/web/src/app/astra/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/auditor",
+      "file": "packages/web/src/app/auditor/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/auth/callback/route",
+      "file": "packages/web/src/app/auth/callback/route.ts",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": true,
+      "requiresTenant": false
+    },
+    {
+      "route": "/benchmarks",
+      "file": "packages/web/src/app/benchmarks/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/billing/success",
+      "file": "packages/web/src/app/billing/success/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/blog",
+      "file": "packages/web/src/app/blog/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/builder/[...page]",
+      "file": "packages/web/src/app/builder/[...page]/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/capabilities",
+      "file": "packages/web/src/app/capabilities/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/categorize",
+      "file": "packages/web/src/app/categorize/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/changelog",
+      "file": "packages/web/src/app/changelog/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/changelog/[slug]",
+      "file": "packages/web/src/app/changelog/[slug]/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/cognitive",
+      "file": "packages/web/src/app/cognitive/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/community/contributors",
+      "file": "packages/web/src/app/community/contributors/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/community",
+      "file": "packages/web/src/app/community/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/compare",
+      "file": "packages/web/src/app/compare/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/components/PositioningFeedbackForm",
+      "file": "packages/web/src/app/components/PositioningFeedbackForm.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/activity",
+      "file": "packages/web/src/app/console/activity/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/admin/activation",
+      "file": "packages/web/src/app/console/admin/activation/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/console/admin/jobs",
+      "file": "packages/web/src/app/console/admin/jobs/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/console/admin/tenants",
+      "file": "packages/web/src/app/console/admin/tenants/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": true,
+      "requiresTenant": true
+    },
+    {
+      "route": "/console/ai-analysis",
+      "file": "packages/web/src/app/console/ai-analysis/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/alerts-view",
+      "file": "packages/web/src/app/console/alerts-view/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/analytics",
+      "file": "packages/web/src/app/console/analytics/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": true,
+      "requiresTenant": true
+    },
+    {
+      "route": "/console/api-keys",
+      "file": "packages/web/src/app/console/api-keys/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/console/api-logs",
+      "file": "packages/web/src/app/console/api-logs/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": true,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/api-playground/collections",
+      "file": "packages/web/src/app/console/api-playground/collections/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/api-playground",
+      "file": "packages/web/src/app/console/api-playground/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/api-test",
+      "file": "packages/web/src/app/console/api-test/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/approvals",
+      "file": "packages/web/src/app/console/approvals/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/audit-trail",
+      "file": "packages/web/src/app/console/audit-trail/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/audits/lock",
+      "file": "packages/web/src/app/console/audits/lock/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/billing",
+      "file": "packages/web/src/app/console/billing/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/billing/upgrade",
+      "file": "packages/web/src/app/console/billing/upgrade/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/console/briefings",
+      "file": "packages/web/src/app/console/briefings/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": true,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/bulk-operations",
+      "file": "packages/web/src/app/console/bulk-operations/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/changes",
+      "file": "packages/web/src/app/console/changes/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/close",
+      "file": "packages/web/src/app/console/close/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/control-plane",
+      "file": "packages/web/src/app/console/control-plane/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/costs",
+      "file": "packages/web/src/app/console/costs/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/dashboards/liquidity",
+      "file": "packages/web/src/app/console/dashboards/liquidity/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/developers/schema-registry",
+      "file": "packages/web/src/app/console/developers/schema-registry/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/developers/webhooks",
+      "file": "packages/web/src/app/console/developers/webhooks/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/diagnostics",
+      "file": "packages/web/src/app/console/diagnostics/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/console/docs/glossary",
+      "file": "packages/web/src/app/console/docs/glossary/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/console/docs",
+      "file": "packages/web/src/app/console/docs/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": true,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/evidence",
+      "file": "packages/web/src/app/console/evidence/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/evidence/siem",
+      "file": "packages/web/src/app/console/evidence/siem/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/evidence/soc2",
+      "file": "packages/web/src/app/console/evidence/soc2/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/exceptions",
+      "file": "packages/web/src/app/console/exceptions/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/exceptions/[exceptionId]/components",
+      "file": "packages/web/src/app/console/exceptions/[exceptionId]/components.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/console/exceptions/[exceptionId]/ExceptionProofpackDownload",
+      "file": "packages/web/src/app/console/exceptions/[exceptionId]/ExceptionProofpackDownload.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/exceptions/[exceptionId]",
+      "file": "packages/web/src/app/console/exceptions/[exceptionId]/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/export/gl",
+      "file": "packages/web/src/app/console/export/gl/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": true,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/feature-flags",
+      "file": "packages/web/src/app/console/feature-flags/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/feature-flags-policy",
+      "file": "packages/web/src/app/console/feature-flags-policy/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/ingestion/ai-mapper",
+      "file": "packages/web/src/app/console/ingestion/ai-mapper/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/ingestion/[ingestionId]",
+      "file": "packages/web/src/app/console/ingestion/[ingestionId]/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/insights",
+      "file": "packages/web/src/app/console/insights/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": true,
+      "requiresTenant": true
+    },
+    {
+      "route": "/console/inspector",
+      "file": "packages/web/src/app/console/inspector/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/integrations",
+      "file": "packages/web/src/app/console/integrations/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/integrations/plugins",
+      "file": "packages/web/src/app/console/integrations/plugins/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/intelligence/forecasting",
+      "file": "packages/web/src/app/console/intelligence/forecasting/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/intelligence/fx",
+      "file": "packages/web/src/app/console/intelligence/fx/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/intelligence",
+      "file": "packages/web/src/app/console/intelligence/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/intelligence/rule-discovery",
+      "file": "packages/web/src/app/console/intelligence/rule-discovery/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/multi-source-reconciliation",
+      "file": "packages/web/src/app/console/multi-source-reconciliation/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/onboarding",
+      "file": "packages/web/src/app/console/onboarding/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/operator",
+      "file": "packages/web/src/app/console/operator/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/console/operator-digest",
+      "file": "packages/web/src/app/console/operator-digest/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/ops",
+      "file": "packages/web/src/app/console/ops/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": true,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/organizations",
+      "file": "packages/web/src/app/console/organizations/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/console",
+      "file": "packages/web/src/app/console/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/console/performance",
+      "file": "packages/web/src/app/console/performance/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/playground/cli",
+      "file": "packages/web/src/app/console/playground/cli/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/playground/convert",
+      "file": "packages/web/src/app/console/playground/convert/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/playground/flags",
+      "file": "packages/web/src/app/console/playground/flags/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/playground",
+      "file": "packages/web/src/app/console/playground/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/playground/receipts",
+      "file": "packages/web/src/app/console/playground/receipts/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/playground/reconcile",
+      "file": "packages/web/src/app/console/playground/reconcile/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/policies/auto-resolution",
+      "file": "packages/web/src/app/console/policies/auto-resolution/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/policies",
+      "file": "packages/web/src/app/console/policies/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/console/proofs",
+      "file": "packages/web/src/app/console/proofs/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/reality",
+      "file": "packages/web/src/app/console/reality/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": true,
+      "requiresTenant": true
+    },
+    {
+      "route": "/console/receipt-matching",
+      "file": "packages/web/src/app/console/receipt-matching/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/receipts",
+      "file": "packages/web/src/app/console/receipts/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/receipts-hash",
+      "file": "packages/web/src/app/console/receipts-hash/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/reconciliation",
+      "file": "packages/web/src/app/console/reconciliation/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/reconciliation/[runId]",
+      "file": "packages/web/src/app/console/reconciliation/[runId]/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/reconciliation-view",
+      "file": "packages/web/src/app/console/reconciliation-view/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/reconciliations",
+      "file": "packages/web/src/app/console/reconciliations/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/console/replay",
+      "file": "packages/web/src/app/console/replay/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/console/replay/[executionId]",
+      "file": "packages/web/src/app/console/replay/[executionId]/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/replay-lab",
+      "file": "packages/web/src/app/console/replay-lab/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/report-issue",
+      "file": "packages/web/src/app/console/report-issue/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": true,
+      "requiresTenant": true
+    },
+    {
+      "route": "/console/rules-engine",
+      "file": "packages/web/src/app/console/rules-engine/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/runs",
+      "file": "packages/web/src/app/console/runs/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/console/runs/[runId]/components/RunConfiguration",
+      "file": "packages/web/src/app/console/runs/[runId]/components/RunConfiguration.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/runs/[runId]/components/RunOperatorTruthPanel",
+      "file": "packages/web/src/app/console/runs/[runId]/components/RunOperatorTruthPanel.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/runs/[runId]/components/RunProvenance",
+      "file": "packages/web/src/app/console/runs/[runId]/components/RunProvenance.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/runs/[runId]/components/RunStages",
+      "file": "packages/web/src/app/console/runs/[runId]/components/RunStages.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/runs/[runId]/components/RunStatistics",
+      "file": "packages/web/src/app/console/runs/[runId]/components/RunStatistics.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/runs/[runId]",
+      "file": "packages/web/src/app/console/runs/[runId]/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/console/schedules/components",
+      "file": "packages/web/src/app/console/schedules/components.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/schedules",
+      "file": "packages/web/src/app/console/schedules/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/security/data-residency",
+      "file": "packages/web/src/app/console/security/data-residency/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/settings",
+      "file": "packages/web/src/app/console/settings/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/console/settings/security",
+      "file": "packages/web/src/app/console/settings/security/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/console/setup-check",
+      "file": "packages/web/src/app/console/setup-check/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/console/site/branding",
+      "file": "packages/web/src/app/console/site/branding/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/console/site/experiments",
+      "file": "packages/web/src/app/console/site/experiments/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/site/experiments/[id]",
+      "file": "packages/web/src/app/console/site/experiments/[id]/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/site/navigation",
+      "file": "packages/web/src/app/console/site/navigation/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/console/site",
+      "file": "packages/web/src/app/console/site/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/console/site/pages/[id]",
+      "file": "packages/web/src/app/console/site/pages/[id]/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/console/site/ui-config",
+      "file": "packages/web/src/app/console/site/ui-config/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/console/sla",
+      "file": "packages/web/src/app/console/sla/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/sources",
+      "file": "packages/web/src/app/console/sources/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/support/crm",
+      "file": "packages/web/src/app/console/support/crm/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/support",
+      "file": "packages/web/src/app/console/support/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": true,
+      "requiresTenant": true
+    },
+    {
+      "route": "/console/tables/[table]",
+      "file": "packages/web/src/app/console/tables/[table]/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/trust-score",
+      "file": "packages/web/src/app/console/trust-score/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/console/usage",
+      "file": "packages/web/src/app/console/usage/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/console/webhooks",
+      "file": "packages/web/src/app/console/webhooks/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/workflows/new",
+      "file": "packages/web/src/app/console/workflows/new/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/workflows",
+      "file": "packages/web/src/app/console/workflows/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/workflows/[id]",
+      "file": "packages/web/src/app/console/workflows/[id]/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/contact",
+      "file": "packages/web/src/app/contact/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/cookbook",
+      "file": "packages/web/src/app/cookbook/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/dashboard/addons",
+      "file": "packages/web/src/app/dashboard/addons/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/dashboard/billing/invoices",
+      "file": "packages/web/src/app/dashboard/billing/invoices/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/dashboard/billing",
+      "file": "packages/web/src/app/dashboard/billing/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/dashboard/billing/payment-methods",
+      "file": "packages/web/src/app/dashboard/billing/payment-methods/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/dashboard/integrations/[integrationId]",
+      "file": "packages/web/src/app/dashboard/integrations/[integrationId]/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/dashboard/jobs",
+      "file": "packages/web/src/app/dashboard/jobs/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/dashboard/jobs/[jobId]/exceptions",
+      "file": "packages/web/src/app/dashboard/jobs/[jobId]/exceptions/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/dashboard/jobs/[jobId]",
+      "file": "packages/web/src/app/dashboard/jobs/[jobId]/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/dashboard/usage",
+      "file": "packages/web/src/app/dashboard/usage/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/dashboard/user",
+      "file": "packages/web/src/app/dashboard/user/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": true,
+      "requiresTenant": false
+    },
+    {
+      "route": "/demo/console",
+      "file": "packages/web/src/app/demo/console/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/demo/lib/data/deterministic",
+      "file": "packages/web/src/app/demo/lib/data/deterministic.ts",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/demo/lib/data/loader",
+      "file": "packages/web/src/app/demo/lib/data/loader.ts",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/demo/lib/data/types",
+      "file": "packages/web/src/app/demo/lib/data/types.ts",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/demo/lib/matching/engine",
+      "file": "packages/web/src/app/demo/lib/matching/engine.ts",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/demo",
+      "file": "packages/web/src/app/demo/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/demo/receipts",
+      "file": "packages/web/src/app/demo/receipts/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/demo/reconciliation",
+      "file": "packages/web/src/app/demo/reconciliation/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/docs/architecture",
+      "file": "packages/web/src/app/docs/architecture/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/docs/architecture/platform-architecture",
+      "file": "packages/web/src/app/docs/architecture/platform-architecture/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/docs/auth",
+      "file": "packages/web/src/app/docs/auth/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/docs/cli",
+      "file": "packages/web/src/app/docs/cli/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/docs/errors",
+      "file": "packages/web/src/app/docs/errors/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/docs/examples",
+      "file": "packages/web/src/app/docs/examples/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/docs/getting-started",
+      "file": "packages/web/src/app/docs/getting-started/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/docs/integrations",
+      "file": "packages/web/src/app/docs/integrations/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/docs/integrations/[integrationId]",
+      "file": "packages/web/src/app/docs/integrations/[integrationId]/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/docs/launch",
+      "file": "packages/web/src/app/docs/launch/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/docs",
+      "file": "packages/web/src/app/docs/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/docs/pilot",
+      "file": "packages/web/src/app/docs/pilot/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/docs/quickstart",
+      "file": "packages/web/src/app/docs/quickstart/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/docs/replay-lab",
+      "file": "packages/web/src/app/docs/replay-lab/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/docs/sdk/go",
+      "file": "packages/web/src/app/docs/sdk/go/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/docs/sdk/nodejs",
+      "file": "packages/web/src/app/docs/sdk/nodejs/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/docs/sdk",
+      "file": "packages/web/src/app/docs/sdk/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/docs/sdk/python",
+      "file": "packages/web/src/app/docs/sdk/python/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/docs/sdk/ruby",
+      "file": "packages/web/src/app/docs/sdk/ruby/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/docs/status",
+      "file": "packages/web/src/app/docs/status/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/docs/support",
+      "file": "packages/web/src/app/docs/support/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/docs/webhooks",
+      "file": "packages/web/src/app/docs/webhooks/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/document-onboarding",
+      "file": "packages/web/src/app/document-onboarding/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/edge-ai/nodes/new",
+      "file": "packages/web/src/app/edge-ai/nodes/new/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/edge-ai/nodes",
+      "file": "packages/web/src/app/edge-ai/nodes/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/edge-ai/nodes/[nodeId]",
+      "file": "packages/web/src/app/edge-ai/nodes/[nodeId]/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/edge-ai",
+      "file": "packages/web/src/app/edge-ai/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/engine/create-run-pack",
+      "file": "packages/web/src/app/engine/create-run-pack/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/engine/import-results",
+      "file": "packages/web/src/app/engine/import-results/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/engine",
+      "file": "packages/web/src/app/engine/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/engine/view-variances",
+      "file": "packages/web/src/app/engine/view-variances/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/enterprise/dashboard",
+      "file": "packages/web/src/app/enterprise/dashboard/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/enterprise",
+      "file": "packages/web/src/app/enterprise/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/explorer/execution/[id]",
+      "file": "packages/web/src/app/explorer/execution/[id]/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/explorer",
+      "file": "packages/web/src/app/explorer/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/explorer/tenant/[tenant_id]",
+      "file": "packages/web/src/app/explorer/tenant/[tenant_id]/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/exports",
+      "file": "packages/web/src/app/exports/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/faq",
+      "file": "packages/web/src/app/faq/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/feature-flags",
+      "file": "packages/web/src/app/feature-flags/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/forgot-password",
+      "file": "packages/web/src/app/forgot-password/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": true,
+      "requiresTenant": false
+    },
+    {
+      "route": "/founder",
+      "file": "packages/web/src/app/founder/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/future-proof",
+      "file": "packages/web/src/app/future-proof/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/integrations",
+      "file": "packages/web/src/app/integrations/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/integrations/request",
+      "file": "packages/web/src/app/integrations/request/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/intelligence/foundry",
+      "file": "packages/web/src/app/intelligence/foundry/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/intelligence/foundry/runs/[runId]",
+      "file": "packages/web/src/app/intelligence/foundry/runs/[runId]/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/intelligence/foundry/[datasetId]",
+      "file": "packages/web/src/app/intelligence/foundry/[datasetId]/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/investor/proof",
+      "file": "packages/web/src/app/investor/proof/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/investor/reality",
+      "file": "packages/web/src/app/investor/reality/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/invite/[token]",
+      "file": "packages/web/src/app/invite/[token]/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/legal/aup",
+      "file": "packages/web/src/app/legal/aup/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/legal/cookies",
+      "file": "packages/web/src/app/legal/cookies/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/legal/dpa",
+      "file": "packages/web/src/app/legal/dpa/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/legal/license",
+      "file": "packages/web/src/app/legal/license/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/legal",
+      "file": "packages/web/src/app/legal/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/legal/privacy",
+      "file": "packages/web/src/app/legal/privacy/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/legal/subprocessors",
+      "file": "packages/web/src/app/legal/subprocessors/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/legal/terms",
+      "file": "packages/web/src/app/legal/terms/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/login",
+      "file": "packages/web/src/app/login/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": true,
+      "requiresTenant": false
+    },
+    {
+      "route": "/managed",
+      "file": "packages/web/src/app/managed/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/manifest",
+      "file": "packages/web/src/app/manifest.ts",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/mobile",
+      "file": "packages/web/src/app/mobile/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/offline",
+      "file": "packages/web/src/app/offline/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/onboarding",
+      "file": "packages/web/src/app/onboarding/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/open-source",
+      "file": "packages/web/src/app/open-source/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/openapi.json/route",
+      "file": "packages/web/src/app/openapi.json/route.ts",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/operator/incidents",
+      "file": "packages/web/src/app/operator/incidents/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/",
+      "file": "packages/web/src/app/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/parser",
+      "file": "packages/web/src/app/parser/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/platform",
+      "file": "packages/web/src/app/platform/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/playground",
+      "file": "packages/web/src/app/playground/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/policies",
+      "file": "packages/web/src/app/policies/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/pricing/metadata",
+      "file": "packages/web/src/app/pricing/metadata.ts",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/pricing",
+      "file": "packages/web/src/app/pricing/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/privacy",
+      "file": "packages/web/src/app/privacy/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/product",
+      "file": "packages/web/src/app/product/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/proof-explorer",
+      "file": "packages/web/src/app/proof-explorer/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/react-settler-demo",
+      "file": "packages/web/src/app/react-settler-demo/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/realtime-dashboard",
+      "file": "packages/web/src/app/realtime-dashboard/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/receipts",
+      "file": "packages/web/src/app/receipts/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/reconcile/actions",
+      "file": "packages/web/src/app/reconcile/actions.ts",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/reconcile",
+      "file": "packages/web/src/app/reconcile/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/reconcile/[id]/MatchDetailView",
+      "file": "packages/web/src/app/reconcile/[id]/MatchDetailView.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/reconcile/[id]",
+      "file": "packages/web/src/app/reconcile/[id]/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/reconciliation",
+      "file": "packages/web/src/app/reconciliation/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/replay-lab",
+      "file": "packages/web/src/app/replay-lab/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/reset-password",
+      "file": "packages/web/src/app/reset-password/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": true,
+      "requiresTenant": true
+    },
+    {
+      "route": "/revenue-recovery",
+      "file": "packages/web/src/app/revenue-recovery/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/review/polish",
+      "file": "packages/web/src/app/review/polish/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": true,
+      "requiresTenant": true
+    },
+    {
+      "route": "/robots",
+      "file": "packages/web/src/app/robots.ts",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/roi-calculator",
+      "file": "packages/web/src/app/roi-calculator/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/runbooks",
+      "file": "packages/web/src/app/runbooks/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/schematics",
+      "file": "packages/web/src/app/schematics/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/security-and-audit",
+      "file": "packages/web/src/app/security-and-audit/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/sidereal",
+      "file": "packages/web/src/app/sidereal/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/signup",
+      "file": "packages/web/src/app/signup/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": true,
+      "requiresTenant": false
+    },
+    {
+      "route": "/sitemap",
+      "file": "packages/web/src/app/sitemap.ts",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/status",
+      "file": "packages/web/src/app/status/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/support/articles/[articleId]",
+      "file": "packages/web/src/app/support/articles/[articleId]/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/support/category/[categoryId]",
+      "file": "packages/web/src/app/support/category/[categoryId]/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/support/contact",
+      "file": "packages/web/src/app/support/contact/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/support",
+      "file": "packages/web/src/app/support/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/terms",
+      "file": "packages/web/src/app/terms/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/tour",
+      "file": "packages/web/src/app/tour/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/transparency",
+      "file": "packages/web/src/app/transparency/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/use-cases",
+      "file": "packages/web/src/app/use-cases/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/use-cases/[slug]",
+      "file": "packages/web/src/app/use-cases/[slug]/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/ux-playground/events",
+      "file": "packages/web/src/app/ux-playground/events/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/ux-playground",
+      "file": "packages/web/src/app/ux-playground/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/value-proposition",
+      "file": "packages/web/src/app/value-proposition/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/vendor-portal",
+      "file": "packages/web/src/app/vendor-portal/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/verify",
+      "file": "packages/web/src/app/verify/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/verify/verify-client",
+      "file": "packages/web/src/app/verify/verify-client.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/why",
+      "file": "packages/web/src/app/why/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/workspace/bulk-triage",
+      "file": "packages/web/src/app/workspace/bulk-triage/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/workspace/investigate",
+      "file": "packages/web/src/app/workspace/investigate/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/workspace/investigate/[ingestionId]",
+      "file": "packages/web/src/app/workspace/investigate/[ingestionId]/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/workspace",
+      "file": "packages/web/src/app/workspace/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/[slug]",
+      "file": "packages/web/src/app/[slug]/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    }
+  ]
 }
