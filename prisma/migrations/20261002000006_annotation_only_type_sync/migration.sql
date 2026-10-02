@@ -1,0 +1,6 @@
+-- No DDL. 2026-10-02 type-annotation sync: 157 Prisma native-type annotations
+-- (@db.Timestamptz/@db.VarChar/BigInt fields, dropped wrong @db.Uuid) aligned
+-- to the live column types. Annotations change the client's view only — the
+-- database already had these types. This empty migration exists so the
+-- "schema changed without a new Prisma migration" CI guard stays meaningful
+-- while annotation-only syncs remain one-commit affairs.
