@@ -17,10 +17,11 @@ test.describe("DOM Reality Regression Prevention", () => {
       const conflicts: string[] = [];
       document.querySelectorAll("*").forEach((el) => {
         const classes = el.className?.toString() || "";
-        if (classes.includes("hidden") && classes.includes("block")) {
+        const classTokens = new Set(classes.split(/\s+/).filter(Boolean));
+        if (classTokens.has("hidden") && classTokens.has("block")) {
           conflicts.push(`${el.tagName}.${classes.split(" ")[0]}`);
         }
-        if (classes.includes("opacity-0") && classes.includes("opacity-100")) {
+        if (classTokens.has("opacity-0") && classTokens.has("opacity-100")) {
           conflicts.push(`${el.tagName}.${classes.split(" ")[0]}`);
         }
       });

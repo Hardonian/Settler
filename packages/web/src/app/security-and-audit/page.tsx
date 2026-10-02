@@ -178,6 +178,7 @@ export default function SecurityAndAuditPage() {
               src="/isolation_vault_3d.png"
               alt="Security isolation vault visualization"
               fill
+              sizes="(max-width: 1023px) 100vw, 50vw"
               className="object-cover"
             />
             <div className="absolute inset-0 bg-gradient-to-tr from-primary/20 to-transparent" />

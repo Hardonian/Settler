@@ -71,7 +71,9 @@ export default function EnterprisePage() {
               src="/enterprise_arch_3d.png"
               alt="Enterprise architecture visualization"
               fill
+              sizes="(max-width: 1023px) 100vw, 50vw"
               className="object-cover"
+              loading="eager"
             />
           </div>
         }
@@ -136,6 +138,7 @@ export default function EnterprisePage() {
               src="/ai_review_nodes_3d.png"
               alt="AI review node visualization"
               fill
+              sizes="(max-width: 1023px) 100vw, 50vw"
               className="object-cover"
             />
             <div className="absolute inset-0 bg-gradient-to-tr from-primary/30 to-transparent" />
@@ -151,6 +154,7 @@ export default function EnterprisePage() {
               src="/hero_abstract_reconciliation.png"
               alt="Deterministic reconciliation"
               fill
+              sizes="(max-width: 1023px) 100vw, 50vw"
               className="object-cover"
             />
           </div>

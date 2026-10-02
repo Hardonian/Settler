@@ -48,7 +48,9 @@ export default function FaqPage() {
                 src="/evidence_artifact_3d.png"
                 alt="Evidence artifact visualization"
                 fill
+                sizes="(max-width: 1023px) min(100vw, 400px), 400px"
                 className="object-cover"
+                loading="eager"
               />
             </div>
           }

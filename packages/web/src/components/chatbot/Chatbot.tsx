@@ -199,6 +199,7 @@ export function Chatbot({ className }: ChatbotProps) {
             className
           )}
           size="icon"
+          aria-label="Open Settler Assistant"
         >
           <MessageCircle className="w-6 h-6" />
         </Button>
@@ -221,6 +222,7 @@ export function Chatbot({ className }: ChatbotProps) {
                 trackChatbotInteraction("chat_closed");
               }}
               className="text-white hover:bg-white/20"
+              aria-label="Close Settler Assistant"
             >
               <X className="w-5 h-5" />
             </Button>

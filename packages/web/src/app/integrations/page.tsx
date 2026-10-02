@@ -44,7 +44,9 @@ export default function IntegrationsPage() {
               src="/adapter_hub_3d.png"
               alt="Adapter hub visualization"
               fill
+              sizes="(max-width: 1023px) 100vw, 50vw"
               className="object-cover"
+              loading="eager"
             />
           </div>
         }

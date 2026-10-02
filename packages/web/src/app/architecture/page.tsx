@@ -54,7 +54,9 @@ export default function ArchitecturePage() {
               src="/rule_trace_3d.png"
               alt="Rule execution trace visualization"
               fill
+              sizes="(max-width: 1023px) 100vw, 50vw"
               className="object-cover"
+              loading="eager"
             />
           </div>
         }

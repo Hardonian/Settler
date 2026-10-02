@@ -37,7 +37,9 @@ export default function ProductPage() {
                 src="/platform_core_3d.png"
                 alt="Settler platform core"
                 fill
+                sizes="(max-width: 1023px) 100vw, 50vw"
                 className="object-cover"
+                loading="eager"
               />
             </div>
           }

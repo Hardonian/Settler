@@ -18,8 +18,30 @@ import { withSecurity } from "@/lib/middleware/api-security";
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
+const hasDatabaseConnectionString = () =>
+  Boolean(process.env.DATABASE_URL || process.env.SUPABASE_DATABASE_URL || process.env.DIRECT_URL);
+
+function defaultResponse() {
+  const res = NextResponse.json(
+    {
+      environment: getRuntimeEnvKey(),
+      tenantId: null,
+      tenantSlug: "default",
+      config: resolvePublicRuntimeUiConfig({}),
+    },
+    { status: 200 }
+  );
+  res.headers.set("Cache-Control", "public, max-age=0, s-maxage=30, stale-while-revalidate=120");
+  res.headers.set("Vary", "Host");
+  return res;
+}
+
 export const GET = withSecurity(
   async function GET(request: NextRequest) {
+    if (!hasDatabaseConnectionString()) {
+      return defaultResponse();
+    }
+
     try {
       const resolution = await resolveTenant(request);
       const tenant = resolution.tenantId ? await getTenantById(resolution.tenantId) : null;
@@ -54,21 +76,7 @@ export const GET = withSecurity(
       return res;
     } catch {
       // Never 500 for public config; return safe default.
-      const res = NextResponse.json(
-        {
-          environment: getRuntimeEnvKey(),
-          tenantId: null,
-          tenantSlug: "default",
-          config: resolvePublicRuntimeUiConfig({}),
-        },
-        { status: 200 }
-      );
-      res.headers.set(
-        "Cache-Control",
-        "public, max-age=0, s-maxage=30, stale-while-revalidate=120"
-      );
-      res.headers.set("Vary", "Host");
-      return res;
+      return defaultResponse();
     }
   },
   { rateLimit: { windowMs: 60_000, maxRequests: 120 }, requireAuth: false }

@@ -69,7 +69,9 @@ export default function ContactPage() {
               src="/strategic_insight_team.png"
               alt="Strategic consultation visualization"
               fill
+              sizes="(max-width: 1023px) 100vw, 50vw"
               className="object-cover"
+              loading="eager"
             />
           </div>
         }

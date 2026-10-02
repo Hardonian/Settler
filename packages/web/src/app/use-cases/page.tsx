@@ -33,8 +33,9 @@ export default function UseCasesPage() {
                 src="/use_cases_3d.png"
                 alt="Multi-rail financial settlement and payment workflow orchestration"
                 fill
+                sizes="(max-width: 1023px) 100vw, 50vw"
                 className="object-cover transition-transform duration-700 group-hover:scale-105"
-                priority
+                loading="eager"
               />
               <div className="absolute inset-0 bg-gradient-to-tr from-primary/10 via-transparent to-transparent pointer-events-none" />
             </div>

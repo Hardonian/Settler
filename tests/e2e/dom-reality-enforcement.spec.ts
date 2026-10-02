@@ -127,8 +127,8 @@ async function capturePostHydrationDOM(page: Page): Promise<string> {
  * Capture final painted DOM (after all effects, animations, dynamic imports)
  */
 async function captureFinalDOM(page: Page): Promise<string> {
-  // Wait for network idle
-  await page.waitForLoadState("networkidle");
+  // Streaming, analytics, and polling must not block DOM inspection indefinitely.
+  await page.waitForLoadState("networkidle", { timeout: 5000 }).catch(() => undefined);
 
   // Wait for all dynamic imports to load
   await page.waitForTimeout(2000);
@@ -144,9 +144,14 @@ async function captureFinalDOM(page: Page): Promise<string> {
             resolve();
             return;
           }
-          Promise.all(animations.map((anim) => anim.finished)).then(() => {
-            setTimeout(resolve, 100);
+          const finiteAnimations = animations.filter((animation) => {
+            const endTime = animation.effect?.getComputedTiming().endTime;
+            return typeof endTime === "number" && Number.isFinite(endTime);
           });
+          Promise.race([
+            Promise.allSettled(finiteAnimations.map((animation) => animation.finished)),
+            new Promise((done) => setTimeout(done, 1000)),
+          ]).then(() => setTimeout(resolve, 100));
         };
         checkAnimations();
       });
@@ -319,7 +324,8 @@ async function detectHydrationMismatches(
 
     // Find missing text nodes
     ssrTextNodes.forEach((text, index) => {
-      if (!hydratedTextNodes.includes(text) && text.trim().length > 10) {
+      const isTransientFallback = text === "Loading Settler..." || text === "Checking...";
+      if (!isTransientFallback && !hydratedTextNodes.includes(text) && text.trim().length > 10) {
         issues.push({
           type: "hydration_mismatch",
           severity: "critical",

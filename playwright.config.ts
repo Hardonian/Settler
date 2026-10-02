@@ -31,8 +31,8 @@ export default defineConfig({
   // Retry on CI only
   retries: process.env.CI ? 2 : 1,
 
-  // Workers: 1 in CI for stability, undefined (auto) locally
-  workers: process.env.CI ? 1 : undefined,
+  // Keep local browser load bounded; DOM-heavy routes become timing-sensitive under auto fan-out.
+  workers: process.env.CI ? 1 : 4,
 
   // Reporter configuration
   reporter: [

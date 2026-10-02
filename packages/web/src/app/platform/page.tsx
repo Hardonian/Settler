@@ -108,7 +108,9 @@ export default function PlatformPage() {
               src="/platform_core_3d.png"
               alt="Platform core visualization"
               fill
+              sizes="(max-width: 1023px) min(100vw, 500px), 500px"
               className="object-cover"
+              loading="eager"
             />
             <div className="absolute inset-0 bg-gradient-to-tr from-primary/10 to-transparent" />
           </div>

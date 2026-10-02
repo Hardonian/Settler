@@ -231,8 +231,9 @@ export function ArchitectureModuleShowcase() {
                   src={activeModule.image}
                   alt={activeModule.alt}
                   fill
+                  sizes="(max-width: 1023px) min(100vw, 480px), 40vw"
                   className="object-cover transition-transform duration-700 group-hover:scale-105"
-                  priority
+                  loading="eager"
                 />
                 <div className="absolute inset-0 bg-gradient-to-tr from-primary/15 via-transparent to-transparent pointer-events-none" />
                 <div className="absolute bottom-4 left-4 right-4 rounded-xl border border-white/10 bg-black/70 backdrop-blur-md p-3 text-xs text-white/90 flex items-center justify-between">

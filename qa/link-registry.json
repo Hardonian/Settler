@@ -1,29 +1,8 @@
 {
-  "generatedAt": "2026-09-20T18:26:55.609Z",
-  "totalLinks": 748,
-  "uniquePaths": 197,
+  "generatedAt": "2026-10-02T17:27:28.296Z",
+  "totalLinks": 735,
+  "uniquePaths": 192,
   "links": [
-    {
-      "href": "/architecture",
-      "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\(marketing)\\home\\page.tsx",
-      "line": 581,
-      "type": "config",
-      "normalizedHref": "/architecture"
-    },
-    {
-      "href": "/replay-lab",
-      "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\(marketing)\\home\\page.tsx",
-      "line": 589,
-      "type": "config",
-      "normalizedHref": "/replay-lab"
-    },
-    {
-      "href": "/proof-explorer",
-      "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\(marketing)\\home\\page.tsx",
-      "line": 597,
-      "type": "config",
-      "normalizedHref": "/proof-explorer"
-    },
     {
       "href": "/login",
       "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\admin\\error.tsx",
@@ -536,32 +515,18 @@
       "normalizedHref": "/community"
     },
     {
-      "href": "/pricing",
+      "href": "/docs/pilot",
       "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\compare\\page.tsx",
-      "line": 59,
+      "line": 58,
       "type": "link",
-      "normalizedHref": "/pricing"
+      "normalizedHref": "/docs/pilot"
     },
     {
-      "href": "/docs",
+      "href": "/architecture",
       "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\compare\\page.tsx",
-      "line": 65,
+      "line": 63,
       "type": "link",
-      "normalizedHref": "/docs"
-    },
-    {
-      "href": "/pricing",
-      "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\compare\\page.tsx",
-      "line": 354,
-      "type": "link",
-      "normalizedHref": "/pricing"
-    },
-    {
-      "href": "/contact",
-      "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\compare\\page.tsx",
-      "line": 357,
-      "type": "link",
-      "normalizedHref": "/contact"
+      "normalizedHref": "/architecture"
     },
     {
       "href": "/console/admin/activation",
@@ -1217,9 +1182,23 @@
     {
       "href": "/console/settings",
       "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\console\\settings\\security\\page.tsx",
-      "line": 30,
+      "line": 28,
       "type": "config",
       "normalizedHref": "/console/settings"
+    },
+    {
+      "href": "/contact",
+      "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\console\\settings\\security\\page.tsx",
+      "line": 103,
+      "type": "link",
+      "normalizedHref": "/contact"
+    },
+    {
+      "href": "/enterprise",
+      "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\console\\settings\\security\\page.tsx",
+      "line": 108,
+      "type": "link",
+      "normalizedHref": "/enterprise"
     },
     {
       "href": "/console",
@@ -2202,20 +2181,6 @@
       "normalizedHref": "/docs/sdk/nodejs"
     },
     {
-      "href": "/support",
-      "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\docs\\support\\page.tsx",
-      "line": 63,
-      "type": "link",
-      "normalizedHref": "/support"
-    },
-    {
-      "href": "/docs/api",
-      "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\docs\\support\\page.tsx",
-      "line": 69,
-      "type": "link",
-      "normalizedHref": "/docs/api"
-    },
-    {
       "href": "/edge-ai/nodes",
       "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\edge-ai\\nodes\\new\\page.tsx",
       "line": 71,
@@ -2267,35 +2232,35 @@
     {
       "href": "/edge-ai/nodes",
       "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\edge-ai\\page.tsx",
-      "line": 210,
+      "line": 211,
       "type": "link",
       "normalizedHref": "/edge-ai/nodes"
     },
     {
       "href": "/docs",
       "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\edge-ai\\page.tsx",
-      "line": 213,
+      "line": 214,
       "type": "link",
       "normalizedHref": "/docs"
     },
     {
       "href": "/edge-ai/nodes",
       "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\edge-ai\\page.tsx",
-      "line": 223,
+      "line": 224,
       "type": "link",
       "normalizedHref": "/edge-ai/nodes"
     },
     {
       "href": "/edge-ai",
       "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\edge-ai\\page.tsx",
-      "line": 256,
+      "line": 257,
       "type": "link",
       "normalizedHref": "/edge-ai"
     },
     {
       "href": "/edge-ai",
       "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\edge-ai\\page.tsx",
-      "line": 269,
+      "line": 270,
       "type": "link",
       "normalizedHref": "/edge-ai"
     },
@@ -2396,20 +2361,6 @@
       "line": 92,
       "type": "link",
       "normalizedHref": "/login"
-    },
-    {
-      "href": "/docs/cli",
-      "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\future-proof\\page.tsx",
-      "line": 133,
-      "type": "link",
-      "normalizedHref": "/docs/cli"
-    },
-    {
-      "href": "/support",
-      "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\future-proof\\page.tsx",
-      "line": 137,
-      "type": "link",
-      "normalizedHref": "/support"
     },
     {
       "href": "/docs",
@@ -2617,7 +2568,7 @@
     {
       "href": "/docs/quickstart",
       "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\open-source\\page.tsx",
-      "line": 147,
+      "line": 146,
       "type": "link",
       "normalizedHref": "/docs/quickstart"
     },
@@ -2638,35 +2589,35 @@
     {
       "href": "/docs/api",
       "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\page.tsx",
-      "line": 226,
+      "line": 247,
       "type": "config",
       "normalizedHref": "/docs/api"
     },
     {
       "href": "/console",
       "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\page.tsx",
-      "line": 233,
+      "line": 254,
       "type": "config",
       "normalizedHref": "/console"
     },
     {
       "href": "/docs/architecture/platform-architecture",
       "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\page.tsx",
-      "line": 240,
+      "line": 261,
       "type": "config",
       "normalizedHref": "/docs/architecture/platform-architecture"
     },
     {
       "href": "/console/close",
       "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\page.tsx",
-      "line": 247,
+      "line": 268,
       "type": "config",
       "normalizedHref": "/console/close"
     },
     {
       "href": "/console/security/data-residency",
       "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\page.tsx",
-      "line": 254,
+      "line": 275,
       "type": "config",
       "normalizedHref": "/console/security/data-residency"
     },
@@ -2708,21 +2659,21 @@
     {
       "href": "/docs/api",
       "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\pricing\\page.tsx",
-      "line": 322,
+      "line": 301,
       "type": "link",
       "normalizedHref": "/docs/api"
     },
     {
       "href": "/openapi.json",
       "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\pricing\\page.tsx",
-      "line": 325,
+      "line": 304,
       "type": "link",
       "normalizedHref": "/openapi.json"
     },
     {
       "href": "/contact",
       "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\pricing\\page.tsx",
-      "line": 328,
+      "line": 307,
       "type": "link",
       "normalizedHref": "/contact"
     },
@@ -3068,6 +3019,20 @@
       "line": 241,
       "type": "link",
       "normalizedHref": "/docs"
+    },
+    {
+      "href": "/docs",
+      "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\support\\page.tsx",
+      "line": 47,
+      "type": "link",
+      "normalizedHref": "/docs"
+    },
+    {
+      "href": "/security-and-audit",
+      "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\support\\page.tsx",
+      "line": 112,
+      "type": "link",
+      "normalizedHref": "/security-and-audit"
     },
     {
       "href": "/signup",
@@ -3686,191 +3651,135 @@
       "normalizedHref": "/console"
     },
     {
-      "href": "/cognitive",
+      "href": "/product",
       "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\components\\Navigation.tsx",
-      "line": 17,
+      "line": 16,
       "type": "config",
-      "normalizedHref": "/cognitive"
-    },
-    {
-      "href": "/verify",
-      "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\components\\Navigation.tsx",
-      "line": 18,
-      "type": "config",
-      "normalizedHref": "/verify"
-    },
-    {
-      "href": "/platform",
-      "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\components\\Navigation.tsx",
-      "line": 19,
-      "type": "config",
-      "normalizedHref": "/platform"
-    },
-    {
-      "href": "/sidereal",
-      "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\components\\Navigation.tsx",
-      "line": 20,
-      "type": "config",
-      "normalizedHref": "/sidereal"
+      "normalizedHref": "/product"
     },
     {
       "href": "/capabilities",
       "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\components\\Navigation.tsx",
-      "line": 21,
+      "line": 17,
       "type": "config",
       "normalizedHref": "/capabilities"
     },
     {
+      "href": "/integrations",
+      "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\components\\Navigation.tsx",
+      "line": 18,
+      "type": "config",
+      "normalizedHref": "/integrations"
+    },
+    {
+      "href": "/security-and-audit",
+      "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\components\\Navigation.tsx",
+      "line": 19,
+      "type": "config",
+      "normalizedHref": "/security-and-audit"
+    },
+    {
       "href": "/pricing",
       "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\components\\Navigation.tsx",
-      "line": 22,
+      "line": 20,
       "type": "config",
       "normalizedHref": "/pricing"
     },
     {
       "href": "/docs",
       "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\components\\Navigation.tsx",
-      "line": 23,
+      "line": 21,
       "type": "config",
       "normalizedHref": "/docs"
     },
     {
-      "href": "/product",
+      "href": "/architecture",
       "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\components\\Navigation.tsx",
-      "line": 28,
+      "line": 26,
       "type": "config",
-      "normalizedHref": "/product"
+      "normalizedHref": "/architecture"
     },
     {
       "href": "/enterprise",
       "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\components\\Navigation.tsx",
-      "line": 29,
+      "line": 27,
       "type": "config",
       "normalizedHref": "/enterprise"
     },
     {
       "href": "/compare",
       "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\components\\Navigation.tsx",
-      "line": 30,
+      "line": 28,
       "type": "config",
       "normalizedHref": "/compare"
     },
     {
-      "href": "/roi-calculator",
-      "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\components\\Navigation.tsx",
-      "line": 31,
-      "type": "config",
-      "normalizedHref": "/roi-calculator"
-    },
-    {
-      "href": "/document-onboarding",
-      "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\components\\Navigation.tsx",
-      "line": 32,
-      "type": "config",
-      "normalizedHref": "/document-onboarding"
-    },
-    {
-      "href": "/value-proposition",
-      "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\components\\Navigation.tsx",
-      "line": 33,
-      "type": "config",
-      "normalizedHref": "/value-proposition"
-    },
-    {
-      "href": "/revenue-recovery",
-      "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\components\\Navigation.tsx",
-      "line": 34,
-      "type": "config",
-      "normalizedHref": "/revenue-recovery"
-    },
-    {
-      "href": "/realtime-dashboard",
-      "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\components\\Navigation.tsx",
-      "line": 35,
-      "type": "config",
-      "normalizedHref": "/realtime-dashboard"
-    },
-    {
-      "href": "/architecture",
-      "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\components\\Navigation.tsx",
-      "line": 36,
-      "type": "config",
-      "normalizedHref": "/architecture"
-    },
-    {
-      "href": "/security-and-audit",
-      "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\components\\Navigation.tsx",
-      "line": 37,
-      "type": "config",
-      "normalizedHref": "/security-and-audit"
-    },
-    {
       "href": "/open-source",
       "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\components\\Navigation.tsx",
-      "line": 38,
+      "line": 29,
       "type": "config",
       "normalizedHref": "/open-source"
     },
     {
       "href": "/changelog",
       "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\components\\Navigation.tsx",
-      "line": 39,
+      "line": 30,
       "type": "config",
       "normalizedHref": "/changelog"
     },
     {
       "href": "/support",
       "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\components\\Navigation.tsx",
-      "line": 44,
+      "line": 35,
       "type": "config",
       "normalizedHref": "/support"
     },
     {
       "href": "/faq",
       "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\components\\Navigation.tsx",
-      "line": 45,
+      "line": 36,
       "type": "config",
       "normalizedHref": "/faq"
     },
     {
       "href": "/contact",
       "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\components\\Navigation.tsx",
-      "line": 46,
+      "line": 37,
       "type": "config",
       "normalizedHref": "/contact"
     },
     {
       "href": "/privacy",
       "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\components\\Navigation.tsx",
-      "line": 47,
+      "line": 38,
       "type": "config",
       "normalizedHref": "/privacy"
     },
     {
       "href": "/terms",
       "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\components\\Navigation.tsx",
-      "line": 48,
+      "line": 39,
       "type": "config",
       "normalizedHref": "/terms"
     },
     {
       "href": "/signup",
       "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\components\\Navigation.tsx",
-      "line": 340,
+      "line": 314,
       "type": "link",
       "normalizedHref": "/signup"
     },
     {
       "href": "/signup",
       "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\components\\Navigation.tsx",
-      "line": 381,
+      "line": 355,
       "type": "link",
       "normalizedHref": "/signup"
     },
     {
       "href": "/signup",
       "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\components\\Navigation.tsx",
-      "line": 523,
+      "line": 497,
       "type": "link",
       "normalizedHref": "/signup"
     },
@@ -4388,238 +4297,238 @@
     {
       "href": "/console",
       "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\lib\\console\\route-maturity.ts",
-      "line": 58,
+      "line": 54,
       "type": "config",
       "normalizedHref": "/console"
     },
     {
       "href": "/console/reconciliations",
       "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\lib\\console\\route-maturity.ts",
-      "line": 79,
+      "line": 75,
       "type": "config",
       "normalizedHref": "/console/reconciliations"
     },
     {
       "href": "/console/runs",
       "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\lib\\console\\route-maturity.ts",
-      "line": 100,
+      "line": 96,
       "type": "config",
       "normalizedHref": "/console/runs"
     },
     {
       "href": "/console/exceptions",
       "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\lib\\console\\route-maturity.ts",
-      "line": 121,
+      "line": 117,
       "type": "config",
       "normalizedHref": "/console/exceptions"
     },
     {
       "href": "/console/audits",
       "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\lib\\console\\route-maturity.ts",
-      "line": 142,
+      "line": 138,
       "type": "config",
       "normalizedHref": "/console/audits"
     },
     {
       "href": "/console/sources",
       "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\lib\\console\\route-maturity.ts",
-      "line": 163,
+      "line": 159,
       "type": "config",
       "normalizedHref": "/console/sources"
     },
     {
       "href": "/console/close",
       "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\lib\\console\\route-maturity.ts",
-      "line": 184,
+      "line": 180,
       "type": "config",
       "normalizedHref": "/console/close"
     },
     {
       "href": "/console/export/gl",
       "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\lib\\console\\route-maturity.ts",
-      "line": 205,
+      "line": 201,
       "type": "config",
       "normalizedHref": "/console/export/gl"
     },
     {
       "href": "/console/evidence/soc2",
       "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\lib\\console\\route-maturity.ts",
-      "line": 226,
+      "line": 222,
       "type": "config",
       "normalizedHref": "/console/evidence/soc2"
     },
     {
       "href": "/console/evidence/siem",
       "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\lib\\console\\route-maturity.ts",
-      "line": 247,
+      "line": 243,
       "type": "config",
       "normalizedHref": "/console/evidence/siem"
     },
     {
       "href": "/console/dashboards/liquidity",
       "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\lib\\console\\route-maturity.ts",
-      "line": 268,
+      "line": 264,
       "type": "config",
       "normalizedHref": "/console/dashboards/liquidity"
     },
     {
       "href": "/console/proof-explorer",
       "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\lib\\console\\route-maturity.ts",
-      "line": 289,
+      "line": 285,
       "type": "config",
       "normalizedHref": "/console/proof-explorer"
     },
     {
       "href": "/console/policies",
       "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\lib\\console\\route-maturity.ts",
-      "line": 311,
+      "line": 307,
       "type": "config",
       "normalizedHref": "/console/policies"
     },
     {
       "href": "/console/control-plane",
       "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\lib\\console\\route-maturity.ts",
-      "line": 332,
+      "line": 328,
       "type": "config",
       "normalizedHref": "/console/control-plane"
     },
     {
       "href": "/console/analytics",
       "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\lib\\console\\route-maturity.ts",
-      "line": 353,
+      "line": 349,
       "type": "config",
       "normalizedHref": "/console/analytics"
     },
     {
       "href": "/console/insights",
       "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\lib\\console\\route-maturity.ts",
-      "line": 374,
+      "line": 370,
       "type": "config",
       "normalizedHref": "/console/insights"
     },
     {
       "href": "/console/intelligence/rule-discovery",
       "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\lib\\console\\route-maturity.ts",
-      "line": 395,
+      "line": 391,
       "type": "config",
       "normalizedHref": "/console/intelligence/rule-discovery"
     },
     {
       "href": "/console/support/crm",
       "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\lib\\console\\route-maturity.ts",
-      "line": 416,
+      "line": 412,
       "type": "config",
       "normalizedHref": "/console/support/crm"
     },
     {
       "href": "/console/diagnostics",
       "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\lib\\console\\route-maturity.ts",
-      "line": 437,
+      "line": 433,
       "type": "config",
       "normalizedHref": "/console/diagnostics"
     },
     {
       "href": "/console/api-keys",
       "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\lib\\console\\route-maturity.ts",
-      "line": 458,
+      "line": 454,
       "type": "config",
       "normalizedHref": "/console/api-keys"
     },
     {
       "href": "/console/developers/webhooks",
       "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\lib\\console\\route-maturity.ts",
-      "line": 479,
+      "line": 475,
       "type": "config",
       "normalizedHref": "/console/developers/webhooks"
     },
     {
       "href": "/console/developers/schema-registry",
       "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\lib\\console\\route-maturity.ts",
-      "line": 501,
+      "line": 497,
       "type": "config",
       "normalizedHref": "/console/developers/schema-registry"
     },
     {
       "href": "/console/workflows",
       "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\lib\\console\\route-maturity.ts",
-      "line": 522,
+      "line": 518,
       "type": "config",
       "normalizedHref": "/console/workflows"
     },
     {
       "href": "/console/schedules",
       "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\lib\\console\\route-maturity.ts",
-      "line": 543,
+      "line": 539,
       "type": "config",
       "normalizedHref": "/console/schedules"
     },
     {
       "href": "/console/billing",
       "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\lib\\console\\route-maturity.ts",
-      "line": 564,
+      "line": 560,
       "type": "config",
       "normalizedHref": "/console/billing"
     },
     {
       "href": "/console/settings",
       "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\lib\\console\\route-maturity.ts",
-      "line": 586,
+      "line": 582,
       "type": "config",
       "normalizedHref": "/console/settings"
     },
     {
       "href": "/console/report-issue",
       "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\lib\\console\\route-maturity.ts",
-      "line": 607,
+      "line": 603,
       "type": "config",
       "normalizedHref": "/console/report-issue"
     },
     {
       "href": "/console/site",
       "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\lib\\console\\route-maturity.ts",
-      "line": 629,
+      "line": 625,
       "type": "config",
       "normalizedHref": "/console/site"
     },
     {
       "href": "/console/replay",
       "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\lib\\console\\route-maturity.ts",
-      "line": 650,
+      "line": 646,
       "type": "config",
       "normalizedHref": "/console/replay"
     },
     {
       "href": "/console/audit-trail",
       "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\lib\\console\\route-maturity.ts",
-      "line": 671,
+      "line": 667,
       "type": "config",
       "normalizedHref": "/console/audit-trail"
     },
     {
       "href": "/console/operator",
       "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\lib\\console\\route-maturity.ts",
-      "line": 693,
+      "line": 689,
       "type": "config",
       "normalizedHref": "/console/operator"
     },
     {
       "href": "/console/admin/tenants",
       "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\lib\\console\\route-maturity.ts",
-      "line": 714,
+      "line": 710,
       "type": "config",
       "normalizedHref": "/console/admin/tenants"
     },
     {
       "href": "/console/security/data-residency",
       "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\lib\\console\\route-maturity.ts",
-      "line": 735,
+      "line": 731,
       "type": "config",
       "normalizedHref": "/console/security/data-residency"
     },
     {
       "href": "/console/trust-score",
       "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\lib\\console\\route-maturity.ts",
-      "line": 756,
+      "line": 752,
       "type": "config",
       "normalizedHref": "/console/trust-score"
     },
@@ -5385,7 +5294,6 @@
     "/docs/status",
     "/docs/support",
     "/docs/webhooks",
-    "/document-onboarding",
     "/edge-ai",
     "/edge-ai/nodes",
     "/edge-ai/nodes/new",
@@ -5394,6 +5302,7 @@
     "/enterprise",
     "/faq",
     "/feature-flags",
+    "/integrations",
     "/integrations/request",
     "/legal",
     "/legal/dpa",
@@ -5412,13 +5321,9 @@
     "/privacy",
     "/product",
     "/proof-explorer",
-    "/realtime-dashboard",
     "/receipts",
     "/replay-lab",
-    "/revenue-recovery",
-    "/roi-calculator",
     "/security-and-audit",
-    "/sidereal",
     "/signup",
     "/status",
     "/support",
@@ -5435,115 +5340,10 @@
     "/terms",
     "/transparency",
     "/use-cases",
-    "/value-proposition",
     "/verify",
     "/workspace"
   ],
   "linksByPath": {
-    "/architecture": [
-      {
-        "href": "/architecture",
-        "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\(marketing)\\home\\page.tsx",
-        "line": 581,
-        "type": "config",
-        "normalizedHref": "/architecture"
-      },
-      {
-        "href": "/architecture",
-        "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\open-source\\page.tsx",
-        "line": 291,
-        "type": "link",
-        "normalizedHref": "/architecture"
-      },
-      {
-        "href": "/architecture",
-        "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\components\\Footer.tsx",
-        "line": 12,
-        "type": "config",
-        "normalizedHref": "/architecture"
-      },
-      {
-        "href": "/architecture",
-        "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\components\\Navigation.tsx",
-        "line": 36,
-        "type": "config",
-        "normalizedHref": "/architecture"
-      },
-      {
-        "href": "/architecture",
-        "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\components\\public-visual-proof.tsx",
-        "line": 366,
-        "type": "link",
-        "normalizedHref": "/architecture"
-      },
-      {
-        "href": "/architecture",
-        "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\lib\\public\\visual-proof-registry.ts",
-        "line": 20,
-        "type": "config",
-        "normalizedHref": "/architecture"
-      }
-    ],
-    "/replay-lab": [
-      {
-        "href": "/replay-lab",
-        "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\(marketing)\\home\\page.tsx",
-        "line": 589,
-        "type": "config",
-        "normalizedHref": "/replay-lab"
-      },
-      {
-        "href": "/replay-lab",
-        "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\docs\\replay-lab\\page.tsx",
-        "line": 84,
-        "type": "link",
-        "normalizedHref": "/replay-lab"
-      },
-      {
-        "href": "/replay-lab",
-        "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\docs\\replay-lab\\page.tsx",
-        "line": 110,
-        "type": "link",
-        "normalizedHref": "/replay-lab"
-      },
-      {
-        "href": "/replay-lab",
-        "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\lib\\public\\visual-proof-registry.ts",
-        "line": 65,
-        "type": "config",
-        "normalizedHref": "/replay-lab"
-      }
-    ],
-    "/proof-explorer": [
-      {
-        "href": "/proof-explorer",
-        "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\(marketing)\\home\\page.tsx",
-        "line": 597,
-        "type": "config",
-        "normalizedHref": "/proof-explorer"
-      },
-      {
-        "href": "/proof-explorer",
-        "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\console\\proof-explorer\\page.tsx",
-        "line": 50,
-        "type": "config",
-        "normalizedHref": "/proof-explorer"
-      },
-      {
-        "href": "/proof-explorer",
-        "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\lib\\public\\visual-proof-registry.ts",
-        "line": 54,
-        "type": "config",
-        "normalizedHref": "/proof-explorer"
-      },
-      {
-        "href": "/proof-explorer",
-        "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\lib\\public\\visual-proof-registry.ts",
-        "line": 64,
-        "type": "config",
-        "normalizedHref": "/proof-explorer"
-      }
-    ],
     "/login": [
       {
         "href": "/login",
@@ -6206,7 +6006,7 @@
       {
         "href": "/console/proof-explorer",
         "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\lib\\console\\route-maturity.ts",
-        "line": 289,
+        "line": 285,
         "type": "config",
         "normalizedHref": "/console/proof-explorer"
       },
@@ -6313,7 +6113,7 @@
       {
         "href": "/console/exceptions",
         "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\lib\\console\\route-maturity.ts",
-        "line": 121,
+        "line": 117,
         "type": "config",
         "normalizedHref": "/console/exceptions"
       },
@@ -6644,7 +6444,7 @@
       {
         "href": "/console/runs",
         "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\lib\\console\\route-maturity.ts",
-        "line": 100,
+        "line": 96,
         "type": "config",
         "normalizedHref": "/console/runs"
       },
@@ -6823,7 +6623,7 @@
       {
         "href": "/console/audits",
         "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\lib\\console\\route-maturity.ts",
-        "line": 142,
+        "line": 138,
         "type": "config",
         "normalizedHref": "/console/audits"
       }
@@ -6867,7 +6667,7 @@
       {
         "href": "/docs/architecture/platform-architecture",
         "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\page.tsx",
-        "line": 240,
+        "line": 261,
         "type": "config",
         "normalizedHref": "/docs/architecture/platform-architecture"
       }
@@ -6903,6 +6703,13 @@
       },
       {
         "href": "/security-and-audit",
+        "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\support\\page.tsx",
+        "line": 112,
+        "type": "link",
+        "normalizedHref": "/security-and-audit"
+      },
+      {
+        "href": "/security-and-audit",
         "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\components\\Footer.tsx",
         "line": 14,
         "type": "config",
@@ -6911,7 +6718,7 @@
       {
         "href": "/security-and-audit",
         "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\components\\Navigation.tsx",
-        "line": 37,
+        "line": 19,
         "type": "config",
         "normalizedHref": "/security-and-audit"
       },
@@ -6949,20 +6756,6 @@
         "href": "/pricing",
         "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\billing\\error.tsx",
         "line": 65,
-        "type": "link",
-        "normalizedHref": "/pricing"
-      },
-      {
-        "href": "/pricing",
-        "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\compare\\page.tsx",
-        "line": 59,
-        "type": "link",
-        "normalizedHref": "/pricing"
-      },
-      {
-        "href": "/pricing",
-        "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\compare\\page.tsx",
-        "line": 354,
         "type": "link",
         "normalizedHref": "/pricing"
       },
@@ -7053,7 +6846,7 @@
       {
         "href": "/pricing",
         "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\components\\Navigation.tsx",
-        "line": 22,
+        "line": 20,
         "type": "config",
         "normalizedHref": "/pricing"
       },
@@ -7244,7 +7037,7 @@
       {
         "href": "/console/billing",
         "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\lib\\console\\route-maturity.ts",
-        "line": 564,
+        "line": 560,
         "type": "config",
         "normalizedHref": "/console/billing"
       }
@@ -7372,7 +7165,7 @@
       {
         "href": "/console",
         "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\page.tsx",
-        "line": 233,
+        "line": 254,
         "type": "config",
         "normalizedHref": "/console"
       },
@@ -7463,7 +7256,7 @@
       {
         "href": "/console",
         "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\lib\\console\\route-maturity.ts",
-        "line": 58,
+        "line": 54,
         "type": "config",
         "normalizedHref": "/console"
       },
@@ -7500,7 +7293,7 @@
       {
         "href": "/changelog",
         "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\components\\Navigation.tsx",
-        "line": 39,
+        "line": 30,
         "type": "config",
         "normalizedHref": "/changelog"
       },
@@ -7546,13 +7339,6 @@
         "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\community\\contributors\\page.tsx",
         "line": 82,
         "type": "config",
-        "normalizedHref": "/docs"
-      },
-      {
-        "href": "/docs",
-        "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\compare\\page.tsx",
-        "line": 65,
-        "type": "link",
         "normalizedHref": "/docs"
       },
       {
@@ -7663,7 +7449,7 @@
       {
         "href": "/docs",
         "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\edge-ai\\page.tsx",
-        "line": 213,
+        "line": 214,
         "type": "link",
         "normalizedHref": "/docs"
       },
@@ -7711,6 +7497,13 @@
       },
       {
         "href": "/docs",
+        "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\support\\page.tsx",
+        "line": 47,
+        "type": "link",
+        "normalizedHref": "/docs"
+      },
+      {
+        "href": "/docs",
         "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\components\\console\\ConsolePublicOverview.tsx",
         "line": 79,
         "type": "link",
@@ -7733,7 +7526,7 @@
       {
         "href": "/docs",
         "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\components\\Navigation.tsx",
-        "line": 23,
+        "line": 21,
         "type": "config",
         "normalizedHref": "/docs"
       },
@@ -7810,69 +7603,85 @@
         "normalizedHref": "/community"
       }
     ],
-    "/contact": [
+    "/docs/pilot": [
       {
-        "href": "/contact",
+        "href": "/docs/pilot",
         "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\compare\\page.tsx",
-        "line": 357,
+        "line": 58,
         "type": "link",
-        "normalizedHref": "/contact"
+        "normalizedHref": "/docs/pilot"
       },
       {
-        "href": "/contact",
-        "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\demo\\console\\page.tsx",
-        "line": 667,
-        "type": "link",
-        "normalizedHref": "/contact"
+        "href": "/docs/pilot",
+        "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\docs\\getting-started\\page.tsx",
+        "line": 245,
+        "type": "config",
+        "normalizedHref": "/docs/pilot"
       },
       {
-        "href": "/contact",
-        "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\enterprise\\page.tsx",
-        "line": 81,
-        "type": "link",
-        "normalizedHref": "/contact"
+        "href": "/docs/pilot",
+        "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\docs\\page.tsx",
+        "line": 30,
+        "type": "config",
+        "normalizedHref": "/docs/pilot"
       },
       {
-        "href": "/contact",
-        "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\enterprise\\page.tsx",
-        "line": 231,
+        "href": "/docs/pilot",
+        "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\components\\console\\Workbench.tsx",
+        "line": 115,
         "type": "link",
-        "normalizedHref": "/contact"
+        "normalizedHref": "/docs/pilot"
       },
       {
-        "href": "/contact",
-        "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\managed\\page.tsx",
-        "line": 330,
-        "type": "link",
-        "normalizedHref": "/contact"
-      },
-      {
-        "href": "/contact",
-        "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\pricing\\page.tsx",
-        "line": 328,
-        "type": "link",
-        "normalizedHref": "/contact"
-      },
-      {
-        "href": "/contact",
-        "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\tour\\page.tsx",
-        "line": 750,
-        "type": "link",
-        "normalizedHref": "/contact"
-      },
-      {
-        "href": "/contact",
+        "href": "/docs/pilot",
         "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\components\\Footer.tsx",
-        "line": 33,
+        "line": 21,
         "type": "config",
-        "normalizedHref": "/contact"
+        "normalizedHref": "/docs/pilot"
+      }
+    ],
+    "/architecture": [
+      {
+        "href": "/architecture",
+        "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\compare\\page.tsx",
+        "line": 63,
+        "type": "link",
+        "normalizedHref": "/architecture"
       },
       {
-        "href": "/contact",
-        "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\components\\Navigation.tsx",
-        "line": 46,
+        "href": "/architecture",
+        "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\open-source\\page.tsx",
+        "line": 291,
+        "type": "link",
+        "normalizedHref": "/architecture"
+      },
+      {
+        "href": "/architecture",
+        "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\components\\Footer.tsx",
+        "line": 12,
         "type": "config",
-        "normalizedHref": "/contact"
+        "normalizedHref": "/architecture"
+      },
+      {
+        "href": "/architecture",
+        "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\components\\Navigation.tsx",
+        "line": 26,
+        "type": "config",
+        "normalizedHref": "/architecture"
+      },
+      {
+        "href": "/architecture",
+        "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\components\\public-visual-proof.tsx",
+        "line": 366,
+        "type": "link",
+        "normalizedHref": "/architecture"
+      },
+      {
+        "href": "/architecture",
+        "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\lib\\public\\visual-proof-registry.ts",
+        "line": 20,
+        "type": "config",
+        "normalizedHref": "/architecture"
       }
     ],
     "/console/admin/activation": [
@@ -7915,13 +7724,6 @@
       },
       {
         "href": "/docs/api",
-        "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\docs\\support\\page.tsx",
-        "line": 69,
-        "type": "link",
-        "normalizedHref": "/docs/api"
-      },
-      {
-        "href": "/docs/api",
         "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\feature-flags\\page.tsx",
         "line": 37,
         "type": "link",
@@ -7930,14 +7732,14 @@
       {
         "href": "/docs/api",
         "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\page.tsx",
-        "line": 226,
+        "line": 247,
         "type": "config",
         "normalizedHref": "/docs/api"
       },
       {
         "href": "/docs/api",
         "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\pricing\\page.tsx",
-        "line": 322,
+        "line": 301,
         "type": "link",
         "normalizedHref": "/docs/api"
       },
@@ -8003,13 +7805,6 @@
       },
       {
         "href": "/verify",
-        "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\components\\Navigation.tsx",
-        "line": 18,
-        "type": "config",
-        "normalizedHref": "/verify"
-      },
-      {
-        "href": "/verify",
         "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\components\\site\\CognitiveVerifierInteractiveEnclave.tsx",
         "line": 616,
         "type": "link",
@@ -8044,6 +7839,13 @@
       },
       {
         "href": "/enterprise",
+        "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\console\\settings\\security\\page.tsx",
+        "line": 108,
+        "type": "link",
+        "normalizedHref": "/enterprise"
+      },
+      {
+        "href": "/enterprise",
         "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\enterprise\\dashboard\\page.tsx",
         "line": 34,
         "type": "config",
@@ -8059,7 +7861,7 @@
       {
         "href": "/enterprise",
         "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\components\\Navigation.tsx",
-        "line": 29,
+        "line": 27,
         "type": "config",
         "normalizedHref": "/enterprise"
       },
@@ -8126,7 +7928,7 @@
       {
         "href": "/console/admin/tenants",
         "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\lib\\console\\route-maturity.ts",
-        "line": 714,
+        "line": 710,
         "type": "config",
         "normalizedHref": "/console/admin/tenants"
       }
@@ -8172,7 +7974,7 @@
       {
         "href": "/console/audit-trail",
         "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\lib\\console\\route-maturity.ts",
-        "line": 671,
+        "line": 667,
         "type": "config",
         "normalizedHref": "/console/audit-trail"
       }
@@ -8188,7 +7990,7 @@
       {
         "href": "/console/report-issue",
         "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\lib\\console\\route-maturity.ts",
-        "line": 607,
+        "line": 603,
         "type": "config",
         "normalizedHref": "/console/report-issue"
       }
@@ -8304,13 +8106,6 @@
         "line": 41,
         "type": "config",
         "normalizedHref": "/docs/cli"
-      },
-      {
-        "href": "/docs/cli",
-        "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\future-proof\\page.tsx",
-        "line": 133,
-        "type": "link",
-        "normalizedHref": "/docs/cli"
       }
     ],
     "/console/api-keys": [
@@ -8352,7 +8147,7 @@
       {
         "href": "/console/api-keys",
         "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\lib\\console\\route-maturity.ts",
-        "line": 458,
+        "line": 454,
         "type": "config",
         "normalizedHref": "/console/api-keys"
       }
@@ -8433,7 +8228,7 @@
       {
         "href": "/console/evidence/soc2",
         "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\lib\\console\\route-maturity.ts",
-        "line": 226,
+        "line": 222,
         "type": "config",
         "normalizedHref": "/console/evidence/soc2"
       }
@@ -8449,7 +8244,7 @@
       {
         "href": "/console/evidence/siem",
         "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\lib\\console\\route-maturity.ts",
-        "line": 247,
+        "line": 243,
         "type": "config",
         "normalizedHref": "/console/evidence/siem"
       }
@@ -8604,7 +8399,7 @@
       {
         "href": "/console/close",
         "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\page.tsx",
-        "line": 247,
+        "line": 268,
         "type": "config",
         "normalizedHref": "/console/close"
       },
@@ -8618,7 +8413,7 @@
       {
         "href": "/console/close",
         "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\lib\\console\\route-maturity.ts",
-        "line": 184,
+        "line": 180,
         "type": "config",
         "normalizedHref": "/console/close"
       }
@@ -8671,7 +8466,7 @@
       {
         "href": "/console/reconciliations",
         "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\lib\\console\\route-maturity.ts",
-        "line": 79,
+        "line": 75,
         "type": "config",
         "normalizedHref": "/console/reconciliations"
       }
@@ -8733,7 +8528,7 @@
       {
         "href": "/console/diagnostics",
         "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\lib\\console\\route-maturity.ts",
-        "line": 437,
+        "line": 433,
         "type": "config",
         "normalizedHref": "/console/diagnostics"
       }
@@ -8763,7 +8558,7 @@
       {
         "href": "/console/policies",
         "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\lib\\console\\route-maturity.ts",
-        "line": 311,
+        "line": 307,
         "type": "config",
         "normalizedHref": "/console/policies"
       }
@@ -8786,7 +8581,7 @@
       {
         "href": "/console/control-plane",
         "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\lib\\console\\route-maturity.ts",
-        "line": 332,
+        "line": 328,
         "type": "config",
         "normalizedHref": "/console/control-plane"
       }
@@ -8807,6 +8602,29 @@
         "line": 25,
         "type": "config",
         "normalizedHref": "/console/policies/auto-resolution"
+      }
+    ],
+    "/proof-explorer": [
+      {
+        "href": "/proof-explorer",
+        "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\console\\proof-explorer\\page.tsx",
+        "line": 50,
+        "type": "config",
+        "normalizedHref": "/proof-explorer"
+      },
+      {
+        "href": "/proof-explorer",
+        "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\lib\\public\\visual-proof-registry.ts",
+        "line": 54,
+        "type": "config",
+        "normalizedHref": "/proof-explorer"
+      },
+      {
+        "href": "/proof-explorer",
+        "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\lib\\public\\visual-proof-registry.ts",
+        "line": 64,
+        "type": "config",
+        "normalizedHref": "/proof-explorer"
       }
     ],
     "/dashboard/integrations": [
@@ -8908,7 +8726,7 @@
       {
         "href": "/console/workflows",
         "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\lib\\console\\route-maturity.ts",
-        "line": 522,
+        "line": 518,
         "type": "config",
         "normalizedHref": "/console/workflows"
       }
@@ -8967,7 +8785,7 @@
       {
         "href": "/console/settings",
         "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\console\\settings\\security\\page.tsx",
-        "line": 30,
+        "line": 28,
         "type": "config",
         "normalizedHref": "/console/settings"
       },
@@ -8981,9 +8799,74 @@
       {
         "href": "/console/settings",
         "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\lib\\console\\route-maturity.ts",
-        "line": 586,
+        "line": 582,
         "type": "config",
         "normalizedHref": "/console/settings"
+      }
+    ],
+    "/contact": [
+      {
+        "href": "/contact",
+        "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\console\\settings\\security\\page.tsx",
+        "line": 103,
+        "type": "link",
+        "normalizedHref": "/contact"
+      },
+      {
+        "href": "/contact",
+        "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\demo\\console\\page.tsx",
+        "line": 667,
+        "type": "link",
+        "normalizedHref": "/contact"
+      },
+      {
+        "href": "/contact",
+        "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\enterprise\\page.tsx",
+        "line": 81,
+        "type": "link",
+        "normalizedHref": "/contact"
+      },
+      {
+        "href": "/contact",
+        "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\enterprise\\page.tsx",
+        "line": 231,
+        "type": "link",
+        "normalizedHref": "/contact"
+      },
+      {
+        "href": "/contact",
+        "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\managed\\page.tsx",
+        "line": 330,
+        "type": "link",
+        "normalizedHref": "/contact"
+      },
+      {
+        "href": "/contact",
+        "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\pricing\\page.tsx",
+        "line": 307,
+        "type": "link",
+        "normalizedHref": "/contact"
+      },
+      {
+        "href": "/contact",
+        "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\tour\\page.tsx",
+        "line": 750,
+        "type": "link",
+        "normalizedHref": "/contact"
+      },
+      {
+        "href": "/contact",
+        "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\components\\Footer.tsx",
+        "line": 33,
+        "type": "config",
+        "normalizedHref": "/contact"
+      },
+      {
+        "href": "/contact",
+        "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\components\\Navigation.tsx",
+        "line": 37,
+        "type": "config",
+        "normalizedHref": "/contact"
       }
     ],
     "/console/site": [
@@ -9025,7 +8908,7 @@
       {
         "href": "/console/site",
         "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\lib\\console\\route-maturity.ts",
-        "line": 629,
+        "line": 625,
         "type": "config",
         "normalizedHref": "/console/site"
       }
@@ -9350,21 +9233,21 @@
       {
         "href": "/signup",
         "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\components\\Navigation.tsx",
-        "line": 340,
+        "line": 314,
         "type": "link",
         "normalizedHref": "/signup"
       },
       {
         "href": "/signup",
         "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\components\\Navigation.tsx",
-        "line": 381,
+        "line": 355,
         "type": "link",
         "normalizedHref": "/signup"
       },
       {
         "href": "/signup",
         "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\components\\Navigation.tsx",
-        "line": 523,
+        "line": 497,
         "type": "link",
         "normalizedHref": "/signup"
       },
@@ -9470,7 +9353,7 @@
       {
         "href": "/openapi.json",
         "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\pricing\\page.tsx",
-        "line": 325,
+        "line": 304,
         "type": "link",
         "normalizedHref": "/openapi.json"
       }
@@ -9601,7 +9484,7 @@
       {
         "href": "/docs/quickstart",
         "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\open-source\\page.tsx",
-        "line": 147,
+        "line": 146,
         "type": "link",
         "normalizedHref": "/docs/quickstart"
       },
@@ -9618,36 +9501,6 @@
         "line": 22,
         "type": "config",
         "normalizedHref": "/docs/quickstart"
-      }
-    ],
-    "/docs/pilot": [
-      {
-        "href": "/docs/pilot",
-        "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\docs\\getting-started\\page.tsx",
-        "line": 245,
-        "type": "config",
-        "normalizedHref": "/docs/pilot"
-      },
-      {
-        "href": "/docs/pilot",
-        "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\docs\\page.tsx",
-        "line": 30,
-        "type": "config",
-        "normalizedHref": "/docs/pilot"
-      },
-      {
-        "href": "/docs/pilot",
-        "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\components\\console\\Workbench.tsx",
-        "line": 115,
-        "type": "link",
-        "normalizedHref": "/docs/pilot"
-      },
-      {
-        "href": "/docs/pilot",
-        "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\components\\Footer.tsx",
-        "line": 21,
-        "type": "config",
-        "normalizedHref": "/docs/pilot"
       }
     ],
     "/docs/integrations/stripe": [
@@ -9712,20 +9565,6 @@
       },
       {
         "href": "/support",
-        "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\docs\\support\\page.tsx",
-        "line": 63,
-        "type": "link",
-        "normalizedHref": "/support"
-      },
-      {
-        "href": "/support",
-        "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\future-proof\\page.tsx",
-        "line": 137,
-        "type": "link",
-        "normalizedHref": "/support"
-      },
-      {
-        "href": "/support",
         "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\integrations\\request\\page.tsx",
         "line": 168,
         "type": "link",
@@ -9783,7 +9622,7 @@
       {
         "href": "/support",
         "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\components\\Navigation.tsx",
-        "line": 44,
+        "line": 35,
         "type": "config",
         "normalizedHref": "/support"
       },
@@ -9875,7 +9714,7 @@
       {
         "href": "/console/schedules",
         "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\lib\\console\\route-maturity.ts",
-        "line": 543,
+        "line": 539,
         "type": "config",
         "normalizedHref": "/console/schedules"
       },
@@ -9885,6 +9724,29 @@
         "line": 272,
         "type": "config",
         "normalizedHref": "/console/schedules"
+      }
+    ],
+    "/replay-lab": [
+      {
+        "href": "/replay-lab",
+        "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\docs\\replay-lab\\page.tsx",
+        "line": 84,
+        "type": "link",
+        "normalizedHref": "/replay-lab"
+      },
+      {
+        "href": "/replay-lab",
+        "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\docs\\replay-lab\\page.tsx",
+        "line": 110,
+        "type": "link",
+        "normalizedHref": "/replay-lab"
+      },
+      {
+        "href": "/replay-lab",
+        "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\lib\\public\\visual-proof-registry.ts",
+        "line": 65,
+        "type": "config",
+        "normalizedHref": "/replay-lab"
       }
     ],
     "/docs/sdk/nodejs": [
@@ -10018,14 +9880,14 @@
       {
         "href": "/edge-ai/nodes",
         "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\edge-ai\\page.tsx",
-        "line": 210,
+        "line": 211,
         "type": "link",
         "normalizedHref": "/edge-ai/nodes"
       },
       {
         "href": "/edge-ai/nodes",
         "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\edge-ai\\page.tsx",
-        "line": 223,
+        "line": 224,
         "type": "link",
         "normalizedHref": "/edge-ai/nodes"
       }
@@ -10050,14 +9912,14 @@
       {
         "href": "/edge-ai",
         "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\edge-ai\\page.tsx",
-        "line": 256,
+        "line": 257,
         "type": "link",
         "normalizedHref": "/edge-ai"
       },
       {
         "href": "/edge-ai",
         "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\edge-ai\\page.tsx",
-        "line": 269,
+        "line": 270,
         "type": "link",
         "normalizedHref": "/edge-ai"
       }
@@ -10242,14 +10104,14 @@
       {
         "href": "/console/security/data-residency",
         "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\page.tsx",
-        "line": 254,
+        "line": 275,
         "type": "config",
         "normalizedHref": "/console/security/data-residency"
       },
       {
         "href": "/console/security/data-residency",
         "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\lib\\console\\route-maturity.ts",
-        "line": 735,
+        "line": 731,
         "type": "config",
         "normalizedHref": "/console/security/data-residency"
       }
@@ -10316,7 +10178,7 @@
       {
         "href": "/terms",
         "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\components\\Navigation.tsx",
-        "line": 48,
+        "line": 39,
         "type": "config",
         "normalizedHref": "/terms"
       }
@@ -10332,7 +10194,7 @@
       {
         "href": "/privacy",
         "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\components\\Navigation.tsx",
-        "line": 47,
+        "line": 38,
         "type": "config",
         "normalizedHref": "/privacy"
       }
@@ -10465,7 +10327,7 @@
       {
         "href": "/console/insights",
         "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\lib\\console\\route-maturity.ts",
-        "line": 374,
+        "line": 370,
         "type": "config",
         "normalizedHref": "/console/insights"
       }
@@ -10582,13 +10444,6 @@
       },
       {
         "href": "/platform",
-        "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\components\\Navigation.tsx",
-        "line": 19,
-        "type": "config",
-        "normalizedHref": "/platform"
-      },
-      {
-        "href": "/platform",
         "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\components\\site\\ArchitectureModuleShowcase.tsx",
         "line": 42,
         "type": "config",
@@ -10606,7 +10461,7 @@
       {
         "href": "/capabilities",
         "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\components\\Navigation.tsx",
-        "line": 21,
+        "line": 17,
         "type": "config",
         "normalizedHref": "/capabilities"
       },
@@ -10629,7 +10484,7 @@
       {
         "href": "/product",
         "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\components\\Navigation.tsx",
-        "line": 28,
+        "line": 16,
         "type": "config",
         "normalizedHref": "/product"
       },
@@ -10652,7 +10507,7 @@
       {
         "href": "/faq",
         "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\components\\Navigation.tsx",
-        "line": 45,
+        "line": 36,
         "type": "config",
         "normalizedHref": "/faq"
       }
@@ -10686,7 +10541,7 @@
       {
         "href": "/open-source",
         "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\components\\Navigation.tsx",
-        "line": 38,
+        "line": 29,
         "type": "config",
         "normalizedHref": "/open-source"
       },
@@ -10705,36 +10560,20 @@
         "normalizedHref": "/open-source"
       }
     ],
-    "/cognitive": [
+    "/integrations": [
       {
-        "href": "/cognitive",
+        "href": "/integrations",
         "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\components\\Navigation.tsx",
-        "line": 17,
+        "line": 18,
         "type": "config",
-        "normalizedHref": "/cognitive"
-      },
-      {
-        "href": "/cognitive",
-        "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\components\\site\\CognitiveVerifierInteractiveEnclave.tsx",
-        "line": 702,
-        "type": "link",
-        "normalizedHref": "/cognitive"
-      }
-    ],
-    "/sidereal": [
-      {
-        "href": "/sidereal",
-        "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\components\\Navigation.tsx",
-        "line": 20,
-        "type": "config",
-        "normalizedHref": "/sidereal"
+        "normalizedHref": "/integrations"
       }
     ],
     "/compare": [
       {
         "href": "/compare",
         "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\components\\Navigation.tsx",
-        "line": 30,
+        "line": 28,
         "type": "config",
         "normalizedHref": "/compare"
       },
@@ -10744,51 +10583,6 @@
         "line": 78,
         "type": "config",
         "normalizedHref": "/compare"
-      }
-    ],
-    "/roi-calculator": [
-      {
-        "href": "/roi-calculator",
-        "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\components\\Navigation.tsx",
-        "line": 31,
-        "type": "config",
-        "normalizedHref": "/roi-calculator"
-      }
-    ],
-    "/document-onboarding": [
-      {
-        "href": "/document-onboarding",
-        "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\components\\Navigation.tsx",
-        "line": 32,
-        "type": "config",
-        "normalizedHref": "/document-onboarding"
-      }
-    ],
-    "/value-proposition": [
-      {
-        "href": "/value-proposition",
-        "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\components\\Navigation.tsx",
-        "line": 33,
-        "type": "config",
-        "normalizedHref": "/value-proposition"
-      }
-    ],
-    "/revenue-recovery": [
-      {
-        "href": "/revenue-recovery",
-        "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\components\\Navigation.tsx",
-        "line": 34,
-        "type": "config",
-        "normalizedHref": "/revenue-recovery"
-      }
-    ],
-    "/realtime-dashboard": [
-      {
-        "href": "/realtime-dashboard",
-        "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\components\\Navigation.tsx",
-        "line": 35,
-        "type": "config",
-        "normalizedHref": "/realtime-dashboard"
       }
     ],
     "/dashboard/user": [
@@ -10846,6 +10640,15 @@
         "line": 60,
         "type": "config",
         "normalizedHref": "/use-cases"
+      }
+    ],
+    "/cognitive": [
+      {
+        "href": "/cognitive",
+        "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\components\\site\\CognitiveVerifierInteractiveEnclave.tsx",
+        "line": 702,
+        "type": "link",
+        "normalizedHref": "/cognitive"
       }
     ],
     "/receipts": [
@@ -10923,7 +10726,7 @@
       {
         "href": "/console/sources",
         "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\lib\\console\\route-maturity.ts",
-        "line": 163,
+        "line": 159,
         "type": "config",
         "normalizedHref": "/console/sources"
       }
@@ -10932,7 +10735,7 @@
       {
         "href": "/console/export/gl",
         "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\lib\\console\\route-maturity.ts",
-        "line": 205,
+        "line": 201,
         "type": "config",
         "normalizedHref": "/console/export/gl"
       }
@@ -10941,7 +10744,7 @@
       {
         "href": "/console/dashboards/liquidity",
         "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\lib\\console\\route-maturity.ts",
-        "line": 268,
+        "line": 264,
         "type": "config",
         "normalizedHref": "/console/dashboards/liquidity"
       }
@@ -10950,7 +10753,7 @@
       {
         "href": "/console/analytics",
         "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\lib\\console\\route-maturity.ts",
-        "line": 353,
+        "line": 349,
         "type": "config",
         "normalizedHref": "/console/analytics"
       }
@@ -10959,7 +10762,7 @@
       {
         "href": "/console/intelligence/rule-discovery",
         "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\lib\\console\\route-maturity.ts",
-        "line": 395,
+        "line": 391,
         "type": "config",
         "normalizedHref": "/console/intelligence/rule-discovery"
       }
@@ -10968,7 +10771,7 @@
       {
         "href": "/console/support/crm",
         "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\lib\\console\\route-maturity.ts",
-        "line": 416,
+        "line": 412,
         "type": "config",
         "normalizedHref": "/console/support/crm"
       }
@@ -10977,7 +10780,7 @@
       {
         "href": "/console/developers/webhooks",
         "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\lib\\console\\route-maturity.ts",
-        "line": 479,
+        "line": 475,
         "type": "config",
         "normalizedHref": "/console/developers/webhooks"
       }
@@ -10986,7 +10789,7 @@
       {
         "href": "/console/developers/schema-registry",
         "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\lib\\console\\route-maturity.ts",
-        "line": 501,
+        "line": 497,
         "type": "config",
         "normalizedHref": "/console/developers/schema-registry"
       }
@@ -10995,7 +10798,7 @@
       {
         "href": "/console/replay",
         "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\lib\\console\\route-maturity.ts",
-        "line": 650,
+        "line": 646,
         "type": "config",
         "normalizedHref": "/console/replay"
       }
@@ -11004,7 +10807,7 @@
       {
         "href": "/console/operator",
         "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\lib\\console\\route-maturity.ts",
-        "line": 693,
+        "line": 689,
         "type": "config",
         "normalizedHref": "/console/operator"
       },
@@ -11020,7 +10823,7 @@
       {
         "href": "/console/trust-score",
         "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\lib\\console\\route-maturity.ts",
-        "line": 756,
+        "line": 752,
         "type": "config",
         "normalizedHref": "/console/trust-score"
       }
