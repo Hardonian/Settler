@@ -496,6 +496,13 @@ const nextConfig = {
       { source: "/docs/api-guide", destination: "/docs/api", permanent: true },
       { source: "/docs/security", destination: "/security-and-audit", permanent: true },
       { source: "/console/governance", destination: "/app/governance", permanent: false },
+      { source: "/console/audit", destination: "/console/audit-trail", permanent: true },
+      { source: "/audit", destination: "/console/audit-trail", permanent: true },
+      { source: "/audits", destination: "/console/audits", permanent: true },
+      { source: "/rules", destination: "/console/rules-engine", permanent: true },
+      { source: "/console/rules", destination: "/console/rules-engine", permanent: true },
+      { source: "/exceptions", destination: "/console/exceptions", permanent: true },
+      { source: "/runs", destination: "/console/runs", permanent: true },
     ];
   },
   async rewrites() {

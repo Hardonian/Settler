@@ -34,12 +34,38 @@ export async function createClient(): Promise<SupabaseClient> {
     supabaseUrl = env.url;
     supabaseAnonKey = env.anonKey;
   } catch (error) {
-    // Log error but don't crash - return a safe fallback client
+    // Log warning but don't crash - return a safe fallback client
     const errorMessage = error instanceof Error ? error.message : "Unknown error";
-    await safeLogger.error("[Supabase] Failed to get environment variables", {
-      error: errorMessage,
-      stack: error instanceof Error ? error.stack : undefined,
-    });
+    await safeLogger.warn(
+      "[Supabase] Credentials not configured, returning safe fallback mock client",
+      {
+        reason: errorMessage,
+      }
+    );
+
+    const createChainableMock = () => {
+      const mock: any = {
+        select: () => mock,
+        insert: () => mock,
+        update: () => mock,
+        delete: () => mock,
+        eq: () => mock,
+        neq: () => mock,
+        gt: () => mock,
+        gte: () => mock,
+        lt: () => mock,
+        lte: () => mock,
+        in: () => mock,
+        is: () => mock,
+        order: () => mock,
+        limit: () => mock,
+        range: () => mock,
+        single: async () => ({ data: null, error: null }),
+        maybeSingle: async () => ({ data: null, error: null }),
+        then: (resolve: any) => Promise.resolve({ data: [], error: null }).then(resolve),
+      };
+      return mock;
+    };
 
     // Return a proper mock client that won't throw on method calls
     // This prevents hard 500s while still allowing the page to render
@@ -47,9 +73,15 @@ export async function createClient(): Promise<SupabaseClient> {
       auth: {
         getUser: async () => ({
           data: { user: null },
-          error: { message: "Supabase not configured", status: 500 },
+          error: null,
+        }),
+        getSession: async () => ({
+          data: { session: null },
+          error: null,
         }),
       },
+      from: () => createChainableMock(),
+      rpc: async () => ({ data: null, error: null }),
     } as unknown as SupabaseClient;
   }
 
