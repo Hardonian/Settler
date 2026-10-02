@@ -40,11 +40,13 @@ In mission-critical financial infrastructure and corporate treasury management, 
 To achieve undisputed market leadership over legacy treasury platforms (BlackLine, Trintech) and modern fintech ledgers, Settler implements six architectural pillars:
 
 ### Pillar 1: Cryptographic Ledger & Audit Verifiability
+
 - **Sparse Merkle Trees (SMT-256):** Implemented in `crates/settler-kernel/src/smt.rs`. Provides $O(256)$ cryptographic inclusion and **non-inclusion proofs**. External auditors can mathematically verify that a disputed transaction or fraudulent replayed nonce does not exist within a committed ledger state without inspecting other records.
 - **Zero-Knowledge Bilateral Reconciliation (ZK-Recon):** When two enterprise counterparties reconcile intercompany or marketplace accounts, ZK-SNARK commitments prove that $\sum \text{Settled}_A - \sum \text{Settled}_B = 0$ and matching transaction sets exist without either party exposing customer PII, secret merchant volume discounts, or proprietary ledger balances.
 - **RFC 3161 / Public Ledger Anchoring (OpenTimestamps):** State roots and proofpack hashes are periodically committed to cryptographic Time Stamping Authorities (TSA) and public block headers, guaranteeing third-party verifiable tamper-proof timing.
 
 ### Pillar 2: Autonomous Cognitive Loop & Causal Reasoning
+
 - **Causal Directed Acyclic Graphs (DAGs):** Rather than simple threshold heuristics, exceptions are analyzed using causal DAGs to isolate true root causes:
   - FX spot volatility vs. processor markup spread.
   - Settlement calendar cutoff lags (weekend/holiday banking cutoffs) vs. counterparty float withholding.
@@ -56,18 +58,22 @@ To achieve undisputed market leadership over legacy treasury platforms (BlackLin
 - **Model Risk Management (SR 11-7 / OCC 2011-12):** Engine continuously monitors statistical feature drift across fiscal close cycles to prevent model degradation during anomalous seasonal volumes.
 
 ### Pillar 3: Continuous T+0 Streaming & Low-Latency Kernel Acceleration
+
 - **TigerBeetle Native Bridge:** Complements scheduled batch runs with continuous micro-batch streaming over TigerBeetle's two-phase transfers (`pending` $\rightarrow$ `posted` / `voided`), scaling to **700k+ transfers/sec** with deterministic crash-safety.
 - **Rust Kernel SIMD Acceleration:** Critical mathematical primitives (Levenshtein distance, Luhn ARN verification, SHA-256 Merkle leaf nodes) leverage Rust SIMD operations, allowing client-side and serverless verification of 1,000,000+ line statements in under 2 seconds.
 
 ### Pillar 4: Multi-Modal Statement Ingestion Moat
+
 - **Layout-Aware Multi-Modal Vision:** Scanned PDF remittance advice, lockbox checks, and multi-page wire notices are parsed with **coordinate-anchored visual provenance**. Every extracted number carries an exact bounding-box polygon and image slice hash, eliminating visual hallucination.
 - **Native ISO 20022 Universal Semantic Graph:** Formats such as CAMT.053, PAIN.001, PACS.008, MT940, and BAI2 are transformed into a canonical financial semantic graph preserving complete clearing references (`EndToEndId`, `UETR`, `MandateId`, `ChargeBearer`) rather than collapsing into flattened description text.
 
 ### Pillar 5: Big-4 Ready "Auditor OS" & Proofpacks
+
 - **100% Census Cryptographic Verification:** Replaces traditional audit sampling error with complete algorithmic verification. Auditors execute offline WASM verification scripts against the company's full transaction history.
 - **Self-Contained Audit Dossiers:** Generates signed AICPA / PCAOB compliant audit memorandums, complete Merkle proof paths, and offline verification bundles in single-file artifacts.
 
 ### Pillar 6: Developer & Operator Experience ("The Flight Recorder")
+
 - **Time-Travel Replay Studio:** Interactive visual flight recorder in Next.js console allowing operators to inspect matching steps, rule evaluations, and ledger postings backward and forward in time.
 - **Counterfactual Policy Sandbox ("What-If" Engine):** Simulates proposed tolerance changes, ARN activation, or healing rules against historical tenant ingestions before promoting them to production, measuring exact match rate lift and float delta down to the minor cent.
 
@@ -99,9 +105,9 @@ Verification evaluates to $\text{Root}$, proving that no entry exists at path $k
 ### 3.2 Zero-Knowledge Bilateral Reconciliation Relation
 
 The ZK-Recon relation $\mathcal{R}_{\text{recon}}$ is formally defined as:
-$$\mathcal{R}_{\text{recon}} = \left\{ (x, w) : 
-\sum_{i \in A} \text{amount}(i) = \sum_{j \in B} \text{amount}(j) 
-\;\land\; \forall i \in A, \exists j \in B \text{ s.t. } \text{ref}(i) = \text{ref}(j) 
+$$\mathcal{R}_{\text{recon}} = \left\{ (x, w) :
+\sum_{i \in A} \text{amount}(i) = \sum_{j \in B} \text{amount}(j)
+\;\land\; \forall i \in A, \exists j \in B \text{ s.t. } \text{ref}(i) = \text{ref}(j)
 \;\land\; \text{Root}_A = \text{SMT}(A) \;\land\; \text{Root}_B = \text{SMT}(B) \right\}$$
 where $x = (\text{Root}_A, \text{Root}_B, \text{NetBalance})$ is the public statement and $w = (A, B)$ is the private witness.
 
