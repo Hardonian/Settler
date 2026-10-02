@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-10-02T15:08:00.227Z",
-  "totalRoutes": 447,
+  "generatedAt": "2026-10-02T17:00:06.578Z",
+  "totalRoutes": 449,
   "routes": [
     {
       "route": "/api/csrf-token",
@@ -337,6 +337,12 @@
       "kind": "express-router",
       "file": "packages/api/src/routes/cognitive.ts",
       "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/cognitive/policy/simulate",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/cognitive.ts",
+      "methods": ["POST"]
     },
     {
       "route": "/api/v1/cognitive/reconcile-staged",
@@ -1921,6 +1927,12 @@
       "kind": "express-router",
       "file": "packages/api/src/routes/cognitive.ts",
       "methods": ["GET"]
+    },
+    {
+      "route": "/api/v2/cognitive/policy/simulate",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/cognitive.ts",
+      "methods": ["POST"]
     },
     {
       "route": "/api/v2/cognitive/reconcile-staged",

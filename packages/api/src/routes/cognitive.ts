@@ -21,6 +21,7 @@ import {
   createPolicyProposal,
   approvePolicy,
   rejectPolicy,
+  simulatePolicyDraft,
   type CognitivePolicyProposal,
   type BatchSourceTransaction,
 } from "@settler/reconciliation-core";
@@ -569,6 +570,120 @@ router.get(
       });
     } catch (error: unknown) {
       handleRouteError(res, error, "Failed to fetch policy registry", 500, {
+        tenantId: req.tenantId,
+        userId: req.userId,
+      });
+    }
+  }
+);
+
+// 8. Counterfactual Policy Sandbox Simulation Route
+const simulatePolicySchema = z.object({
+  body: z.object({
+    baselineRuleset: z.object({
+      dateWindowDays: z.number().min(0).max(30),
+      amountToleranceCents: z.number().min(0).max(500),
+      fuzzyDescriptionThreshold: z.number().min(0).max(1),
+      enableArnCorrelation: z.boolean().optional(),
+    }),
+    candidatePolicy: z.object({
+      policyId: z.string().min(1),
+      proposedBy: z.string().min(1),
+      actionType: z.string().min(1),
+      proposedRuleset: z.object({
+        dateWindowDays: z.number().min(0).max(30),
+        amountToleranceCents: z.number().min(0).max(500),
+        fuzzyDescriptionThreshold: z.number().min(0).max(1),
+        enableArnCorrelation: z.boolean().optional(),
+      }),
+      rationale: z.string().min(1),
+    }),
+    sourceTransactions: z.array(
+      z.object({
+        id: z.string(),
+        externalId: z.string().optional(),
+        amountCents: z.union([z.number(), z.string()]),
+        date: z.string(),
+        description: z.string(),
+        currency: z.string().default("USD"),
+      })
+    ),
+    targetTransactions: z.array(
+      z.object({
+        id: z.string(),
+        externalId: z.string().optional(),
+        amountCents: z.union([z.number(), z.string()]),
+        date: z.string(),
+        description: z.string(),
+        currency: z.string().default("USD"),
+      })
+    ),
+  }),
+});
+
+router.post(
+  "/cognitive/policy/simulate",
+  requirePermission(Permission.JOBS_READ),
+  validateRequest(simulatePolicySchema),
+  async (req: AuthRequest, res: Response) => {
+    try {
+      const tenantId = assertTenant(req.tenantId);
+      const { baselineRuleset, candidatePolicy, sourceTransactions, targetTransactions } = req.body;
+
+      const report = simulatePolicyDraft({
+        tenantId,
+        baselineRuleset,
+        candidatePolicy: {
+          ...candidatePolicy,
+          tenantId,
+        },
+        sourceTransactions: sourceTransactions.map(
+          (s: {
+            id: string;
+            externalId?: string;
+            amountCents: number | string;
+            date: string;
+            description: string;
+            currency: string;
+          }) => ({
+            ...s,
+            amountCents: BigInt(s.amountCents),
+          })
+        ),
+        targetTransactions: targetTransactions.map(
+          (t: {
+            id: string;
+            externalId?: string;
+            amountCents: number | string;
+            date: string;
+            description: string;
+            currency: string;
+          }) => ({
+            ...t,
+            amountCents: BigInt(t.amountCents),
+          })
+        ),
+      });
+
+      res.json({
+        data: {
+          ...report,
+          baseline: {
+            ...report.baseline,
+            totalMatchedVolumeCents: report.baseline.totalMatchedVolumeCents.toString(),
+          },
+          simulated: {
+            ...report.simulated,
+            totalMatchedVolumeCents: report.simulated.totalMatchedVolumeCents.toString(),
+          },
+          delta: {
+            ...report.delta,
+            netFloatDeltaCents: report.delta.netFloatDeltaCents.toString(),
+          },
+        },
+      });
+    } catch (error: unknown) {
+      handleRouteError(res, error, "Failed to run counterfactual policy simulation", 500, {
         tenantId: req.tenantId,
         userId: req.userId,
       });

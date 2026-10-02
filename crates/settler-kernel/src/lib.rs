@@ -5,6 +5,11 @@ use std::collections::{BTreeMap, HashMap, HashSet};
 #[cfg(not(target_arch = "wasm32"))]
 pub mod plugin_runtime;
 pub mod streaming;
+pub mod smt;
+pub use smt::{
+    get_empty_hashes, hash_leaf, hash_nodes, verify_smt_proof, SmtProof, SmtVerificationResult,
+    SparseMerkleTree, SMT_DEPTH,
+};
 
 pub const SCHEMA_VERSION: &str = "v1";
 
