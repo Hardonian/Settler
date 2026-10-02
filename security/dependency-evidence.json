@@ -1,7 +1,7 @@
 {
   "reportVersion": "2026-03-09.1",
-  "generatedAt": "2026-09-22T01:31:53.358Z",
-  "runId": "2026-09-22T01-31-53-350Z",
+  "generatedAt": "2026-10-02T02:47:42.368Z",
+  "runId": "2026-10-02T02-47-42-361Z",
   "status": "PASS_WITH_DEGRADED_EVIDENCE",
   "evidenceState": "DEGRADED",
   "reason": "Local dependency audit was degraded: osv-scanner-missing. Authenticated advisory completeness is unauthenticated.",

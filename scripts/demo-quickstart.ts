@@ -1,285 +1,286 @@
 #!/usr/bin/env tsx
-import { createHash } from "node:crypto";
 import fs from "node:fs/promises";
 import path from "node:path";
+import { parse } from "csv-parse/sync";
+import {
+  createDemoProofpack,
+  formatMinorUnits,
+  reconcileSettlementRecords,
+  sha256,
+  verifyDemoProofpack,
+  type DemoProofpack,
+  type SettlementDecision,
+  type SettlementRecordInput,
+  type SettlementRecordKind,
+  type SettlementRuleSet,
+} from "../packages/reconciliation-core/src/settlement-reconciliation.js";
 
 type CsvRow = Record<string, string>;
-type MatchScenario = "exact" | "fuzzy" | "unmatched";
-
-interface ProcessorTransaction {
-  transaction_id: string;
-  settled_at: string;
-  description: string;
-  counterparty: string;
-  amount: number;
-  currency: string;
-  reference: string;
-}
-
-interface BankTransaction {
-  transaction_id: string;
-  posted_at: string;
-  description: string;
-  counterparty: string;
-  amount: number;
-  currency: string;
-  reference: string;
-}
-
-interface ReconciliationMatch {
-  scenario: MatchScenario;
-  processor_transaction_id: string | null;
-  bank_transaction_id: string | null;
-  amount_delta: number | null;
-  confidence: number;
-  reason: string;
-}
 
 const dataDir = path.resolve("docs/demo-data");
 const outputDir = path.resolve("docs/demo-output");
-const amountTolerance = 0.05;
+const maxInputBytes = 1_000_000;
+const tenantId = "demo-tenant";
+const accountId = "demo-operating-usd";
+const rules: SettlementRuleSet = {
+  version: "stripe-bank-settlement/1.0.0",
+  amountToleranceMinor: "1",
+  dateWindowDays: 3,
+  requireReference: true,
+};
 
-function parseCsv(contents: string): CsvRow[] {
-  const lines = contents.trim().split(/\r?\n/);
-  const headers = lines[0].split(",").map((header) => header.trim());
-  return lines.slice(1).map((line) => {
-    const values = line.split(",").map((value) => value.trim());
-    return Object.fromEntries(headers.map((header, index) => [header, values[index] ?? ""]));
+function parseCsv(contents: string, filename: string): { headers: string[]; rows: CsvRow[] } {
+  if (Buffer.byteLength(contents, "utf8") > maxInputBytes) {
+    throw new Error(`${filename} exceeds the ${maxInputBytes} byte demo limit`);
+  }
+  const records = parse(contents, {
+    bom: true,
+    columns: false,
+    relax_column_count: false,
+    skip_empty_lines: true,
+    trim: true,
+  }) as string[][];
+  if (records.length < 2) throw new Error(`${filename} must contain a header and at least one row`);
+  const headers = records[0] ?? [];
+  const normalizedHeaders = headers.map((header) => header.toLocaleLowerCase("en-US"));
+  const duplicate = normalizedHeaders.find(
+    (header, index) => normalizedHeaders.indexOf(header) !== index
+  );
+  if (duplicate) throw new Error(`${filename} contains duplicate header: ${duplicate}`);
+  if (headers.some((header) => !header)) throw new Error(`${filename} contains an empty header`);
+  return {
+    headers,
+    rows: records
+      .slice(1)
+      .map((values) =>
+        Object.fromEntries(headers.map((header, index) => [header, values[index] ?? ""]))
+      ),
+  };
+}
+
+function required(row: CsvRow, column: string, rowNumber: number, filename: string): string {
+  const value = row[column]?.trim();
+  if (!value) throw new Error(`${filename} row ${rowNumber}: ${column} is required`);
+  return value;
+}
+
+function settlementKind(value: string, rowNumber: number, filename: string): SettlementRecordKind {
+  if (["payout", "fee", "refund", "dispute", "adjustment"].includes(value)) {
+    return value as SettlementRecordKind;
+  }
+  throw new Error(`${filename} row ${rowNumber}: unsupported record_kind ${value}`);
+}
+
+function toRecords(
+  rows: CsvRow[],
+  side: "processor_csv" | "bank_csv",
+  filename: string
+): SettlementRecordInput[] {
+  const dateColumn = side === "processor_csv" ? "settled_at" : "posted_at";
+  return rows.map((row, index) => {
+    const rowNumber = index + 2;
+    const id = required(row, "transaction_id", rowNumber, filename);
+    return {
+      id,
+      tenantId,
+      accountId,
+      amount: required(row, "amount", rowNumber, filename),
+      currency: required(row, "currency", rowNumber, filename),
+      date: required(row, dateColumn, rowNumber, filename),
+      reference: required(row, "reference", rowNumber, filename),
+      description: row.description?.trim(),
+      kind: settlementKind(required(row, "record_kind", rowNumber, filename), rowNumber, filename),
+      provenance: { source: side, sourceRecordId: id },
+    };
   });
 }
 
-function toProcessor(row: CsvRow): ProcessorTransaction {
-  return { ...row, amount: Number(row.amount) } as ProcessorTransaction;
+function escapeHtml(value: string): string {
+  return value
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;");
 }
 
-function toBank(row: CsvRow): BankTransaction {
-  return { ...row, amount: Number(row.amount) } as BankTransaction;
-}
-
-function sha256(value: unknown): string {
-  return createHash("sha256").update(JSON.stringify(value)).digest("hex");
-}
-
-function amountDelta(processor: ProcessorTransaction, bank: BankTransaction): number {
-  return Number(Math.abs(processor.amount - bank.amount).toFixed(2));
-}
-
-function reconcile(
-  processorTransactions: ProcessorTransaction[],
-  bankTransactions: BankTransaction[]
-): ReconciliationMatch[] {
-  const unmatchedBank = new Map(
-    bankTransactions.map((transaction) => [transaction.transaction_id, transaction])
-  );
-  const matches: ReconciliationMatch[] = [];
-
-  for (const processor of processorTransactions) {
-    const exact = [...unmatchedBank.values()].find(
-      (bank) =>
-        bank.reference.toLowerCase() === processor.reference.toLowerCase() &&
-        bank.currency === processor.currency &&
-        bank.amount === processor.amount
-    );
-
-    if (exact) {
-      unmatchedBank.delete(exact.transaction_id);
-      matches.push({
-        scenario: "exact",
-        processor_transaction_id: processor.transaction_id,
-        bank_transaction_id: exact.transaction_id,
-        amount_delta: 0,
-        confidence: 1,
-        reason: "Reference, currency, and amount match exactly.",
-      });
-      continue;
-    }
-
-    const fuzzy = [...unmatchedBank.values()].find(
-      (bank) =>
-        bank.reference.toLowerCase() === processor.reference.toLowerCase() &&
-        bank.currency === processor.currency &&
-        amountDelta(processor, bank) <= amountTolerance
-    );
-
-    if (fuzzy) {
-      const delta = amountDelta(processor, fuzzy);
-      unmatchedBank.delete(fuzzy.transaction_id);
-      matches.push({
-        scenario: "fuzzy",
-        processor_transaction_id: processor.transaction_id,
-        bank_transaction_id: fuzzy.transaction_id,
-        amount_delta: delta,
-        confidence: 0.94,
-        reason: `Reference and currency match; amount delta $${delta.toFixed(2)} is within the $${amountTolerance.toFixed(2)} tolerance.`,
-      });
-      continue;
-    }
-
-    const outOfTolerance = [...unmatchedBank.values()].find(
-      (bank) =>
-        bank.reference.toLowerCase() === processor.reference.toLowerCase() &&
-        bank.currency === processor.currency
-    );
-
-    if (outOfTolerance) {
-      const delta = amountDelta(processor, outOfTolerance);
-      unmatchedBank.delete(outOfTolerance.transaction_id);
-      matches.push({
-        scenario: "unmatched",
-        processor_transaction_id: processor.transaction_id,
-        bank_transaction_id: outOfTolerance.transaction_id,
-        amount_delta: delta,
-        confidence: 0.12,
-        reason: `Reference and currency match, but amount delta $${delta.toFixed(2)} exceeds the $${amountTolerance.toFixed(2)} tolerance.`,
-      });
-      continue;
-    }
-
-    matches.push({
-      scenario: "unmatched",
-      processor_transaction_id: processor.transaction_id,
-      bank_transaction_id: null,
-      amount_delta: null,
-      confidence: 0,
-      reason: "No bank transaction matched within the exact or fuzzy tolerance rules.",
-    });
-  }
-
-  for (const bank of unmatchedBank.values()) {
-    matches.push({
-      scenario: "unmatched",
-      processor_transaction_id: null,
-      bank_transaction_id: bank.transaction_id,
-      amount_delta: null,
-      confidence: 0,
-      reason: "No processor transaction matched this bank-side line.",
-    });
-  }
-
-  return matches;
-}
-
-function renderDashboard(matches: ReconciliationMatch[], proofpackHash: string): string {
-  const counts = matches.reduce(
-    (accumulator, match) => {
-      accumulator[match.scenario] += 1;
-      return accumulator;
-    },
-    { exact: 0, fuzzy: 0, unmatched: 0 } satisfies Record<MatchScenario, number>
-  );
-  const matched = counts.exact + counts.fuzzy;
-  const rows = matches
-    .map(
-      (match) => `<tr>
-        <td>${match.scenario}</td>
-        <td>${match.processor_transaction_id ?? "—"}</td>
-        <td>${match.bank_transaction_id ?? "—"}</td>
-        <td>${match.amount_delta === null ? "—" : `$${match.amount_delta.toFixed(2)}`}</td>
-        <td>${Math.round(match.confidence * 100)}%</td>
-        <td>${match.reason}</td>
-      </tr>`
-    )
+function renderDashboard(proofpack: DemoProofpack): string {
+  const { run } = proofpack.payload;
+  const rows = run.results
+    .map((result) => {
+      const source = run.sourceRecords.find((record) => record.id === result.sourceRecordId);
+      const delta =
+        result.amountDeltaMinor === null || !source
+          ? "—"
+          : `${source.currency} ${formatMinorUnits(result.amountDeltaMinor, source.currencyExponent)}`;
+      return `<tr>
+        <td>${escapeHtml(result.decision)}</td>
+        <td>${escapeHtml(result.sourceRecordId ?? "—")}</td>
+        <td>${escapeHtml(result.targetRecordId ?? (result.candidateTargetIds.join(", ") || "—"))}</td>
+        <td>${escapeHtml(delta)}</td>
+        <td>${escapeHtml(result.reason)}</td>
+      </tr>`;
+    })
     .join("\n");
-
   return `<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>Settler 5-minute reconciliation demo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Settler verified settlement reconciliation</title>
   <style>
-    body { font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; margin: 2rem; color: #172033; background: #f8fafc; }
-    .cards { display: grid; gap: 1rem; grid-template-columns: repeat(4, minmax(0, 1fr)); margin: 1.5rem 0; }
-    .card { background: white; border: 1px solid #dbe3ef; border-radius: 14px; padding: 1rem; box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06); }
+    body { font-family: Inter, ui-sans-serif, system-ui, sans-serif; margin: 2rem; color: #172033; background: #f8fafc; }
+    .cards { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr)); margin: 1.5rem 0; }
+    .card { background: white; border: 1px solid #dbe3ef; border-radius: 14px; padding: 1rem; }
     .value { display: block; font-size: 2rem; font-weight: 750; margin-top: 0.35rem; }
-    table { width: 100%; border-collapse: collapse; background: white; border: 1px solid #dbe3ef; border-radius: 14px; overflow: hidden; }
-    th, td { padding: 0.75rem; border-bottom: 1px solid #e5edf7; text-align: left; vertical-align: top; }
-    th { background: #edf4ff; color: #23314d; }
-    code { background: #e9eef7; border-radius: 6px; padding: 0.15rem 0.35rem; }
+    .table-wrap { overflow-x: auto; } table { width: 100%; border-collapse: collapse; background: white; }
+    th, td { padding: 0.75rem; border: 1px solid #e5edf7; text-align: left; vertical-align: top; }
+    th { background: #edf4ff; } code { overflow-wrap: anywhere; }
   </style>
 </head>
 <body>
-  <h1>Settler 5-minute reconciliation demo</h1>
-  <p>Seed CSVs were loaded, reconciliation rules were applied, and an audit-ready proofpack was exported.</p>
-  <section class="cards" aria-label="Reconciliation dashboard summary">
-    <div class="card">Matched transactions<span class="value">${matched}</span></div>
-    <div class="card">Exact matches<span class="value">${counts.exact}</span></div>
-    <div class="card">Fuzzy matches<span class="value">${counts.fuzzy}</span></div>
-    <div class="card">Unmatched exceptions<span class="value">${counts.unmatched}</span></div>
+  <h1>Stripe settlement-to-bank reconciliation</h1>
+  <p>This fixture reconciles processor settlement ledger lines—not individual card charges—against bank postings using the canonical engine.</p>
+  <section class="cards" aria-label="Reconciliation summary">
+    ${Object.entries(run.summary)
+      .map(
+        ([decision, count]) =>
+          `<div class="card">${escapeHtml(decision)}<span class="value">${count}</span></div>`
+      )
+      .join("\n")}
   </section>
-  <p>Proofpack SHA-256: <code>${proofpackHash}</code></p>
-  <table>
-    <thead><tr><th>Scenario</th><th>Processor</th><th>Bank</th><th>Delta</th><th>Confidence</th><th>Reason</th></tr></thead>
+  <p>Rule: <code>${escapeHtml(run.ruleVersion)}</code></p>
+  <p>Semantic commitment: <code>${proofpack.integrity.commitment}</code></p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Decision</th><th>Processor record</th><th>Bank record/candidates</th><th>Delta</th><th>Rule explanation</th></tr></thead>
     <tbody>${rows}</tbody>
-  </table>
+  </table></div>
 </body>
 </html>`;
 }
 
+function assertExpected(
+  expectedRows: CsvRow[],
+  results: DemoProofpack["payload"]["run"]["results"]
+): void {
+  for (const [index, row] of expectedRows.entries()) {
+    const expectedDecision = required(
+      row,
+      "expected_decision",
+      index + 2,
+      "expected-reconciliation.csv"
+    ) as SettlementDecision;
+    const sourceId = row.processor_transaction_id || null;
+    const targetId = row.bank_transaction_id || null;
+    const actual = results.find(
+      (result) =>
+        result.decision === expectedDecision &&
+        result.sourceRecordId === sourceId &&
+        (targetId === null ||
+          result.targetRecordId === targetId ||
+          result.candidateTargetIds.includes(targetId))
+    );
+    if (!actual) {
+      throw new Error(
+        `Expected decision not produced at expected-reconciliation.csv row ${index + 2}`
+      );
+    }
+  }
+  if (expectedRows.length !== results.length) {
+    throw new Error(
+      `Expected ${expectedRows.length} decisions but engine produced ${results.length}`
+    );
+  }
+}
+
 async function main(): Promise<void> {
+  const processorPath = path.join(dataDir, "processor-transactions.csv");
+  const bankPath = path.join(dataDir, "bank-transactions.csv");
+  const expectedPath = path.join(dataDir, "expected-reconciliation.csv");
   const [processorRaw, bankRaw, expectedRaw] = await Promise.all([
-    fs.readFile(path.join(dataDir, "processor-transactions.csv"), "utf8"),
-    fs.readFile(path.join(dataDir, "bank-transactions.csv"), "utf8"),
-    fs.readFile(path.join(dataDir, "expected-reconciliation.csv"), "utf8"),
+    fs.readFile(processorPath, "utf8"),
+    fs.readFile(bankPath, "utf8"),
+    fs.readFile(expectedPath, "utf8"),
   ]);
-  const processorTransactions = parseCsv(processorRaw).map(toProcessor);
-  const bankTransactions = parseCsv(bankRaw).map(toBank);
-  const expected = parseCsv(expectedRaw);
-  const matches = reconcile(processorTransactions, bankTransactions);
-  const summary = matches.reduce(
-    (accumulator, match) => {
-      accumulator[match.scenario] += 1;
-      return accumulator;
+  const processorCsv = parseCsv(processorRaw, "processor-transactions.csv");
+  const bankCsv = parseCsv(bankRaw, "bank-transactions.csv");
+  const expectedCsv = parseCsv(expectedRaw, "expected-reconciliation.csv");
+  const run = reconcileSettlementRecords({
+    sourceRecords: toRecords(processorCsv.rows, "processor_csv", "processor-transactions.csv"),
+    targetRecords: toRecords(bankCsv.rows, "bank_csv", "bank-transactions.csv"),
+    rules,
+  });
+  const proofpack = createDemoProofpack(
+    run,
+    {
+      "bank-transactions.csv": sha256(bankRaw),
+      "processor-transactions.csv": sha256(processorRaw),
     },
-    { exact: 0, fuzzy: 0, unmatched: 0 } satisfies Record<MatchScenario, number>
+    process.env.SETTLER_DEMO_GENERATED_AT
   );
-  const proofpack = {
-    run_id: "self-serve-demo-2026-06",
-    generated_at: new Date().toISOString(),
-    source_files: [
-      "docs/demo-data/processor-transactions.csv",
-      "docs/demo-data/bank-transactions.csv",
-      "docs/demo-data/expected-reconciliation.csv",
-    ],
-    rules: {
-      exact: "reference + currency + amount",
-      fuzzy: `reference + currency + amount delta <= ${amountTolerance}`,
-      unmatched: "no exact or fuzzy candidate",
+  assertExpected(expectedCsv.rows, run.results);
+  const verification = verifyDemoProofpack(proofpack);
+  if (!verification.valid || !verification.replayed) {
+    throw new Error(`Generated proofpack failed verification: ${verification.errors.join("; ")}`);
+  }
+  const tampered = structuredClone(proofpack);
+  tampered.payload.run.sourceRecords[0]!.amountMinor = "999999";
+  const tamperVerification = verifyDemoProofpack(tampered);
+  if (tamperVerification.valid) throw new Error("Tampered proofpack unexpectedly verified");
+
+  const mappingPreview = {
+    schemaVersion: "import-mapping-preview/1.0.0",
+    limitBytes: maxInputBytes,
+    processor: { headers: processorCsv.headers, rowCount: processorCsv.rows.length },
+    bank: { headers: bankCsv.headers, rowCount: bankCsv.rows.length },
+    mappings: {
+      processor: {
+        id: "transaction_id",
+        date: "settled_at",
+        amount: "amount",
+        currency: "currency",
+        reference: "reference",
+        kind: "record_kind",
+      },
+      bank: {
+        id: "transaction_id",
+        date: "posted_at",
+        amount: "amount",
+        currency: "currency",
+        reference: "reference",
+        kind: "record_kind",
+      },
     },
-    input_hashes: {
-      processor: sha256(processorRaw),
-      bank: sha256(bankRaw),
-      expected: sha256(expectedRaw),
-    },
-    summary,
-    expected_scenarios: expected,
-    matches,
+    validationErrors: [],
   };
-  const proofpackHash = sha256(proofpack);
-
   await fs.mkdir(outputDir, { recursive: true });
-  await fs.writeFile(
-    path.join(outputDir, "reconciliation-results.json"),
-    `${JSON.stringify({ summary, matches }, null, 2)}\n`
-  );
-  await fs.writeFile(
-    path.join(outputDir, "proofpack.json"),
-    `${JSON.stringify({ ...proofpack, proofpack_hash: proofpackHash }, null, 2)}\n`
-  );
-  await fs.writeFile(
-    path.join(outputDir, "dashboard.html"),
-    renderDashboard(matches, proofpackHash)
-  );
+  await Promise.all([
+    fs.writeFile(
+      path.join(outputDir, "mapping-preview.json"),
+      `${JSON.stringify(mappingPreview, null, 2)}\n`
+    ),
+    fs.writeFile(
+      path.join(outputDir, "reconciliation-results.json"),
+      `${JSON.stringify(run, null, 2)}\n`
+    ),
+    fs.writeFile(path.join(outputDir, "proofpack.json"), `${JSON.stringify(proofpack, null, 2)}\n`),
+    fs.writeFile(
+      path.join(outputDir, "proofpack.tampered.json"),
+      `${JSON.stringify(tampered, null, 2)}\n`
+    ),
+    fs.writeFile(path.join(outputDir, "dashboard.html"), renderDashboard(proofpack)),
+  ]);
 
-  console.log("Settler self-serve demo complete");
-  console.log(
-    `Matched: ${summary.exact + summary.fuzzy} (${summary.exact} exact, ${summary.fuzzy} fuzzy)`
-  );
-  console.log(`Unmatched: ${summary.unmatched}`);
-  console.log(`Dashboard: ${path.relative(process.cwd(), path.join(outputDir, "dashboard.html"))}`);
-  console.log(`Proofpack: ${path.relative(process.cwd(), path.join(outputDir, "proofpack.json"))}`);
+  console.log("Settler canonical settlement demo verified");
+  console.log(`Run: ${proofpack.payload.runId}`);
+  console.log(`Commitment: ${proofpack.integrity.commitment}`);
+  console.log(`Decisions: ${JSON.stringify(run.summary)}`);
+  console.log("Replay: PASS");
+  console.log(`Tamper check: PASS (${tamperVerification.errors.join("; ")})`);
+  console.log(`Artifacts: ${path.relative(process.cwd(), outputDir)}`);
 }
 
 main().catch((error) => {
-  console.error(error);
-  process.exit(1);
+  console.error(error instanceof Error ? error.message : error);
+  process.exitCode = 1;
 });

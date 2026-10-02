@@ -1,8 +1,10 @@
-processor_transaction_id,bank_transaction_id,expected_scenario,reason
-proc_1001,bank_9001,exact,Same reference and amount.
-proc_1002,bank_9002,fuzzy,Same reference with a one-cent settlement rounding delta.
-proc_1003,bank_9003,unmatched,Amount is outside the fuzzy tolerance and should remain in review.
+processor_transaction_id,bank_transaction_id,expected_decision,reason
+proc_1001,bank_9001,exact,Same reference currency account and amount.
+proc_1002,bank_9002,tolerance,Same reference with a one-minor-unit settlement delta allowed by policy.
+proc_1003,,unmatched_source,Amount is outside policy and remains in review.
+,bank_9003,unmatched_target,The bank amount is outside policy and remains independently visible.
 proc_1004,bank_9004,exact,Refund amount and reference match exactly.
-proc_1005,,unmatched,Processor-side chargeback has no bank line yet.
+proc_1005,,unmatched_source,Processor-side dispute has no bank line yet.
 proc_1006,bank_9006,exact,Marketplace payout clears exactly.
-,bank_9005,unmatched,Bank fee has no processor-side source transaction.
+proc_1007,bank_9007a,ambiguous,Two bank postings have the same best rule rank and require review.
+,bank_9005,unmatched_target,Bank fee has no processor settlement line.

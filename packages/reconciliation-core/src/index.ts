@@ -52,3 +52,4 @@ export * from "./processor-renegotiation.js";
 export * from "./policy-explainer.js";
 export * from "./gemini-cognitive-engine.js";
 export * from "./cognitive-policy-registry.js";
+export * from "./settlement-reconciliation.js";

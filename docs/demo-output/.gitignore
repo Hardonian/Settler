@@ -1,2 +1,7 @@
 *
 !.gitignore
+!dashboard.html
+!mapping-preview.json
+!proofpack.json
+!proofpack.tampered.json
+!reconciliation-results.json

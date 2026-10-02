@@ -1,5 +1,29 @@
 # Quickstart
 
+## Credential-free verified settlement demo
+
+This is the shortest supported path. It requires Node.js 24.15.x and pnpm 10.13.1, but no database, provider credentials, or network access after dependencies are installed.
+
+```bash
+pnpm install --frozen-lockfile
+pnpm run demo:quickstart
+pnpm run demo:verify
+```
+
+The command parses the synthetic processor-settlement and bank CSVs in `docs/demo-data/`, validates their mappings, invokes the versioned engine in `@settler/reconciliation-core`, asserts every expected decision, replays the result, and proves that a modified committed amount fails verification.
+
+Generated artifacts are under `docs/demo-output/`:
+
+- `mapping-preview.json`: detected columns, mappings, row counts, and validation state.
+- `reconciliation-results.json`: normalized records, rule version, decisions, and summary.
+- `proofpack.json`: deterministic payload, SHA-256 commitment, and export metadata.
+- `proofpack.tampered.json`: deliberately invalid example; verification must exit non-zero.
+- `dashboard.html`: inspectable static operator report.
+
+The fixture models Stripe settlement ledger lines, including payouts, a refund, a dispute, and a tolerance case. It does not match individual card charges directly to bank payouts and does not claim charge-to-payout aggregation.
+
+The commitment covers the normalized inputs, versions, rules, and semantic results. `operationalMetadata.generatedAt` is intentionally outside that commitment. Verification proves integrity and replay under the recorded engine version; it does not prove that source data was truthful or that a decision is legally or economically correct.
+
 ## Canonical Path (Recommended)
 
 For the most reliable local development setup, follow the canonical install/run order defined in [SETUP.md](../../SETUP.md). This ensures all services are properly configured and validated.
@@ -8,12 +32,24 @@ For the most reliable local development setup, follow the canonical install/run 
 
 ```bash
 # One-time setup
-git clone https://github.com/settler/settler.git
+git clone https://github.com/Hardonian/Settler.git
 cd settler
 pnpm run bootstrap          # Creates .env.local, installs deps, validates setup
 pnpm tb:start               # Starts TigerBeetle and PostgreSQL
 pnpm dev                    # Starts web (localhost:3000) and API (localhost:4000)
 ```
+
+## Authenticated local pilot
+
+The following path exercises persistence and authenticated application surfaces. It is separate from the credential-free demo and requires the environment contract in `.env.example` plus local infrastructure.
+
+```bash
+pnpm run bootstrap
+pnpm tb:start
+pnpm dev
+```
+
+Do not treat the credential-free demo as evidence for hosted authentication, database RLS, live connectors, billing, or durable background execution.
 
 ## What `pnpm demo:settler` Does
 

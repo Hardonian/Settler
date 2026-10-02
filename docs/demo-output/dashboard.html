@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Settler verified settlement reconciliation</title>
+  <style>
+    body { font-family: Inter, ui-sans-serif, system-ui, sans-serif; margin: 2rem; color: #172033; background: #f8fafc; }
+    .cards { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr)); margin: 1.5rem 0; }
+    .card { background: white; border: 1px solid #dbe3ef; border-radius: 14px; padding: 1rem; }
+    .value { display: block; font-size: 2rem; font-weight: 750; margin-top: 0.35rem; }
+    .table-wrap { overflow-x: auto; } table { width: 100%; border-collapse: collapse; background: white; }
+    th, td { padding: 0.75rem; border: 1px solid #e5edf7; text-align: left; vertical-align: top; }
+    th { background: #edf4ff; } code { overflow-wrap: anywhere; }
+  </style>
+</head>
+<body>
+  <h1>Stripe settlement-to-bank reconciliation</h1>
+  <p>This fixture reconciles processor settlement ledger lines—not individual card charges—against bank postings using the canonical engine.</p>
+  <section class="cards" aria-label="Reconciliation summary">
+    <div class="card">exact<span class="value">3</span></div>
+<div class="card">tolerance<span class="value">1</span></div>
+<div class="card">ambiguous<span class="value">1</span></div>
+<div class="card">unmatched_source<span class="value">2</span></div>
+<div class="card">unmatched_target<span class="value">2</span></div>
+  </section>
+  <p>Rule: <code>stripe-bank-settlement/1.0.0</code></p>
+  <p>Semantic commitment: <code>2bb536691b20051b25345cb01c41679317f95a039a72356d2ca626687cfe2d33</code></p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Decision</th><th>Processor record</th><th>Bank record/candidates</th><th>Delta</th><th>Rule explanation</th></tr></thead>
+    <tbody><tr>
+        <td>unmatched_target</td>
+        <td>—</td>
+        <td>bank_9003</td>
+        <td>—</td>
+        <td>No processor settlement record satisfies the configured reference, currency, amount, and date rules.</td>
+      </tr>
+<tr>
+        <td>unmatched_target</td>
+        <td>—</td>
+        <td>bank_9005</td>
+        <td>—</td>
+        <td>No processor settlement record satisfies the configured reference, currency, amount, and date rules.</td>
+      </tr>
+<tr>
+        <td>exact</td>
+        <td>proc_1001</td>
+        <td>bank_9001</td>
+        <td>USD 0.00</td>
+        <td>Reference, currency, account, and amount match within the configured date window.</td>
+      </tr>
+<tr>
+        <td>tolerance</td>
+        <td>proc_1002</td>
+        <td>bank_9002</td>
+        <td>USD 0.01</td>
+        <td>Reference, currency, and account match; amount delta 1 minor unit(s) is allowed by rule stripe-bank-settlement/1.0.0.</td>
+      </tr>
+<tr>
+        <td>unmatched_source</td>
+        <td>proc_1003</td>
+        <td>—</td>
+        <td>—</td>
+        <td>Reference and currency exist on the bank side, but amount or date is outside the configured rule boundary.</td>
+      </tr>
+<tr>
+        <td>exact</td>
+        <td>proc_1004</td>
+        <td>bank_9004</td>
+        <td>USD 0.00</td>
+        <td>Reference, currency, account, and amount match within the configured date window.</td>
+      </tr>
+<tr>
+        <td>unmatched_source</td>
+        <td>proc_1005</td>
+        <td>—</td>
+        <td>—</td>
+        <td>No bank record shares the required reference and currency.</td>
+      </tr>
+<tr>
+        <td>exact</td>
+        <td>proc_1006</td>
+        <td>bank_9006</td>
+        <td>USD 0.00</td>
+        <td>Reference, currency, account, and amount match within the configured date window.</td>
+      </tr>
+<tr>
+        <td>ambiguous</td>
+        <td>proc_1007</td>
+        <td>bank_9007a, bank_9007b</td>
+        <td>USD 0.00</td>
+        <td>Multiple target records have the same best rule rank; operator review is required.</td>
+      </tr></tbody>
+  </table></div>
+</body>
+</html>

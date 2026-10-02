@@ -1,7 +1,9 @@
-transaction_id,posted_at,description,counterparty,amount,currency,reference
-bank_9001,2026-06-01,Stripe card payout INV-1001,Operating Bank,1250.00,USD,INV-1001
-bank_9002,2026-06-01,Stripe marketplace payout invoice 1002,Operating Bank,940.24,USD,INV-1002
-bank_9003,2026-06-01,Stripe payout inv-1003 batch,Operating Bank,431.50,USD,INV-1003
-bank_9004,2026-06-01,Refund batch RF-204,Operating Bank,-75.00,USD,RF-204
-bank_9005,2026-06-01,Bank service fee May,Operating Bank,-25.00,USD,BANK-FEE-MAY
-bank_9006,2026-06-01,Stripe marketplace payout INV-1006,Operating Bank,810.10,USD,INV-1006
+transaction_id,posted_at,description,counterparty,amount,currency,reference,record_kind
+bank_9001,2026-06-01,Stripe card settlement INV-1001,Operating Bank,1250.00,USD,INV-1001,payout
+bank_9002,2026-06-01,Stripe marketplace settlement invoice 1002,Operating Bank,940.24,USD,INV-1002,payout
+bank_9003,2026-06-01,Stripe settlement inv-1003 batch,Operating Bank,431.50,USD,INV-1003,payout
+bank_9004,2026-06-01,Refund batch RF-204,Operating Bank,-75.00,USD,RF-204,refund
+bank_9005,2026-06-01,Bank service fee May,Operating Bank,-25.00,USD,BANK-FEE-MAY,fee
+bank_9006,2026-06-01,Stripe marketplace settlement INV-1006,Operating Bank,810.10,USD,INV-1006,payout
+bank_9007a,2026-06-01,Stripe settlement INV-1007 first candidate,Operating Bank,325.00,USD,INV-1007,payout
+bank_9007b,2026-06-01,Stripe settlement INV-1007 second candidate,Operating Bank,325.00,USD,INV-1007,payout
