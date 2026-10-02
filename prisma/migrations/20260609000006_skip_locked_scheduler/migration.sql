@@ -1,8 +1,8 @@
 -- CreateTable
 CREATE TABLE "scheduled_jobs" (
     "id" UUID NOT NULL,
-    "reconJobId" UUID NOT NULL,
-    "tenantId" UUID NOT NULL,
+    "recon_job_id" UUID NOT NULL,
+    "tenant_id" UUID NOT NULL,
     "status" TEXT NOT NULL DEFAULT 'pending',
     "scheduled_for" TIMESTAMP(3) NOT NULL,
     "locked_at" TIMESTAMP(3),
@@ -20,10 +20,10 @@ CREATE TABLE "scheduled_jobs" (
 CREATE INDEX "scheduled_jobs_status_scheduled_for_idx" ON "scheduled_jobs"("status", "scheduled_for");
 
 -- CreateIndex
-CREATE INDEX "scheduled_jobs_reconJobId_idx" ON "scheduled_jobs"("reconJobId");
+CREATE INDEX "scheduled_jobs_recon_job_id_idx" ON "scheduled_jobs"("recon_job_id");
 
 -- AlterTable
 ALTER TABLE "recon_jobs" ADD COLUMN "next_execution_at" TIMESTAMP(3);
 
 -- AddForeignKey
-ALTER TABLE "scheduled_jobs" ADD CONSTRAINT "scheduled_jobs_reconJobId_fkey" FOREIGN KEY ("reconJobId") REFERENCES "recon_jobs"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "scheduled_jobs" ADD CONSTRAINT "scheduled_jobs_recon_job_id_fkey" FOREIGN KEY ("recon_job_id") REFERENCES "recon_jobs"("id") ON DELETE CASCADE ON UPDATE CASCADE;
