@@ -114,8 +114,8 @@ export function idempotencyMiddleware() {
       void query(
         `INSERT INTO idempotency_keys (user_id, tenant_id, key, response, expires_at)
          VALUES ($1, $2, $3, $4::jsonb, NOW() + ($5 || ' hours')::interval)
-         ON CONFLICT (tenant_id, key)
-         DO UPDATE SET response = EXCLUDED.response, expires_at = EXCLUDED.expires_at`,
+         ON CONFLICT (user_id, key)
+         DO UPDATE SET response = EXCLUDED.response, expires_at = EXCLUDED.expires_at, tenant_id = EXCLUDED.tenant_id`,
         [
           req.userId as string,
           req.tenantId as string,

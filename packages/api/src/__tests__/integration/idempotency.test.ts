@@ -80,6 +80,8 @@ describeIdempotency("Idempotency Integration", () => {
     expect(firstResponse.status).toBe(200);
     expect(firstResponse.body.batchId).toBeDefined();
 
+    await new Promise((resolve) => setTimeout(resolve, 50));
+
     const cachedEntries = await query<{ total: string }>(
       `SELECT COUNT(*)::text as total
        FROM idempotency_keys
