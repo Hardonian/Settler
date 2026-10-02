@@ -59,7 +59,6 @@ export class RedisRateLimiter {
       this.redis = new Redis(redisUrl, {
         maxRetriesPerRequest: 1,
         connectTimeout: 2000,
-        enableOfflineQueue: false,
         retryStrategy: () => null,
       });
     }

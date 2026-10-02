@@ -4,7 +4,7 @@
  */
 
 // Mock environment variables
-process.env.NODE_ENV = "test";
+(process.env as Record<string, string | undefined>).NODE_ENV = "test";
 process.env.JWT_SECRET = "test-secret-key";
 process.env.JWT_REFRESH_SECRET = "test-refresh-secret";
 process.env.ENCRYPTION_KEY = "test-encryption-key-32-bytes-long!!";
@@ -18,7 +18,7 @@ process.env.REDIS_URL = process.env.REDIS_URL || "redis://localhost:6379";
 import { logger } from "../utils/logger";
 
 // Silence logger in tests to keep output clean unless debugging
-logger.silent = true;
+(logger as any).silent = true;
 
 // Increase timeout for integration tests
 jest.setTimeout(30000);

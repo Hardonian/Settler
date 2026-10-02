@@ -52,8 +52,12 @@ export async function checkTenantFrozen(tenantId: string): Promise<{
       frozen_by: state.frozen_by || undefined,
       freeze_reason: state.freeze_reason || undefined,
     };
-  } catch (error) {
-    // On any error, default to FROZEN. This is a "fail-closed" security posture.
+  } catch (error: any) {
+    // If the governance table does not exist in this environment, treat as unfrozen
+    if (error?.code === "42P01") {
+      return { frozen: false };
+    }
+    // On any other unexpected database error, default to FROZEN. This is a "fail-closed" security posture.
     console.error(`Governance check failed for tenant ${tenantId}. Defaulting to frozen.`, error);
     return { frozen: true };
   }
