@@ -136,7 +136,7 @@ impl SparseMerkleTree {
     pub fn prove_inclusion(&self, key: &[u8; 32]) -> Option<SmtProof> {
         let value = self.entries.get(key)?;
         let siblings = self.collect_siblings(key);
-        let siblings_hex = siblings.iter().map(|s| hex::encode(s)).collect();
+        let siblings_hex = siblings.iter().map(hex::encode).collect();
 
         Some(SmtProof {
             key_hex: hex::encode(key),
@@ -154,7 +154,7 @@ impl SparseMerkleTree {
         }
 
         let siblings = self.collect_siblings(key);
-        let siblings_hex = siblings.iter().map(|s| hex::encode(s)).collect();
+        let siblings_hex = siblings.iter().map(hex::encode).collect();
 
         Some(SmtProof {
             key_hex: hex::encode(key),
