@@ -1,0 +1,49 @@
+{
+  "schemaVersion": "import-mapping-preview/1.0.0",
+  "limitBytes": 1000000,
+  "processor": {
+    "headers": [
+      "transaction_id",
+      "settled_at",
+      "description",
+      "counterparty",
+      "amount",
+      "currency",
+      "reference",
+      "record_kind"
+    ],
+    "rowCount": 7
+  },
+  "bank": {
+    "headers": [
+      "transaction_id",
+      "posted_at",
+      "description",
+      "counterparty",
+      "amount",
+      "currency",
+      "reference",
+      "record_kind"
+    ],
+    "rowCount": 8
+  },
+  "mappings": {
+    "processor": {
+      "id": "transaction_id",
+      "date": "settled_at",
+      "amount": "amount",
+      "currency": "currency",
+      "reference": "reference",
+      "kind": "record_kind"
+    },
+    "bank": {
+      "id": "transaction_id",
+      "date": "posted_at",
+      "amount": "amount",
+      "currency": "currency",
+      "reference": "reference",
+      "kind": "record_kind"
+    }
+  },
+  "validationErrors": []
+}

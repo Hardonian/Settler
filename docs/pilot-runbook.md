@@ -4,7 +4,7 @@ Operational guide for running a Settler pilot. Covers setup, success criteria, w
 
 ## Pilot overview
 
-A typical Settler pilot runs 2–4 weeks with a single reconciliation use case (e.g., Stripe payments vs. bank deposits). The goal is to validate three things:
+A typical Settler pilot runs 2–4 weeks with one bounded use case: Stripe settlement ledger lines versus bank postings. Individual charges are not assumed to correspond one-to-one with payouts. The goal is to validate three things:
 
 1. **Technical fit** — Can Settler match your real transaction data accurately?
 2. **Operational fit** — Does the exception workflow integrate with your team's process?
@@ -16,8 +16,9 @@ A typical Settler pilot runs 2–4 weeks with a single reconciliation use case (
 | ----------------------------------------------- | ------------------ | ------ |
 | Settler account or local instance provisioned   | Engineering        | [ ]    |
 | API key generated and stored in secret manager  | Engineering        | [ ]    |
-| Source adapter configured (e.g., Stripe)        | Engineering        | [ ]    |
-| Target adapter configured (e.g., bank/ledger)   | Engineering        | [ ]    |
+| Processor settlement CSV mapping approved       | Finance / Eng      | [ ]    |
+| Bank posting CSV mapping approved               | Finance / Eng      | [ ]    |
+| Stripe test-mode adapter configured (optional)  | Engineering        | [ ]    |
 | First reconciliation job created and tested     | Engineering        | [ ]    |
 | Webhook endpoint registered (if using events)   | Engineering        | [ ]    |
 | Pilot success criteria agreed with stakeholders | Eng Lead / Finance | [ ]    |
@@ -30,13 +31,17 @@ A typical Settler pilot runs 2–4 weeks with a single reconciliation use case (
 **Goals:** Working integration, first successful reconciliation, team access.
 
 ```bash
-# Quick setup path
-git clone https://github.com/settler/settler.git
+# Prove the rule and evidence boundary without credentials first
+git clone https://github.com/Hardonian/Settler.git
 cd settler
+pnpm install --frozen-lockfile
+pnpm run demo:quickstart
+pnpm run demo:verify
+
+# Then start the authenticated local pilot
 pnpm run bootstrap
 pnpm tb:start
 pnpm dev
-pnpm demo:seed   # Load demo data for evaluation
 ```
 
 **Or use the hosted API:**
@@ -61,7 +66,8 @@ npm start
 
 **Goals:** Connect real data sources, run against production-like volume.
 
-- Replace demo adapters with your real Stripe/bank credentials
+- Import authorized processor settlement and bank CSV exports first
+- Configure Stripe read-only test-mode ingestion only when credentials are available
 - Run reconciliation against a representative data window (e.g., last 30 days)
 - Set up scheduled runs if applicable
 - Configure webhook notifications for your team's Slack/PagerDuty
@@ -101,21 +107,21 @@ Score each criterion. **Go = all critical met + majority of important met.**
 
 | Criterion                       | Target      | Actual | Pass? |
 | ------------------------------- | ----------- | ------ | ----- |
-| Reconciliation accuracy         | ≥ 95%       |        | [ ]   |
+| Known fixture decisions correct | Agreed set  |        | [ ]   |
 | No data leakage across tenants  | 0 incidents |        | [ ]   |
-| API available during pilot      | ≥ 99%       |        | [ ]   |
-| First reconciliation in < 1 day | Yes/No      |        | [ ]   |
+| API availability                | Measured     |        | [ ]   |
+| Time to first completed run     | Measured     |        | [ ]   |
 | Data export works               | Yes/No      |        | [ ]   |
 
 ### Important (should pass)
 
 | Criterion                             | Target        | Actual | Pass? |
 | ------------------------------------- | ------------- | ------ | ----- |
-| Exception resolution time             | < 4 hours avg |        | [ ]   |
+| Exception resolution time             | Measured      |        | [ ]   |
 | Team can use console without training | Yes/No        |        | [ ]   |
 | Audit log meets compliance needs      | Yes/No        |        | [ ]   |
-| Webhook delivery reliable             | ≥ 99%         |        | [ ]   |
-| Time saved vs. manual process         | ≥ 50%         |        | [ ]   |
+| Webhook delivery                      | Measured      |        | [ ]   |
+| Time saved vs. manual process         | Measured      |        | [ ]   |
 
 ### Nice to have
 

@@ -1,0 +1,124 @@
+{
+  "schemaVersion": "settler.release-status/1.0.0",
+  "release": "verified-first-customer",
+  "classification": "Moat",
+  "updatedAt": "2026-10-01T22:37:19-04:00",
+  "source": {
+    "baseCommit": "001a4327c74c228c53f35169220dd055d1a17df4",
+    "currentCommit": "00ae0c950caf0e9c2d41b461bdc07dcda52b5148",
+    "branch": "codex/verified-first-customer-release",
+    "worktree": "C:/Users/scott/GitHub/Settler",
+    "instructions": [
+      "AGENTS.md",
+      "packages/web/AGENTS.md",
+      "REPO_POLICY.md",
+      "SECURITY_INVARIANTS.md",
+      "SECURITY.md",
+      "packages/api/SECURITY.md"
+    ]
+  },
+  "supportedWorkflow": "Synthetic or customer-supplied processor settlement CSV to bank-posting CSV, one-to-one deterministic matching, offline proof verification and replay",
+  "deploymentTopology": {
+    "localDemo": "Node.js CLI only; no credentials or external services",
+    "pilot": "Next.js web and API surfaces on Vercel with PostgreSQL/Supabase persistence; Redis and worker paths are conditional on configured runtime",
+    "pilotVerification": "not started"
+  },
+  "milestones": {
+    "M0": { "status": "in progress", "dependency": null },
+    "M1": { "status": "verified", "dependency": null },
+    "M2": { "status": "verified", "dependency": null },
+    "M3": { "status": "not started", "dependency": null },
+    "M4": { "status": "not started", "dependency": "isolated live PostgreSQL test environment" },
+    "M5": { "status": "verified", "dependency": null },
+    "M6": { "status": "not started", "dependency": "runnable authenticated local stack" },
+    "M7": {
+      "status": "not started",
+      "dependency": "authorized Stripe test-mode credentials for live validation"
+    },
+    "M8": {
+      "status": "not started",
+      "dependency": "Vercel project authorization for hosted smoke"
+    },
+    "M9": { "status": "not started", "dependency": null },
+    "M10": { "status": "in progress", "dependency": null },
+    "M11": { "status": "not started", "dependency": null }
+  },
+  "checks": [
+    {
+      "command": "pnpm --filter @settler/reconciliation-core test -- settlement-reconciliation.test.ts",
+      "exitCode": 0,
+      "elapsedSeconds": 2,
+      "result": "6 tests passed"
+    },
+    {
+      "command": "pnpm run demo:quickstart",
+      "exitCode": 0,
+      "elapsedSeconds": 2,
+      "result": "3 exact, 1 tolerance, 1 ambiguous, 2 unmatched source, 2 unmatched target; replay and tamper assertions passed"
+    },
+    {
+      "command": "pnpm run demo:verify",
+      "exitCode": 0,
+      "elapsedSeconds": 1,
+      "result": "offline integrity and semantic replay passed"
+    },
+    {
+      "command": "pnpm exec tsx scripts/verify-demo-proofpack.ts docs/demo-output/proofpack.tampered.json",
+      "exitCode": 1,
+      "elapsedSeconds": 1,
+      "result": "expected failure: commitment mismatch"
+    },
+    {
+      "command": "pnpm --filter @settler/reconciliation-core run typecheck",
+      "exitCode": 0,
+      "elapsedSeconds": 2,
+      "result": "passed"
+    },
+    {
+      "command": "pnpm --filter @settler/reconciliation-core run build",
+      "exitCode": 0,
+      "elapsedSeconds": 2,
+      "result": "passed"
+    }
+  ],
+  "defects": [
+    {
+      "id": "FCR-001",
+      "status": "verified",
+      "rootCause": "quickstart owned a second Number-based matcher and ad-hoc CSV parser",
+      "resolution": "quickstart now invokes the versioned reconciliation-core settlement engine and csv-parse"
+    },
+    {
+      "id": "FCR-002",
+      "status": "verified",
+      "rootCause": "proof hash included export time and did not replay the decision set",
+      "resolution": "operational metadata is outside the committed payload; verifier recomputes the hash and reruns the engine"
+    },
+    {
+      "id": "FCR-003",
+      "status": "in progress",
+      "rootCause": "authenticated API and web demo still contain legacy matching implementations",
+      "resolution": "consolidation and integration proof pending"
+    }
+  ],
+  "artifacts": [
+    "docs/demo-output/mapping-preview.json",
+    "docs/demo-output/reconciliation-results.json",
+    "docs/demo-output/proofpack.json",
+    "docs/demo-output/proofpack.tampered.json",
+    "docs/demo-output/dashboard.html"
+  ],
+  "externalBlockers": [
+    {
+      "item": "Stripe test-mode end-to-end validation",
+      "dependency": "authorized test-mode account and webhook secret",
+      "owner": "repository operator"
+    },
+    {
+      "item": "Vercel preview and hosted smoke",
+      "dependency": "authorized linked Vercel project and deployment credentials",
+      "owner": "repository operator"
+    }
+  ],
+  "nextAction": "Run repository-wide baseline gates, then consolidate the authenticated matching path and exercise database-backed tenant isolation."
+}

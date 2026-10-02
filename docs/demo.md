@@ -1,4 +1,15 @@
-# Settler Demo (TTFV)
+# Settler Demo
+
+For the verified credential-free settlement path, run:
+
+```bash
+pnpm run demo:quickstart
+pnpm run demo:verify
+```
+
+See [the canonical quickstart](./getting-started/quickstart.md) for the supported scope, generated evidence, and verification boundary.
+
+## Legacy foundry demonstration
 
 Run the deterministic moat demo:
 
