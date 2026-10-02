@@ -2,7 +2,20 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, Command, ArrowRight, Bot, Zap, CreditCard, Activity } from "lucide-react";
+import {
+  Search,
+  Command,
+  ArrowRight,
+  Bot,
+  Zap,
+  CreditCard,
+  Activity,
+  ShieldCheck,
+  BookOpen,
+  Sliders,
+  PlayCircle,
+  FileCheck,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
 
 export function CommandPalette() {
@@ -35,6 +48,24 @@ export function CommandPalette() {
       action: () => router.push("/console/runs"),
     },
     {
+      id: "verify-proofpack",
+      icon: <ShieldCheck className="text-emerald-400" />,
+      label: "Verify Proofpack (Zero-Trust Offline Verifier)",
+      action: () => router.push("/verify"),
+    },
+    {
+      id: "cognitive-auditor",
+      icon: <FileCheck className="text-indigo-400" />,
+      label: "Auditor OS & Cognitive Intelligence",
+      action: () => router.push("/cognitive"),
+    },
+    {
+      id: "rules-engine",
+      icon: <Sliders className="text-amber-400" />,
+      label: "Rules Engine & Policy Sandbox",
+      action: () => router.push("/console/rules-engine"),
+    },
+    {
       id: "sla-dashboard",
       icon: <Activity className="text-purple-400" />,
       label: "View SLA Dashboard",
@@ -47,9 +78,21 @@ export function CommandPalette() {
       action: () => router.push("/console/close"),
     },
     {
+      id: "interactive-playground",
+      icon: <PlayCircle className="text-cyan-400" />,
+      label: "Interactive Engine Playground",
+      action: () => router.push("/playground"),
+    },
+    {
+      id: "documentation",
+      icon: <BookOpen className="text-rose-400" />,
+      label: "Documentation & API Reference",
+      action: () => router.push("/docs"),
+    },
+    {
       id: "enterprise-identity",
-      icon: <CreditCard className="text-emerald-400" />,
-      label: "Enterprise Identity Status",
+      icon: <CreditCard className="text-teal-400" />,
+      label: "Enterprise Identity & Security Status",
       action: () => router.push("/console/settings/security"),
     },
   ];
