@@ -86,6 +86,15 @@ interface AuditIssue {
 
 const auditResults: AuditIssue[] = [];
 
+async function navigateForAudit(page: Page, url: string) {
+  const response = await page.goto(url, {
+    waitUntil: "domcontentloaded",
+    timeout: 30000,
+  });
+  await page.waitForLoadState("networkidle", { timeout: 5000 }).catch(() => undefined);
+  return response;
+}
+
 /**
  * Collect console errors and warnings
  */
@@ -424,10 +433,7 @@ test.describe("UI Consistency Audit", () => {
         await collectNetworkIssues(page, route, viewport.name);
 
         // Navigate
-        const response = await page.goto(`${BASE_URL}${route}`, {
-          waitUntil: "networkidle",
-          timeout: 30000,
-        });
+        const response = await navigateForAudit(page, `${BASE_URL}${route}`);
 
         // Wait for page to settle
         await page.waitForTimeout(1000);
@@ -470,10 +476,7 @@ test.describe("UI Consistency Audit - Reduced Motion", () => {
     // Emulate reduced motion preference
     await page.emulateMedia({ reducedMotion: "reduce" });
 
-    await page.goto(`${BASE_URL}/`, {
-      waitUntil: "networkidle",
-      timeout: 30000,
-    });
+    await navigateForAudit(page, `${BASE_URL}/`);
 
     const respectsMotion = await checkReducedMotion(page);
 
@@ -483,10 +486,7 @@ test.describe("UI Consistency Audit - Reduced Motion", () => {
   test("animations disabled in reduced motion mode", async ({ page }) => {
     await page.emulateMedia({ reducedMotion: "reduce" });
 
-    await page.goto(`${BASE_URL}/`, {
-      waitUntil: "networkidle",
-      timeout: 30000,
-    });
+    await navigateForAudit(page, `${BASE_URL}/`);
 
     // Check computed styles for animations
     const animationDurations = await page.evaluate(() => {
@@ -517,10 +517,7 @@ test.describe("UI Consistency Audit - Theme Consistency", () => {
 
       // Test light mode
       await page.emulateMedia({ colorScheme: "light" });
-      await page.goto(`${BASE_URL}/`, {
-        waitUntil: "networkidle",
-        timeout: 30000,
-      });
+      await navigateForAudit(page, `${BASE_URL}/`);
 
       const lightModeBg = await page.evaluate(() => {
         return window.getComputedStyle(document.body).backgroundColor;
@@ -528,7 +525,8 @@ test.describe("UI Consistency Audit - Theme Consistency", () => {
 
       // Test dark mode
       await page.emulateMedia({ colorScheme: "dark" });
-      await page.reload({ waitUntil: "networkidle" });
+      await page.reload({ waitUntil: "domcontentloaded" });
+      await page.waitForLoadState("networkidle", { timeout: 5000 }).catch(() => undefined);
 
       const darkModeBg = await page.evaluate(() => {
         return window.getComputedStyle(document.body).backgroundColor;
