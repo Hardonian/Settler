@@ -11,7 +11,7 @@
 import "./env-loader";
 import { createClient } from "@supabase/supabase-js";
 import { PrismaClient } from "@prisma/client";
-import { PrismaPg } from "C:/Users/scott/GitHub/Settler/packages/api/node_modules/@prisma/adapter-pg";
+import { PrismaPg } from "@prisma/adapter-pg";
 import { Pool } from "pg";
 
 const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || "";
@@ -53,33 +53,28 @@ async function testTenantIsolation() {
     ];
 
     for (const table of tables) {
-      const { error } = await supabaseAdmin.rpc("get_table_rls_status", {
-        table_name: table,
-      });
-      if (error && !error.message.includes("does not exist")) {
-        // RLS status function might not exist, check directly
-        const { data: policies } = await supabaseAdmin
-          .from("pg_policies")
-          .select("*")
-          .eq("tablename", table)
-          .limit(1);
-
-        if (!policies || policies.length === 0) {
-          results.push({
-            test: `RLS enabled on ${table}`,
-            passed: false,
-            error: "No RLS policies found",
-          });
-        } else {
-          results.push({
-            test: `RLS enabled on ${table}`,
-            passed: true,
-          });
-        }
-      } else {
+      // Direct catalog check: PostgREST cannot serve pg_policies, so query the
+      // database through the pool instead of supabaseAdmin.from("pg_policies").
+      const { rows: polRows } = await pool.query(
+        "SELECT count(*)::int AS n FROM pg_policies WHERE schemaname = 'public' AND tablename = $1",
+        [table]
+      );
+      const { rows: rlsRows } = await pool.query(
+        "SELECT relrowsecurity AS rls FROM pg_class WHERE oid = ('public.' || $1)::regclass",
+        [table]
+      );
+      const policies = polRows[0].n;
+      const rlsEnabled = rlsRows[0].rls;
+      if (policies > 0 && rlsEnabled) {
         results.push({
           test: `RLS enabled on ${table}`,
           passed: true,
+        });
+      } else {
+        results.push({
+          test: `RLS enabled on ${table}`,
+          passed: false,
+          error: `policies=${policies}, rls_enabled=${rlsEnabled}`,
         });
       }
     }
@@ -210,11 +205,20 @@ async function testTenantIsolation() {
       },
     });
 
+    const ingestion1 = await prisma.ingestion.create({
+      data: {
+        sourceId: source1.id,
+        tenantId: tenant1Id,
+        userId: user1Id,
+        status: "completed",
+      },
+    });
+
     const transaction1 = await prisma.normalizedTransaction.create({
       data: {
         tenantId: tenant1Id,
         sourceId: source1.id,
-        ingestionId: source1.id, // Simplified
+        ingestionId: ingestion1.id,
         amount: 100.0,
         currency: "USD",
         date: new Date(),
@@ -325,17 +329,21 @@ async function testTenantIsolation() {
       passed: true,
     });
   } catch (error) {
-    if (error instanceof Error && error.message.includes("SECURITY BREACH")) {
+    const msg = error instanceof Error ? error.message : String(error);
+    if (msg.includes("SECURITY BREACH")) {
       results.push({
         test: "User 2 CANNOT access tenant 1 data (RLS blocks)",
         passed: false,
-        error: error.message,
+        error: msg,
       });
     } else {
-      // RLS might return empty array, which is correct
+      // Only an explicit permission/RLS denial proves the row is blocked.
+      // Any other error is a real failure and must not be counted as a pass.
+      const blockedByRls = /permission denied|row-level security|RLS/i.test(msg);
       results.push({
         test: "User 2 CANNOT access tenant 1 data (RLS blocks)",
-        passed: true,
+        passed: blockedByRls,
+        ...(blockedByRls ? {} : { error: `Query error: ${msg}` }),
       });
     }
   }
@@ -344,6 +352,9 @@ async function testTenantIsolation() {
   console.info("\nCleaning up test data...");
   try {
     await prisma.normalizedTransaction.deleteMany({
+      where: { tenantId: { in: [tenant1Id, tenant2Id] } },
+    });
+    await prisma.ingestion.deleteMany({
       where: { tenantId: { in: [tenant1Id, tenant2Id] } },
     });
     await prisma.ingestionSource.deleteMany({
