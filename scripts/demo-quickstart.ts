@@ -210,10 +210,14 @@ async function main(): Promise<void> {
     targetRecords: toRecords(bankCsv.rows, "bank_csv", "bank-transactions.csv"),
     rules,
   });
-  const proofpack = createDemoProofpack(run, {
-    "bank-transactions.csv": sha256(bankRaw),
-    "processor-transactions.csv": sha256(processorRaw),
-  });
+  const proofpack = createDemoProofpack(
+    run,
+    {
+      "bank-transactions.csv": sha256(bankRaw),
+      "processor-transactions.csv": sha256(processorRaw),
+    },
+    process.env.SETTLER_DEMO_GENERATED_AT
+  );
   assertExpected(expectedCsv.rows, run.results);
   const verification = verifyDemoProofpack(proofpack);
   if (!verification.valid || !verification.replayed) {

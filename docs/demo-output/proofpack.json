@@ -1,0 +1,395 @@
+{
+  "payload": {
+    "schemaVersion": "settler.demo-proofpack/1.0.0",
+    "runId": "run_ba58921c7a26f0ad393af122",
+    "inputHashes": {
+      "bank-transactions.csv": "33cb5acbe773ff386fec82dd7e39f48b5bc6db6f73f5567433e73cb9753d3936",
+      "processor-transactions.csv": "b7eab104ea88109686e18d13581ea574697dac9a5a2c3b60394576704fa2f0f5"
+    },
+    "run": {
+      "schemaVersion": "settlement-run/1.0.0",
+      "engineVersion": "settlement-reconciliation/1.0.0",
+      "normalizationVersion": "financial-record/1.0.0",
+      "ruleVersion": "stripe-bank-settlement/1.0.0",
+      "tenantId": "demo-tenant",
+      "accountId": "demo-operating-usd",
+      "sourceRecords": [
+        {
+          "id": "proc_1001",
+          "tenantId": "demo-tenant",
+          "accountId": "demo-operating-usd",
+          "amount": "1250.00",
+          "currency": "USD",
+          "date": "2026-05-31",
+          "reference": "INV-1001",
+          "description": "Card settlement payout INV-1001",
+          "kind": "payout",
+          "provenance": {
+            "source": "processor_csv",
+            "sourceRecordId": "proc_1001"
+          },
+          "amountMinor": "125000",
+          "currencyExponent": 2,
+          "normalizedReference": "INV-1001"
+        },
+        {
+          "id": "proc_1002",
+          "tenantId": "demo-tenant",
+          "accountId": "demo-operating-usd",
+          "amount": "940.25",
+          "currency": "USD",
+          "date": "2026-05-31",
+          "reference": "INV-1002",
+          "description": "Marketplace settlement payout INV-1002",
+          "kind": "payout",
+          "provenance": {
+            "source": "processor_csv",
+            "sourceRecordId": "proc_1002"
+          },
+          "amountMinor": "94025",
+          "currencyExponent": 2,
+          "normalizedReference": "INV-1002"
+        },
+        {
+          "id": "proc_1003",
+          "tenantId": "demo-tenant",
+          "accountId": "demo-operating-usd",
+          "amount": "430.00",
+          "currency": "USD",
+          "date": "2026-05-31",
+          "reference": "INV-1003",
+          "description": "Card settlement payout INV-1003",
+          "kind": "payout",
+          "provenance": {
+            "source": "processor_csv",
+            "sourceRecordId": "proc_1003"
+          },
+          "amountMinor": "43000",
+          "currencyExponent": 2,
+          "normalizedReference": "INV-1003"
+        },
+        {
+          "id": "proc_1004",
+          "tenantId": "demo-tenant",
+          "accountId": "demo-operating-usd",
+          "amount": "-75.00",
+          "currency": "USD",
+          "date": "2026-05-31",
+          "reference": "RF-204",
+          "description": "Refund batch RF-204",
+          "kind": "refund",
+          "provenance": {
+            "source": "processor_csv",
+            "sourceRecordId": "proc_1004"
+          },
+          "amountMinor": "-7500",
+          "currencyExponent": 2,
+          "normalizedReference": "RF-204"
+        },
+        {
+          "id": "proc_1005",
+          "tenantId": "demo-tenant",
+          "accountId": "demo-operating-usd",
+          "amount": "-120.00",
+          "currency": "USD",
+          "date": "2026-05-31",
+          "reference": "CB-88",
+          "description": "Dispute case CB-88",
+          "kind": "dispute",
+          "provenance": {
+            "source": "processor_csv",
+            "sourceRecordId": "proc_1005"
+          },
+          "amountMinor": "-12000",
+          "currencyExponent": 2,
+          "normalizedReference": "CB-88"
+        },
+        {
+          "id": "proc_1006",
+          "tenantId": "demo-tenant",
+          "accountId": "demo-operating-usd",
+          "amount": "810.10",
+          "currency": "USD",
+          "date": "2026-05-31",
+          "reference": "INV-1006",
+          "description": "Marketplace settlement payout INV-1006",
+          "kind": "payout",
+          "provenance": {
+            "source": "processor_csv",
+            "sourceRecordId": "proc_1006"
+          },
+          "amountMinor": "81010",
+          "currencyExponent": 2,
+          "normalizedReference": "INV-1006"
+        },
+        {
+          "id": "proc_1007",
+          "tenantId": "demo-tenant",
+          "accountId": "demo-operating-usd",
+          "amount": "325.00",
+          "currency": "USD",
+          "date": "2026-05-31",
+          "reference": "INV-1007",
+          "description": "Ambiguous settlement payout INV-1007",
+          "kind": "payout",
+          "provenance": {
+            "source": "processor_csv",
+            "sourceRecordId": "proc_1007"
+          },
+          "amountMinor": "32500",
+          "currencyExponent": 2,
+          "normalizedReference": "INV-1007"
+        }
+      ],
+      "targetRecords": [
+        {
+          "id": "bank_9001",
+          "tenantId": "demo-tenant",
+          "accountId": "demo-operating-usd",
+          "amount": "1250.00",
+          "currency": "USD",
+          "date": "2026-06-01",
+          "reference": "INV-1001",
+          "description": "Stripe card settlement INV-1001",
+          "kind": "payout",
+          "provenance": {
+            "source": "bank_csv",
+            "sourceRecordId": "bank_9001"
+          },
+          "amountMinor": "125000",
+          "currencyExponent": 2,
+          "normalizedReference": "INV-1001"
+        },
+        {
+          "id": "bank_9002",
+          "tenantId": "demo-tenant",
+          "accountId": "demo-operating-usd",
+          "amount": "940.24",
+          "currency": "USD",
+          "date": "2026-06-01",
+          "reference": "INV-1002",
+          "description": "Stripe marketplace settlement invoice 1002",
+          "kind": "payout",
+          "provenance": {
+            "source": "bank_csv",
+            "sourceRecordId": "bank_9002"
+          },
+          "amountMinor": "94024",
+          "currencyExponent": 2,
+          "normalizedReference": "INV-1002"
+        },
+        {
+          "id": "bank_9003",
+          "tenantId": "demo-tenant",
+          "accountId": "demo-operating-usd",
+          "amount": "431.50",
+          "currency": "USD",
+          "date": "2026-06-01",
+          "reference": "INV-1003",
+          "description": "Stripe settlement inv-1003 batch",
+          "kind": "payout",
+          "provenance": {
+            "source": "bank_csv",
+            "sourceRecordId": "bank_9003"
+          },
+          "amountMinor": "43150",
+          "currencyExponent": 2,
+          "normalizedReference": "INV-1003"
+        },
+        {
+          "id": "bank_9004",
+          "tenantId": "demo-tenant",
+          "accountId": "demo-operating-usd",
+          "amount": "-75.00",
+          "currency": "USD",
+          "date": "2026-06-01",
+          "reference": "RF-204",
+          "description": "Refund batch RF-204",
+          "kind": "refund",
+          "provenance": {
+            "source": "bank_csv",
+            "sourceRecordId": "bank_9004"
+          },
+          "amountMinor": "-7500",
+          "currencyExponent": 2,
+          "normalizedReference": "RF-204"
+        },
+        {
+          "id": "bank_9005",
+          "tenantId": "demo-tenant",
+          "accountId": "demo-operating-usd",
+          "amount": "-25.00",
+          "currency": "USD",
+          "date": "2026-06-01",
+          "reference": "BANK-FEE-MAY",
+          "description": "Bank service fee May",
+          "kind": "fee",
+          "provenance": {
+            "source": "bank_csv",
+            "sourceRecordId": "bank_9005"
+          },
+          "amountMinor": "-2500",
+          "currencyExponent": 2,
+          "normalizedReference": "BANK-FEE-MAY"
+        },
+        {
+          "id": "bank_9006",
+          "tenantId": "demo-tenant",
+          "accountId": "demo-operating-usd",
+          "amount": "810.10",
+          "currency": "USD",
+          "date": "2026-06-01",
+          "reference": "INV-1006",
+          "description": "Stripe marketplace settlement INV-1006",
+          "kind": "payout",
+          "provenance": {
+            "source": "bank_csv",
+            "sourceRecordId": "bank_9006"
+          },
+          "amountMinor": "81010",
+          "currencyExponent": 2,
+          "normalizedReference": "INV-1006"
+        },
+        {
+          "id": "bank_9007a",
+          "tenantId": "demo-tenant",
+          "accountId": "demo-operating-usd",
+          "amount": "325.00",
+          "currency": "USD",
+          "date": "2026-06-01",
+          "reference": "INV-1007",
+          "description": "Stripe settlement INV-1007 first candidate",
+          "kind": "payout",
+          "provenance": {
+            "source": "bank_csv",
+            "sourceRecordId": "bank_9007a"
+          },
+          "amountMinor": "32500",
+          "currencyExponent": 2,
+          "normalizedReference": "INV-1007"
+        },
+        {
+          "id": "bank_9007b",
+          "tenantId": "demo-tenant",
+          "accountId": "demo-operating-usd",
+          "amount": "325.00",
+          "currency": "USD",
+          "date": "2026-06-01",
+          "reference": "INV-1007",
+          "description": "Stripe settlement INV-1007 second candidate",
+          "kind": "payout",
+          "provenance": {
+            "source": "bank_csv",
+            "sourceRecordId": "bank_9007b"
+          },
+          "amountMinor": "32500",
+          "currencyExponent": 2,
+          "normalizedReference": "INV-1007"
+        }
+      ],
+      "rules": {
+        "version": "stripe-bank-settlement/1.0.0",
+        "amountToleranceMinor": "1",
+        "dateWindowDays": 3,
+        "requireReference": true
+      },
+      "results": [
+        {
+          "decision": "unmatched_target",
+          "sourceRecordId": null,
+          "targetRecordId": "bank_9003",
+          "candidateTargetIds": [],
+          "amountDeltaMinor": null,
+          "dateDeltaDays": null,
+          "reason": "No processor settlement record satisfies the configured reference, currency, amount, and date rules."
+        },
+        {
+          "decision": "unmatched_target",
+          "sourceRecordId": null,
+          "targetRecordId": "bank_9005",
+          "candidateTargetIds": [],
+          "amountDeltaMinor": null,
+          "dateDeltaDays": null,
+          "reason": "No processor settlement record satisfies the configured reference, currency, amount, and date rules."
+        },
+        {
+          "decision": "exact",
+          "sourceRecordId": "proc_1001",
+          "targetRecordId": "bank_9001",
+          "candidateTargetIds": ["bank_9001"],
+          "amountDeltaMinor": "0",
+          "dateDeltaDays": 1,
+          "reason": "Reference, currency, account, and amount match within the configured date window."
+        },
+        {
+          "decision": "tolerance",
+          "sourceRecordId": "proc_1002",
+          "targetRecordId": "bank_9002",
+          "candidateTargetIds": ["bank_9002"],
+          "amountDeltaMinor": "1",
+          "dateDeltaDays": 1,
+          "reason": "Reference, currency, and account match; amount delta 1 minor unit(s) is allowed by rule stripe-bank-settlement/1.0.0."
+        },
+        {
+          "decision": "unmatched_source",
+          "sourceRecordId": "proc_1003",
+          "targetRecordId": null,
+          "candidateTargetIds": [],
+          "amountDeltaMinor": null,
+          "dateDeltaDays": null,
+          "reason": "Reference and currency exist on the bank side, but amount or date is outside the configured rule boundary."
+        },
+        {
+          "decision": "exact",
+          "sourceRecordId": "proc_1004",
+          "targetRecordId": "bank_9004",
+          "candidateTargetIds": ["bank_9004"],
+          "amountDeltaMinor": "0",
+          "dateDeltaDays": 1,
+          "reason": "Reference, currency, account, and amount match within the configured date window."
+        },
+        {
+          "decision": "unmatched_source",
+          "sourceRecordId": "proc_1005",
+          "targetRecordId": null,
+          "candidateTargetIds": [],
+          "amountDeltaMinor": null,
+          "dateDeltaDays": null,
+          "reason": "No bank record shares the required reference and currency."
+        },
+        {
+          "decision": "exact",
+          "sourceRecordId": "proc_1006",
+          "targetRecordId": "bank_9006",
+          "candidateTargetIds": ["bank_9006"],
+          "amountDeltaMinor": "0",
+          "dateDeltaDays": 1,
+          "reason": "Reference, currency, account, and amount match within the configured date window."
+        },
+        {
+          "decision": "ambiguous",
+          "sourceRecordId": "proc_1007",
+          "targetRecordId": null,
+          "candidateTargetIds": ["bank_9007a", "bank_9007b"],
+          "amountDeltaMinor": "0",
+          "dateDeltaDays": 1,
+          "reason": "Multiple target records have the same best rule rank; operator review is required."
+        }
+      ],
+      "summary": {
+        "exact": 3,
+        "tolerance": 1,
+        "ambiguous": 1,
+        "unmatched_source": 2,
+        "unmatched_target": 2
+      }
+    }
+  },
+  "integrity": {
+    "algorithm": "sha256",
+    "commitment": "2bb536691b20051b25345cb01c41679317f95a039a72356d2ca626687cfe2d33"
+  },
+  "operationalMetadata": {
+    "generatedAt": "2026-10-02T02:36:18.976Z"
+  }
+}
