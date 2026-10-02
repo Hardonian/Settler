@@ -133,15 +133,15 @@ export async function getExecutiveMetrics(billingAccountId?: string): Promise<Ex
 
     const totalApiCalls = usageCounters
       .filter((uc: (typeof usageCounters)[0]) => uc.service === "api")
-      .reduce((sum: number, uc: (typeof usageCounters)[0]) => sum + uc.count, 0);
+      .reduce((sum: number, uc: (typeof usageCounters)[0]) => sum + Number(uc.count), 0);
 
     const totalReconciliations = usageCounters
       .filter((uc: (typeof usageCounters)[0]) => uc.service === "reconciliation")
-      .reduce((sum: number, uc: (typeof usageCounters)[0]) => sum + uc.count, 0);
+      .reduce((sum: number, uc: (typeof usageCounters)[0]) => sum + Number(uc.count), 0);
 
     const totalReceiptsParsed = usageCounters
       .filter((uc: (typeof usageCounters)[0]) => uc.service === "receipt_parsing")
-      .reduce((sum: number, uc: (typeof usageCounters)[0]) => sum + uc.count, 0);
+      .reduce((sum: number, uc: (typeof usageCounters)[0]) => sum + Number(uc.count), 0);
 
     // Growth metrics
     const lastPeriodUsers = await prisma.billingAccount.count({

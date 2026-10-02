@@ -27,9 +27,9 @@ model BillingAccount {
   currency          String    @default("usd")
   status            String    @default("active") // active, suspended, cancelled
   metadata          Json      @default("{}")
-  createdAt         DateTime  @default(now()) @map("created_at")
-  updatedAt         DateTime  @updatedAt @map("updated_at")
-  deletedAt         DateTime? @map("deleted_at")
+  createdAt         DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt         DateTime  @updatedAt @map("updated_at") @db.Timestamptz
+  deletedAt         DateTime? @map("deleted_at") @db.Timestamptz
 
   tenant            Tenant?   // Optional relation to Tenant model
   subscriptions     Subscription[]
@@ -53,15 +53,15 @@ model Subscription {
   planId                String     @map("plan_id") // base, pro, enterprise
   planName              String     @map("plan_name") // "Settler Core"
   status                String    // active, cancelled, past_due, trialing
-  currentPeriodStart    DateTime @map("current_period_start")
-  currentPeriodEnd      DateTime @map("current_period_end")
+  currentPeriodStart    DateTime @map("current_period_start") @db.Timestamptz
+  currentPeriodEnd      DateTime @map("current_period_end") @db.Timestamptz
   cancelAtPeriodEnd     Boolean   @default(false) @map("cancel_at_period_end")
-  cancelledAt           DateTime? @map("cancelled_at")
-  trialStart            DateTime? @map("trial_start")
-  trialEnd              DateTime? @map("trial_end")
+  cancelledAt           DateTime? @map("cancelled_at") @db.Timestamptz
+  trialStart            DateTime? @map("trial_start") @db.Timestamptz
+  trialEnd              DateTime? @map("trial_end") @db.Timestamptz
   metadata              Json?
-  createdAt             DateTime  @default(now()) @map("created_at")
-  updatedAt             DateTime  @updatedAt @map("updated_at")
+  createdAt             DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt             DateTime  @updatedAt @map("updated_at") @db.Timestamptz
 
   billingAccount        BillingAccount @relation(fields: [billingAccountId], references: [id], onDelete: Cascade)
 
@@ -73,19 +73,19 @@ model Subscription {
 }
 
 model StripeEvent {
-  id            String    @id @default(uuid()) @db.Uuid
+ id String @id @default(uuid())
   eventId       String    @unique  @map("event_id") // Stripe event.id
   type          String    // Event type (e.g., checkout.session.completed)
   status        String    @default("received") // received, processed, failed
-  receivedAt    DateTime  @default(now()) @map("received_at")
-  processedAt   DateTime? @map("processed_at")
+  receivedAt    DateTime  @default(now()) @map("received_at") @db.Timestamptz
+  processedAt   DateTime? @map("processed_at") @db.Timestamptz
   error         String?   @db.Text @map("error")
   userId        String?   @db.Uuid @map("user_id")
   tenantId      String?   @db.Uuid @map("tenant_id")
   billingAccountId String? @db.Uuid @map("billing_account_id")
   rawPayload    Json?      @map("raw_payload") // Full event payload for debugging
-  createdAt     DateTime  @default(now()) @map("created_at")
-  updatedAt     DateTime  @updatedAt @map("updated_at")
+  createdAt     DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt     DateTime  @updatedAt @map("updated_at") @db.Timestamptz
 
   @@index([eventId])
   @@index([type])
@@ -111,8 +111,8 @@ model AddOn {
   isActive          Boolean   @default(true) @map("is_active")
   isStandard        Boolean   @default(false)  @map("is_standard") // true if included in base plan
   metadata          Json?
-  createdAt         DateTime  @default(now()) @map("created_at")
-  updatedAt         DateTime  @updatedAt @map("updated_at")
+  createdAt         DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt         DateTime  @updatedAt @map("updated_at") @db.Timestamptz
 
   purchases         AddOnPurchase[]
 
@@ -128,11 +128,11 @@ model AddOnPurchase {
   addOnId           String    @db.Uuid @map("add_on_id")
   stripeSubscriptionItemId String? @unique @map("stripe_subscription_item_id")
   status            String    @default("active") // active, cancelled, expired
-  purchasedAt       DateTime  @default(now()) @map("purchased_at")
-  cancelledAt       DateTime? @map("cancelled_at")
+  purchasedAt       DateTime  @default(now()) @map("purchased_at") @db.Timestamptz
+  cancelledAt       DateTime? @map("cancelled_at") @db.Timestamptz
   metadata          Json?
-  createdAt         DateTime  @default(now()) @map("created_at")
-  updatedAt         DateTime  @updatedAt @map("updated_at")
+  createdAt         DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt         DateTime  @updatedAt @map("updated_at") @db.Timestamptz
 
   billingAccount    BillingAccount @relation(fields: [billingAccountId], references: [id], onDelete: Cascade)
   addOn             AddOn @relation(fields: [addOnId], references: [id], onDelete: Restrict)
@@ -155,7 +155,7 @@ model UsageEvent {
   quantity          Decimal   @db.Decimal(15, 6) // can be fractional
   unit              String?   // request, job, event, message, etc.
   metadata          Json?
-  timestamp         DateTime  @default(now())
+  timestamp         DateTime  @default(now()) @db.Timestamptz
   aggregated        Boolean   @default(false) // true once aggregated into daily table
 
   billingAccount    BillingAccount @relation(fields: [billingAccountId], references: [id], onDelete: Cascade)
@@ -182,10 +182,10 @@ model UsageAggregateDaily {
   integrationId     String? @map("integration_id")
   addOnId           String?   @db.Uuid @map("add_on_id")
   totalQuantity     Decimal   @db.Decimal(15, 6) @map("total_quantity")
-  eventCount        Int       @default(0) @map("event_count")
+  eventCount        BigInt    @default(0) @map("event_count")
   estimatedCost     Decimal?  @db.Decimal(10, 2) @map("estimated_cost")
-  createdAt         DateTime  @default(now()) @map("created_at")
-  updatedAt         DateTime  @updatedAt @map("updated_at")
+  createdAt         DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt         DateTime  @updatedAt @map("updated_at") @db.Timestamptz
 
   billingAccount    BillingAccount @relation(fields: [billingAccountId], references: [id], onDelete: Cascade)
 
@@ -205,10 +205,10 @@ model UsageCounter {
   service           String     @map("service") // 'reconcile', 'receipts', 'featureFlags', 'playground'
   period            String     @map("period") // 'daily', 'monthly'
   periodStart       DateTime  @db.Date @map("period_start")
-  count             Int       @default(0)
+  count             BigInt    @default(0)
   limit             Int       @default(0)  @map("limit") // Cached limit for reference
-  createdAt         DateTime  @default(now()) @map("created_at")
-  updatedAt         DateTime  @updatedAt @map("updated_at")
+  createdAt         DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt         DateTime  @updatedAt @map("updated_at") @db.Timestamptz
 
   billingAccount    BillingAccount @relation(fields: [billingAccountId], references: [id], onDelete: Cascade)
 
@@ -240,13 +240,13 @@ model ReconJob {
   reconStrategy      String    @default("deterministic") @map("recon_strategy")
   scheduleCron       String?   @map("schedule_cron")
   scheduleTimezone   String    @default("UTC") @map("schedule_timezone")
-  nextExecutionAt    DateTime? @map("next_execution_at")
+  nextExecutionAt    DateTime? @map("next_execution_at") @db.Timestamptz
   status             String    @default("active")
   version            Int       @default(1)
   metadata           Json      @default("{}")
-  createdAt          DateTime  @default(now()) @map("created_at")
-  updatedAt          DateTime  @updatedAt @map("updated_at")
-  deletedAt          DateTime? @map("deleted_at")
+  createdAt          DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt          DateTime  @updatedAt @map("updated_at") @db.Timestamptz
+  deletedAt          DateTime? @map("deleted_at") @db.Timestamptz
 
   template           ReconTemplate? @relation(fields: [templateId], references: [id], onDelete: SetNull)
   mappingTemplate    MappingTemplate? @relation(fields: [mappingTemplateId], references: [id], onDelete: SetNull)
@@ -292,8 +292,8 @@ model ReconResult {
   snapshotId            String?   @map("snapshot_id") @db.Uuid
   inputHash             String?   @map("input_hash")
   status                String    @default("running")
-  startedAt             DateTime  @default(now()) @map("started_at")
-  completedAt           DateTime? @map("completed_at")
+  startedAt             DateTime  @default(now()) @map("started_at") @db.Timestamptz
+  completedAt           DateTime? @map("completed_at") @db.Timestamptz
   sourceCount           Int       @default(0) @map("source_count")
   targetCount           Int       @default(0) @map("target_count")
   matchedCount          Int       @default(0) @map("matched_count")
@@ -316,8 +316,8 @@ model ReconResult {
   proofCapsule          Json?     @default("{}") @map("proof_capsule")
   proofpackPayload      Json?     @map("proofpack_payload")
   proofpackHash         String?   @map("proofpack_hash")
-  createdAt             DateTime  @default(now()) @map("created_at")
-  updatedAt             DateTime  @updatedAt @map("updated_at")
+  createdAt             DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt             DateTime  @updatedAt @map("updated_at") @db.Timestamptz
 
   reconJob              ReconJob? @relation(fields: [reconJobId], references: [id], onDelete: Cascade)
   snapshot              RunSnapshot? @relation(fields: [snapshotId], references: [id], onDelete: SetNull)
@@ -346,7 +346,7 @@ model RunSnapshot {
   ruleVersions          Json      @default("[]") @map("rule_versions")
   engineVersion         String    @default("1.0.0") @map("engine_version")
   metadata              Json      @default("{}")
-  createdAt             DateTime  @default(now()) @map("created_at")
+  createdAt             DateTime  @default(now()) @map("created_at") @db.Timestamptz
 
   results               ReconResult[]
 
@@ -373,7 +373,7 @@ model ExecutionProvenance {
   actorUserId           String?   @db.Uuid @map("actor_user_id")
   details               Json      @default("{}") @map("details")
   entryHash             String @map("entry_hash")
-  timestamp             DateTime  @default(now())
+  timestamp             DateTime  @default(now()) @db.Timestamptz
 
   runResult             ReconResult @relation(fields: [runResultId], references: [id], onDelete: Cascade)
 
@@ -403,9 +403,9 @@ model ReconTemplate {
   isSystem          Boolean   @default(false) @map("is_system")
   usageCount        Int       @default(0) @map("usage_count")
   metadata          Json      @default("{}") @map("metadata")
-  createdAt         DateTime  @default(now()) @map("created_at")
-  updatedAt         DateTime  @updatedAt @map("updated_at")
-  deletedAt         DateTime? @map("deleted_at")
+  createdAt         DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt         DateTime  @updatedAt @map("updated_at") @db.Timestamptz
+  deletedAt         DateTime? @map("deleted_at") @db.Timestamptz
 
   jobs              ReconJob[]
 
@@ -431,7 +431,7 @@ model ReconAudit {
   ipAddress     String? @map("ip_address")
   userAgent     String?   @db.Text @map("user_agent")
   metadata      Json      @default("{}")
-  createdAt     DateTime  @default(now()) @map("created_at")
+  createdAt     DateTime  @default(now()) @map("created_at") @db.Timestamptz
 
   reconJob      ReconJob? @relation(fields: [reconJobId], references: [id], onDelete: Cascade)
   reconResult   ReconResult? @relation(fields: [reconResultId], references: [id], onDelete: Cascade)
@@ -459,9 +459,9 @@ model MappingTemplate {
   usageCount         Int       @default(0) @map("usage_count")
   version            Int       @default(1)
   metadata           Json      @default("{}")
-  createdAt          DateTime  @default(now()) @map("created_at")
-  updatedAt          DateTime  @updatedAt @map("updated_at")
-  deletedAt          DateTime? @map("deleted_at")
+  createdAt          DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt          DateTime  @updatedAt @map("updated_at") @db.Timestamptz
+  deletedAt          DateTime? @map("deleted_at") @db.Timestamptz
 
   jobs               ReconJob[]
 
@@ -483,9 +483,9 @@ model ValidationRule {
   isSystem    Boolean   @default(false) @map("is_system")
   usageCount  Int       @default(0) @map("usage_count")
   metadata    Json      @default("{}")
-  createdAt   DateTime  @default(now()) @map("created_at")
-  updatedAt   DateTime  @updatedAt @map("updated_at")
-  deletedAt   DateTime? @map("deleted_at")
+  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt   DateTime  @updatedAt @map("updated_at") @db.Timestamptz
+  deletedAt   DateTime? @map("deleted_at") @db.Timestamptz
 
   @@index([tenantId])
   @@index([ruleType])
@@ -509,9 +509,9 @@ model CustomMatchingRule {
   applicableTargets Json      @default("[]")  @map("applicable_targets") // Array of target adapter types this rule applies to
   usageCount        Int       @default(0) @map("usage_count")
   metadata          Json      @default("{}") @map("metadata")
-  createdAt         DateTime  @default(now()) @map("created_at")
-  updatedAt         DateTime  @updatedAt @map("updated_at")
-  deletedAt         DateTime? @map("deleted_at")
+  createdAt         DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt         DateTime  @updatedAt @map("updated_at") @db.Timestamptz
+  deletedAt         DateTime? @map("deleted_at") @db.Timestamptz
 
   @@index([tenantId])
   @@index([matchStrategy])
@@ -536,9 +536,9 @@ model TransformRecipe {
   usageCount        Int       @default(0) @map("usage_count")
   version           Int       @default(1)
   metadata          Json      @default("{}")
-  createdAt         DateTime  @default(now()) @map("created_at")
-  updatedAt         DateTime  @updatedAt @map("updated_at")
-  deletedAt         DateTime? @map("deleted_at")
+  createdAt         DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt         DateTime  @updatedAt @map("updated_at") @db.Timestamptz
+  deletedAt         DateTime? @map("deleted_at") @db.Timestamptz
 
   jobs              ReconJob[]
 
@@ -556,12 +556,12 @@ model ContractVersion {
   schemaDefinition  Json @map("schema_definition")
   isActive          Boolean   @default(true) @map("is_active")
   isDeprecated      Boolean   @default(false) @map("is_deprecated")
-  deprecatedAt      DateTime? @map("deprecated_at")
+  deprecatedAt      DateTime? @map("deprecated_at") @db.Timestamptz
   breakingChanges   Json      @default("[]") @map("breaking_changes")
   migrationGuide    String?   @db.Text @map("migration_guide")
   metadata          Json      @default("{}")
-  createdAt         DateTime  @default(now()) @map("created_at")
-  updatedAt         DateTime  @updatedAt @map("updated_at")
+  createdAt         DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt         DateTime  @updatedAt @map("updated_at") @db.Timestamptz
 
   driftEvents       DriftEvent[]
 
@@ -590,9 +590,9 @@ model DriftEvent {
   repairAction      Json? @map("repair_action")
   acknowledged      Boolean   @default(false)
   acknowledgedBy    String?   @db.Uuid @map("acknowledged_by")
-  acknowledgedAt     DateTime? @map("acknowledged_at")
+  acknowledgedAt     DateTime? @map("acknowledged_at") @db.Timestamptz
   metadata          Json      @default("{}")
-  createdAt         DateTime  @default(now()) @map("created_at")
+  createdAt         DateTime  @default(now()) @map("created_at") @db.Timestamptz
 
   contractVersion   ContractVersion? @relation(fields: [contractVersionId], references: [id], onDelete: SetNull)
 
@@ -612,8 +612,8 @@ model WorkflowRun {
   workflowName  String? @map("workflow_name")
   workflowVersion String? @map("workflow_version")
   status        String    @default("running")
-  startedAt     DateTime  @default(now()) @map("started_at")
-  completedAt   DateTime? @map("completed_at")
+  startedAt     DateTime  @default(now()) @map("started_at") @db.Timestamptz
+  completedAt   DateTime? @map("completed_at") @db.Timestamptz
   triggeredBy   String? @map("triggered_by")
   triggerEvent  Json? @map("trigger_event")
   executionGraph Json? @map("execution_graph")
@@ -622,8 +622,8 @@ model WorkflowRun {
   errorStack    String?   @db.Text @map("error_stack")
   durationMs    BigInt? @map("duration_ms")
   metadata      Json      @default("{}")
-  createdAt     DateTime  @default(now()) @map("created_at")
-  updatedAt     DateTime  @updatedAt @map("updated_at")
+  createdAt     DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt     DateTime  @updatedAt @map("updated_at") @db.Timestamptz
 
   @@index([tenantId])
   @@index([workflowId])
@@ -643,9 +643,9 @@ model AnalyticsEvent {
   data      Json     @default("{}") @map("data")
   userId    String?  @db.Uuid @map("user_id")
   sessionId String? @map("session_id")
-  timestamp DateTime @default(now()) @map("timestamp")
+  timestamp DateTime @default(now()) @map("timestamp") @db.Timestamptz
   metadata  Json     @default("{}") @map("metadata")
-  createdAt DateTime @default(now()) @map("created_at")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
 
   @@index([type])
   @@index([userId])
@@ -756,8 +756,8 @@ model TenantBranding {
   fontFamilyPrimary String? @map("font_family_primary")
   fontFamilySecondary String? @map("font_family_secondary")
   metadata          Json      @default("{}") @map("metadata")
-  createdAt         DateTime  @default(now()) @map("created_at")
-  updatedAt         DateTime  @updatedAt @map("updated_at")
+  createdAt         DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt         DateTime  @updatedAt @map("updated_at") @db.Timestamptz
 
   tenant            Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
@@ -771,8 +771,8 @@ model TenantNavigation {
   navItems          Json      @default("[]") @map("nav_items")
   footerItems       Json      @default("[]") @map("footer_items")
   metadata          Json      @default("{}")
-  createdAt         DateTime  @default(now()) @map("created_at")
-  updatedAt         DateTime  @updatedAt @map("updated_at")
+  createdAt         DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt         DateTime  @updatedAt @map("updated_at") @db.Timestamptz
 
   tenant            Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
@@ -792,8 +792,8 @@ model TenantPage {
   seoImageUrl       String? @map("seo_image_url")
   isDraft           Boolean   @default(false) @map("is_draft")
   metadata          Json      @default("{}")
-  createdAt         DateTime  @default(now()) @map("created_at")
-  updatedAt         DateTime  @updatedAt @map("updated_at")
+  createdAt         DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt         DateTime  @updatedAt @map("updated_at") @db.Timestamptz
 
   tenant            Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   revisions         TenantPageRevision[]
@@ -814,8 +814,8 @@ model TenantPageRevision {
   snapshot          Json
   comment           String?
   approvedByUserId  String?   @db.Uuid @map("approved_by_user_id")
-  approvedAt        DateTime? @map("approved_at")
-  createdAt         DateTime  @default(now()) @map("created_at")
+  approvedAt        DateTime? @map("approved_at") @db.Timestamptz
+  createdAt         DateTime  @default(now()) @map("created_at") @db.Timestamptz
 
   tenantPage        TenantPage @relation(fields: [tenantPageId], references: [id], onDelete: Cascade)
 
@@ -835,11 +835,11 @@ model Experiment {
   status            String    @default("draft")
   trafficSplit      Json      @default("{}") @map("traffic_split")
   primaryMetric     String    @default("click_through") @map("primary_metric")
-  startsAt          DateTime? @map("starts_at")
-  endsAt            DateTime? @map("ends_at")
+  startsAt          DateTime? @map("starts_at") @db.Timestamptz
+  endsAt            DateTime? @map("ends_at") @db.Timestamptz
   metadata          Json      @default("{}")
-  createdAt         DateTime  @default(now()) @map("created_at")
-  updatedAt         DateTime  @updatedAt @map("updated_at")
+  createdAt         DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt         DateTime  @updatedAt @map("updated_at") @db.Timestamptz
 
   tenant            Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   targetPage        TenantPage @relation(fields: [targetPageId], references: [id], onDelete: Cascade)
@@ -862,8 +862,8 @@ model ExperimentVariant {
   label             String @map("label")
   blocksOverride    Json      @default("{}") @map("blocks_override")
   metadata          Json      @default("{}")
-  createdAt         DateTime  @default(now()) @map("created_at")
-  updatedAt         DateTime  @updatedAt @map("updated_at")
+  createdAt         DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt         DateTime  @updatedAt @map("updated_at") @db.Timestamptz
 
   experiment        Experiment @relation(fields: [experimentId], references: [id], onDelete: Cascade)
 
@@ -883,7 +883,7 @@ model ExperimentMetricEvent {
   sessionId         String? @map("session_id")
   userId            String?   @db.Uuid @map("user_id")
   meta              Json      @default("{}")
-  createdAt         DateTime  @default(now()) @map("created_at")
+  createdAt         DateTime  @default(now()) @map("created_at") @db.Timestamptz
 
   experiment        Experiment @relation(fields: [experimentId], references: [id], onDelete: Cascade)
 
@@ -910,8 +910,8 @@ model ReceiptUpload {
   status            String    @default("pending")
   errorMessage      String?   @db.Text @map("error_message")
   metadata          Json      @default("{}") @map("metadata")
-  createdAt         DateTime  @default(now()) @map("created_at")
-  updatedAt         DateTime  @updatedAt @map("updated_at")
+  createdAt         DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt         DateTime  @updatedAt @map("updated_at") @db.Timestamptz
 
   receipt           Receipt?
 
@@ -926,7 +926,7 @@ model Receipt {
   id                String    @id @default(uuid()) @db.Uuid
   uploadId           String    @db.Uuid @unique @map("upload_id")
   vendor             String?
-  date               DateTime?
+  date               DateTime? @db.Timestamptz
   currency           String?
   subtotal           Decimal?  @db.Decimal(15, 2)
   tax                Decimal?  @db.Decimal(15, 2)
@@ -935,8 +935,8 @@ model Receipt {
   confidenceScore    Decimal?  @db.Decimal(5, 4)  @map("confidence_score") // 0.0000 to 1.0000
   rawText            String?   @db.Text @map("raw_text")
   metadata           Json      @default("{}")
-  createdAt          DateTime  @default(now()) @map("created_at")
-  updatedAt          DateTime  @updatedAt @map("updated_at")
+  createdAt          DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt          DateTime  @updatedAt @map("updated_at") @db.Timestamptz
 
   upload             ReceiptUpload @relation(fields: [uploadId], references: [id], onDelete: Cascade)
   items              ReceiptItem[]
@@ -957,8 +957,8 @@ model ReceiptItem {
   lineTotal         Decimal?  @db.Decimal(15, 2) @map("line_total")
   category          String?
   metadata          Json      @default("{}")
-  createdAt         DateTime  @default(now()) @map("created_at")
-  updatedAt         DateTime  @updatedAt @map("updated_at")
+  createdAt         DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt         DateTime  @updatedAt @map("updated_at") @db.Timestamptz
 
   receipt           Receipt @relation(fields: [receiptId], references: [id], onDelete: Cascade)
 
@@ -983,9 +983,9 @@ model FeatureFlag {
   isGlobal          Boolean   @default(false)  @map("is_global") // true if applies to all projects
   defaultValue      Json?      @map("default_value") // Default value for the flag
   metadata          Json      @default("{}") @map("metadata")
-  createdAt         DateTime  @default(now()) @map("created_at")
-  updatedAt         DateTime  @updatedAt @map("updated_at")
-  deletedAt         DateTime? @map("deleted_at")
+  createdAt         DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt         DateTime  @updatedAt @map("updated_at") @db.Timestamptz
+  deletedAt         DateTime? @map("deleted_at") @db.Timestamptz
 
   environments      FeatureFlagEnvironment[]
   overrides         FeatureFlagOverride[]
@@ -1006,7 +1006,7 @@ model FeatureFlagEnvironment {
   enabled           Boolean   @default(false)
   variant           Json?     // For string/number flags, the variant value
   config            Json      @default("{}") // Additional environment-specific config
-  updatedAt         DateTime  @updatedAt @map("updated_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at") @db.Timestamptz
   updatedBy         String?   @db.Uuid @map("updated_by")
 
   flag              FeatureFlag @relation(fields: [flagId], references: [id], onDelete: Cascade)
@@ -1026,9 +1026,9 @@ model FeatureFlagOverride {
   targetType        String    @default("user")  @map("target_type") // user, tenant, segment, etc.
   value             Json      // The override value
   metadata          Json      @default("{}") @map("metadata")
-  createdAt         DateTime  @default(now()) @map("created_at")
-  updatedAt         DateTime  @updatedAt @map("updated_at")
-  expiresAt         DateTime? @map("expires_at")
+  createdAt         DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt         DateTime  @updatedAt @map("updated_at") @db.Timestamptz
+  expiresAt         DateTime? @map("expires_at") @db.Timestamptz
 
   flag              FeatureFlag @relation(fields: [flagId], references: [id], onDelete: Cascade)
 
@@ -1054,8 +1054,8 @@ model Tenant {
   name               String
   isActive            Boolean   @default(true) @map("is_active")
   metadata           Json      @default("{}")
-  createdAt          DateTime  @default(now()) @map("created_at")
-  updatedAt          DateTime  @updatedAt @map("updated_at")
+  createdAt          DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt          DateTime  @updatedAt @map("updated_at") @db.Timestamptz
 
   billingAccount     BillingAccount? @relation(fields: [billingAccountId], references: [id], onDelete: SetNull)
   branding           TenantBranding?
@@ -1093,9 +1093,9 @@ model OnboardingProgress {
   skippedSteps      String[]  @default([]) @map("skipped_steps")
   progress          Int       @default(0) // 0-100
   metadata          Json      @default("{}")
-  completedAt       DateTime? @map("completed_at")
-  createdAt         DateTime  @default(now()) @map("created_at")
-  updatedAt         DateTime  @updatedAt @map("updated_at")
+  completedAt       DateTime? @map("completed_at") @db.Timestamptz
+  createdAt         DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt         DateTime  @updatedAt @map("updated_at") @db.Timestamptz
 
   @@index([userId])
   @@index([currentStep])
@@ -1112,9 +1112,9 @@ model TenantOnboardingProgress {
   skippedSteps      String[]  @default([]) @map("skipped_steps")
   progress          Int       @default(0) // 0-100
   metadata          Json      @default("{}")
-  completedAt       DateTime? @map("completed_at")
-  createdAt         DateTime  @default(now()) @map("created_at")
-  updatedAt         DateTime  @updatedAt @map("updated_at")
+  completedAt       DateTime? @map("completed_at") @db.Timestamptz
+  createdAt         DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt         DateTime  @updatedAt @map("updated_at") @db.Timestamptz
 
   @@unique([tenantId, userId])
   @@index([tenantId])
@@ -1154,7 +1154,7 @@ model OnboardingEvent {
   stepId            String? @map("step_id")
   traceId           String? @map("trace_id")
   properties        Json      @default("{}")
-  createdAt         DateTime  @default(now()) @map("created_at")
+  createdAt         DateTime  @default(now()) @map("created_at") @db.Timestamptz
 
   @@index([tenantId])
   @@index([userId])
@@ -1185,7 +1185,7 @@ model AuditLog {
   actorId           String?   @db.Uuid  @map("actor_id") // ID of the actor performing the action
   reason            String?   @db.VarChar(500)  @map("reason") // Reason for the action (for governance)
   
-  createdAt         DateTime  @default(now()) @map("created_at")
+  createdAt         DateTime  @default(now()) @map("created_at") @db.Timestamptz
 
   @@index([userId])
   @@index([billingAccountId])
@@ -1209,14 +1209,14 @@ model Webhook {
   id                String    @id @default(uuid()) @db.Uuid
   userId            String    @db.Uuid @map("user_id")
   tenantId          String    @db.Uuid @map("tenant_id")
-  url               String    @db.Text
+  url               String @db.VarChar
   events            Json      @default("[]") // Array of event type strings
-  secret            String    @db.Text // HMAC signing secret
+  secret            String @db.VarChar  // HMAC signing secret
   status            String    @default("active") // active, inactive, deleted
   metadata          Json      @default("{}") @map("metadata")
-  createdAt         DateTime  @default(now()) @map("created_at")
-  updatedAt         DateTime  @updatedAt @map("updated_at")
-  deletedAt         DateTime? @map("deleted_at")
+  createdAt         DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt         DateTime  @updatedAt @map("updated_at") @db.Timestamptz
+  deletedAt         DateTime? @map("deleted_at") @db.Timestamptz
 
   deliveries        WebhookDelivery[]
 
@@ -1230,17 +1230,17 @@ model Webhook {
 model WebhookDelivery {
   id                String    @id @default(uuid()) @db.Uuid
   webhookId         String    @db.Uuid @map("webhook_id")
-  url               String    @db.Text
+  url               String @db.VarChar
   payload           Json      // The webhook event payload
   status            String    @default("pending") // pending, delivered, failed
   statusCode        Int? @map("status_code")
   responseBody      String?   @db.Text @map("response_body")
   attempts          Int       @default(1)
-  nextRetryAt       DateTime? @map("next_retry_at")
+  nextRetryAt       DateTime? @map("next_retry_at") @db.Timestamptz
   errorMessage      String?   @db.Text @map("error_message")
   metadata          Json      @default("{}")
-  createdAt         DateTime  @default(now()) @map("created_at")
-  updatedAt         DateTime  @updatedAt @map("updated_at")
+  createdAt         DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt         DateTime  @updatedAt @map("updated_at") @db.Timestamptz
 
   webhook           Webhook   @relation(fields: [webhookId], references: [id], onDelete: Cascade)
 
@@ -1263,9 +1263,9 @@ model IdempotencyKey {
   key               String    // The idempotency key
   status            String    @default("pending") // pending, completed, failed
   response          Json?     // Cached response for completed requests
-  createdAt         DateTime  @default(now()) @map("created_at")
-  completedAt       DateTime? @map("completed_at")
-  expiresAt         DateTime   @map("expires_at") // Auto-cleanup after 24 hours
+  createdAt         DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  completedAt       DateTime? @map("completed_at") @db.Timestamptz
+  expiresAt         DateTime   @map("expires_at") @db.Timestamptz  // Auto-cleanup after 24 hours
 
   @@unique([tenantId, key], map: "idempotency_keys_tenant_key_unique")
   @@index([tenantId, userId])
@@ -1292,14 +1292,14 @@ model IngestionSource {
   configEncrypted   String?   @db.Text  @map("config_encrypted") // Encrypted connector config (API keys, OAuth tokens)
   configMetadata    Json      @default("{}")  @map("config_metadata") // Non-sensitive metadata (connector name, etc.)
   status            String    @default("active") // active, paused, error
-  lastSyncAt        DateTime? @map("last_sync_at")
+  lastSyncAt        DateTime? @map("last_sync_at") @db.Timestamptz
   lastSyncStatus    String?    @map("last_sync_status") // success, failed, partial
   lastSyncError     String?   @db.Text @map("last_sync_error")
   syncSchedule      String?    @map("sync_schedule") // Cron expression for scheduled syncs
   metadata          Json      @default("{}")
-  createdAt         DateTime  @default(now()) @map("created_at")
-  updatedAt         DateTime  @updatedAt @map("updated_at")
-  deletedAt         DateTime? @map("deleted_at")
+  createdAt         DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt         DateTime  @updatedAt @map("updated_at") @db.Timestamptz
+  deletedAt         DateTime? @map("deleted_at") @db.Timestamptz
 
   ingestions        Ingestion[]
   rawRecords        RawRecord[]
@@ -1321,8 +1321,8 @@ model Ingestion {
   userId            String    @db.Uuid @map("user_id")
   idempotencyKey    String?   @unique  @map("idempotency_key") // For idempotent retries
   status            String    @default("pending") // pending, processing, completed, failed
-  startedAt         DateTime  @default(now()) @map("started_at")
-  completedAt       DateTime? @map("completed_at")
+  startedAt         DateTime  @default(now()) @map("started_at") @db.Timestamptz
+  completedAt       DateTime? @map("completed_at") @db.Timestamptz
   errorMessage      String?   @db.Text @map("error_message")
   errorStack        String?   @db.Text @map("error_stack")
   traceId           String?    @map("trace_id") // For observability
@@ -1331,8 +1331,8 @@ model Ingestion {
   failedCount       Int       @default(0) @map("failed_count")
   retryCount        Int       @default(0) @map("retry_count")
   metadata          Json      @default("{}")
-  createdAt         DateTime  @default(now()) @map("created_at")
-  updatedAt         DateTime  @updatedAt @map("updated_at")
+  createdAt         DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt         DateTime  @updatedAt @map("updated_at") @db.Timestamptz
 
   source            IngestionSource @relation(fields: [sourceId], references: [id], onDelete: Cascade)
   rawRecords        RawRecord[]
@@ -1359,8 +1359,8 @@ model RawRecord {
   status            String    @default("pending") // pending, normalized, failed
   errorMessage      String?   @db.Text @map("error_message")
   metadata          Json      @default("{}")
-  createdAt         DateTime  @default(now()) @map("created_at")
-  updatedAt         DateTime  @updatedAt @map("updated_at")
+  createdAt         DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt         DateTime  @updatedAt @map("updated_at") @db.Timestamptz
 
   ingestion         Ingestion @relation(fields: [ingestionId], references: [id], onDelete: Cascade)
   source            IngestionSource @relation(fields: [sourceId], references: [id], onDelete: Cascade)
@@ -1389,8 +1389,8 @@ model NormalizedTransaction {
   paymentMethod     String? @map("payment_method")
   reference         String?
   metadata          Json      @default("{}")
-  createdAt         DateTime  @default(now()) @map("created_at")
-  updatedAt         DateTime  @updatedAt @map("updated_at")
+  createdAt         DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt         DateTime  @updatedAt @map("updated_at") @db.Timestamptz
 
   ingestion         Ingestion @relation(fields: [ingestionId], references: [id], onDelete: Cascade)
   rawRecord         RawRecord? @relation(fields: [rawRecordId], references: [id], onDelete: SetNull)
@@ -1417,8 +1417,8 @@ model ReconciliationRun {
   userId            String    @map("user_id") @db.Uuid
   name              String?
   status            String    @default("pending") // pending, running, completed, failed
-  startedAt         DateTime  @default(now()) @map("started_at")
-  completedAt       DateTime? @map("completed_at")
+  startedAt         DateTime  @default(now()) @map("started_at") @db.Timestamptz
+  completedAt       DateTime? @map("completed_at") @db.Timestamptz
   sourceCount       Int       @default(0) @map("source_count")
   targetCount       Int       @default(0) @map("target_count")
   matchedCount      Int       @default(0) @map("matched_count")
@@ -1428,8 +1428,8 @@ model ReconciliationRun {
   errorMessage      String?   @map("error_message") @db.Text
   traceId           String?   @map("trace_id")
   metadata          Json      @default("{}")
-  createdAt         DateTime  @default(now()) @map("created_at")
-  updatedAt         DateTime  @updatedAt @map("updated_at")
+  createdAt         DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt         DateTime  @updatedAt @map("updated_at") @db.Timestamptz
 
   ingestion         Ingestion? @relation(fields: [ingestionId], references: [id], onDelete: SetNull)
   matches           ReconciliationMatch[]
@@ -1456,7 +1456,7 @@ model ReconciliationMatch {
   dateDiff          Int?       @map("date_diff") // Days difference
   reviewed          Boolean   @default(false)
   reviewedBy        String?   @db.Uuid @map("reviewed_by")
-  reviewedAt        DateTime? @map("reviewed_at")
+  reviewedAt        DateTime? @map("reviewed_at") @db.Timestamptz
   // Enterprise exception workflow fields
   status            String    @default("open")  @map("status") // open, in_progress, resolved, dismissed
   assignedTo        String?   @db.Uuid  @map("assigned_to") // Operator assigned to resolve this exception
@@ -1464,8 +1464,8 @@ model ReconciliationMatch {
   notes             String?   @db.Text  @map("notes") // Operator notes during adjudication
   severity          String    @default("medium")  @map("severity") // low, medium, high, critical
   metadata          Json      @default("{}")
-  createdAt         DateTime  @default(now()) @map("created_at")
-  updatedAt         DateTime  @updatedAt @map("updated_at")
+  createdAt         DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt         DateTime  @updatedAt @map("updated_at") @db.Timestamptz
 
   run               ReconciliationRun @relation(fields: [runId], references: [id], onDelete: Cascade)
   sourceTransaction NormalizedTransaction @relation("SourceMatches", fields: [sourceTransactionId], references: [id], onDelete: Cascade)
@@ -1499,7 +1499,7 @@ model ReconciliationProvenance {
   actorUserId       String?  @map("actor_user_id") @db.Uuid
   details           Json     @default("{}")
   entryHash         String   @map("entry_hash")
-  createdAt         DateTime @default(now()) @map("created_at")
+  createdAt         DateTime @default(now()) @map("created_at") @db.Timestamptz
 
   run               ReconciliationRun   @relation(fields: [runId], references: [id], onDelete: Cascade)
   match             ReconciliationMatch? @relation(fields: [matchId], references: [id], onDelete: SetNull)
@@ -1949,7 +1949,7 @@ model RunDelta {
   
   // Run context
   jobId             String    @db.Uuid @map("job_id")
-  deltaGeneratedAt  DateTime  @default(now()) @map("delta_generated_at")
+  deltaGeneratedAt  DateTime  @default(now()) @map("delta_generated_at") @db.Timestamptz
   
   // Input changes
   inputChanged      Boolean   @default(false) @map("input_changed")
@@ -1987,7 +1987,7 @@ model RunDelta {
   processingTimeMs  BigInt? @map("processing_time_ms")
   
   metadata           Json      @default("{}")
-  createdAt         DateTime  @default(now()) @map("created_at")
+  createdAt         DateTime  @default(now()) @map("created_at") @db.Timestamptz
 
   workerRuns        WorkerRun[]
 
@@ -2075,8 +2075,8 @@ model PolicyMemoryArtifact {
   evidenceCount  Int      @default(0) @map("evidence_count")
   degraded       Boolean  @default(false)
   degradedReasons Json    @default("[]") @map("degraded_reasons")
-  createdAt      DateTime @default(now()) @map("created_at")
-  updatedAt      DateTime @updatedAt @map("updated_at")
+  createdAt      DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt      DateTime @updatedAt @map("updated_at") @db.Timestamptz
 
   @@unique([tenantId, artifactKey])
   @@index([tenantId])
@@ -2097,8 +2097,8 @@ model PolicyEvolutionProposal {
   impactSummary     Json     @default("{}") @map("impact_summary")
   riskFlags         Json     @default("[]") @map("risk_flags")
   missingData       Json     @default("[]") @map("missing_data")
-  createdAt         DateTime @default(now()) @map("created_at")
-  updatedAt         DateTime @updatedAt @map("updated_at")
+  createdAt         DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt         DateTime @updatedAt @map("updated_at") @db.Timestamptz
 
   reviews           PolicyEvolutionProposalReview[]
 
@@ -2118,7 +2118,7 @@ model PolicyEvolutionProposalReview {
   reason          String?  @db.Text
   priorStatus     String   @map("prior_status")
   resultingStatus String   @map("resulting_status")
-  createdAt       DateTime @default(now()) @map("created_at")
+  createdAt       DateTime @default(now()) @map("created_at") @db.Timestamptz
 
   proposal        PolicyEvolutionProposal @relation(fields: [proposalId], references: [id], onDelete: Cascade)
 
@@ -2139,15 +2139,15 @@ model Export {
   status            String    @default("pending") // pending, processing, completed, failed
   storageLocation   String?    @map("storage_location") // URL or storage key
   signedUrl         String?   @db.Text @map("signed_url")
-  signedUrlExpiresAt DateTime? @map("signed_url_expires_at")
+  signedUrlExpiresAt DateTime? @map("signed_url_expires_at") @db.Timestamptz
   fileSizeBytes     Int? @map("file_size_bytes")
   rowCount           Int? @map("row_count")
   errorMessage      String?   @db.Text @map("error_message")
   traceId           String? @map("trace_id")
   metadata          Json      @default("{}")
-  createdAt         DateTime  @default(now()) @map("created_at")
-  updatedAt         DateTime  @updatedAt @map("updated_at")
-  expiresAt         DateTime?  @map("expires_at") // Auto-cleanup after expiration
+  createdAt         DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt         DateTime  @updatedAt @map("updated_at") @db.Timestamptz
+  expiresAt         DateTime?  @map("expires_at") @db.Timestamptz  // Auto-cleanup after expiration
 
   @@index([tenantId])
   @@index([userId])
@@ -2206,11 +2206,11 @@ model ApprovalRequest {
   
   // Status and timing
   status            String    @default("pending") // pending, approved, rejected, cancelled, expired
-  requestedAt       DateTime  @default(now()) @map("requested_at")
-  approvedAt        DateTime? @map("approved_at")
-  rejectedAt        DateTime? @map("rejected_at")
-  cancelledAt       DateTime? @map("cancelled_at")
-  expiresAt         DateTime? @map("expires_at")
+  requestedAt       DateTime  @default(now()) @map("requested_at") @db.Timestamptz
+  approvedAt        DateTime? @map("approved_at") @db.Timestamptz
+  rejectedAt        DateTime? @map("rejected_at") @db.Timestamptz
+  cancelledAt       DateTime? @map("cancelled_at") @db.Timestamptz
+  expiresAt         DateTime? @map("expires_at") @db.Timestamptz
   
   // Outcome
   outcome          String?    @map("outcome") // approved, rejected, superseded, auto_approved, auto_rejected
@@ -2225,8 +2225,8 @@ model ApprovalRequest {
   separationViolation Boolean @default(false)  @map("separation_violation") // True if requester tried to self-approve
   
   metadata          Json      @default("{}")
-  createdAt         DateTime  @default(now()) @map("created_at")
-  updatedAt         DateTime  @updatedAt @map("updated_at")
+  createdAt         DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt         DateTime  @updatedAt @map("updated_at") @db.Timestamptz
 
   @@index([tenantId])
   @@index([requestedBy])
@@ -2263,9 +2263,9 @@ model Approver {
   notifyOnRequest     Boolean   @default(true) @map("notify_on_request")
   notifyOnExpiration  Boolean   @default(true) @map("notify_on_expiration")
   
-  createdAt           DateTime  @default(now()) @map("created_at")
-  updatedAt           DateTime  @updatedAt @map("updated_at")
-  deletedAt          DateTime? @map("deleted_at")
+  createdAt           DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt           DateTime  @updatedAt @map("updated_at") @db.Timestamptz
+  deletedAt          DateTime? @map("deleted_at") @db.Timestamptz
 
   @@unique([tenantId, userId, role])
   @@index([tenantId])

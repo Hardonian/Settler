@@ -46,7 +46,8 @@ fn parse_inputs(
 
 #[wasm_bindgen]
 pub fn verify_smt(proof_json: &str) -> String {
-    let parsed: Result<settler_kernel::SmtProof, serde_json::Error> = serde_json::from_str(proof_json);
+    let parsed: Result<settler_kernel::SmtProof, serde_json::Error> =
+        serde_json::from_str(proof_json);
     let result = match parsed {
         Ok(proof) => settler_kernel::verify_smt_proof(&proof),
         Err(err) => settler_kernel::SmtVerificationResult {

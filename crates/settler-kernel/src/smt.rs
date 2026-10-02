@@ -325,7 +325,9 @@ mod tests {
         let val = Sha256::digest(b"amount_cents=5000:status=cleared").into();
 
         tree.update(&key, &val);
-        let proof = tree.prove_inclusion(&key).expect("Proof should be generated");
+        let proof = tree
+            .prove_inclusion(&key)
+            .expect("Proof should be generated");
         assert!(proof.is_inclusion);
         assert_eq!(proof.siblings_hex.len(), SMT_DEPTH);
 
@@ -343,12 +345,17 @@ mod tests {
 
         // Key B was never inserted
         let key_b = Sha256::digest(b"tx_fraudulent_replayed_nonce").into();
-        let proof = tree.prove_non_inclusion(&key_b).expect("Non-inclusion proof should be generated");
+        let proof = tree
+            .prove_non_inclusion(&key_b)
+            .expect("Non-inclusion proof should be generated");
         assert!(!proof.is_inclusion);
         assert!(proof.value_hex.is_none());
 
         let verification = verify_smt_proof(&proof);
-        assert!(verification.valid, "Non-inclusion proof must verify that key does not exist");
+        assert!(
+            verification.valid,
+            "Non-inclusion proof must verify that key does not exist"
+        );
         assert!(verification.is_non_inclusion);
     }
 
@@ -366,6 +373,9 @@ mod tests {
         proof.value_hex = Some(hex::encode(tampered_val));
 
         let verification = verify_smt_proof(&proof);
-        assert!(!verification.valid, "Tampered value must fail SMT verification");
+        assert!(
+            !verification.valid,
+            "Tampered value must fail SMT verification"
+        );
     }
 }

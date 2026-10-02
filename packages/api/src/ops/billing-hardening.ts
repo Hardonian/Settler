@@ -134,7 +134,7 @@ export async function checkEntitlements(
       });
 
       if (usageCounter) {
-        const newCount = usageCounter.count + quantity;
+        const newCount = Number(usageCounter.count) + quantity;
         if (newCount > usageCounter.limit && usageCounter.limit > 0) {
           return {
             canRunRecon: false,
