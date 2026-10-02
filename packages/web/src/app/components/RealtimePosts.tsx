@@ -39,6 +39,15 @@ export function RealtimePosts() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    const canUseSupabase =
+      process.env.NEXT_PUBLIC_TEST_MODE !== "1" &&
+      Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
+
+    if (!canUseSupabase) {
+      setIsLoading(false);
+      return;
+    }
+
     try {
       const supabase = createClient();
 

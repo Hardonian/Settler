@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-02T17:27:28.296Z",
+  "generatedAt": "2026-10-02T18:46:34.639Z",
   "totalLinks": 735,
   "uniquePaths": 192,
   "links": [
@@ -412,21 +412,21 @@
     {
       "href": "/docs/architecture/platform-architecture",
       "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\architecture\\page.tsx",
-      "line": 63,
+      "line": 65,
       "type": "link",
       "normalizedHref": "/docs/architecture/platform-architecture"
     },
     {
       "href": "/docs/architecture/platform-architecture",
       "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\architecture\\page.tsx",
-      "line": 157,
+      "line": 159,
       "type": "link",
       "normalizedHref": "/docs/architecture/platform-architecture"
     },
     {
       "href": "/security-and-audit",
       "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\architecture\\page.tsx",
-      "line": 162,
+      "line": 164,
       "type": "link",
       "normalizedHref": "/security-and-audit"
     },
@@ -2302,28 +2302,28 @@
     {
       "href": "/contact",
       "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\enterprise\\page.tsx",
-      "line": 81,
+      "line": 83,
       "type": "link",
       "normalizedHref": "/contact"
     },
     {
       "href": "/pricing",
       "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\enterprise\\page.tsx",
-      "line": 86,
+      "line": 88,
       "type": "link",
       "normalizedHref": "/pricing"
     },
     {
       "href": "/contact",
       "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\enterprise\\page.tsx",
-      "line": 231,
+      "line": 235,
       "type": "link",
       "normalizedHref": "/contact"
     },
     {
       "href": "/docs",
       "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\enterprise\\page.tsx",
-      "line": 236,
+      "line": 240,
       "type": "link",
       "normalizedHref": "/docs"
     },
@@ -2575,14 +2575,14 @@
     {
       "href": "/architecture",
       "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\open-source\\page.tsx",
-      "line": 291,
+      "line": 292,
       "type": "link",
       "normalizedHref": "/architecture"
     },
     {
       "href": "/security-and-audit",
       "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\open-source\\page.tsx",
-      "line": 359,
+      "line": 360,
       "type": "link",
       "normalizedHref": "/security-and-audit"
     },
@@ -2659,21 +2659,21 @@
     {
       "href": "/docs/api",
       "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\pricing\\page.tsx",
-      "line": 301,
+      "line": 302,
       "type": "link",
       "normalizedHref": "/docs/api"
     },
     {
       "href": "/openapi.json",
       "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\pricing\\page.tsx",
-      "line": 304,
+      "line": 305,
       "type": "link",
       "normalizedHref": "/openapi.json"
     },
     {
       "href": "/contact",
       "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\pricing\\page.tsx",
-      "line": 307,
+      "line": 308,
       "type": "link",
       "normalizedHref": "/contact"
     },
@@ -4757,11 +4757,11 @@
       "normalizedHref": "/security-and-audit"
     },
     {
-      "href": "/security-and-audit",
+      "href": "/transparency",
       "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\lib\\public\\visual-proof-registry.ts",
       "line": 101,
       "type": "config",
-      "normalizedHref": "/security-and-audit"
+      "normalizedHref": "/transparency"
     },
     {
       "href": "/app/audit",
@@ -6632,14 +6632,14 @@
       {
         "href": "/docs/architecture/platform-architecture",
         "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\architecture\\page.tsx",
-        "line": 63,
+        "line": 65,
         "type": "link",
         "normalizedHref": "/docs/architecture/platform-architecture"
       },
       {
         "href": "/docs/architecture/platform-architecture",
         "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\architecture\\page.tsx",
-        "line": 157,
+        "line": 159,
         "type": "link",
         "normalizedHref": "/docs/architecture/platform-architecture"
       },
@@ -6676,7 +6676,7 @@
       {
         "href": "/security-and-audit",
         "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\architecture\\page.tsx",
-        "line": 162,
+        "line": 164,
         "type": "link",
         "normalizedHref": "/security-and-audit"
       },
@@ -6697,7 +6697,7 @@
       {
         "href": "/security-and-audit",
         "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\open-source\\page.tsx",
-        "line": 359,
+        "line": 360,
         "type": "link",
         "normalizedHref": "/security-and-audit"
       },
@@ -6742,13 +6742,6 @@
         "line": 100,
         "type": "config",
         "normalizedHref": "/security-and-audit"
-      },
-      {
-        "href": "/security-and-audit",
-        "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\lib\\public\\visual-proof-registry.ts",
-        "line": 101,
-        "type": "config",
-        "normalizedHref": "/security-and-audit"
       }
     ],
     "/pricing": [
@@ -6790,7 +6783,7 @@
       {
         "href": "/pricing",
         "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\enterprise\\page.tsx",
-        "line": 86,
+        "line": 88,
         "type": "link",
         "normalizedHref": "/pricing"
       },
@@ -7456,7 +7449,7 @@
       {
         "href": "/docs",
         "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\enterprise\\page.tsx",
-        "line": 236,
+        "line": 240,
         "type": "link",
         "normalizedHref": "/docs"
       },
@@ -7651,7 +7644,7 @@
       {
         "href": "/architecture",
         "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\open-source\\page.tsx",
-        "line": 291,
+        "line": 292,
         "type": "link",
         "normalizedHref": "/architecture"
       },
@@ -7739,7 +7732,7 @@
       {
         "href": "/docs/api",
         "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\pricing\\page.tsx",
-        "line": 301,
+        "line": 302,
         "type": "link",
         "normalizedHref": "/docs/api"
       },
@@ -8822,14 +8815,14 @@
       {
         "href": "/contact",
         "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\enterprise\\page.tsx",
-        "line": 81,
+        "line": 83,
         "type": "link",
         "normalizedHref": "/contact"
       },
       {
         "href": "/contact",
         "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\enterprise\\page.tsx",
-        "line": 231,
+        "line": 235,
         "type": "link",
         "normalizedHref": "/contact"
       },
@@ -8843,7 +8836,7 @@
       {
         "href": "/contact",
         "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\pricing\\page.tsx",
-        "line": 307,
+        "line": 308,
         "type": "link",
         "normalizedHref": "/contact"
       },
@@ -9353,7 +9346,7 @@
       {
         "href": "/openapi.json",
         "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\pricing\\page.tsx",
-        "line": 304,
+        "line": 305,
         "type": "link",
         "normalizedHref": "/openapi.json"
       }
@@ -10851,6 +10844,13 @@
         "href": "/transparency",
         "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\lib\\public\\visual-proof-registry.ts",
         "line": 90,
+        "type": "config",
+        "normalizedHref": "/transparency"
+      },
+      {
+        "href": "/transparency",
+        "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\lib\\public\\visual-proof-registry.ts",
+        "line": 101,
         "type": "config",
         "normalizedHref": "/transparency"
       }

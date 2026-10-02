@@ -43,7 +43,6 @@ const AUDIT_ROUTES = [
   // Product
   "/engine",
   "/edge-ai",
-  "/builder",
 
   // Console (auth pages - check graceful handling)
   "/console",
@@ -594,7 +593,7 @@ test.describe("UI Consistency Audit - Form Consistency", () => {
     await expect(form).toBeVisible();
 
     // Inputs should have labels
-    const inputs = form.locator("input");
+    const inputs = form.locator('input:not([type="hidden"])');
     const count = await inputs.count();
 
     for (let i = 0; i < count; i++) {

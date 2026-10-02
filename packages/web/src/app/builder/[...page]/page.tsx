@@ -18,8 +18,16 @@ interface PageProps {
   }>;
 }
 
+const isBuilderUnavailable = () =>
+  process.env.NEXT_PUBLIC_TEST_MODE === "1" ||
+  !Boolean(process.env.NEXT_PUBLIC_BUILDER_API_KEY || process.env.BUILDER_API_KEY);
+
 // Generate metadata for SEO
 export async function generateMetadata({ params }: PageProps) {
+  if (isBuilderUnavailable()) {
+    return { title: "Page Not Found" };
+  }
+
   try {
     const { builder } = await import("@builder.io/sdk");
     const { builderModels } = await import("@/lib/builder/config");
@@ -67,6 +75,10 @@ export async function generateMetadata({ params }: PageProps) {
 
 // Page component
 export default async function BuilderCatchAllPage({ params }: PageProps) {
+  if (isBuilderUnavailable()) {
+    notFound();
+  }
+
   try {
     const { builder } = await import("@builder.io/sdk");
     const { builderModels } = await import("@/lib/builder/config");
