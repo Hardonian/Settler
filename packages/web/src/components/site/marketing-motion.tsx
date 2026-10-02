@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, useReducedMotion, type HTMLMotionProps } from "framer-motion";
-import type { ReactNode } from "react";
+import { useSyncExternalStore, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 const easeSnappy = [0.22, 1, 0.36, 1] as const;
@@ -10,12 +10,24 @@ const fadeInTransition = { duration: 0.28, ease: easeSnappy };
 
 const slideUpTransition = { duration: 0.32, ease: easeSnappy };
 
+const subscribeToHydration = () => () => undefined;
+
+export function useHydratedReducedMotion() {
+  const prefersReducedMotion = useReducedMotion();
+  const isHydrated = useSyncExternalStore(
+    subscribeToHydration,
+    () => true,
+    () => false
+  );
+  return isHydrated && Boolean(prefersReducedMotion);
+}
+
 export function MotionFadeIn({
   className,
   children,
   ...rest
 }: HTMLMotionProps<"div"> & { children: ReactNode }) {
-  const reduceMotion = useReducedMotion();
+  const reduceMotion = useHydratedReducedMotion();
   return (
     <motion.div
       className={cn("will-change-[opacity]", className)}
@@ -34,7 +46,7 @@ export function MotionSlideUp({
   children,
   ...rest
 }: HTMLMotionProps<"div"> & { children: ReactNode }) {
-  const reduceMotion = useReducedMotion();
+  const reduceMotion = useHydratedReducedMotion();
   return (
     <motion.div
       className={cn("will-change-[transform,opacity]", className)}
@@ -55,7 +67,7 @@ export function MotionHeroBlock({
   delay = 0,
   ...rest
 }: HTMLMotionProps<"div"> & { children: ReactNode; delay?: number }) {
-  const reduceMotion = useReducedMotion();
+  const reduceMotion = useHydratedReducedMotion();
   return (
     <motion.div
       className={cn("will-change-[transform,opacity]", className)}
@@ -75,7 +87,7 @@ export function MotionInteractive({
   children,
   ...rest
 }: HTMLMotionProps<"div"> & { children: ReactNode }) {
-  const reduceMotion = useReducedMotion();
+  const reduceMotion = useHydratedReducedMotion();
   return (
     <motion.div
       className={cn(className)}

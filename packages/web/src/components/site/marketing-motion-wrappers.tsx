@@ -1,12 +1,13 @@
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
 import { Children, type ReactNode } from "react";
 import {
   MotionFadeIn,
   MotionHeroBlock,
   MotionInteractive,
   MotionSlideUp,
+  useHydratedReducedMotion,
 } from "./marketing-motion";
 
 const easeSnappy = [0.22, 1, 0.36, 1] as const;
@@ -29,7 +30,7 @@ export function MarketingIntentCard({ children }: { children: ReactNode }) {
 }
 
 export function MarketingStaggeredFeatureGrid({ children }: { children: ReactNode }) {
-  const reduceMotion = useReducedMotion();
+  const reduceMotion = useHydratedReducedMotion();
   return (
     <motion.div
       className="grid gap-6 md:grid-cols-2 lg:grid-cols-3"

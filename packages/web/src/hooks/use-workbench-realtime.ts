@@ -24,13 +24,27 @@ interface WorkbenchData {
   activeRuns: ActiveRun[];
 }
 
+function getWorkbenchRealtimeUrl(): string | null {
+  if (process.env.NEXT_PUBLIC_TEST_MODE === "1") {
+    return null;
+  }
+
+  const configuredBase = process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "").replace(/\/api$/, "");
+  return `${configuredBase ?? ""}/api/realtime/workbench`;
+}
+
 export function useWorkbenchRealtime() {
   const [data, setData] = useState<WorkbenchData | null>(null);
   const [isConnected, setIsConnected] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const connect = useCallback(() => {
-    const eventSource = new EventSource("/api/realtime/workbench", {
+    const realtimeUrl = getWorkbenchRealtimeUrl();
+    if (!realtimeUrl) {
+      return null;
+    }
+
+    const eventSource = new EventSource(realtimeUrl, {
       withCredentials: true,
     });
 
@@ -70,7 +84,7 @@ export function useWorkbenchRealtime() {
   useEffect(() => {
     const es = connect();
     return () => {
-      es.close();
+      es?.close();
     };
   }, [connect]);
 

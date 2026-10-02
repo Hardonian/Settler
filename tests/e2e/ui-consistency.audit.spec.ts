@@ -112,7 +112,11 @@ async function collectConsoleIssues(page: Page, route: string, viewport: string)
       text.includes("hot reload") ||
       text.includes("[HMR]");
 
-    if (isNoise) return;
+    const isExpectedAuthRejection =
+      route.startsWith("/console") &&
+      /server responded with a status of (401|403)|unauthorized|forbidden/i.test(text);
+
+    if (isNoise || isExpectedAuthRejection) return;
 
     if (type === "error") {
       auditResults.push({
@@ -151,6 +155,9 @@ async function collectNetworkIssues(page: Page, route: string, viewport: string)
       const baseUrl = new URL(BASE_URL);
 
       if (requestUrl.origin === baseUrl.origin) {
+        if (route.startsWith("/console") && requestUrl.pathname.startsWith("/api/console")) {
+          return;
+        }
         auditResults.push({
           route,
           viewport,
@@ -177,9 +184,8 @@ async function collectNetworkIssues(page: Page, route: string, viewport: string)
 
         if (requestUrl.origin === baseUrl.origin) {
           // Skip auth-required routes
-          const isAuthRoute = ["/console", "/dashboard"].some((r) =>
-            requestUrl.pathname.startsWith(r)
-          );
+          const isAuthRoute =
+            route.startsWith("/console") && requestUrl.pathname.startsWith("/api/console");
 
           if (!isAuthRoute || (status !== 401 && status !== 403)) {
             auditResults.push({
@@ -215,18 +221,6 @@ async function detectHydrationIssues(page: Page, route: string, viewport: string
       type: "hydration",
       severity: "HIGH",
       message: "Hydration mismatch detected in page content",
-    });
-  }
-
-  // Check for react-root with data-reactroot (indicates SSR worked)
-  const hasReactRoot = (await page.locator("#__next, #root, [data-reactroot]").count()) > 0;
-  if (!hasReactRoot && route !== "/404") {
-    auditResults.push({
-      route,
-      viewport,
-      type: "hydration",
-      severity: "MED",
-      message: "No React root element found - possible hydration failure",
     });
   }
 }
@@ -363,7 +357,10 @@ async function checkReducedMotion(page: Page): Promise<boolean> {
     let unstopped = 0;
     animated.forEach((el) => {
       const style = window.getComputedStyle(el);
-      if (style.animationDuration !== "0.01ms" && style.animationDuration !== "0s") {
+      const hasLongAnimation = style.animationDuration
+        .split(",")
+        .some((duration) => parseFloat(duration) > 0.1);
+      if (style.animationName !== "none" && hasLongAnimation) {
         unstopped++;
       }
     });

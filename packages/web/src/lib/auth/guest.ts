@@ -29,6 +29,11 @@ export async function initGuestSession(): Promise<GuestSession> {
     return existing;
   }
 
+  // Keep browser tests hermetic: anonymous Supabase auth is an external boundary.
+  if (process.env.NEXT_PUBLIC_TEST_MODE === "1") {
+    return createLocalGuestSession();
+  }
+
   // Try Supabase anonymous auth
   const supabaseResult = await safeAsync(async () => {
     const supabase = createClient();
@@ -54,6 +59,10 @@ export async function initGuestSession(): Promise<GuestSession> {
   }
 
   // Fallback to local session
+  return createLocalGuestSession();
+}
+
+function createLocalGuestSession(): GuestSession {
   const guestSession: GuestSession = {
     id: generateGuestId(),
     createdAt: new Date().toISOString(),

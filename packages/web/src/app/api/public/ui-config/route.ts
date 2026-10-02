@@ -18,7 +18,8 @@ import { withSecurity } from "@/lib/middleware/api-security";
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
-const hasDatabaseConnectionString = () =>
+const shouldResolveTenantFromDatabase = () =>
+  process.env.NEXT_PUBLIC_TEST_MODE !== "1" &&
   Boolean(process.env.DATABASE_URL || process.env.SUPABASE_DATABASE_URL || process.env.DIRECT_URL);
 
 function defaultResponse() {
@@ -38,7 +39,7 @@ function defaultResponse() {
 
 export const GET = withSecurity(
   async function GET(request: NextRequest) {
-    if (!hasDatabaseConnectionString()) {
+    if (!shouldResolveTenantFromDatabase()) {
       return defaultResponse();
     }
 
