@@ -54,8 +54,14 @@ export class RedisRateLimiter {
 
   private getRedis(): Redis {
     if (!this.redis) {
-      const redisUrl = config.redis.url || "redis://localhost:6379";
-      this.redis = new Redis(redisUrl);
+      const redisUrl =
+        (config as any)?.redis?.url || process.env.REDIS_URL || "redis://localhost:6379";
+      this.redis = new Redis(redisUrl, {
+        maxRetriesPerRequest: 1,
+        connectTimeout: 2000,
+        enableOfflineQueue: false,
+        retryStrategy: () => null,
+      });
     }
     return this.redis;
   }
