@@ -25,6 +25,1920 @@
       "severity": "medium"
     },
     {
+      "type": "table_no_consumer",
+      "description": "Table \"_prisma_migrations\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"account_balances\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"activation_checklist\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"activity_log\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"activity_logs\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"advisor_findings\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"advisors_findings\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"affiliate_conversions\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"affiliates\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"agent_runs\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"ai_analyses\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"ai_analysis_usage\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"ai_usage_events\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"ai_usage_quotas\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"alert_history\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"alert_notifications\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"alert_rules\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"alerts\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"anomaly_events\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"api_call_logs\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"api_call_logs_p20251225\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"api_call_logs_p20251226\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"api_call_logs_p20251227\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"api_call_logs_p20251228\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"api_call_logs_p20251229\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"api_call_logs_p20251230\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"api_call_logs_p20251231\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"api_call_logs_p20260101\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"api_call_logs_p20260102\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"api_call_logs_p20260103\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"api_call_logs_p20260104\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"api_call_logs_p20260105\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"api_call_logs_p20260106\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"api_call_logs_p20260107\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"api_call_logs_p20260108\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"api_call_logs_p20260109\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"api_call_logs_p20260110\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"api_call_logs_p20260111\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"api_call_logs_p20260112\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"api_call_logs_p20260113\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"api_call_logs_p20260114\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"api_call_logs_p20260115\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"api_call_logs_p20260116\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"api_call_logs_p20260117\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"api_call_logs_p20260118\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"api_call_logs_p20260119\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"api_call_logs_p20260120\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"api_call_logs_p20260121\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"api_call_logs_p20260122\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"api_call_logs_p20260123\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"api_call_logs_p20260124\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"api_keys\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"app_event_log\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"architecture_violations\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"audit_exports\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"audit_notarization_checkpoints\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"automated_decisions\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"background_job_limits\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"backup_records\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"billing_customers\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"billing_disputes\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"billing_reconciliation_log\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"billing_subscriptions\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"blocked_ips\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"bulk_operations\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"canned_responses\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"capacity_signals\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"chat_message_embeddings\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"chat_messages\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"chat_threads\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"checkpoints\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"circuit_breakers\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"cms_audit\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"cms_media\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"cms_page_versions\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"cms_pages\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"confidence_events\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"connector_accounts\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"connector_credentials\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"connectors\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"console_activities\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"contacts\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"conversation_members\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"conversation_summaries\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"conversations\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"cron_targets\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"currency_conversions\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"currency_rates\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"custom_integrations\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"customer_segments\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"daily_intelligence\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"data_export_items\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"data_exports\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"dead_letters\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"deals\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"decision_traces\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"dedicated_infrastructure\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"deterministic_match_results\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"device_profiles\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"diagnostics\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"documents\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"economic_metrics\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"edge_jobs\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"edge_node_deployments\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"edge_nodes\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"email_invites\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"email_sends\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"email_sequences\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"email_templates\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"entitlements\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"entity_performance\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"error_logs\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"escalation_history\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"escalation_rules\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"event_logs\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"executions\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"experiment_assignments\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"feature_flag_events\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"financial_balances\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"financial_insights\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"financial_invoices\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"financial_ledger\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"financial_payouts\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"financial_subscriptions\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"financial_tax_estimates\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"financial_transactions\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"fraud_signals\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"growth_content\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"health_checks\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"http_logs\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"http_logs_p20251225\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"http_logs_p20251226\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"http_logs_p20251227\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"http_logs_p20251228\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"http_logs_p20251229\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"http_logs_p20251230\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"http_logs_p20251231\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"http_logs_p20260101\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"http_logs_p20260102\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"http_logs_p20260103\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"http_logs_p20260104\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"http_logs_p20260105\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"http_logs_p20260106\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"http_logs_p20260107\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"http_logs_p20260108\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"http_logs_p20260109\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"http_logs_p20260110\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"http_logs_p20260111\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"http_logs_p20260112\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"http_logs_p20260113\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"http_logs_p20260114\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"http_logs_p20260115\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"http_logs_p20260116\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"http_logs_p20260117\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"http_logs_p20260118\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"http_logs_p20260119\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"http_logs_p20260120\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"http_logs_p20260121\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"http_logs_p20260122\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"http_logs_p20260123\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"http_logs_p20260124\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"ingestion_dlq\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"ingestion_idempotency\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"integration_credentials\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"integration_health\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"integration_quota_usage\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"interaction_events\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"job_attempts\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"job_failure_log\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"job_queue\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"job_rule_snapshots\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"job_runs\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"jobforge_connector_configs\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"jobforge_job_attempts\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"jobforge_job_results\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"jobforge_jobs\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"jobs\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"kill_switches\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"leads\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"matches\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"memberships\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"message_summaries\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"messages\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"model_versions\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"monitoring_metrics\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"multi_source_jobs\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"nods_page\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"nods_page_section\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"notification_logs\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"notification_preferences\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"notifications\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"operator_anomaly_alerts\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"operator_error_issue_links\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"operator_infrastructure_settings\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"ops_actions\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"ops_audit_logs\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"ops_briefings\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"ops_errors\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"ops_insights\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"ops_jobs\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"ops_recommendations\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"ops_support_tickets\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"ops_usage_aggregates\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"ops_webhooks\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"participants\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"payment_recovery\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"pii_mapping_tokens\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"plans\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"policy_metrics\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"portfolio_entities\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"portfolio_intelligence_log\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"portfolio_rebalance_log\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"portfolio_risk_events\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"portfolios\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"positioning_feedback\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"posts\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"preemptive_support_actions\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"preview_tokens\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"profiles\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"project_snapshots\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"public_content\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"rate_limits\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"rate_usage\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"raw_events\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"reality_events\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"reality_metrics\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"realtime_limits\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"receipt_audit_logs\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"receipt_conversions\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"receipt_events\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"receipt_items_extracted\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"receipt_ratings\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"receipt_transaction_links\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"receipt_webhook_outbox\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"receipt_webhooks\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"receipts_extracted\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"recon_runs\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"recon_templates_full\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"reconciliation_candidates\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"reconciliation_codegen_artifacts\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"reconciliation_graph_edges\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"reconciliation_graph_nodes\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"reconciliation_memory\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"reconciliation_rules\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"reconciliation_spec_versions\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"referrals\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"release_safety_checks\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"reports\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"request_metrics\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"retention_policies\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"revoked_tokens\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"rule_usage_events\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"run_events\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"run_execution_log\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"run_metrics\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"schema_migrations\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"security_events\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"service_events\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"service_integrations\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"service_slos\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"shareable_artifacts\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"sla_agreements\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"sla_metrics\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"sla_violations\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"slo_breaches\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"source_conflicts\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"staleness_checks\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"storage_references\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"strategic_backlog\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"stripe_customers\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"stripe_event_log\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"stripe_webhook_logs\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"support_articles\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"support_categories\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"support_tickets\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"sync_cursors\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"sync_runs\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"system_incidents\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"system_state_snapshots\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"tenant_billing_accounts\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"tenant_drafts\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"tenant_feature_flags\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"tenant_governance\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"tenant_media\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"tenant_memberships\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"tenant_page_blocks\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"tenant_plans\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"tenant_quota_usage\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"tenant_usage\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"tenant_usage_ceilings\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"tenant_usage_monthly\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"tenant_users\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"tenant_versions\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"themes\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"ticket_messages\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"uploads\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"usage_event_idempotency\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"usage_events_billing\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"usage_export_chunks\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"usage_tracking\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"user_artifacts\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"user_confusion_events\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"user_email_preferences\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"user_intent_insights\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"user_lifecycle\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"user_milestones\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"user_organizations\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"user_presence\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"user_profiles\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"user_tenants\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"users\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"value_ledger\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"value_ledger_daily\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"webhook_attempts\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"webhook_configs\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"webhook_dead_letters\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"webhook_events\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"webhook_payloads\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
+      "type": "table_no_consumer",
+      "description": "Table \"weekly_snapshots\" exists but has no consumers in code, Prisma, or SQL routines",
+      "location": "supabase/production-schema.json",
+      "severity": "medium"
+    },
+    {
       "type": "unused_env",
       "description": "Environment variable \"NODE_ENV\" defined but never used",
       "location": ".env.example",
@@ -673,6 +2587,1922 @@
         "type": "feature_in_docs",
         "description": "Feature \"bank connectivity itself\" mentioned in README but not found in code",
         "location": "README.md",
+        "severity": "medium"
+      }
+    ],
+    "table_no_consumer": [
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"_prisma_migrations\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"account_balances\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"activation_checklist\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"activity_log\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"activity_logs\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"advisor_findings\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"advisors_findings\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"affiliate_conversions\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"affiliates\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"agent_runs\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"ai_analyses\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"ai_analysis_usage\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"ai_usage_events\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"ai_usage_quotas\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"alert_history\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"alert_notifications\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"alert_rules\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"alerts\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"anomaly_events\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"api_call_logs\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"api_call_logs_p20251225\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"api_call_logs_p20251226\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"api_call_logs_p20251227\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"api_call_logs_p20251228\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"api_call_logs_p20251229\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"api_call_logs_p20251230\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"api_call_logs_p20251231\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"api_call_logs_p20260101\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"api_call_logs_p20260102\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"api_call_logs_p20260103\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"api_call_logs_p20260104\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"api_call_logs_p20260105\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"api_call_logs_p20260106\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"api_call_logs_p20260107\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"api_call_logs_p20260108\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"api_call_logs_p20260109\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"api_call_logs_p20260110\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"api_call_logs_p20260111\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"api_call_logs_p20260112\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"api_call_logs_p20260113\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"api_call_logs_p20260114\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"api_call_logs_p20260115\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"api_call_logs_p20260116\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"api_call_logs_p20260117\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"api_call_logs_p20260118\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"api_call_logs_p20260119\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"api_call_logs_p20260120\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"api_call_logs_p20260121\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"api_call_logs_p20260122\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"api_call_logs_p20260123\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"api_call_logs_p20260124\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"api_keys\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"app_event_log\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"architecture_violations\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"audit_exports\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"audit_notarization_checkpoints\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"automated_decisions\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"background_job_limits\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"backup_records\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"billing_customers\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"billing_disputes\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"billing_reconciliation_log\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"billing_subscriptions\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"blocked_ips\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"bulk_operations\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"canned_responses\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"capacity_signals\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"chat_message_embeddings\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"chat_messages\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"chat_threads\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"checkpoints\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"circuit_breakers\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"cms_audit\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"cms_media\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"cms_page_versions\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"cms_pages\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"confidence_events\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"connector_accounts\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"connector_credentials\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"connectors\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"console_activities\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"contacts\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"conversation_members\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"conversation_summaries\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"conversations\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"cron_targets\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"currency_conversions\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"currency_rates\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"custom_integrations\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"customer_segments\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"daily_intelligence\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"data_export_items\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"data_exports\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"dead_letters\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"deals\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"decision_traces\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"dedicated_infrastructure\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"deterministic_match_results\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"device_profiles\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"diagnostics\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"documents\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"economic_metrics\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"edge_jobs\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"edge_node_deployments\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"edge_nodes\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"email_invites\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"email_sends\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"email_sequences\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"email_templates\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"entitlements\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"entity_performance\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"error_logs\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"escalation_history\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"escalation_rules\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"event_logs\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"executions\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"experiment_assignments\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"feature_flag_events\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"financial_balances\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"financial_insights\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"financial_invoices\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"financial_ledger\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"financial_payouts\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"financial_subscriptions\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"financial_tax_estimates\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"financial_transactions\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"fraud_signals\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"growth_content\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"health_checks\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"http_logs\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"http_logs_p20251225\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"http_logs_p20251226\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"http_logs_p20251227\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"http_logs_p20251228\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"http_logs_p20251229\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"http_logs_p20251230\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"http_logs_p20251231\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"http_logs_p20260101\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"http_logs_p20260102\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"http_logs_p20260103\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"http_logs_p20260104\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"http_logs_p20260105\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"http_logs_p20260106\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"http_logs_p20260107\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"http_logs_p20260108\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"http_logs_p20260109\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"http_logs_p20260110\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"http_logs_p20260111\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"http_logs_p20260112\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"http_logs_p20260113\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"http_logs_p20260114\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"http_logs_p20260115\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"http_logs_p20260116\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"http_logs_p20260117\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"http_logs_p20260118\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"http_logs_p20260119\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"http_logs_p20260120\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"http_logs_p20260121\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"http_logs_p20260122\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"http_logs_p20260123\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"http_logs_p20260124\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"ingestion_dlq\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"ingestion_idempotency\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"integration_credentials\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"integration_health\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"integration_quota_usage\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"interaction_events\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"job_attempts\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"job_failure_log\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"job_queue\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"job_rule_snapshots\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"job_runs\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"jobforge_connector_configs\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"jobforge_job_attempts\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"jobforge_job_results\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"jobforge_jobs\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"jobs\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"kill_switches\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"leads\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"matches\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"memberships\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"message_summaries\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"messages\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"model_versions\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"monitoring_metrics\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"multi_source_jobs\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"nods_page\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"nods_page_section\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"notification_logs\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"notification_preferences\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"notifications\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"operator_anomaly_alerts\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"operator_error_issue_links\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"operator_infrastructure_settings\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"ops_actions\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"ops_audit_logs\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"ops_briefings\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"ops_errors\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"ops_insights\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"ops_jobs\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"ops_recommendations\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"ops_support_tickets\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"ops_usage_aggregates\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"ops_webhooks\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"participants\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"payment_recovery\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"pii_mapping_tokens\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"plans\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"policy_metrics\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"portfolio_entities\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"portfolio_intelligence_log\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"portfolio_rebalance_log\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"portfolio_risk_events\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"portfolios\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"positioning_feedback\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"posts\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"preemptive_support_actions\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"preview_tokens\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"profiles\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"project_snapshots\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"public_content\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"rate_limits\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"rate_usage\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"raw_events\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"reality_events\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"reality_metrics\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"realtime_limits\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"receipt_audit_logs\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"receipt_conversions\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"receipt_events\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"receipt_items_extracted\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"receipt_ratings\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"receipt_transaction_links\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"receipt_webhook_outbox\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"receipt_webhooks\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"receipts_extracted\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"recon_runs\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"recon_templates_full\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"reconciliation_candidates\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"reconciliation_codegen_artifacts\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"reconciliation_graph_edges\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"reconciliation_graph_nodes\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"reconciliation_memory\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"reconciliation_rules\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"reconciliation_spec_versions\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"referrals\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"release_safety_checks\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"reports\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"request_metrics\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"retention_policies\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"revoked_tokens\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"rule_usage_events\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"run_events\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"run_execution_log\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"run_metrics\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"schema_migrations\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"security_events\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"service_events\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"service_integrations\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"service_slos\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"shareable_artifacts\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"sla_agreements\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"sla_metrics\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"sla_violations\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"slo_breaches\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"source_conflicts\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"staleness_checks\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"storage_references\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"strategic_backlog\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"stripe_customers\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"stripe_event_log\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"stripe_webhook_logs\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"support_articles\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"support_categories\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"support_tickets\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"sync_cursors\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"sync_runs\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"system_incidents\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"system_state_snapshots\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"tenant_billing_accounts\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"tenant_drafts\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"tenant_feature_flags\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"tenant_governance\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"tenant_media\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"tenant_memberships\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"tenant_page_blocks\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"tenant_plans\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"tenant_quota_usage\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"tenant_usage\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"tenant_usage_ceilings\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"tenant_usage_monthly\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"tenant_users\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"tenant_versions\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"themes\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"ticket_messages\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"uploads\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"usage_event_idempotency\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"usage_events_billing\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"usage_export_chunks\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"usage_tracking\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"user_artifacts\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"user_confusion_events\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"user_email_preferences\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"user_intent_insights\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"user_lifecycle\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"user_milestones\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"user_organizations\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"user_presence\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"user_profiles\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"user_tenants\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"users\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"value_ledger\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"value_ledger_daily\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"webhook_attempts\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"webhook_configs\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"webhook_dead_letters\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"webhook_events\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"webhook_payloads\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
+        "severity": "medium"
+      },
+      {
+        "type": "table_no_consumer",
+        "description": "Table \"weekly_snapshots\" exists but has no consumers in code, Prisma, or SQL routines",
+        "location": "supabase/production-schema.json",
         "severity": "medium"
       }
     ],

@@ -1,11 +1,11 @@
 {
   "total": 33,
-  "valid": 23,
-  "invalid": 10,
+  "valid": 26,
+  "invalid": 7,
   "functions": [
     {
       "name": "agent-monitor",
-      "path": "/app/supabase/functions/agent-monitor/index.ts",
+      "path": "/home/scott/repos/Settler/supabase/functions/agent-monitor/index.ts",
       "tables": ["agent_runs"],
       "functions": [
         "serve",
@@ -33,7 +33,7 @@
     },
     {
       "name": "agent-orchestrator",
-      "path": "/app/supabase/functions/agent-orchestrator/index.ts",
+      "path": "/home/scott/repos/Settler/supabase/functions/agent-orchestrator/index.ts",
       "tables": ["agent_runs"],
       "functions": [
         "serve",
@@ -60,7 +60,7 @@
     },
     {
       "name": "architecture-sentinel-agent",
-      "path": "/app/supabase/functions/architecture-sentinel-agent/index.ts",
+      "path": "/home/scott/repos/Settler/supabase/functions/architecture-sentinel-agent/index.ts",
       "tables": [
         "agent_runs",
         "schema_migrations",
@@ -105,7 +105,7 @@
     },
     {
       "name": "auth_edge_guard",
-      "path": "/app/supabase/functions/auth_edge_guard/index.ts",
+      "path": "/home/scott/repos/Settler/supabase/functions/auth_edge_guard/index.ts",
       "tables": [],
       "functions": [
         "get",
@@ -130,7 +130,7 @@
     },
     {
       "name": "automated-alerting",
-      "path": "/app/supabase/functions/automated-alerting/index.ts",
+      "path": "/home/scott/repos/Settler/supabase/functions/automated-alerting/index.ts",
       "tables": ["alerts", "users", "subscriptions", "agent_runs"],
       "functions": [
         "serve",
@@ -169,7 +169,7 @@
     },
     {
       "name": "automated-diagnostics",
-      "path": "/app/supabase/functions/automated-diagnostics/index.ts",
+      "path": "/home/scott/repos/Settler/supabase/functions/automated-diagnostics/index.ts",
       "tables": ["stripe_event_log", "subscriptions", "usage_events", "email_sends", "diagnostics"],
       "functions": [
         "serve",
@@ -201,7 +201,7 @@
     },
     {
       "name": "automated-health-checks",
-      "path": "/app/supabase/functions/automated-health-checks/index.ts",
+      "path": "/home/scott/repos/Settler/supabase/functions/automated-health-checks/index.ts",
       "tables": [
         "profiles",
         "stripe_event_log",
@@ -223,10 +223,10 @@
         "eq",
         "gte",
         "reduce",
+        "fetch",
         "insert",
         "catch",
         "map",
-        "fetch",
         "stringify",
         "error"
       ],
@@ -236,7 +236,7 @@
     },
     {
       "name": "automated-onboarding-emails",
-      "path": "/app/supabase/functions/automated-onboarding-emails/index.ts",
+      "path": "/home/scott/repos/Settler/supabase/functions/automated-onboarding-emails/index.ts",
       "tables": ["profiles", "onboarding_progress", "email_sends"],
       "functions": [
         "serve",
@@ -269,7 +269,7 @@
     },
     {
       "name": "automated-reconciliation-review",
-      "path": "/app/supabase/functions/automated-reconciliation-review/index.ts",
+      "path": "/home/scott/repos/Settler/supabase/functions/automated-reconciliation-review/index.ts",
       "tables": ["reconciliation_matches", "recon_audits", "reconciliation_runs"],
       "functions": [
         "serve",
@@ -291,14 +291,11 @@
       ],
       "rpcCalls": [],
       "hasDeployConfig": false,
-      "errors": [
-        "Table 'reconciliation_matches' does not exist",
-        "Table 'reconciliation_runs' does not exist"
-      ]
+      "errors": []
     },
     {
       "name": "autonomous-cfo-agent",
-      "path": "/app/supabase/functions/autonomous-cfo-agent/index.ts",
+      "path": "/home/scott/repos/Settler/supabase/functions/autonomous-cfo-agent/index.ts",
       "tables": [
         "agent_runs",
         "subscriptions",
@@ -340,7 +337,7 @@
     },
     {
       "name": "collect-reality-metrics",
-      "path": "/app/supabase/functions/collect-reality-metrics/index.ts",
+      "path": "/home/scott/repos/Settler/supabase/functions/collect-reality-metrics/index.ts",
       "tables": [
         "subscriptions",
         "stripe_events",
@@ -368,11 +365,11 @@
       ],
       "rpcCalls": ["upsert_reality_metric"],
       "hasDeployConfig": false,
-      "errors": ["Table 'onboarding_events' does not exist"]
+      "errors": []
     },
     {
       "name": "compute-bill",
-      "path": "/app/supabase/functions/compute-bill/index.ts",
+      "path": "/home/scott/repos/Settler/supabase/functions/compute-bill/index.ts",
       "tables": ["billing_accounts", "subscriptions"],
       "functions": [
         "serve",
@@ -394,7 +391,7 @@
     },
     {
       "name": "generate-founder-digest",
-      "path": "/app/supabase/functions/generate-founder-digest/index.ts",
+      "path": "/home/scott/repos/Settler/supabase/functions/generate-founder-digest/index.ts",
       "tables": ["users", "subscriptions", "reconciliation_jobs", "user_lifecycle"],
       "functions": [
         "serve",
@@ -417,7 +414,7 @@
     },
     {
       "name": "generate-monthly-export",
-      "path": "/app/supabase/functions/generate-monthly-export/index.ts",
+      "path": "/home/scott/repos/Settler/supabase/functions/generate-monthly-export/index.ts",
       "tables": ["users", "user_lifecycle", "subscriptions", "reconciliation_jobs"],
       "functions": [
         "serve",
@@ -437,7 +434,7 @@
     },
     {
       "name": "generate-ops-insights",
-      "path": "/app/supabase/functions/generate-ops-insights/index.ts",
+      "path": "/home/scott/repos/Settler/supabase/functions/generate-ops-insights/index.ts",
       "tables": [
         "ops_insights",
         "ops_recommendations",
@@ -475,7 +472,7 @@
     },
     {
       "name": "generate-weekly-briefing",
-      "path": "/app/supabase/functions/generate-weekly-briefing/index.ts",
+      "path": "/home/scott/repos/Settler/supabase/functions/generate-weekly-briefing/index.ts",
       "tables": [
         "ops_briefings",
         "ops_insights",
@@ -512,7 +509,7 @@
     },
     {
       "name": "integration-sync-paypal",
-      "path": "/app/supabase/functions/integration-sync-paypal/index.ts",
+      "path": "/home/scott/repos/Settler/supabase/functions/integration-sync-paypal/index.ts",
       "tables": [],
       "functions": ["serve", "get", "stringify", "json", "rpc", "error"],
       "rpcCalls": ["log_usage_event"],
@@ -521,7 +518,7 @@
     },
     {
       "name": "integration-sync-scheduler",
-      "path": "/app/supabase/functions/integration-sync-scheduler/index.ts",
+      "path": "/home/scott/repos/Settler/supabase/functions/integration-sync-scheduler/index.ts",
       "tables": ["connectors"],
       "functions": [
         "serve",
@@ -539,11 +536,11 @@
       ],
       "rpcCalls": [],
       "hasDeployConfig": false,
-      "errors": ["Table 'connectors' does not exist"]
+      "errors": []
     },
     {
       "name": "integration-sync-shopify",
-      "path": "/app/supabase/functions/integration-sync-shopify/index.ts",
+      "path": "/home/scott/repos/Settler/supabase/functions/integration-sync-shopify/index.ts",
       "tables": [],
       "functions": ["serve", "get", "stringify", "json", "rpc", "error"],
       "rpcCalls": ["log_usage_event"],
@@ -552,8 +549,8 @@
     },
     {
       "name": "integration-sync-shopify-secure",
-      "path": "/app/supabase/functions/integration-sync-shopify-secure/index.ts",
-      "tables": ["service_integrations", "webhook_payloads", "integration_health"],
+      "path": "/home/scott/repos/Settler/supabase/functions/integration-sync-shopify-secure/index.ts",
+      "tables": ["ingestion_sources", "billing_accounts", "integration_health"],
       "functions": [
         "now",
         "get",
@@ -567,14 +564,13 @@
         "split",
         "stringify",
         "text",
+        "parse",
         "select",
         "eq",
         "filter",
         "error",
-        "parse",
-        "insert",
-        "json",
         "rpc",
+        "json",
         "single",
         "catch"
       ],
@@ -591,7 +587,7 @@
     },
     {
       "name": "integration-sync-stripe",
-      "path": "/app/supabase/functions/integration-sync-stripe/index.ts",
+      "path": "/home/scott/repos/Settler/supabase/functions/integration-sync-stripe/index.ts",
       "tables": [],
       "functions": ["serve", "get", "stringify", "json", "rpc", "error"],
       "rpcCalls": ["log_usage_event"],
@@ -600,7 +596,7 @@
     },
     {
       "name": "integration-sync-tiktok",
-      "path": "/app/supabase/functions/integration-sync-tiktok/index.ts",
+      "path": "/home/scott/repos/Settler/supabase/functions/integration-sync-tiktok/index.ts",
       "tables": [],
       "functions": ["serve", "get", "stringify", "json", "rpc", "error"],
       "rpcCalls": ["log_usage_event"],
@@ -609,7 +605,7 @@
     },
     {
       "name": "log-usage",
-      "path": "/app/supabase/functions/log-usage/index.ts",
+      "path": "/home/scott/repos/Settler/supabase/functions/log-usage/index.ts",
       "tables": ["billing_accounts"],
       "functions": [
         "serve",
@@ -629,7 +625,7 @@
     },
     {
       "name": "log-usage-secure",
-      "path": "/app/supabase/functions/log-usage-secure/index.ts",
+      "path": "/home/scott/repos/Settler/supabase/functions/log-usage-secure/index.ts",
       "tables": ["billing_accounts"],
       "functions": [
         "now",
@@ -652,7 +648,7 @@
     },
     {
       "name": "organic-growth-agent",
-      "path": "/app/supabase/functions/organic-growth-agent/index.ts",
+      "path": "/home/scott/repos/Settler/supabase/functions/organic-growth-agent/index.ts",
       "tables": ["agent_runs", "feature_flags", "usage_events", "error_logs", "growth_content"],
       "functions": [
         "get",
@@ -687,7 +683,7 @@
     },
     {
       "name": "preemptive-support-agent",
-      "path": "/app/supabase/functions/preemptive-support-agent/index.ts",
+      "path": "/home/scott/repos/Settler/supabase/functions/preemptive-support-agent/index.ts",
       "tables": ["agent_runs", "error_logs", "analytics_events", "preemptive_support_actions"],
       "functions": [
         "get",
@@ -723,7 +719,7 @@
     },
     {
       "name": "release-gatekeeper-agent",
-      "path": "/app/supabase/functions/release-gatekeeper-agent/index.ts",
+      "path": "/home/scott/repos/Settler/supabase/functions/release-gatekeeper-agent/index.ts",
       "tables": [
         "agent_runs",
         "error_logs",
@@ -767,7 +763,7 @@
     },
     {
       "name": "retry-queue-processor",
-      "path": "/app/supabase/functions/retry-queue-processor/index.ts",
+      "path": "/home/scott/repos/Settler/supabase/functions/retry-queue-processor/index.ts",
       "tables": ["retry_queue", "connectors"],
       "functions": [
         "serve",
@@ -792,11 +788,11 @@
       ],
       "rpcCalls": [],
       "hasDeployConfig": false,
-      "errors": ["Table 'retry_queue' does not exist", "Table 'connectors' does not exist"]
+      "errors": ["Table 'retry_queue' does not exist"]
     },
     {
       "name": "strategic-governor-agent",
-      "path": "/app/supabase/functions/strategic-governor-agent/index.ts",
+      "path": "/home/scott/repos/Settler/supabase/functions/strategic-governor-agent/index.ts",
       "tables": [
         "agent_runs",
         "users",
@@ -848,7 +844,7 @@
     },
     {
       "name": "sync-usage-to-stripe",
-      "path": "/app/supabase/functions/sync-usage-to-stripe/index.ts",
+      "path": "/home/scott/repos/Settler/supabase/functions/sync-usage-to-stripe/index.ts",
       "tables": ["billing_accounts", "subscriptions", "usage_aggregate_daily"],
       "functions": [
         "serve",
@@ -874,7 +870,7 @@
     },
     {
       "name": "trigger-upgrade-alert",
-      "path": "/app/supabase/functions/trigger-upgrade-alert/index.ts",
+      "path": "/home/scott/repos/Settler/supabase/functions/trigger-upgrade-alert/index.ts",
       "tables": ["billing_accounts"],
       "functions": [
         "serve",
@@ -894,7 +890,7 @@
     },
     {
       "name": "user-intent-synthesizer-agent",
-      "path": "/app/supabase/functions/user-intent-synthesizer-agent/index.ts",
+      "path": "/home/scott/repos/Settler/supabase/functions/user-intent-synthesizer-agent/index.ts",
       "tables": [
         "agent_runs",
         "receipt_uploads",
@@ -941,7 +937,7 @@
     },
     {
       "name": "weekly-reality-loop",
-      "path": "/app/supabase/functions/weekly-reality-loop/index.ts",
+      "path": "/home/scott/repos/Settler/supabase/functions/weekly-reality-loop/index.ts",
       "tables": ["weekly_snapshots", "reality_metrics", "reality_events"],
       "functions": [
         "serve",

@@ -146,3 +146,81 @@ in the service and scheduled job first.
   available through either the direct host or pooler, so live parity was
   verified through the Supabase management API and SQL rather than by a fresh
   `prisma migrate status` or live `prisma migrate diff` invocation.
+
+## 2026-10-03 update — advisor lint sweep, catalog reconciliation, parity
+monitoring
+
+All changes are recorded as forward-only migrations under
+`supabase/migrations/20261003*` and in `supabase_migrations.schema_migrations`.
+
+RLS (live: `johfcvvmtfiomzxipspz`):
+
+- `multiple_permissive_policies` 213 -> 0 via role-conditioned per-action
+  consolidation (`20261003011531_consolidate_permissive_policies`). Every
+  consolidated cell keeps its predicate as the OR of the same expressions, with
+  `pg_has_role(...)` guards preserving role-set semantics; the equivalence
+  manifest is `supabase/consolidation-evidence.json`.
+- `auth_rls_initplan` 19 -> 0 (`20261003010424_optimize_rls_initplans`).
+- The 61 policy-free RLS tables are strictly server-only: browser-role table
+  grants revoked (`20261003012119`); anon/authenticated queries return zero
+  rows by deny-by-default policy.
+- `alert_history` global scope made explicit (`20261003013025` +
+  `20261003013317`): tenant rows visible to members, `tenant_id IS NULL` rows
+  visible only to admins; writes remain service-side. `tenant_id` stays NULLABLE
+  until the operator alert job and super-admin route semantics are migrated.
+  Live-proven by `scripts/probes/assert-alert-history-rls.mjs` (member sees
+  own-tenant only; stranger sees 0; admin sees own-tenant + global).
+
+Indexes (`20261003012423_drop_duplicate_indexes`): `duplicate_index` 51 -> 0.
+Each pair verified definition-identical (columns + uniqueness) before removal;
+constraint-backed indexes kept; the 31 `api_call_logs` partition pairs resolved
+at the parent (dropping `idx_api_call_logs_tenant` cascades its 31 loose
+children). `table_bloat` 1 -> 0: `VACUUM (FULL, ANALYZE) net._http_response`
+(48 MB -> 520 kB). Residual: 2083 `unused_index` findings (INFO) intentionally
+NOT dropped — dropping on label alone risks losing index coverage for slow
+cadence queries; this needs a per-index query-plan review (backlog).
+
+Migration catalog reconciliation: 53 unrecorded `supabase/migrations` files were
+missing from `supabase_migrations.schema_migrations` (plus 2 filename version
+collisions, `20250120000000` and `20260313000000`, renamed to
+`20250120000010_gap_discovery_phases` and
+`20260313000010_final_reconciliation_preview`). Ledger now matches the file
+catalog exactly (71 = 71 supabase, 34 = 34 prisma). Permanent monitoring:
+`scripts/verify-migration-catalog.mjs` (`pnpm run verify:migration-catalog`, now
+also detects duplicate version prefixes) and `.github/workflows/parity-monitor.yml`
+(daily: route parity, surface/API-family docs, contract compatibility, migration
+catalog parity, `prisma migrate status`).
+
+Verification tooling fixes (root causes, not symptom suppression):
+
+- `verify:route-parity` false-negatives: marketing routes (`/why-settler`,
+  `/comparison`, `/security`) are `next.config.js` redirects, not page files.
+  The route registry now records redirect/rewrite sources (`routedPaths`), and
+  the genuinely missing `/architecture` route was added as a redirect.
+- `verify:production-parity` exited 0 with a failing step in its summary. The
+  introspection step is now required when `DATABASE_URL` is present and cleanly
+  reported as skipped (not passed) when it is not; any failure exits non-zero.
+- `find-pipe-dream-signals.ts` `table_no_consumer` consumed only `.from('t')`
+  in `packages/`, producing 416 false "high" findings. Consumer detection now
+  includes Prisma `@@map`, SQL routines, and quoted dynamic RPC references, and
+  the signal is a medium review signal (removing tables is destructive and
+  needs human review). Residual review backlog: tables still unconsumed after
+  the improved detection are listed in `supabase/pipe-dream-signals.json`.
+
+Schema-engine gap closed: `prisma migrate status` runs green from this
+environment (34 migrations, "Database schema is up to date!"). Full
+`prisma migrate diff --from-schema --to-config-datasource` is still blocked by
+Prisma P4002 (cross-schema FK `public.activity_logs -> auth.users` requires
+`auth` in the datasource `schemas` list) — a tooling limit, not schema drift;
+parity remains covered by `migrate status` + the nightly catalog check.
+
+Residual risks (unchanged or by design): leaked-password protection
+(`auth_leaked_password_protection`) returns HTTP 402 — "Configuring leaked
+password protection via HaveIBeenPwned.org is available on Pro Plans and up."
+(plan blocker, enable `password_hibp_enabled` after upgrade); 4 anon-executable
+SECURITY DEFINER context helpers (`current_tenant_id`, `get_user_tenant_ids`,
+`is_admin_user`, `is_tenant_admin`) are required by the `TO (public)` tenant
+isolation policies (revoking turns anon reads into errors — see known limits);
+2083 `unused_index` findings remain as the review backlog above; the
+Open-Source Public Mirror Sync job remains red on its expired
+`PUBLIC_MIRROR_GIT_TOKEN`.
