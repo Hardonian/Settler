@@ -1,0 +1,1509 @@
+{
+  "tables": {
+    "add_on_purchases": {
+      "mode": "same-set merge to (authenticated)",
+      "cells": [
+        {
+          "action": "SELECT",
+          "role": "authenticated",
+          "before": [
+            "((billing_account_id IN ( SELECT billing_accounts.id\n   FROM billing_accounts\n  WHERE (billing_accounts.user_id = ( SELECT auth.uid() AS uid)))))",
+            "((EXISTS ( SELECT 1\n   FROM billing_accounts ba\n  WHERE ((ba.id = add_on_purchases.billing_account_id) AND ((ba.user_id = ( SELECT auth.uid() AS uid)) OR (ba.tenant_id IN ( SELECT tenant_users.tenant_id\n           FROM tenant_users\n          WHERE (tenant_users.user_id = ( SELECT auth.uid() AS uid)))))))))"
+          ],
+          "after": "(((billing_account_id IN ( SELECT billing_accounts.id\n   FROM billing_accounts\n  WHERE (billing_accounts.user_id = ( SELECT auth.uid() AS uid))))) OR ((EXISTS ( SELECT 1\n   FROM billing_accounts ba\n  WHERE ((ba.id = add_on_purchases.billing_account_id) AND ((ba.user_id = ( SELECT auth.uid() AS uid)) OR (ba.tenant_id IN ( SELECT tenant_users.tenant_id\n           FROM tenant_users\n          WHERE (tenant_users.user_id = ( SELECT auth.uid() AS uid))))))))))"
+        },
+        {
+          "action": "INSERT",
+          "role": "authenticated",
+          "before": [
+            "((billing_account_id IN ( SELECT billing_accounts.id\n   FROM billing_accounts\n  WHERE (billing_accounts.user_id = ( SELECT auth.uid() AS uid)))))"
+          ],
+          "after": "((billing_account_id IN ( SELECT billing_accounts.id\n   FROM billing_accounts\n  WHERE (billing_accounts.user_id = ( SELECT auth.uid() AS uid)))))"
+        },
+        {
+          "action": "UPDATE",
+          "role": "authenticated",
+          "before": [
+            "((billing_account_id IN ( SELECT billing_accounts.id\n   FROM billing_accounts\n  WHERE (billing_accounts.user_id = ( SELECT auth.uid() AS uid)))))",
+            "((EXISTS ( SELECT 1\n   FROM billing_accounts ba\n  WHERE ((ba.id = add_on_purchases.billing_account_id) AND ((ba.user_id = ( SELECT auth.uid() AS uid)) OR (ba.tenant_id IN ( SELECT tenant_users.tenant_id\n           FROM tenant_users\n          WHERE (tenant_users.user_id = ( SELECT auth.uid() AS uid)))))))))"
+          ],
+          "after": "(((billing_account_id IN ( SELECT billing_accounts.id\n   FROM billing_accounts\n  WHERE (billing_accounts.user_id = ( SELECT auth.uid() AS uid))))) OR ((EXISTS ( SELECT 1\n   FROM billing_accounts ba\n  WHERE ((ba.id = add_on_purchases.billing_account_id) AND ((ba.user_id = ( SELECT auth.uid() AS uid)) OR (ba.tenant_id IN ( SELECT tenant_users.tenant_id\n           FROM tenant_users\n          WHERE (tenant_users.user_id = ( SELECT auth.uid() AS uid))))))))))"
+        },
+        {
+          "action": "DELETE",
+          "role": "authenticated",
+          "before": [
+            "((EXISTS ( SELECT 1\n   FROM billing_accounts ba\n  WHERE ((ba.id = add_on_purchases.billing_account_id) AND ((ba.user_id = ( SELECT auth.uid() AS uid)) OR (ba.tenant_id IN ( SELECT tenant_users.tenant_id\n           FROM tenant_users\n          WHERE (tenant_users.user_id = ( SELECT auth.uid() AS uid)))))))))",
+            "((billing_account_id IN ( SELECT billing_accounts.id\n   FROM billing_accounts\n  WHERE (billing_accounts.user_id = ( SELECT auth.uid() AS uid)))))"
+          ],
+          "after": "(((EXISTS ( SELECT 1\n   FROM billing_accounts ba\n  WHERE ((ba.id = add_on_purchases.billing_account_id) AND ((ba.user_id = ( SELECT auth.uid() AS uid)) OR (ba.tenant_id IN ( SELECT tenant_users.tenant_id\n           FROM tenant_users\n          WHERE (tenant_users.user_id = ( SELECT auth.uid() AS uid))))))))) OR ((billing_account_id IN ( SELECT billing_accounts.id\n   FROM billing_accounts\n  WHERE (billing_accounts.user_id = ( SELECT auth.uid() AS uid))))))"
+        }
+      ],
+      "dropped": [
+        "add_on_purchases_delete_authenticated",
+        "add_on_purchases_insert_authenticated",
+        "add_on_purchases_isolation",
+        "add_on_purchases_select_authenticated",
+        "add_on_purchases_update_authenticated"
+      ]
+    },
+    "add_ons": {
+      "mode": "role-conditioned single policy per action (exact for every role)",
+      "cells": [
+        {
+          "action": "SELECT",
+          "role": "*role-conditioned*",
+          "before_terms": [
+            "(((is_active = true)) AND (pg_has_role(current_user, 'authenticated', 'MEMBER')))",
+            "(((is_active = true) OR (EXISTS ( SELECT 1\n   FROM add_on_purchases\n  WHERE ((add_on_purchases.add_on_id = add_ons.id) AND (EXISTS ( SELECT 1\n           FROM billing_accounts\n          WHERE ((billing_accounts.id = add_on_purchases.billing_account_id) AND (billing_accounts.user_id = current_user_id())))))))))"
+          ],
+          "after": "((((is_active = true)) AND (pg_has_role(current_user, 'authenticated', 'MEMBER'))) OR (((is_active = true) OR (EXISTS ( SELECT 1\n   FROM add_on_purchases\n  WHERE ((add_on_purchases.add_on_id = add_ons.id) AND (EXISTS ( SELECT 1\n           FROM billing_accounts\n          WHERE ((billing_accounts.id = add_on_purchases.billing_account_id) AND (billing_accounts.user_id = current_user_id()))))))))))"
+        },
+        {
+          "action": "INSERT",
+          "role": "*role-conditioned*",
+          "before_terms": [],
+          "after": null
+        },
+        {
+          "action": "UPDATE",
+          "role": "*role-conditioned*",
+          "before_terms": ["(false)"],
+          "after": "(false)"
+        },
+        {
+          "action": "DELETE",
+          "role": "*role-conditioned*",
+          "before_terms": ["(false)"],
+          "after": "(false)"
+        }
+      ],
+      "dropped": [
+        "add_ons_delete_admin",
+        "add_ons_insert_admin",
+        "add_ons_select",
+        "add_ons_select_public",
+        "add_ons_update_admin"
+      ]
+    },
+    "audit_logs": {
+      "mode": "same-set merge to (authenticated)",
+      "cells": [
+        {
+          "action": "SELECT",
+          "role": "authenticated",
+          "before": [
+            "(((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids)) OR (user_id = ( SELECT auth.uid() AS uid))))",
+            "((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[]))))"
+          ],
+          "after": "((((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids)) OR (user_id = ( SELECT auth.uid() AS uid)))) OR ((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[])))))"
+        },
+        {
+          "action": "INSERT",
+          "role": "authenticated",
+          "before": [],
+          "after": null
+        },
+        {
+          "action": "UPDATE",
+          "role": "authenticated",
+          "before": [
+            "((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[]))))"
+          ],
+          "after": "((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[]))))"
+        },
+        {
+          "action": "DELETE",
+          "role": "authenticated",
+          "before": [
+            "((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[]))))"
+          ],
+          "after": "((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[]))))"
+        }
+      ],
+      "dropped": [
+        "audit_logs_select_tenant",
+        "tenant_delete",
+        "tenant_insert",
+        "tenant_select",
+        "tenant_update"
+      ]
+    },
+    "billing_accounts": {
+      "mode": "role-conditioned single policy per action (exact for every role)",
+      "cells": [
+        {
+          "action": "SELECT",
+          "role": "*role-conditioned*",
+          "before_terms": [
+            "((true) AND (pg_has_role(current_user, 'service_role', 'MEMBER')))",
+            "((((user_id = ( SELECT auth.uid() AS uid)) OR (tenant_id IN ( SELECT tu.tenant_id\n   FROM tenant_users tu\n  WHERE (tu.user_id = ( SELECT auth.uid() AS uid)))) OR (tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[]))))) AND (pg_has_role(current_user, 'authenticated', 'MEMBER')))",
+            "(((user_id = ( SELECT auth.uid() AS uid))) AND (pg_has_role(current_user, 'authenticated', 'MEMBER')))"
+          ],
+          "after": "(((true) AND (pg_has_role(current_user, 'service_role', 'MEMBER'))) OR ((((user_id = ( SELECT auth.uid() AS uid)) OR (tenant_id IN ( SELECT tu.tenant_id\n   FROM tenant_users tu\n  WHERE (tu.user_id = ( SELECT auth.uid() AS uid)))) OR (tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[]))))) AND (pg_has_role(current_user, 'authenticated', 'MEMBER'))) OR (((user_id = ( SELECT auth.uid() AS uid))) AND (pg_has_role(current_user, 'authenticated', 'MEMBER'))))"
+        },
+        {
+          "action": "INSERT",
+          "role": "*role-conditioned*",
+          "before_terms": ["((true) AND (pg_has_role(current_user, 'service_role', 'MEMBER')))"],
+          "after": "((true) AND (pg_has_role(current_user, 'service_role', 'MEMBER')))"
+        },
+        {
+          "action": "UPDATE",
+          "role": "*role-conditioned*",
+          "before_terms": [
+            "((true) AND (pg_has_role(current_user, 'service_role', 'MEMBER')))",
+            "((((user_id = ( SELECT auth.uid() AS uid)) OR (tenant_id IN ( SELECT tenant_users.tenant_id\n   FROM tenant_users\n  WHERE (tenant_users.user_id = ( SELECT auth.uid() AS uid)))) OR (tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[]))))) AND (pg_has_role(current_user, 'authenticated', 'MEMBER')))",
+            "(((user_id = ( SELECT auth.uid() AS uid))) AND (pg_has_role(current_user, 'authenticated', 'MEMBER')))"
+          ],
+          "after": "(((true) AND (pg_has_role(current_user, 'service_role', 'MEMBER'))) OR ((((user_id = ( SELECT auth.uid() AS uid)) OR (tenant_id IN ( SELECT tenant_users.tenant_id\n   FROM tenant_users\n  WHERE (tenant_users.user_id = ( SELECT auth.uid() AS uid)))) OR (tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[]))))) AND (pg_has_role(current_user, 'authenticated', 'MEMBER'))) OR (((user_id = ( SELECT auth.uid() AS uid))) AND (pg_has_role(current_user, 'authenticated', 'MEMBER'))))"
+        },
+        {
+          "action": "DELETE",
+          "role": "*role-conditioned*",
+          "before_terms": [
+            "((true) AND (pg_has_role(current_user, 'service_role', 'MEMBER')))",
+            "(((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[])))) AND (pg_has_role(current_user, 'authenticated', 'MEMBER')))"
+          ],
+          "after": "(((true) AND (pg_has_role(current_user, 'service_role', 'MEMBER'))) OR (((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[])))) AND (pg_has_role(current_user, 'authenticated', 'MEMBER'))))"
+        }
+      ],
+      "dropped": [
+        "Service role can manage billing accounts",
+        "billing_accounts_select_authenticated_combined",
+        "billing_accounts_select_own",
+        "billing_accounts_update_authenticated",
+        "billing_accounts_update_own",
+        "tenant_delete",
+        "tenant_insert"
+      ]
+    },
+    "contract_versions": {
+      "mode": "same-set merge to (authenticated)",
+      "cells": [
+        {
+          "action": "SELECT",
+          "role": "authenticated",
+          "before": [
+            "((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids)))",
+            "((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[]))))"
+          ],
+          "after": "(((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids))) OR ((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[])))))"
+        },
+        {
+          "action": "INSERT",
+          "role": "authenticated",
+          "before": [],
+          "after": null
+        },
+        {
+          "action": "UPDATE",
+          "role": "authenticated",
+          "before": [
+            "((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids)))",
+            "((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[]))))"
+          ],
+          "after": "(((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids))) OR ((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[])))))"
+        },
+        {
+          "action": "DELETE",
+          "role": "authenticated",
+          "before": [
+            "((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids)))",
+            "((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[]))))"
+          ],
+          "after": "(((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids))) OR ((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[])))))"
+        }
+      ],
+      "dropped": [
+        "contract_versions_delete",
+        "contract_versions_insert",
+        "contract_versions_select",
+        "contract_versions_update",
+        "tenant_delete",
+        "tenant_insert",
+        "tenant_select",
+        "tenant_update"
+      ]
+    },
+    "drift_events": {
+      "mode": "same-set merge to (authenticated)",
+      "cells": [
+        {
+          "action": "SELECT",
+          "role": "authenticated",
+          "before": [
+            "((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids)))",
+            "((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[]))))"
+          ],
+          "after": "(((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids))) OR ((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[])))))"
+        },
+        {
+          "action": "INSERT",
+          "role": "authenticated",
+          "before": ["((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids)))"],
+          "after": "((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids)))"
+        },
+        {
+          "action": "UPDATE",
+          "role": "authenticated",
+          "before": [
+            "((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids)))",
+            "((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[]))))"
+          ],
+          "after": "(((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids))) OR ((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[])))))"
+        },
+        {
+          "action": "DELETE",
+          "role": "authenticated",
+          "before": [
+            "((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids)))",
+            "((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[]))))"
+          ],
+          "after": "(((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids))) OR ((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[])))))"
+        }
+      ],
+      "dropped": [
+        "drift_events_isolation",
+        "tenant_delete",
+        "tenant_insert",
+        "tenant_select",
+        "tenant_update"
+      ]
+    },
+    "exports": {
+      "mode": "same-set merge to (authenticated)",
+      "cells": [
+        {
+          "action": "SELECT",
+          "role": "authenticated",
+          "before": [
+            "((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids)))",
+            "((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[]))))"
+          ],
+          "after": "(((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids))) OR ((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[])))))"
+        },
+        {
+          "action": "INSERT",
+          "role": "authenticated",
+          "before": [],
+          "after": null
+        },
+        {
+          "action": "UPDATE",
+          "role": "authenticated",
+          "before": [
+            "((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[]))))"
+          ],
+          "after": "((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[]))))"
+        },
+        {
+          "action": "DELETE",
+          "role": "authenticated",
+          "before": [
+            "((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[]))))"
+          ],
+          "after": "((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[]))))"
+        }
+      ],
+      "dropped": [
+        "exports_insert",
+        "exports_select",
+        "tenant_delete",
+        "tenant_insert",
+        "tenant_select",
+        "tenant_update"
+      ]
+    },
+    "feature_flag_overrides": {
+      "mode": "same-set merge to (authenticated)",
+      "cells": [
+        {
+          "action": "SELECT",
+          "role": "authenticated",
+          "before": [
+            "((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids)))",
+            "((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[]))))"
+          ],
+          "after": "(((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids))) OR ((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[])))))"
+        },
+        {
+          "action": "INSERT",
+          "role": "authenticated",
+          "before": ["((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids)))"],
+          "after": "((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids)))"
+        },
+        {
+          "action": "UPDATE",
+          "role": "authenticated",
+          "before": [
+            "((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids)))",
+            "((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[]))))"
+          ],
+          "after": "(((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids))) OR ((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[])))))"
+        },
+        {
+          "action": "DELETE",
+          "role": "authenticated",
+          "before": [
+            "((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids)))",
+            "((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[]))))"
+          ],
+          "after": "(((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids))) OR ((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[])))))"
+        }
+      ],
+      "dropped": [
+        "feature_flag_overrides_isolation",
+        "tenant_delete",
+        "tenant_insert",
+        "tenant_select",
+        "tenant_update"
+      ]
+    },
+    "feature_flags": {
+      "mode": "same-set merge to (authenticated)",
+      "cells": [
+        {
+          "action": "SELECT",
+          "role": "authenticated",
+          "before": [
+            "(((is_global = true) OR (billing_account_id IN ( SELECT billing_accounts.id\n   FROM billing_accounts\n  WHERE (billing_accounts.user_id = ( SELECT auth.uid() AS uid))))))",
+            "((billing_account_id IN ( SELECT ba.id\n   FROM billing_accounts ba\n  WHERE ((ba.user_id = ( SELECT auth.uid() AS uid)) AND ((ba.status)::text = 'active'::text) AND (ba.deleted_at IS NULL)))))"
+          ],
+          "after": "((((is_global = true) OR (billing_account_id IN ( SELECT billing_accounts.id\n   FROM billing_accounts\n  WHERE (billing_accounts.user_id = ( SELECT auth.uid() AS uid)))))) OR ((billing_account_id IN ( SELECT ba.id\n   FROM billing_accounts ba\n  WHERE ((ba.user_id = ( SELECT auth.uid() AS uid)) AND ((ba.status)::text = 'active'::text) AND (ba.deleted_at IS NULL))))))"
+        },
+        {
+          "action": "INSERT",
+          "role": "authenticated",
+          "before": [],
+          "after": null
+        },
+        {
+          "action": "UPDATE",
+          "role": "authenticated",
+          "before": [
+            "((billing_account_id IN ( SELECT ba.id\n   FROM billing_accounts ba\n  WHERE ((ba.user_id = ( SELECT auth.uid() AS uid)) AND ((ba.status)::text = 'active'::text) AND (ba.deleted_at IS NULL)))))"
+          ],
+          "after": "((billing_account_id IN ( SELECT ba.id\n   FROM billing_accounts ba\n  WHERE ((ba.user_id = ( SELECT auth.uid() AS uid)) AND ((ba.status)::text = 'active'::text) AND (ba.deleted_at IS NULL)))))"
+        },
+        {
+          "action": "DELETE",
+          "role": "authenticated",
+          "before": [
+            "((billing_account_id IN ( SELECT ba.id\n   FROM billing_accounts ba\n  WHERE ((ba.user_id = ( SELECT auth.uid() AS uid)) AND ((ba.status)::text = 'active'::text) AND (ba.deleted_at IS NULL)))))"
+          ],
+          "after": "((billing_account_id IN ( SELECT ba.id\n   FROM billing_accounts ba\n  WHERE ((ba.user_id = ( SELECT auth.uid() AS uid)) AND ((ba.status)::text = 'active'::text) AND (ba.deleted_at IS NULL)))))"
+        }
+      ],
+      "dropped": [
+        "feature_flags_select",
+        "tenant_isolation_delete",
+        "tenant_isolation_insert",
+        "tenant_isolation_select",
+        "tenant_isolation_update"
+      ]
+    },
+    "idempotency_keys": {
+      "mode": "role-conditioned single policy per action (exact for every role)",
+      "cells": [
+        {
+          "action": "SELECT",
+          "role": "*role-conditioned*",
+          "before_terms": [
+            "((CURRENT_USER = 'service_role'::name))",
+            "((tenant_id = (( SELECT current_setting('app.current_tenant_id'::text, true) AS current_setting))::uuid))",
+            "(((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[])))) AND (pg_has_role(current_user, 'authenticated', 'MEMBER')))"
+          ],
+          "after": "(((CURRENT_USER = 'service_role'::name)) OR ((tenant_id = (( SELECT current_setting('app.current_tenant_id'::text, true) AS current_setting))::uuid)) OR (((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[])))) AND (pg_has_role(current_user, 'authenticated', 'MEMBER'))))"
+        },
+        {
+          "action": "INSERT",
+          "role": "*role-conditioned*",
+          "before_terms": [
+            "((CURRENT_USER = 'service_role'::name))",
+            "((tenant_id = (( SELECT current_setting('app.current_tenant_id'::text, true) AS current_setting))::uuid))"
+          ],
+          "after": "(((CURRENT_USER = 'service_role'::name)) OR ((tenant_id = (( SELECT current_setting('app.current_tenant_id'::text, true) AS current_setting))::uuid)))"
+        },
+        {
+          "action": "UPDATE",
+          "role": "*role-conditioned*",
+          "before_terms": [
+            "((CURRENT_USER = 'service_role'::name))",
+            "((tenant_id = (( SELECT current_setting('app.current_tenant_id'::text, true) AS current_setting))::uuid))",
+            "(((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[])))) AND (pg_has_role(current_user, 'authenticated', 'MEMBER')))"
+          ],
+          "after": "(((CURRENT_USER = 'service_role'::name)) OR ((tenant_id = (( SELECT current_setting('app.current_tenant_id'::text, true) AS current_setting))::uuid)) OR (((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[])))) AND (pg_has_role(current_user, 'authenticated', 'MEMBER'))))"
+        },
+        {
+          "action": "DELETE",
+          "role": "*role-conditioned*",
+          "before_terms": [
+            "((CURRENT_USER = 'service_role'::name))",
+            "(((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[])))) AND (pg_has_role(current_user, 'authenticated', 'MEMBER')))",
+            "((tenant_id = (( SELECT current_setting('app.current_tenant_id'::text, true) AS current_setting))::uuid))"
+          ],
+          "after": "(((CURRENT_USER = 'service_role'::name)) OR (((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[])))) AND (pg_has_role(current_user, 'authenticated', 'MEMBER'))) OR ((tenant_id = (( SELECT current_setting('app.current_tenant_id'::text, true) AS current_setting))::uuid)))"
+        }
+      ],
+      "dropped": [
+        "service_role_bypass_idempotency",
+        "tenant_delete",
+        "tenant_insert",
+        "tenant_isolation_idempotency_keys",
+        "tenant_select",
+        "tenant_update"
+      ]
+    },
+    "ingestion_dlq": {
+      "mode": "same-set merge to (public)",
+      "cells": [
+        {
+          "action": "SELECT",
+          "role": "public",
+          "before": [
+            "((CURRENT_USER = 'service_role'::name))",
+            "(((tenant_id = (( SELECT current_setting('app.current_tenant_id'::text, true) AS current_setting))::uuid) OR (tenant_id IS NULL)))"
+          ],
+          "after": "(((CURRENT_USER = 'service_role'::name)) OR (((tenant_id = (( SELECT current_setting('app.current_tenant_id'::text, true) AS current_setting))::uuid) OR (tenant_id IS NULL))))"
+        },
+        {
+          "action": "INSERT",
+          "role": "public",
+          "before": [
+            "((CURRENT_USER = 'service_role'::name))",
+            "(((tenant_id = (( SELECT current_setting('app.current_tenant_id'::text, true) AS current_setting))::uuid) OR (tenant_id IS NULL)))"
+          ],
+          "after": "(((CURRENT_USER = 'service_role'::name)) OR (((tenant_id = (( SELECT current_setting('app.current_tenant_id'::text, true) AS current_setting))::uuid) OR (tenant_id IS NULL))))"
+        },
+        {
+          "action": "UPDATE",
+          "role": "public",
+          "before": [
+            "((CURRENT_USER = 'service_role'::name))",
+            "(((tenant_id = (( SELECT current_setting('app.current_tenant_id'::text, true) AS current_setting))::uuid) OR (tenant_id IS NULL)))"
+          ],
+          "after": "(((CURRENT_USER = 'service_role'::name)) OR (((tenant_id = (( SELECT current_setting('app.current_tenant_id'::text, true) AS current_setting))::uuid) OR (tenant_id IS NULL))))"
+        },
+        {
+          "action": "DELETE",
+          "role": "public",
+          "before": [
+            "((CURRENT_USER = 'service_role'::name))",
+            "(((tenant_id = (( SELECT current_setting('app.current_tenant_id'::text, true) AS current_setting))::uuid) OR (tenant_id IS NULL)))"
+          ],
+          "after": "(((CURRENT_USER = 'service_role'::name)) OR (((tenant_id = (( SELECT current_setting('app.current_tenant_id'::text, true) AS current_setting))::uuid) OR (tenant_id IS NULL))))"
+        }
+      ],
+      "dropped": ["service_role_bypass_dlq", "tenant_isolation_ingestion_dlq"]
+    },
+    "ingestion_sources": {
+      "mode": "same-set merge to (authenticated)",
+      "cells": [
+        {
+          "action": "SELECT",
+          "role": "authenticated",
+          "before": [
+            "((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids)))",
+            "((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[]))))"
+          ],
+          "after": "(((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids))) OR ((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[])))))"
+        },
+        {
+          "action": "INSERT",
+          "role": "authenticated",
+          "before": [],
+          "after": null
+        },
+        {
+          "action": "UPDATE",
+          "role": "authenticated",
+          "before": [
+            "((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids)))",
+            "((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[]))))"
+          ],
+          "after": "(((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids))) OR ((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[])))))"
+        },
+        {
+          "action": "DELETE",
+          "role": "authenticated",
+          "before": [
+            "((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[]))))"
+          ],
+          "after": "((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[]))))"
+        }
+      ],
+      "dropped": [
+        "ingestion_sources_insert",
+        "ingestion_sources_select",
+        "ingestion_sources_update",
+        "tenant_delete",
+        "tenant_insert",
+        "tenant_select",
+        "tenant_update"
+      ]
+    },
+    "ingestions": {
+      "mode": "same-set merge to (authenticated)",
+      "cells": [
+        {
+          "action": "SELECT",
+          "role": "authenticated",
+          "before": [
+            "((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids)))",
+            "((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[]))))"
+          ],
+          "after": "(((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids))) OR ((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[])))))"
+        },
+        {
+          "action": "INSERT",
+          "role": "authenticated",
+          "before": ["((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids)))"],
+          "after": "((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids)))"
+        },
+        {
+          "action": "UPDATE",
+          "role": "authenticated",
+          "before": [
+            "((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids)))",
+            "((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[]))))"
+          ],
+          "after": "(((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids))) OR ((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[])))))"
+        },
+        {
+          "action": "DELETE",
+          "role": "authenticated",
+          "before": [
+            "((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids)))",
+            "((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[]))))"
+          ],
+          "after": "(((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids))) OR ((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[])))))"
+        }
+      ],
+      "dropped": [
+        "ingestions_isolation",
+        "tenant_delete",
+        "tenant_insert",
+        "tenant_select",
+        "tenant_update"
+      ]
+    },
+    "mapping_templates": {
+      "mode": "same-set merge to (authenticated)",
+      "cells": [
+        {
+          "action": "SELECT",
+          "role": "authenticated",
+          "before": [
+            "(((is_public = true) OR (is_system = true) OR (tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids))))",
+            "((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[]))))"
+          ],
+          "after": "((((is_public = true) OR (is_system = true) OR (tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids)))) OR ((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[])))))"
+        },
+        {
+          "action": "INSERT",
+          "role": "authenticated",
+          "before": [],
+          "after": null
+        },
+        {
+          "action": "UPDATE",
+          "role": "authenticated",
+          "before": [
+            "(((is_system = false) AND (tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids))))",
+            "((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[]))))"
+          ],
+          "after": "((((is_system = false) AND (tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids)))) OR ((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[])))))"
+        },
+        {
+          "action": "DELETE",
+          "role": "authenticated",
+          "before": [
+            "((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[]))))"
+          ],
+          "after": "((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[]))))"
+        }
+      ],
+      "dropped": [
+        "mapping_templates_insert",
+        "mapping_templates_select",
+        "mapping_templates_update",
+        "tenant_delete",
+        "tenant_insert",
+        "tenant_select",
+        "tenant_update"
+      ]
+    },
+    "memberships": {
+      "mode": "role-conditioned single policy per action (exact for every role)",
+      "cells": [
+        {
+          "action": "SELECT",
+          "role": "*role-conditioned*",
+          "before_terms": [
+            "((true) AND (pg_has_role(current_user, 'service_role', 'MEMBER')))",
+            "(((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids))) AND (pg_has_role(current_user, 'authenticated', 'MEMBER')))",
+            "(((user_id = ( SELECT auth.uid() AS uid))) AND (pg_has_role(current_user, 'authenticated', 'MEMBER')))"
+          ],
+          "after": "(((true) AND (pg_has_role(current_user, 'service_role', 'MEMBER'))) OR (((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids))) AND (pg_has_role(current_user, 'authenticated', 'MEMBER'))) OR (((user_id = ( SELECT auth.uid() AS uid))) AND (pg_has_role(current_user, 'authenticated', 'MEMBER'))))"
+        },
+        {
+          "action": "INSERT",
+          "role": "*role-conditioned*",
+          "before_terms": ["((true) AND (pg_has_role(current_user, 'service_role', 'MEMBER')))"],
+          "after": "((true) AND (pg_has_role(current_user, 'service_role', 'MEMBER')))"
+        },
+        {
+          "action": "UPDATE",
+          "role": "*role-conditioned*",
+          "before_terms": [
+            "((true) AND (pg_has_role(current_user, 'service_role', 'MEMBER')))",
+            "(((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids))) AND (pg_has_role(current_user, 'authenticated', 'MEMBER')))",
+            "(((user_id = ( SELECT auth.uid() AS uid))) AND (pg_has_role(current_user, 'authenticated', 'MEMBER')))"
+          ],
+          "after": "(((true) AND (pg_has_role(current_user, 'service_role', 'MEMBER'))) OR (((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids))) AND (pg_has_role(current_user, 'authenticated', 'MEMBER'))) OR (((user_id = ( SELECT auth.uid() AS uid))) AND (pg_has_role(current_user, 'authenticated', 'MEMBER'))))"
+        },
+        {
+          "action": "DELETE",
+          "role": "*role-conditioned*",
+          "before_terms": [
+            "(((user_id = ( SELECT auth.uid() AS uid))) AND (pg_has_role(current_user, 'authenticated', 'MEMBER')))",
+            "((true) AND (pg_has_role(current_user, 'service_role', 'MEMBER')))"
+          ],
+          "after": "((((user_id = ( SELECT auth.uid() AS uid))) AND (pg_has_role(current_user, 'authenticated', 'MEMBER'))) OR ((true) AND (pg_has_role(current_user, 'service_role', 'MEMBER'))))"
+        }
+      ],
+      "dropped": [
+        "memberships_delete_owned",
+        "memberships_insert",
+        "memberships_insert_owned",
+        "memberships_modify_service",
+        "memberships_select",
+        "memberships_select_own",
+        "memberships_update",
+        "memberships_update_owned"
+      ]
+    },
+    "normalized_transactions": {
+      "mode": "same-set merge to (authenticated)",
+      "cells": [
+        {
+          "action": "SELECT",
+          "role": "authenticated",
+          "before": [
+            "((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids)))",
+            "((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[]))))"
+          ],
+          "after": "(((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids))) OR ((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[])))))"
+        },
+        {
+          "action": "INSERT",
+          "role": "authenticated",
+          "before": ["((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids)))"],
+          "after": "((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids)))"
+        },
+        {
+          "action": "UPDATE",
+          "role": "authenticated",
+          "before": [
+            "((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids)))",
+            "((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[]))))"
+          ],
+          "after": "(((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids))) OR ((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[])))))"
+        },
+        {
+          "action": "DELETE",
+          "role": "authenticated",
+          "before": [
+            "((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids)))",
+            "((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[]))))"
+          ],
+          "after": "(((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids))) OR ((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[])))))"
+        }
+      ],
+      "dropped": [
+        "normalized_transactions_isolation",
+        "tenant_delete",
+        "tenant_insert",
+        "tenant_select",
+        "tenant_update"
+      ]
+    },
+    "raw_records": {
+      "mode": "role-conditioned single policy per action (exact for every role)",
+      "cells": [
+        {
+          "action": "SELECT",
+          "role": "*role-conditioned*",
+          "before_terms": [
+            "(((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids))) AND (pg_has_role(current_user, 'authenticated', 'MEMBER')))",
+            "((true) AND (pg_has_role(current_user, 'service_role', 'MEMBER')))",
+            "(((tenant_id IN ( SELECT ba.tenant_id\n   FROM billing_accounts ba\n  WHERE ((ba.user_id = ( SELECT auth.uid() AS uid)) AND ((ba.status)::text = 'active'::text) AND (ba.deleted_at IS NULL))))) AND (pg_has_role(current_user, 'authenticated', 'MEMBER')))"
+          ],
+          "after": "((((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids))) AND (pg_has_role(current_user, 'authenticated', 'MEMBER'))) OR ((true) AND (pg_has_role(current_user, 'service_role', 'MEMBER'))) OR (((tenant_id IN ( SELECT ba.tenant_id\n   FROM billing_accounts ba\n  WHERE ((ba.user_id = ( SELECT auth.uid() AS uid)) AND ((ba.status)::text = 'active'::text) AND (ba.deleted_at IS NULL))))) AND (pg_has_role(current_user, 'authenticated', 'MEMBER'))))"
+        },
+        {
+          "action": "INSERT",
+          "role": "*role-conditioned*",
+          "before_terms": [
+            "(((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids))) AND (pg_has_role(current_user, 'authenticated', 'MEMBER')))",
+            "((true) AND (pg_has_role(current_user, 'service_role', 'MEMBER')))"
+          ],
+          "after": "((((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids))) AND (pg_has_role(current_user, 'authenticated', 'MEMBER'))) OR ((true) AND (pg_has_role(current_user, 'service_role', 'MEMBER'))))"
+        },
+        {
+          "action": "UPDATE",
+          "role": "*role-conditioned*",
+          "before_terms": [
+            "(((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids))) AND (pg_has_role(current_user, 'authenticated', 'MEMBER')))",
+            "((true) AND (pg_has_role(current_user, 'service_role', 'MEMBER')))",
+            "(((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[])))) AND (pg_has_role(current_user, 'authenticated', 'MEMBER')))"
+          ],
+          "after": "((((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids))) AND (pg_has_role(current_user, 'authenticated', 'MEMBER'))) OR ((true) AND (pg_has_role(current_user, 'service_role', 'MEMBER'))) OR (((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[])))) AND (pg_has_role(current_user, 'authenticated', 'MEMBER'))))"
+        },
+        {
+          "action": "DELETE",
+          "role": "*role-conditioned*",
+          "before_terms": [
+            "(((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[])))) AND (pg_has_role(current_user, 'authenticated', 'MEMBER')))",
+            "(((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids))) AND (pg_has_role(current_user, 'authenticated', 'MEMBER')))",
+            "((true) AND (pg_has_role(current_user, 'service_role', 'MEMBER')))"
+          ],
+          "after": "((((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[])))) AND (pg_has_role(current_user, 'authenticated', 'MEMBER'))) OR (((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids))) AND (pg_has_role(current_user, 'authenticated', 'MEMBER'))) OR ((true) AND (pg_has_role(current_user, 'service_role', 'MEMBER'))))"
+        }
+      ],
+      "dropped": [
+        "raw_records_delete_tenant",
+        "raw_records_insert_tenant",
+        "raw_records_isolation",
+        "raw_records_modify_service",
+        "raw_records_select_tenant",
+        "raw_records_update_tenant"
+      ]
+    },
+    "receipt_items": {
+      "mode": "role-conditioned single policy per action (exact for every role)",
+      "cells": [
+        {
+          "action": "SELECT",
+          "role": "*role-conditioned*",
+          "before_terms": [
+            "(((receipt_id IN ( SELECT receipts.id\n   FROM receipts\n  WHERE (receipts.tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids))))) AND (pg_has_role(current_user, 'authenticated', 'MEMBER')))",
+            "((true) AND (pg_has_role(current_user, 'service_role', 'MEMBER')))",
+            "(((EXISTS ( SELECT 1\n   FROM receipts r\n  WHERE ((r.id = receipt_items.receipt_id) AND (r.tenant_id IN ( SELECT ba.tenant_id\n           FROM billing_accounts ba\n          WHERE ((ba.user_id = ( SELECT auth.uid() AS uid)) AND ((ba.status)::text = 'active'::text) AND (ba.deleted_at IS NULL)))))))) AND (pg_has_role(current_user, 'authenticated', 'MEMBER')))"
+          ],
+          "after": "((((receipt_id IN ( SELECT receipts.id\n   FROM receipts\n  WHERE (receipts.tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids))))) AND (pg_has_role(current_user, 'authenticated', 'MEMBER'))) OR ((true) AND (pg_has_role(current_user, 'service_role', 'MEMBER'))) OR (((EXISTS ( SELECT 1\n   FROM receipts r\n  WHERE ((r.id = receipt_items.receipt_id) AND (r.tenant_id IN ( SELECT ba.tenant_id\n           FROM billing_accounts ba\n          WHERE ((ba.user_id = ( SELECT auth.uid() AS uid)) AND ((ba.status)::text = 'active'::text) AND (ba.deleted_at IS NULL)))))))) AND (pg_has_role(current_user, 'authenticated', 'MEMBER'))))"
+        },
+        {
+          "action": "INSERT",
+          "role": "*role-conditioned*",
+          "before_terms": [
+            "(((receipt_id IN ( SELECT receipts.id\n   FROM receipts\n  WHERE (receipts.tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids))))) AND (pg_has_role(current_user, 'authenticated', 'MEMBER')))",
+            "((true) AND (pg_has_role(current_user, 'service_role', 'MEMBER')))"
+          ],
+          "after": "((((receipt_id IN ( SELECT receipts.id\n   FROM receipts\n  WHERE (receipts.tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids))))) AND (pg_has_role(current_user, 'authenticated', 'MEMBER'))) OR ((true) AND (pg_has_role(current_user, 'service_role', 'MEMBER'))))"
+        },
+        {
+          "action": "UPDATE",
+          "role": "*role-conditioned*",
+          "before_terms": [
+            "(((receipt_id IN ( SELECT receipts.id\n   FROM receipts\n  WHERE (receipts.tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids))))) AND (pg_has_role(current_user, 'authenticated', 'MEMBER')))",
+            "((true) AND (pg_has_role(current_user, 'service_role', 'MEMBER')))",
+            "(((EXISTS ( SELECT 1\n   FROM receipts r\n  WHERE ((r.id = receipt_items.receipt_id) AND (r.tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[]))))))) AND (pg_has_role(current_user, 'authenticated', 'MEMBER')))"
+          ],
+          "after": "((((receipt_id IN ( SELECT receipts.id\n   FROM receipts\n  WHERE (receipts.tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids))))) AND (pg_has_role(current_user, 'authenticated', 'MEMBER'))) OR ((true) AND (pg_has_role(current_user, 'service_role', 'MEMBER'))) OR (((EXISTS ( SELECT 1\n   FROM receipts r\n  WHERE ((r.id = receipt_items.receipt_id) AND (r.tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[]))))))) AND (pg_has_role(current_user, 'authenticated', 'MEMBER'))))"
+        },
+        {
+          "action": "DELETE",
+          "role": "*role-conditioned*",
+          "before_terms": [
+            "(((EXISTS ( SELECT 1\n   FROM receipts r\n  WHERE ((r.id = receipt_items.receipt_id) AND (r.tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[]))))))) AND (pg_has_role(current_user, 'authenticated', 'MEMBER')))",
+            "(((receipt_id IN ( SELECT receipts.id\n   FROM receipts\n  WHERE (receipts.tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids))))) AND (pg_has_role(current_user, 'authenticated', 'MEMBER')))",
+            "((true) AND (pg_has_role(current_user, 'service_role', 'MEMBER')))"
+          ],
+          "after": "((((EXISTS ( SELECT 1\n   FROM receipts r\n  WHERE ((r.id = receipt_items.receipt_id) AND (r.tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[]))))))) AND (pg_has_role(current_user, 'authenticated', 'MEMBER'))) OR (((receipt_id IN ( SELECT receipts.id\n   FROM receipts\n  WHERE (receipts.tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids))))) AND (pg_has_role(current_user, 'authenticated', 'MEMBER'))) OR ((true) AND (pg_has_role(current_user, 'service_role', 'MEMBER'))))"
+        }
+      ],
+      "dropped": [
+        "receipt_items_delete_tenant",
+        "receipt_items_insert_tenant",
+        "receipt_items_isolation",
+        "receipt_items_modify_service",
+        "receipt_items_select_tenant",
+        "receipt_items_update_tenant"
+      ]
+    },
+    "receipt_uploads": {
+      "mode": "same-set merge to (authenticated)",
+      "cells": [
+        {
+          "action": "SELECT",
+          "role": "authenticated",
+          "before": [
+            "((billing_account_id IN ( SELECT billing_accounts.id\n   FROM billing_accounts\n  WHERE (billing_accounts.user_id = ( SELECT auth.uid() AS uid)))))",
+            "(((EXISTS ( SELECT 1\n   FROM billing_accounts ba\n  WHERE ((ba.id = receipt_uploads.billing_account_id) AND ((ba.user_id = ( SELECT auth.uid() AS uid)) OR (ba.tenant_id IN ( SELECT tu.tenant_id\n           FROM tenant_users tu\n          WHERE (tu.user_id = ( SELECT auth.uid() AS uid)))))))) OR (EXISTS ( SELECT 1\n   FROM api_keys ak\n  WHERE ((ak.id = receipt_uploads.api_key_id) AND (ak.user_id = ( SELECT auth.uid() AS uid)))))))"
+          ],
+          "after": "(((billing_account_id IN ( SELECT billing_accounts.id\n   FROM billing_accounts\n  WHERE (billing_accounts.user_id = ( SELECT auth.uid() AS uid))))) OR (((EXISTS ( SELECT 1\n   FROM billing_accounts ba\n  WHERE ((ba.id = receipt_uploads.billing_account_id) AND ((ba.user_id = ( SELECT auth.uid() AS uid)) OR (ba.tenant_id IN ( SELECT tu.tenant_id\n           FROM tenant_users tu\n          WHERE (tu.user_id = ( SELECT auth.uid() AS uid)))))))) OR (EXISTS ( SELECT 1\n   FROM api_keys ak\n  WHERE ((ak.id = receipt_uploads.api_key_id) AND (ak.user_id = ( SELECT auth.uid() AS uid))))))))"
+        },
+        {
+          "action": "INSERT",
+          "role": "authenticated",
+          "before": [],
+          "after": null
+        },
+        {
+          "action": "UPDATE",
+          "role": "authenticated",
+          "before": [
+            "(((EXISTS ( SELECT 1\n   FROM billing_accounts ba\n  WHERE ((ba.id = receipt_uploads.billing_account_id) AND ((ba.user_id = ( SELECT auth.uid() AS uid)) OR (ba.tenant_id IN ( SELECT tu.tenant_id\n           FROM tenant_users tu\n          WHERE (tu.user_id = ( SELECT auth.uid() AS uid)))))))) OR (EXISTS ( SELECT 1\n   FROM api_keys ak\n  WHERE ((ak.id = receipt_uploads.api_key_id) AND (ak.user_id = ( SELECT auth.uid() AS uid)))))))"
+          ],
+          "after": "(((EXISTS ( SELECT 1\n   FROM billing_accounts ba\n  WHERE ((ba.id = receipt_uploads.billing_account_id) AND ((ba.user_id = ( SELECT auth.uid() AS uid)) OR (ba.tenant_id IN ( SELECT tu.tenant_id\n           FROM tenant_users tu\n          WHERE (tu.user_id = ( SELECT auth.uid() AS uid)))))))) OR (EXISTS ( SELECT 1\n   FROM api_keys ak\n  WHERE ((ak.id = receipt_uploads.api_key_id) AND (ak.user_id = ( SELECT auth.uid() AS uid)))))))"
+        },
+        {
+          "action": "DELETE",
+          "role": "authenticated",
+          "before": [
+            "(((EXISTS ( SELECT 1\n   FROM billing_accounts ba\n  WHERE ((ba.id = receipt_uploads.billing_account_id) AND ((ba.user_id = ( SELECT auth.uid() AS uid)) OR (ba.tenant_id IN ( SELECT tenant_users.tenant_id\n           FROM tenant_users\n          WHERE (tenant_users.user_id = ( SELECT auth.uid() AS uid)))))))) OR (EXISTS ( SELECT 1\n   FROM api_keys ak\n  WHERE ((ak.id = receipt_uploads.api_key_id) AND (ak.user_id = ( SELECT auth.uid() AS uid)))))))"
+          ],
+          "after": "(((EXISTS ( SELECT 1\n   FROM billing_accounts ba\n  WHERE ((ba.id = receipt_uploads.billing_account_id) AND ((ba.user_id = ( SELECT auth.uid() AS uid)) OR (ba.tenant_id IN ( SELECT tenant_users.tenant_id\n           FROM tenant_users\n          WHERE (tenant_users.user_id = ( SELECT auth.uid() AS uid)))))))) OR (EXISTS ( SELECT 1\n   FROM api_keys ak\n  WHERE ((ak.id = receipt_uploads.api_key_id) AND (ak.user_id = ( SELECT auth.uid() AS uid)))))))"
+        }
+      ],
+      "dropped": [
+        "receipt_uploads_delete_authenticated",
+        "receipt_uploads_insert_unified",
+        "receipt_uploads_select",
+        "receipt_uploads_select_unified",
+        "receipt_uploads_update_unified"
+      ]
+    },
+    "recon_audits": {
+      "mode": "same-set merge to (authenticated)",
+      "cells": [
+        {
+          "action": "SELECT",
+          "role": "authenticated",
+          "before": [
+            "((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids)))",
+            "((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[]))))"
+          ],
+          "after": "(((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids))) OR ((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[])))))"
+        },
+        {
+          "action": "INSERT",
+          "role": "authenticated",
+          "before": ["((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids)))"],
+          "after": "((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids)))"
+        },
+        {
+          "action": "UPDATE",
+          "role": "authenticated",
+          "before": [
+            "((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids)))",
+            "((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[]))))"
+          ],
+          "after": "(((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids))) OR ((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[])))))"
+        },
+        {
+          "action": "DELETE",
+          "role": "authenticated",
+          "before": [
+            "((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids)))",
+            "((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[]))))"
+          ],
+          "after": "(((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids))) OR ((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[])))))"
+        }
+      ],
+      "dropped": [
+        "recon_audits_isolation",
+        "tenant_delete",
+        "tenant_insert",
+        "tenant_select",
+        "tenant_update"
+      ]
+    },
+    "recon_jobs": {
+      "mode": "same-set merge to (authenticated)",
+      "cells": [
+        {
+          "action": "SELECT",
+          "role": "authenticated",
+          "before": [
+            "(((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids)) OR (tenant_id IN ( SELECT COALESCE(billing_accounts.tenant_id, billing_accounts.id) AS \"coalesce\"\n   FROM billing_accounts\n  WHERE (billing_accounts.user_id = ( SELECT auth.uid() AS uid))))))",
+            "((tenant_id IN ( SELECT ba.tenant_id\n   FROM billing_accounts ba\n  WHERE ((ba.user_id = ( SELECT auth.uid() AS uid)) AND ((ba.status)::text = 'active'::text) AND (ba.deleted_at IS NULL)))))"
+          ],
+          "after": "((((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids)) OR (tenant_id IN ( SELECT COALESCE(billing_accounts.tenant_id, billing_accounts.id) AS \"coalesce\"\n   FROM billing_accounts\n  WHERE (billing_accounts.user_id = ( SELECT auth.uid() AS uid)))))) OR ((tenant_id IN ( SELECT ba.tenant_id\n   FROM billing_accounts ba\n  WHERE ((ba.user_id = ( SELECT auth.uid() AS uid)) AND ((ba.status)::text = 'active'::text) AND (ba.deleted_at IS NULL))))))"
+        },
+        {
+          "action": "INSERT",
+          "role": "authenticated",
+          "before": [],
+          "after": null
+        },
+        {
+          "action": "UPDATE",
+          "role": "authenticated",
+          "before": [
+            "(((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids)) OR (tenant_id IN ( SELECT COALESCE(billing_accounts.tenant_id, billing_accounts.id) AS \"coalesce\"\n   FROM billing_accounts\n  WHERE (billing_accounts.user_id = ( SELECT auth.uid() AS uid))))))",
+            "((tenant_id IN ( SELECT ba.tenant_id\n   FROM billing_accounts ba\n  WHERE ((ba.user_id = ( SELECT auth.uid() AS uid)) AND ((ba.status)::text = 'active'::text) AND (ba.deleted_at IS NULL)))))"
+          ],
+          "after": "((((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids)) OR (tenant_id IN ( SELECT COALESCE(billing_accounts.tenant_id, billing_accounts.id) AS \"coalesce\"\n   FROM billing_accounts\n  WHERE (billing_accounts.user_id = ( SELECT auth.uid() AS uid)))))) OR ((tenant_id IN ( SELECT ba.tenant_id\n   FROM billing_accounts ba\n  WHERE ((ba.user_id = ( SELECT auth.uid() AS uid)) AND ((ba.status)::text = 'active'::text) AND (ba.deleted_at IS NULL))))))"
+        },
+        {
+          "action": "DELETE",
+          "role": "authenticated",
+          "before": [
+            "((tenant_id IN ( SELECT ba.tenant_id\n   FROM billing_accounts ba\n  WHERE ((ba.user_id = ( SELECT auth.uid() AS uid)) AND ((ba.status)::text = 'active'::text) AND (ba.deleted_at IS NULL)))))"
+          ],
+          "after": "((tenant_id IN ( SELECT ba.tenant_id\n   FROM billing_accounts ba\n  WHERE ((ba.user_id = ( SELECT auth.uid() AS uid)) AND ((ba.status)::text = 'active'::text) AND (ba.deleted_at IS NULL)))))"
+        }
+      ],
+      "dropped": [
+        "recon_jobs_insert",
+        "recon_jobs_select",
+        "recon_jobs_update",
+        "tenant_isolation_delete",
+        "tenant_isolation_insert",
+        "tenant_isolation_select",
+        "tenant_isolation_update"
+      ]
+    },
+    "recon_results": {
+      "mode": "same-set merge to (authenticated)",
+      "cells": [
+        {
+          "action": "SELECT",
+          "role": "authenticated",
+          "before": [
+            "(((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids)) OR (tenant_id IN ( SELECT COALESCE(billing_accounts.tenant_id, billing_accounts.id) AS \"coalesce\"\n   FROM billing_accounts\n  WHERE (billing_accounts.user_id = ( SELECT auth.uid() AS uid))))))",
+            "((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[]))))"
+          ],
+          "after": "((((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids)) OR (tenant_id IN ( SELECT COALESCE(billing_accounts.tenant_id, billing_accounts.id) AS \"coalesce\"\n   FROM billing_accounts\n  WHERE (billing_accounts.user_id = ( SELECT auth.uid() AS uid)))))) OR ((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[])))))"
+        },
+        {
+          "action": "INSERT",
+          "role": "authenticated",
+          "before": [],
+          "after": null
+        },
+        {
+          "action": "UPDATE",
+          "role": "authenticated",
+          "before": [
+            "((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[]))))"
+          ],
+          "after": "((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[]))))"
+        },
+        {
+          "action": "DELETE",
+          "role": "authenticated",
+          "before": [
+            "((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[]))))"
+          ],
+          "after": "((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[]))))"
+        }
+      ],
+      "dropped": [
+        "recon_results_select",
+        "tenant_delete",
+        "tenant_insert",
+        "tenant_select",
+        "tenant_update"
+      ]
+    },
+    "recon_templates": {
+      "mode": "same-set merge to (authenticated)",
+      "cells": [
+        {
+          "action": "SELECT",
+          "role": "authenticated",
+          "before": [
+            "(((is_public = true) OR (is_system = true) OR (tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids))))",
+            "((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[]))))"
+          ],
+          "after": "((((is_public = true) OR (is_system = true) OR (tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids)))) OR ((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[])))))"
+        },
+        {
+          "action": "INSERT",
+          "role": "authenticated",
+          "before": [],
+          "after": null
+        },
+        {
+          "action": "UPDATE",
+          "role": "authenticated",
+          "before": [
+            "(((is_system = false) AND (tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids))))",
+            "((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[]))))"
+          ],
+          "after": "((((is_system = false) AND (tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids)))) OR ((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[])))))"
+        },
+        {
+          "action": "DELETE",
+          "role": "authenticated",
+          "before": [
+            "(((is_system = false) AND (tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids))))",
+            "((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[]))))"
+          ],
+          "after": "((((is_system = false) AND (tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids)))) OR ((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[])))))"
+        }
+      ],
+      "dropped": [
+        "recon_templates_delete",
+        "recon_templates_insert",
+        "recon_templates_select",
+        "recon_templates_update",
+        "tenant_delete",
+        "tenant_insert",
+        "tenant_select",
+        "tenant_update"
+      ]
+    },
+    "reconciliation_matches": {
+      "mode": "role-conditioned single policy per action (exact for every role)",
+      "cells": [
+        {
+          "action": "SELECT",
+          "role": "*role-conditioned*",
+          "before_terms": [
+            "(((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids))) AND (pg_has_role(current_user, 'authenticated', 'MEMBER')))",
+            "((true) AND (pg_has_role(current_user, 'service_role', 'MEMBER')))",
+            "(((EXISTS ( SELECT 1\n   FROM reconciliation_runs rr\n  WHERE ((rr.id = reconciliation_matches.run_id) AND (rr.tenant_id IN ( SELECT ba.tenant_id\n           FROM billing_accounts ba\n          WHERE ((ba.user_id = ( SELECT auth.uid() AS uid)) AND ((ba.status)::text = 'active'::text) AND (ba.deleted_at IS NULL)))))))) AND (pg_has_role(current_user, 'authenticated', 'MEMBER')))"
+          ],
+          "after": "((((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids))) AND (pg_has_role(current_user, 'authenticated', 'MEMBER'))) OR ((true) AND (pg_has_role(current_user, 'service_role', 'MEMBER'))) OR (((EXISTS ( SELECT 1\n   FROM reconciliation_runs rr\n  WHERE ((rr.id = reconciliation_matches.run_id) AND (rr.tenant_id IN ( SELECT ba.tenant_id\n           FROM billing_accounts ba\n          WHERE ((ba.user_id = ( SELECT auth.uid() AS uid)) AND ((ba.status)::text = 'active'::text) AND (ba.deleted_at IS NULL)))))))) AND (pg_has_role(current_user, 'authenticated', 'MEMBER'))))"
+        },
+        {
+          "action": "INSERT",
+          "role": "*role-conditioned*",
+          "before_terms": [
+            "(((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids))) AND (pg_has_role(current_user, 'authenticated', 'MEMBER')))",
+            "((true) AND (pg_has_role(current_user, 'service_role', 'MEMBER')))"
+          ],
+          "after": "((((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids))) AND (pg_has_role(current_user, 'authenticated', 'MEMBER'))) OR ((true) AND (pg_has_role(current_user, 'service_role', 'MEMBER'))))"
+        },
+        {
+          "action": "UPDATE",
+          "role": "*role-conditioned*",
+          "before_terms": [
+            "(((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids))) AND (pg_has_role(current_user, 'authenticated', 'MEMBER')))",
+            "((true) AND (pg_has_role(current_user, 'service_role', 'MEMBER')))"
+          ],
+          "after": "((((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids))) AND (pg_has_role(current_user, 'authenticated', 'MEMBER'))) OR ((true) AND (pg_has_role(current_user, 'service_role', 'MEMBER'))))"
+        },
+        {
+          "action": "DELETE",
+          "role": "*role-conditioned*",
+          "before_terms": [
+            "(((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids))) AND (pg_has_role(current_user, 'authenticated', 'MEMBER')))",
+            "((true) AND (pg_has_role(current_user, 'service_role', 'MEMBER')))"
+          ],
+          "after": "((((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids))) AND (pg_has_role(current_user, 'authenticated', 'MEMBER'))) OR ((true) AND (pg_has_role(current_user, 'service_role', 'MEMBER'))))"
+        }
+      ],
+      "dropped": [
+        "reconciliation_matches_isolation",
+        "reconciliation_matches_modify_service",
+        "reconciliation_matches_select_tenant"
+      ]
+    },
+    "reconciliation_runs": {
+      "mode": "role-conditioned single policy per action (exact for every role)",
+      "cells": [
+        {
+          "action": "SELECT",
+          "role": "*role-conditioned*",
+          "before_terms": [
+            "(((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids))) AND (pg_has_role(current_user, 'authenticated', 'MEMBER')))",
+            "((true) AND (pg_has_role(current_user, 'service_role', 'MEMBER')))",
+            "(((tenant_id IN ( SELECT ba.tenant_id\n   FROM billing_accounts ba\n  WHERE ((ba.user_id = ( SELECT auth.uid() AS uid)) AND ((ba.status)::text = 'active'::text) AND (ba.deleted_at IS NULL))))) AND (pg_has_role(current_user, 'authenticated', 'MEMBER')))"
+          ],
+          "after": "((((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids))) AND (pg_has_role(current_user, 'authenticated', 'MEMBER'))) OR ((true) AND (pg_has_role(current_user, 'service_role', 'MEMBER'))) OR (((tenant_id IN ( SELECT ba.tenant_id\n   FROM billing_accounts ba\n  WHERE ((ba.user_id = ( SELECT auth.uid() AS uid)) AND ((ba.status)::text = 'active'::text) AND (ba.deleted_at IS NULL))))) AND (pg_has_role(current_user, 'authenticated', 'MEMBER'))))"
+        },
+        {
+          "action": "INSERT",
+          "role": "*role-conditioned*",
+          "before_terms": [
+            "(((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids))) AND (pg_has_role(current_user, 'authenticated', 'MEMBER')))",
+            "((true) AND (pg_has_role(current_user, 'service_role', 'MEMBER')))"
+          ],
+          "after": "((((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids))) AND (pg_has_role(current_user, 'authenticated', 'MEMBER'))) OR ((true) AND (pg_has_role(current_user, 'service_role', 'MEMBER'))))"
+        },
+        {
+          "action": "UPDATE",
+          "role": "*role-conditioned*",
+          "before_terms": [
+            "(((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids))) AND (pg_has_role(current_user, 'authenticated', 'MEMBER')))",
+            "((true) AND (pg_has_role(current_user, 'service_role', 'MEMBER')))"
+          ],
+          "after": "((((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids))) AND (pg_has_role(current_user, 'authenticated', 'MEMBER'))) OR ((true) AND (pg_has_role(current_user, 'service_role', 'MEMBER'))))"
+        },
+        {
+          "action": "DELETE",
+          "role": "*role-conditioned*",
+          "before_terms": [
+            "(((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids))) AND (pg_has_role(current_user, 'authenticated', 'MEMBER')))",
+            "((true) AND (pg_has_role(current_user, 'service_role', 'MEMBER')))"
+          ],
+          "after": "((((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids))) AND (pg_has_role(current_user, 'authenticated', 'MEMBER'))) OR ((true) AND (pg_has_role(current_user, 'service_role', 'MEMBER'))))"
+        }
+      ],
+      "dropped": [
+        "reconciliation_runs_isolation",
+        "reconciliation_runs_modify_service",
+        "reconciliation_runs_select_tenant"
+      ]
+    },
+    "stripe_events": {
+      "mode": "same-set merge to (authenticated)",
+      "cells": [
+        {
+          "action": "SELECT",
+          "role": "authenticated",
+          "before": [
+            "((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids)))",
+            "((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[]))))"
+          ],
+          "after": "(((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids))) OR ((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[])))))"
+        },
+        {
+          "action": "INSERT",
+          "role": "authenticated",
+          "before": ["((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids)))"],
+          "after": "((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids)))"
+        },
+        {
+          "action": "UPDATE",
+          "role": "authenticated",
+          "before": [
+            "((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids)))",
+            "((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[]))))"
+          ],
+          "after": "(((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids))) OR ((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[])))))"
+        },
+        {
+          "action": "DELETE",
+          "role": "authenticated",
+          "before": [
+            "((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids)))",
+            "((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[]))))"
+          ],
+          "after": "(((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids))) OR ((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[])))))"
+        }
+      ],
+      "dropped": [
+        "stripe_events_isolation",
+        "tenant_delete",
+        "tenant_insert",
+        "tenant_select",
+        "tenant_update"
+      ]
+    },
+    "tenants": {
+      "mode": "role-conditioned single policy per action (exact for every role)",
+      "cells": [
+        {
+          "action": "SELECT",
+          "role": "*role-conditioned*",
+          "before_terms": [
+            "((true) AND (pg_has_role(current_user, 'service_role', 'MEMBER')))",
+            "((((id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids)) OR (billing_account_id IN ( SELECT ba.id\n   FROM billing_accounts ba\n  WHERE (ba.user_id = ( SELECT auth.uid() AS uid)))) OR (id IN ( SELECT tu.tenant_id\n   FROM tenant_users tu\n  WHERE (tu.user_id = ( SELECT auth.uid() AS uid)))))) AND (pg_has_role(current_user, 'authenticated', 'MEMBER')))",
+            "(((id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids))) AND (pg_has_role(current_user, 'authenticated', 'MEMBER')))"
+          ],
+          "after": "(((true) AND (pg_has_role(current_user, 'service_role', 'MEMBER'))) OR ((((id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids)) OR (billing_account_id IN ( SELECT ba.id\n   FROM billing_accounts ba\n  WHERE (ba.user_id = ( SELECT auth.uid() AS uid)))) OR (id IN ( SELECT tu.tenant_id\n   FROM tenant_users tu\n  WHERE (tu.user_id = ( SELECT auth.uid() AS uid)))))) AND (pg_has_role(current_user, 'authenticated', 'MEMBER'))) OR (((id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids))) AND (pg_has_role(current_user, 'authenticated', 'MEMBER'))))"
+        },
+        {
+          "action": "INSERT",
+          "role": "*role-conditioned*",
+          "before_terms": ["((true) AND (pg_has_role(current_user, 'service_role', 'MEMBER')))"],
+          "after": "((true) AND (pg_has_role(current_user, 'service_role', 'MEMBER')))"
+        },
+        {
+          "action": "UPDATE",
+          "role": "*role-conditioned*",
+          "before_terms": ["((true) AND (pg_has_role(current_user, 'service_role', 'MEMBER')))"],
+          "after": "((true) AND (pg_has_role(current_user, 'service_role', 'MEMBER')))"
+        },
+        {
+          "action": "DELETE",
+          "role": "*role-conditioned*",
+          "before_terms": ["((true) AND (pg_has_role(current_user, 'service_role', 'MEMBER')))"],
+          "after": "((true) AND (pg_has_role(current_user, 'service_role', 'MEMBER')))"
+        }
+      ],
+      "dropped": [
+        "Service role can manage tenants",
+        "tenants_select_authenticated",
+        "tenants_select_tenant"
+      ]
+    },
+    "transform_recipes": {
+      "mode": "same-set merge to (authenticated)",
+      "cells": [
+        {
+          "action": "SELECT",
+          "role": "authenticated",
+          "before": [
+            "((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[]))))",
+            "(((is_public = true) OR (is_system = true) OR (tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids))))"
+          ],
+          "after": "(((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[])))) OR (((is_public = true) OR (is_system = true) OR (tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids)))))"
+        },
+        {
+          "action": "INSERT",
+          "role": "authenticated",
+          "before": [
+            "(((is_public = true) OR (is_system = true) OR (tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids))))"
+          ],
+          "after": "(((is_public = true) OR (is_system = true) OR (tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids))))"
+        },
+        {
+          "action": "UPDATE",
+          "role": "authenticated",
+          "before": [
+            "((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[]))))",
+            "(((is_public = true) OR (is_system = true) OR (tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids))))"
+          ],
+          "after": "(((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[])))) OR (((is_public = true) OR (is_system = true) OR (tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids)))))"
+        },
+        {
+          "action": "DELETE",
+          "role": "authenticated",
+          "before": [
+            "((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[]))))",
+            "(((is_public = true) OR (is_system = true) OR (tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids))))"
+          ],
+          "after": "(((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[])))) OR (((is_public = true) OR (is_system = true) OR (tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids)))))"
+        }
+      ],
+      "dropped": [
+        "tenant_delete",
+        "tenant_insert",
+        "tenant_select",
+        "tenant_update",
+        "transform_recipes_isolation"
+      ]
+    },
+    "usage_aggregate_daily": {
+      "mode": "same-set merge to (authenticated)",
+      "cells": [
+        {
+          "action": "SELECT",
+          "role": "authenticated",
+          "before": [
+            "((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[]))))",
+            "((billing_account_id IN ( SELECT billing_accounts.id\n   FROM billing_accounts\n  WHERE (billing_accounts.user_id = ( SELECT auth.uid() AS uid)))))"
+          ],
+          "after": "(((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[])))) OR ((billing_account_id IN ( SELECT billing_accounts.id\n   FROM billing_accounts\n  WHERE (billing_accounts.user_id = ( SELECT auth.uid() AS uid))))))"
+        },
+        {
+          "action": "INSERT",
+          "role": "authenticated",
+          "before": [],
+          "after": null
+        },
+        {
+          "action": "UPDATE",
+          "role": "authenticated",
+          "before": [
+            "((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[]))))"
+          ],
+          "after": "((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[]))))"
+        },
+        {
+          "action": "DELETE",
+          "role": "authenticated",
+          "before": [
+            "((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[]))))"
+          ],
+          "after": "((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[]))))"
+        }
+      ],
+      "dropped": [
+        "tenant_delete",
+        "tenant_insert",
+        "tenant_select",
+        "tenant_update",
+        "usage_aggregate_daily_select"
+      ]
+    },
+    "users": {
+      "mode": "role-conditioned single policy per action (exact for every role)",
+      "cells": [
+        {
+          "action": "SELECT",
+          "role": "*role-conditioned*",
+          "before_terms": [
+            "((( SELECT auth.uid() AS uid) = id))",
+            "(((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[])))) AND (pg_has_role(current_user, 'authenticated', 'MEMBER')))"
+          ],
+          "after": "(((( SELECT auth.uid() AS uid) = id)) OR (((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[])))) AND (pg_has_role(current_user, 'authenticated', 'MEMBER'))))"
+        },
+        {
+          "action": "INSERT",
+          "role": "*role-conditioned*",
+          "before_terms": [],
+          "after": null
+        },
+        {
+          "action": "UPDATE",
+          "role": "*role-conditioned*",
+          "before_terms": [
+            "((( SELECT auth.uid() AS uid) = id))",
+            "(((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[])))) AND (pg_has_role(current_user, 'authenticated', 'MEMBER')))"
+          ],
+          "after": "(((( SELECT auth.uid() AS uid) = id)) OR (((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[])))) AND (pg_has_role(current_user, 'authenticated', 'MEMBER'))))"
+        },
+        {
+          "action": "DELETE",
+          "role": "*role-conditioned*",
+          "before_terms": [
+            "(((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[])))) AND (pg_has_role(current_user, 'authenticated', 'MEMBER')))"
+          ],
+          "after": "(((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[])))) AND (pg_has_role(current_user, 'authenticated', 'MEMBER')))"
+        }
+      ],
+      "dropped": [
+        "Users can update own profile",
+        "Users can view own profile",
+        "tenant_delete",
+        "tenant_insert",
+        "tenant_select",
+        "tenant_update"
+      ]
+    },
+    "validation_rules": {
+      "mode": "same-set merge to (authenticated)",
+      "cells": [
+        {
+          "action": "SELECT",
+          "role": "authenticated",
+          "before": [
+            "((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[]))))",
+            "(((is_public = true) OR (is_system = true) OR (tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids))))"
+          ],
+          "after": "(((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[])))) OR (((is_public = true) OR (is_system = true) OR (tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids)))))"
+        },
+        {
+          "action": "INSERT",
+          "role": "authenticated",
+          "before": [
+            "(((is_public = true) OR (is_system = true) OR (tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids))))"
+          ],
+          "after": "(((is_public = true) OR (is_system = true) OR (tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids))))"
+        },
+        {
+          "action": "UPDATE",
+          "role": "authenticated",
+          "before": [
+            "((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[]))))",
+            "(((is_public = true) OR (is_system = true) OR (tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids))))"
+          ],
+          "after": "(((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[])))) OR (((is_public = true) OR (is_system = true) OR (tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids)))))"
+        },
+        {
+          "action": "DELETE",
+          "role": "authenticated",
+          "before": [
+            "((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[]))))",
+            "(((is_public = true) OR (is_system = true) OR (tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids))))"
+          ],
+          "after": "(((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[])))) OR (((is_public = true) OR (is_system = true) OR (tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids)))))"
+        }
+      ],
+      "dropped": [
+        "tenant_delete",
+        "tenant_insert",
+        "tenant_select",
+        "tenant_update",
+        "validation_rules_isolation"
+      ]
+    },
+    "webhook_deliveries": {
+      "mode": "same-set merge to (authenticated)",
+      "cells": [
+        {
+          "action": "SELECT",
+          "role": "authenticated",
+          "before": [
+            "((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids)))",
+            "((tenant_id = current_tenant()))"
+          ],
+          "after": "(((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids))) OR ((tenant_id = current_tenant())))"
+        },
+        {
+          "action": "INSERT",
+          "role": "authenticated",
+          "before": ["((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids)))"],
+          "after": "((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids)))"
+        },
+        {
+          "action": "UPDATE",
+          "role": "authenticated",
+          "before": [
+            "((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids)))",
+            "((tenant_id = current_tenant()))"
+          ],
+          "after": "(((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids))) OR ((tenant_id = current_tenant())))"
+        },
+        {
+          "action": "DELETE",
+          "role": "authenticated",
+          "before": ["((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids)))"],
+          "after": "((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids)))"
+        }
+      ],
+      "dropped": [
+        "webhook_deliveries_isolation",
+        "webhook_deliveries_select",
+        "webhook_deliveries_update"
+      ]
+    },
+    "webhooks": {
+      "mode": "same-set merge to (authenticated)",
+      "cells": [
+        {
+          "action": "SELECT",
+          "role": "authenticated",
+          "before": [
+            "((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[]))))",
+            "((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids)))"
+          ],
+          "after": "(((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[])))) OR ((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids))))"
+        },
+        {
+          "action": "INSERT",
+          "role": "authenticated",
+          "before": [],
+          "after": null
+        },
+        {
+          "action": "UPDATE",
+          "role": "authenticated",
+          "before": [
+            "((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[]))))",
+            "((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids)))"
+          ],
+          "after": "(((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[])))) OR ((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids))))"
+        },
+        {
+          "action": "DELETE",
+          "role": "authenticated",
+          "before": [
+            "((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[]))))",
+            "((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids)))"
+          ],
+          "after": "(((tenant_id = ANY (COALESCE(( SELECT app_private.current_tenant_ids() AS current_tenant_ids), ARRAY[]::uuid[])))) OR ((tenant_id IN ( SELECT get_user_tenant_ids() AS get_user_tenant_ids))))"
+        }
+      ],
+      "dropped": [
+        "tenant_delete",
+        "tenant_insert",
+        "tenant_select",
+        "tenant_update",
+        "webhooks_delete",
+        "webhooks_insert",
+        "webhooks_select",
+        "webhooks_update"
+      ]
+    }
+  }
+}

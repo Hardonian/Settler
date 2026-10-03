@@ -51,7 +51,7 @@ CREATE OR REPLACE FUNCTION public.write_audit_notarization_checkpoint(max_rows i
 RETURNS public.audit_notarization_checkpoints
 LANGUAGE plpgsql
 SECURITY DEFINER
-SET search_path TO 'public', 'pg_catalog'
+SET search_path = public, pg_catalog
 AS $fn$
 DECLARE
   inserted_row public.audit_notarization_checkpoints;
@@ -79,6 +79,9 @@ BEGIN
   RETURN inserted_row;
 END;
 $fn$;
+
+-- SECURITY DEFINER: public execution revoked; callable by service/ops paths
+REVOKE EXECUTE ON FUNCTION public.write_audit_notarization_checkpoint(integer) FROM PUBLIC;
 
 DO $$
 BEGIN
