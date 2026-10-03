@@ -375,6 +375,11 @@ const nextConfig = {
         permanent: true,
       },
       {
+        source: "/architecture",
+        destination: "/product",
+        permanent: true,
+      },
+      {
         source: "/how-it-works",
         destination: "/product",
         permanent: true,

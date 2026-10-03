@@ -159,6 +159,37 @@ async function scanDirectory(
   return routes;
 }
 
+/**
+ * Capture static redirect/rewrite sources from packages/web/next.config.js.
+ * These are live URLs (e.g. /why-settler -> /product) without page files.
+ * Dynamic sources (containing :param) are excluded.
+ */
+async function captureConfiguredRoutes(): Promise<string[]> {
+  const { createRequire } = await import("module");
+  const configPath = join(process.cwd(), "packages/web/next.config.js");
+  const requireFromRoot = createRequire(configPath);
+  const config = requireFromRoot(configPath);
+  const sources = new Set<string>();
+  const addStatic = (entry: { source?: string }) => {
+    if (typeof entry?.source === "string" && !entry.source.includes(":")) {
+      sources.add(entry.source);
+    }
+  };
+  for (const entry of (await config.redirects?.()) ?? []) {
+    addStatic(entry);
+  }
+  const rewriteResult = (await config.rewrites?.()) ?? [];
+  const rewriteLists = Array.isArray(rewriteResult)
+    ? [rewriteResult]
+    : Object.values(rewriteResult);
+  for (const list of rewriteLists) {
+    for (const entry of (list as Array<{ source?: string }>) ?? []) {
+      addStatic(entry);
+    }
+  }
+  return [...sources].sort();
+}
+
 async function generateRouteRegistry() {
   console.log("🔍 Scanning app directory for routes...");
 
@@ -174,6 +205,12 @@ async function generateRouteRegistry() {
 
   console.log(`✅ Found ${pageRoutes.length} page routes`);
 
+  // Redirect/rewrite sources are live URLs without page files (e.g.
+  // /why-settler -> /product). Capture them so parity checks see the full
+  // public surface. Sources with dynamic segments (:path*) are excluded.
+  const routedPaths = await captureConfiguredRoutes();
+  console.log(`✅ Found ${routedPaths.length} configured redirect/rewrite sources`);
+
   // Generate JSON output
   const jsonOutput = {
     generatedAt: new Date().toISOString(),
@@ -181,6 +218,7 @@ async function generateRouteRegistry() {
     pageRoutes: pageRoutes.length,
     routes: uniqueRoutes,
     pagePaths: pageRoutes.map((r) => r.path),
+    routedPaths,
   };
 
   await writeFile(join(OUTPUT_DIR, "route-registry.json"), JSON.stringify(jsonOutput, null, 2));
@@ -210,6 +248,8 @@ export const PAGE_ROUTES: string[] = ${JSON.stringify(
     null,
     2
   )};
+
+export const ROUTED_PATHS: string[] = ${JSON.stringify(routedPaths, null, 2)};
 
 export const ALL_ROUTES: string[] = ${JSON.stringify(
     uniqueRoutes.map((r) => r.path),

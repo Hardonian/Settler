@@ -1,0 +1,56 @@
+name: Parity & Drift Monitor
+
+on:
+  schedule:
+    - cron: "17 6 * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: parity-monitor-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  parity:
+    name: Route, docs, and migration catalog parity
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+
+      - name: Setup Node
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: ".nvmrc"
+          cache: pnpm
+
+      - name: Deterministic install
+        run: pnpm install --frozen-lockfile
+
+      - name: Route parity manifest
+        run: pnpm run verify:route-parity
+
+      - name: Surface docs in sync
+        run: node scripts/verify-surface-docs.mjs
+
+      - name: API family docs in sync
+        run: node scripts/verify-api-family-docs.mjs
+
+      - name: Contract compatibility
+        run: npx tsx scripts/check-contract-compatibility.ts
+
+      - name: Migration catalog parity (files vs live ledgers)
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: node scripts/verify-migration-catalog.mjs
+
+      - name: Prisma migration status (schema engine vs live)
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: npx prisma migrate status

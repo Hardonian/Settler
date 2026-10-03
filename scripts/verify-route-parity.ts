@@ -5,6 +5,7 @@ import { join } from "node:path";
 
 interface RouteRegistry {
   pagePaths: string[];
+  routedPaths?: string[];
 }
 
 const REQUIRED_ROUTES = [
@@ -23,22 +24,25 @@ function loadRegistry(): RouteRegistry {
   return JSON.parse(raw) as RouteRegistry;
 }
 
-function assertPresent(paths: string[], route: string, label: string) {
-  if (!paths.includes(route)) {
+function assertPresent(registry: RouteRegistry, route: string, label: string) {
+  // A route is live if it has a page file OR is a redirect/rewrite source in
+  // next.config.js (e.g. /why-settler -> /product).
+  const present =
+    registry.pagePaths.includes(route) || (registry.routedPaths ?? []).includes(route);
+  if (!present) {
     throw new Error(`${label} route missing from registry: ${route}`);
   }
 }
 
 function main() {
   const registry = loadRegistry();
-  const pagePaths = registry.pagePaths;
 
   for (const route of REQUIRED_ROUTES.filter((r) => !r.startsWith("/api/"))) {
-    assertPresent(pagePaths, route, "Critical");
+    assertPresent(registry, route, "Critical");
   }
 
   for (const route of REQUIRED_MARKETING_ROUTES) {
-    assertPresent(pagePaths, route, "Marketing parity");
+    assertPresent(registry, route, "Marketing parity");
   }
 
   console.log("✅ Route parity manifest checks passed");

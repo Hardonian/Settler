@@ -95,21 +95,54 @@ function findPipeDreamSignals(): PipeDreamSignal[] {
   }
 
   // 2. Check for tables with no consumers
+  //
+  // A table is "consumed" when application code, the Prisma schema, or SQL
+  // routines (RPCs, jobs, functions) reference it. Tables reached only through
+  // the generic CRUD RPCs (dynamic table-name strings) are matched by the
+  // string-literal scan of code. What remains is a dead-table REVIEW signal
+  // (medium, not high): removing tables is destructive and requires human
+  // review, and this heuristic cannot prove absence of dynamic access.
   const schemaPath = path.join(__dirname, "..", "supabase", "production-schema.json");
+  const migrationSql = findFiles(path.join(baseDir, "supabase", "migrations"), /\.sql$/)
+    .map((f) => {
+      try {
+        return fs.readFileSync(path.join(__dirname, "..", f), "utf-8");
+      } catch {
+        return "";
+      }
+    })
+    .join("\n");
+  let prismaContent = "";
+  try {
+    prismaContent = fs.readFileSync(path.join(__dirname, "..", "prisma", "schema.prisma"), "utf-8");
+  } catch {
+    // prisma schema is optional for this check
+  }
   if (fs.existsSync(schemaPath)) {
     const schema = JSON.parse(fs.readFileSync(schemaPath, "utf-8"));
     const tables =
       schema.tables?.filter((t: any) => t.schema === "public").map((t: any) => t.name) || [];
 
     for (const table of tables) {
-      // Check if table is referenced in code
-      const tableRefs = codeContent.match(new RegExp(`\\.from\\(['"]${table}['"]\\)`, "gi"));
-      if (!tableRefs || tableRefs.length === 0) {
+      const escaped = table.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      // `.from('t')` or any quoted literal 't' / "t" / `t` (dynamic RPC args)
+      const quotedRef = new RegExp(
+        `\\.from\\(\\s*['"\`]${escaped}['"\`]\\)|['"\`]${escaped}['"\`]`,
+        "i"
+      );
+      // Non-DDL SQL usage: FROM/JOIN/INTO/UPDATE <table> (excludes CREATE TABLE)
+      const sqlUse = new RegExp(
+        `(FROM|JOIN|INTO|UPDATE)\\s+(ONLY\\s+)?(public\\.)?${escaped}\\b`,
+        "i"
+      );
+      const consumed =
+        quotedRef.test(codeContent) || quotedRef.test(prismaContent) || sqlUse.test(migrationSql);
+      if (!consumed) {
         signals.push({
           type: "table_no_consumer",
-          description: `Table "${table}" exists but has no consumers in code`,
+          description: `Table "${table}" exists but has no consumers in code, Prisma, or SQL routines`,
           location: `supabase/production-schema.json`,
-          severity: "high",
+          severity: "medium",
         });
       }
     }

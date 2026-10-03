@@ -18,7 +18,10 @@ const scripts = [
   {
     name: "Production Schema Introspection",
     script: "scripts/introspect-production-schema.ts",
-    required: false, // May not have DATABASE_URL in CI
+    // Required whenever DATABASE_URL is configured; cleanly skipped when it is
+    // not (CI without DB secrets). A failure with env present is a real failure.
+    required: true,
+    skipIf: () => !process.env.DATABASE_URL,
   },
   {
     name: "Frontend-Backend Contract Mapping",
@@ -40,9 +43,14 @@ const scripts = [
 async function main() {
   console.log("🔍 Running Production Parity Verification...\n");
 
-  const results: Array<{ name: string; success: boolean; error?: string }> = [];
+  const results: Array<{ name: string; success: boolean; error?: string; skipped?: boolean }> = [];
 
-  for (const { name, script, required } of scripts) {
+  for (const { name, script, required, skipIf } of scripts) {
+    if (skipIf?.()) {
+      results.push({ name, success: true, skipped: true });
+      console.warn(`⏭️  ${name} skipped (prerequisites not configured)`);
+      continue;
+    }
     console.log(`\n📋 ${name}...`);
     try {
       execSync(`npx tsx ${script}`, {
@@ -68,24 +76,27 @@ async function main() {
   console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
 
   for (const result of results) {
-    const icon = result.success ? "✅" : "❌";
+    const icon = result.skipped ? "⏭️" : result.success ? "✅" : "❌";
     console.log(`${icon} ${result.name}`);
     if (!result.success && result.error) {
       console.log(`   Error: ${result.error}`);
     }
+    if (result.skipped) {
+      console.log("   Skipped: prerequisites not configured (not counted as a pass)");
+    }
   }
 
-  const allPassed = results.every(
-    (r) => r.success || !scripts.find((s) => s.name === r.name)?.required
-  );
+  const anyFailed = results.some((r) => !r.success);
+  const skippedCount = results.filter((r) => r.skipped).length;
 
-  if (allPassed) {
-    console.log("\n✅ All required verifications passed!");
-    process.exit(0);
-  } else {
+  if (anyFailed) {
     console.log("\n❌ Some verifications failed");
     process.exit(1);
   }
+  console.log(
+    `\n✅ All required verifications passed${skippedCount ? ` (${skippedCount} skipped: prerequisites not configured)` : ""}!`
+  );
+  process.exit(0);
 }
 
 main().catch((err) => {
