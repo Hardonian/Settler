@@ -8,6 +8,14 @@
     "node": ">=24.15.0 <25.0.0",
     "pnpm": ">=10.13.1"
   },
+  "pnpm": {
+    "overrides": {
+      "proxy-addr": "2.0.8",
+      "source-map-js": "1.2.2",
+      "vue": "3.5.42",
+      "@vue/server-renderer": "3.5.42"
+    }
+  },
   "workspaces": [
     "packages/*",
     "!packages/sdk-go",

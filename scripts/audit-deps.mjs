@@ -85,6 +85,19 @@ const ACCEPTED_EXCEPTIONS = new Set([
   "@opentelemetry/propagator-jaeger",
   // Locked by postcss -> nanoid
   "nanoid",
+  // GHSA stack-exhaustion DoS: no patched version published (patched <0.0.0).
+  // Deep transitive via chokidar -> readdirp and eslint chains; build-time
+  // input only, never exposed to request data. Re-check when advisories move.
+  "braces",
+  // GHSA-hp3w-g68c-fv3c DoS via precision specifiers: no patched version
+  // published (patched <0.0.0). Deep transitive via js-yaml -> argparse and
+  // fengari; format-string constants only in our code paths.
+  "sprintf-js",
+  // GHSA-rj75-hqrm-r3gf CPU exhaustion in flat selector parsing: fix exists
+  // only in 7.x, but tailwindcss@3.4.19 pins postcss-selector-parser@^6
+  // (6.1.4 in tree) and 7.x is a breaking API change for it. Build-time DoS
+  // surface only. Unblock with the tailwind v4 migration, then drop this.
+  "postcss-selector-parser",
 ]);
 
 const attempts = [];

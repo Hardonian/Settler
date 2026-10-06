@@ -167,6 +167,11 @@ const BINARY_EXTENSIONS = [
 
 // Files/paths that are known to contain example keys and should be excluded
 const EXCLUDED_FROM_SECRET_CHECK = [
+  // Supabase schema export embeds the stock supabase-dbdev extension DDL whose
+  // dbdev.install() function carries a PUBLIC default api_key (upstream
+  // boilerplate from the dbdev package, identical across extension versions) —
+  // not a credential. Verified 2026-10-06: no project secrets in this file.
+  "supabase/production-schema.json",
   "**/__tests__/**",
   "**/__test__/**",
   "**/*.test.ts",
