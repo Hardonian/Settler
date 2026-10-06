@@ -15,9 +15,16 @@ export async function replayRun(
     artifacts: { run: string };
   };
 
-  const runPath = path.isAbsolute(evidence.artifacts.run)
-    ? evidence.artifacts.run
-    : path.resolve(path.dirname(evidencePath), evidence.artifacts.run);
+  // Artifact paths in evidence files are RECORDINGS from whatever machine ran
+  // the demo (fixtures contain e.g. C:\Users\...\run.json). Resolution must be
+  // relocatable: take the recorded basename and resolve it next to the evidence
+  // file, instead of trusting machine-specific absolute paths (POSIX
+  // path.isAbsolute does not recognize Windows drive paths, which previously
+  // produced ENOENT joins like fixtures/demo-run-1/C:\Users\...\run.json).
+  const runPath = path.resolve(
+    path.dirname(evidencePath),
+    path.basename(evidence.artifacts.run.replace(/\\/g, "/"))
+  );
   const runRaw = await fs.readFile(runPath, "utf8");
   const run = JSON.parse(runRaw) as {
     inputs: unknown;

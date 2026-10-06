@@ -72,6 +72,24 @@ function parseTotals(raw) {
   }
 }
 
+// Package names with >=1 OSV vulnerability in osv-scanner's --format json output.
+function parseOsvFindingPackages(raw) {
+  const names = new Set();
+  try {
+    const parsed = JSON.parse(raw);
+    for (const result of parsed?.results || []) {
+      for (const pkg of result?.packages || []) {
+        if ((pkg?.vulnerabilities || []).length > 0 && pkg?.package?.name) {
+          names.add(pkg.package.name);
+        }
+      }
+    }
+  } catch {
+    return null; // unparseable — caller must treat as unable to verify
+  }
+  return names;
+}
+
 // Accepted exceptions: deep transitive deps locked by upstream packages
 // that cannot be overridden by pnpm overrides in CI
 const ACCEPTED_EXCEPTIONS = new Set([
@@ -166,13 +184,35 @@ if (mode !== "off") {
     attempts.push({ tool: "osv-scan", ...osvRun });
     writeFileSync(path.join(outputDir, "osv.json"), osvRun.stdout || osvRun.stderr, "utf8");
 
-    if (osvRun.status !== 0) {
+    // osv-scanner exit codes: 0 = clean, 1 = vulnerabilities found, >1 = scan error.
+    const osvPackages = parseOsvFindingPackages(osvRun.stdout);
+    if (osvRun.status > 1 || (osvRun.status === 1 && osvPackages === null)) {
+      // Real scan failure, or findings we cannot attribute to packages:
+      // cannot verify the tree — fail loudly rather than assume safety.
       degradedReasons.push("osv-scan-failed");
       completeness = "degraded";
       if (mode === "strict") {
         finalOutcome = "failed-osv";
       } else if (!finalOutcome.startsWith("failed")) {
         finalOutcome = "warn-osv";
+      }
+    } else {
+      const osvNonAccepted = [...osvPackages].filter((name) => !ACCEPTED_EXCEPTIONS.has(name));
+      if (osvNonAccepted.length > 0) {
+        // Vulnerabilities outside the accepted set: hard failure in strict mode.
+        degradedReasons.push(`osv-findings:${osvNonAccepted.sort().join(",")}`);
+        if (mode === "strict") {
+          finalOutcome = "failed-osv-findings";
+        } else if (!finalOutcome.startsWith("failed")) {
+          finalOutcome = "warn-osv-findings";
+        }
+      } else if (osvPackages.size > 0) {
+        // Only accepted transitive exceptions found — consistent with the
+        // pnpm-audit path's "passed-with-accepted-exceptions" stance.
+        degradedReasons.push("accepted-transitive-vulns");
+        if (finalOutcome === "passed") {
+          finalOutcome = "passed-with-accepted-exceptions";
+        }
       }
     }
   } else {
@@ -196,7 +236,7 @@ const artifact = {
   backend,
   completeness,
   degraded: completeness !== "full",
-  degradedReasons,
+  degradedReasons: [...new Set(degradedReasons)],
   commandAttempts: attempts.map((entry) => ({
     tool: entry.tool,
     command: entry.command,
