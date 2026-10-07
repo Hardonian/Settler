@@ -25,8 +25,8 @@
   },
   "dependencies": {
     "@ai-sdk/openai": "^4.0.78",
-    "@types/node": "^26.6.3",
-    "ai": "^7.0.118",
+    "@types/node": "^26.6.4",
+    "ai": "^7.0.127",
     "typescript": "^6.0.3"
   },
   "keywords": [
@@ -46,7 +46,7 @@
     "@types/jest": "^30.0.0",
     "@vitest/coverage-v8": "^5.0.2",
     "jest": "^30.5.2",
-    "ts-jest": "^29.4.12",
+    "ts-jest": "^29.4.14",
     "vite": "^8.2.2",
     "vitest": "^5.0.2"
   }

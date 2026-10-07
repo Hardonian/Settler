@@ -26,16 +26,16 @@
   },
   "dependencies": {
     "@ai-sdk/openai": "^4.0.78",
-    "@types/node": "^26.6.3",
-    "ai": "^7.0.118",
+    "@types/node": "^26.6.4",
+    "ai": "^7.0.127",
     "typescript": "^6.0.3",
     "uuid": "^14.0.2"
   },
   "devDependencies": {
     "@types/jest": "^30.0.0",
     "@types/uuid": "^9.0.8",
-    "@typescript-eslint/eslint-plugin": "^8.70.0",
-    "@typescript-eslint/parser": "^8.70.0",
+    "@typescript-eslint/eslint-plugin": "^8.71.0",
+    "@typescript-eslint/parser": "^8.71.0",
     "@vitest/coverage-v8": "^5.0.2",
     "eslint": "^9.39.4",
     "eslint-config-prettier": "^10.1.8",

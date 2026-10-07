@@ -24,12 +24,12 @@
   "dependencies": {
     "@ai-sdk/openai": "^4.0.78",
     "@settler/types": "workspace:*",
-    "ai": "^7.0.118",
+    "ai": "^7.0.127",
     "zod": "^4.6.5"
   },
   "devDependencies": {
     "@types/jest": "^30.0.0",
-    "@types/node": "^26.6.2",
+    "@types/node": "^26.6.4",
     "@vitest/coverage-v8": "^5.0.2",
     "jest": "^30.5.2",
     "ts-jest": "^29.4.14",

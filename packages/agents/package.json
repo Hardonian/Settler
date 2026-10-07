@@ -13,7 +13,7 @@
   "dependencies": {
     "@ai-sdk/openai": "^4.0.78",
     "@settler/logger": "workspace:*",
-    "ai": "^7.0.118",
+    "ai": "^7.0.127",
     "zod": "^4.6.5"
   },
   "devDependencies": {
