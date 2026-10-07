@@ -19,7 +19,7 @@
   "dependencies": {
     "@ai-sdk/openai": "^4.0.78",
     "@settler/types": "workspace:*",
-    "ai": "^7.0.118"
+    "ai": "^7.0.127"
   },
   "devDependencies": {
     "@vitest/coverage-v8": "^5.0.2",

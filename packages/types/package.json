@@ -24,8 +24,8 @@
   },
   "dependencies": {
     "@ai-sdk/openai": "^4.0.78",
-    "@types/node": "^26.6.3",
-    "ai": "^7.0.118",
+    "@types/node": "^26.6.4",
+    "ai": "^7.0.127",
     "typescript": "^6.0.3",
     "zod": "^4.6.5"
   },
