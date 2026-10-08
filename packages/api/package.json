@@ -1,6 +1,6 @@
 {
   "name": "@settler/api",
-  "version": "1.0.0",
+  "version": "1.6.0",
   "description": "Settler API Server - Serverless reconciliation service with enterprise-grade operations tooling",
   "author": "Settler.dev",
   "license": "PROPRIETARY",

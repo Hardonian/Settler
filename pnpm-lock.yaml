@@ -67,10 +67,6 @@ overrides:
   socket.io-parser: ^4.2.7
   react: 19.2.7
   react-dom: 19.2.7
-  proxy-addr: 2.0.8
-  source-map-js: 1.2.2
-  vue: 3.5.42
-  '@vue/server-renderer': 3.5.42
 
 pnpmfileChecksum: sha256-n0nCXmUYbLEtlhBka8Hz1WzVz2vi4PkCjyU6mY6wNO4=
 
@@ -5119,7 +5115,7 @@ packages:
       nuxt: '>= 3'
       react: 19.2.7
       svelte: '>= 4'
-      vue: 3.5.42
+      vue: ^3
       vue-router: ^4
     peerDependenciesMeta:
       '@remix-run/react':
@@ -5181,7 +5177,7 @@ packages:
       next: 16.3.8
       react: 19.2.7
       svelte: '>= 4'
-      vue: 3.5.42
+      vue: ^3
       vue-router: ^4
     peerDependenciesMeta:
       '@sveltejs/kit':
@@ -7565,7 +7561,7 @@ packages:
     peerDependencies:
       '@nuxt/kit': '>=3.0.0'
       react: 19.2.7
-      vue: 3.5.42
+      vue: '>=3.0.0'
     peerDependenciesMeta:
       '@nuxt/kit':
         optional: true

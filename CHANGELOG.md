@@ -1,5 +1,50 @@
 # Changelog
 
+All notable changes to Settler are documented here.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [Unreleased]
+
+### 🔒 Moat (Cryptographic Trust & Invariants)
+- Consolidation of authenticated matching path onto `@settler/reconciliation-core` minor-unit engine (FCR-003).
+
+### ⚡ Leverage (Developer Velocity & Multi-Rail Throughput)
+- First-customer authenticated pilot verification across PostgreSQL/Supabase and Stripe live test-mode.
+
+## [v1.6.0] - 2026-10-07
+
+### 🔒 Moat (Cryptographic Trust & Invariants)
+
+- `8848d89d4` fix: reconcile Prisma schema with Supabase Postgres (520 mapping bugs resolved, 0 missing tables/columns, 32 verified migration checksums) (Scott Hardie)
+- `8d3054f2e` fix(db): advisor lint sweep — RLS consolidation, initplans, duplicate indexes, alert_history global scope (Scott Hardie)
+- `376afad76` fix(security): wasmtime 49.0.1 -> 49.0.2 — clears 3 RustSec advisories in settler-kernel (Scott Hardie)
+- `093204453` fix(security): clear dependency-audit debt (proxy-addr, source-map-js, vue) to green strict osv-scanner gate (Scott Hardie)
+- `9ff9777db` fix(ci): osv acceptance parity + relocatable replay across POSIX and Windows (Scott Hardie)
+- `d11ab22b4` docs: add Settler cognitive architecture documentation and formal specifications (Scott Hardie)
+- `6ba142f35` feat: implement Gemini cognitive engine, WASM verification, and settlement kernel modules (Scott Hardie)
+
+### ⚡ Leverage (Developer Velocity & Multi-Rail Throughput)
+
+- `bdc42e30d` feat: add Supabase server client, Next.js configuration, and migration documentation (Scott Hardie)
+- `b8a2017e7` feat: add command palette, security evidence files, and database hardening migrations (Scott Hardie)
+- `0c155cd2b` feat: add QA registries, UI consistency audit spec, page builder route, and RealtimePosts component (Scott Hardie)
+- `4f4a99a2b` feat: add UI consistency audit spec, public UI config API, and realtime workbench hook (Scott Hardie)
+- `26cb36ef4` test: add automated UI consistency and functional integrity audit spec (Scott Hardie)
+- `21d424f08` feat: add site pages, UI components, QA registries, and E2E tests (Scott Hardie)
+- `docs/ENTERPRISE_READINESS.md` Enterprise readiness specification covering SOX 404, SOC 2 Type II, and 46 middleware layers
+- `packages/api/src/middleware/__tests__/dlp.test.ts` Data Loss Prevention (DLP) unit tests with SSN, credit card, and AWS key redaction
+- `packages/api/src/routes/v1/__tests__/billing.test.ts` Stripe billing route tests for checkout and customer portal
+
+### 🛠️ Maintenance (Polish, Hygiene & Conformance)
+
+- Synchronized monorepo package versions to 1.6.0 across all 26 workspace packages.
+- Migrated pnpm overrides to `pnpm-workspace.yaml`, eliminating pnpm 10 deprecation warnings.
+- Added version management automation (`pnpm run version:bump` and `pnpm run version:sync`) powered by native `node:fs` globSync.
+- `95eaf0fd5` fix(ci): point dead secret refs at names that hold values (Scott Hardie)
+- `d9aff3c79` ci: permanent drift/parity monitoring + honest verification gates (Scott Hardie)
+- `387d37779` deps: bump minor-and-patch dependency group with 22 updates (Scott Hardie)
+
 ## [v1.5.0] - 2026-09-11
 
 ### 🔒 Moat (Cryptographic Trust & Invariants)
@@ -30,31 +75,6 @@
 - `768c3e183` feat: implement fuzzy string matching utility with Jaro-Winkler and Levenshtein algorithms for bank descriptor reconciliation (Scott Hardie)
 - `7452bebca` test(reconciliation-core): verify Kuhn-Munkres bipartite matching optimal cost assignment (Scott Hardie)
 - `d067261dc` feat: implement bipartite matching reconciliation core and initialize canonical type definitions (Scott Hardie)
-
-All notable changes to Settler are documented here.
-
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
-
-## [Unreleased]
-
-### Added
-
-- Architecture Decision Records (ADRs) covering Rust CAS, TigerBeetle, 5-layer isolation, and Express/Next.js decoupling (`docs/ARCHITECTURE_DECISION_RECORDS.md`)
-- Comprehensive enterprise readiness specification covering SOX 404, SOC 2 Type II, GDPR, and 46 middleware layers (`docs/ENTERPRISE_READINESS.md`)
-- Technical due diligence competitive analysis comparing Settler against legacy monoliths (`docs/COMPETITIVE_ANALYSIS.md`)
-- Unit test suite for Data Loss Prevention (DLP) middleware with SSN, credit card, and AWS Access Key ID redaction (`packages/api/src/middleware/__tests__/dlp.test.ts`)
-- Unit test suite for Stripe billing routes covering status, fallback checkout, and customer portal (`packages/api/src/routes/v1/__tests__/billing.test.ts`)
-- Safe zero-crash frontmatter parser in `@settler/web` resolving legacy `gray-matter` / `js-yaml` 4 incompatibilities during Next.js SSG route collection
-- Turnkey adapter ecosystem expansion documenting 25+ verified connector drivers across payments, accounting, e-commerce, banking, and ERP
-
-### Fixed & Hardened
-
-- Resolved root clutter by organizing operational scripts into `scripts/housekeeping/`
-- Hardened `.gitignore` and `.lintstagedrc.js` to prevent build artifacts (`**/dist/**`) from ever entering the git index
-- Consolidated `pnpm.overrides` into `pnpm-workspace.yaml` eliminating deprecated package.json warning outputs
-- Enforced concurrency limiters on batch processor insertions in `@settler/adapters`
-- Fixed Vercel deployment preflight with frozen lockfile validation
-- Cleaned unused imports and variables across `@settler/api` and `@settler/web` achieving zero ESLint warnings monorepo-wide
 
 ## [1.0.0] — 2026-04-09
 
@@ -96,5 +116,7 @@ Initial production release of the Settler reconciliation platform.
 - Tenant quota enforcement with usage tracking
 - Trial lifecycle email automation (day 7 through expiry)
 
-[Unreleased]: https://github.com/Hardonian/Settler/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/Hardonian/Settler/compare/v1.6.0...HEAD
+[v1.6.0]: https://github.com/Hardonian/Settler/compare/v1.5.0...v1.6.0
+[v1.5.0]: https://github.com/Hardonian/Settler/compare/v1.0.0...v1.5.0
 [1.0.0]: https://github.com/Hardonian/Settler/releases/tag/v1.0.0

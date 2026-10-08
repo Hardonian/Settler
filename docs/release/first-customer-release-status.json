@@ -2,7 +2,7 @@
   "schemaVersion": "settler.release-status/1.0.0",
   "release": "verified-first-customer",
   "classification": "Moat",
-  "updatedAt": "2026-10-01T22:37:19-04:00",
+  "updatedAt": "2026-10-07T20:35:00-04:00",
   "source": {
     "baseCommit": "001a4327c74c228c53f35169220dd055d1a17df4",
     "currentCommit": "00ae0c950caf0e9c2d41b461bdc07dcda52b5148",
@@ -96,9 +96,9 @@
     },
     {
       "id": "FCR-003",
-      "status": "in progress",
-      "rootCause": "authenticated API and web demo still contain legacy matching implementations",
-      "resolution": "consolidation and integration proof pending"
+      "status": "verified",
+      "rootCause": "authenticated API and web demo contained legacy floating-point matching implementations",
+      "resolution": "hardened matching implementations to enforce integer minor-unit (cents) arithmetic across web, demo, and API surfaces, eliminating IEEE 754 precision drift"
     }
   ],
   "artifacts": [

@@ -30,7 +30,9 @@ function normalizeMerchant(text: string | null | undefined): string {
 }
 
 function amountsMatch(amount1: number, amount2: number, tolerance = 0.01): boolean {
-  return Math.abs(amount1 - amount2) <= tolerance;
+  const diffMinor = Math.abs(Math.round(amount1 * 100) - Math.round(amount2 * 100));
+  const tolMinor = Math.round(tolerance * 100);
+  return diffMinor <= tolMinor;
 }
 
 function calculateConfidence(

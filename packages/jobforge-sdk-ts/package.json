@@ -1,6 +1,6 @@
 {
   "name": "@jobforge/sdk-ts",
-  "version": "0.1.0",
+  "version": "1.6.0",
   "private": true,
   "description": "TypeScript SDK for JobForge (server-only)",
   "main": "./dist/index.js",

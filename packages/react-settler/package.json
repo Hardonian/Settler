@@ -1,6 +1,6 @@
 {
   "name": "@settler/react-settler",
-  "version": "0.1.0",
+  "version": "1.6.0",
   "description": "React components for building reconciliation workflows",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

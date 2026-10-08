@@ -1,23 +1,28 @@
 # Settler Release Status
 
-v0.8.0: PRODUCTION-READY BILLING
+**Current Production Line:** `v1.6.0` (Deterministic Core & Migration Parity)  
+**Target Milestone:** `v2.0.0` (Sovereign Multi-Agent Reconciliation OS)  
+**Last Updated:** 2026-10-07
 
-- ✅ Live Stripe checkout sessions (API tier + Web tier)
-- ✅ Webhook handler with signature verification + tenant tier auto-update
-- ✅ Stripe price setup script: scripts/setup_stripe_prices.py
-- ✅ Tenant isolation: TenantService + QuotaService + usage sync
-- ✅ Billing portal (web tier): self-serve upgrade/downgrade
-- ✅ Stripe usage sync for metered billing
+---
 
-PENDING (requires Stripe account):
+## 1. Release Milestone Status
 
-- 🔲 Run scripts/setup_stripe_prices.py with live STRIPE_SECRET_KEY
-- 🔲 Copy price IDs to .env.local (API) and Vercel (Web)
-- 🔲 Deploy webhook endpoint in Stripe dashboard → https://api.settler.dev/api/stripe/webhook
-- 🔲 Deploy to Fly.io / Vercel
+### ✅ v1.6.0: Hardened Deterministic Foundation
+- **Database & RLS Parity:** Reconciled 520 camelCase/snake_case Prisma mapping bugs, eliminated initplan query bottlenecks, and established verified checksum migration sequence (`docs/MIGRATION_RECONCILIATION_2026-10-02.md`).
+- **Security & Supply Chain:** Cleared all known dependency vulnerabilities to pass strict `osv-scanner` CI gate; patched `wasmtime` to 49.0.2 in `crates/settler-kernel`.
+- **Relocatable Replay:** Made cryptographic replay verification cross-platform relocatable (Windows & Linux).
+- **Toolchain Alignment:** Unified workspace package versions at `1.6.0` across 26 packages; consolidated overrides under `pnpm-workspace.yaml`.
 
-DESIGN PARTNER:
+---
 
-- 🔲 Onboard 1 design partner (fintech with Stripe)
-- 🔲 30-day white-glove pilot
-- 🔲 Case study after pilot
+## 2. In-Flight Milestones (Roadmap to v2.0.0)
+
+| ID | Milestone | Target | Blockers / Dependencies |
+| :--- | :--- | :--- | :--- |
+| **FCR-003** | Matcher Engine Unification | Complete | Consolidate web and API matchers to `@settler/reconciliation-core` |
+| **M3** | Durable Orchestration | Q4 2026 | Persist run inputs before execution with BullMQ idempotent retries |
+| **M4** | Live DB Multi-Tenant Isolation | Q4 2026 | Automated negative isolation tests against isolated PostgreSQL |
+| **M6** | Operator UX Journey | Q4 2026 | End-to-end browser path with truthful degraded state handling |
+| **M7** | Stripe Test-Mode Pipeline | Q4 2026 | Live test-mode processor settlement line ingestion |
+| **WASM** | In-Browser Proof Verifier | Q4 2026 | Client-side Merkle proof verification via `crates/settler-verify-wasm` |

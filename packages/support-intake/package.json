@@ -1,6 +1,6 @@
 {
   "name": "@settler/support-intake",
-  "version": "0.1.0",
+  "version": "1.6.0",
   "description": "Canonical support intake schema and persistence for Settler OSS/API and Next surfaces",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

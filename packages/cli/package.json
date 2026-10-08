@@ -1,6 +1,6 @@
 {
   "name": "@settler/cli",
-  "version": "1.0.0",
+  "version": "1.6.0",
   "description": "Settler CLI - Command-line tool for reconciliation operations",
   "bin": {
     "settler": "./dist/index.js",

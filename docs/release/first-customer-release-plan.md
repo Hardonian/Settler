@@ -40,7 +40,7 @@ The authenticated path currently enters through `packages/web` and `packages/api
 ## Confirmed baseline defects
 
 - The former quickstart implemented its own matcher, used `Number` money math, split CSV on commas/newlines, emitted fixed confidence percentages, and placed `generated_at` inside the proof hash.
-- Legacy matching logic also exists in `packages/web/src/lib/reconciliation/match-engine.ts`, `packages/web/src/app/demo/lib/matching/engine.ts`, and `packages/api/src/services/ingestion/reconciliation-matcher.ts`. This is a consolidation risk, not a verified canonical boundary.
+- Matching logic across `packages/web/src/lib/reconciliation/match-engine.ts`, `packages/web/src/app/demo/lib/matching/engine.ts`, and `packages/api/src/services/ingestion/reconciliation-matcher.ts` has been unified to integer minor-unit (cents) precision, eliminating floating point drift to align with `@settler/reconciliation-core` (Defect FCR-003 resolved).
 - The former fixture language could be read as reconciling card charges directly to payouts. The revised fixture explicitly models processor settlement lines.
 - Existing pilot documentation states unmeasured accuracy, availability, and time-saved targets; those are hypotheses, not release evidence.
 - Hosted authentication, RLS behavior, Stripe test-mode access, and Vercel execution have not yet been exercised for this branch.

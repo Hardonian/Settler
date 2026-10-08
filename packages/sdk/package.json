@@ -1,6 +1,6 @@
 {
   "name": "@settler/sdk",
-  "version": "1.0.0",
+  "version": "1.6.0",
   "description": "Production-grade TypeScript SDK for the Settler Reconciliation API",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

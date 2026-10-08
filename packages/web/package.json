@@ -1,6 +1,6 @@
 {
   "name": "@settler/web",
-  "version": "1.0.0",
+  "version": "1.6.0",
   "description": "Settler Web Application - Next.js frontend with Developer Console and Admin Dashboard",
   "author": "Settler.dev",
   "license": "PROPRIETARY",

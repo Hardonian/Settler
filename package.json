@@ -1,20 +1,12 @@
 {
   "name": "settler-monorepo",
-  "version": "1.0.0",
+  "version": "1.6.0",
   "private": true,
   "description": "Settler - Open Source Reconciliation Engine",
   "packageManager": "pnpm@10.13.1",
   "engines": {
     "node": ">=24.15.0 <25.0.0",
     "pnpm": ">=10.13.1"
-  },
-  "pnpm": {
-    "overrides": {
-      "proxy-addr": "2.0.8",
-      "source-map-js": "1.2.2",
-      "vue": "3.5.42",
-      "@vue/server-renderer": "3.5.42"
-    }
   },
   "workspaces": [
     "packages/*",
@@ -24,6 +16,8 @@
     "!packages/workhorse"
   ],
   "scripts": {
+    "version:bump": "node scripts/release/version-manager.mjs bump",
+    "version:sync": "node scripts/release/version-manager.mjs sync",
     "check:node": "node scripts/assert-node-version.mjs",
     "build": "turbo run build --filter @settler/web...",
     "build:all": "turbo run build",
@@ -155,7 +149,7 @@
     "preinstall": "node scripts/assert-node-version.mjs --warn-only",
     "postinstall": "node scripts/vercel-prisma-postinstall.js",
     "verify:build": "node scripts/verify-release.mjs --profile=build",
-    "setup:turbo": "test -f scripts/setup-vercel-turbo-cache.sh && bash scripts/setup-vercel-turbo-cache.sh || echo '\u26a0\ufe0f  Turbo setup script not available'",
+    "setup:turbo": "test -f scripts/setup-vercel-turbo-cache.sh && bash scripts/setup-vercel-turbo-cache.sh || echo '⚠️  Turbo setup script not available'",
     "demo:setup": "tsx scripts/generate-demo-data.ts",
     "demo:quickstart": "tsx scripts/demo-quickstart.ts",
     "demo:verify": "tsx scripts/verify-demo-proofpack.ts docs/demo-output/proofpack.json",
@@ -299,8 +293,6 @@
     "reconciliation:compare": "node scripts/reconciliation-run-tools.mjs compare test-data/exports/smoke-seed42 test-data/exports/latest",
     "verify:wcag": "node scripts/verify-wcag-accessibility.mjs --strict",
     "verify:issue-templates": "node scripts/validate-issue-templates.mjs",
-    "version:sync": "node scripts/release/version-manager.mjs sync",
-    "version:bump": "node scripts/release/version-manager.mjs bump",
     "build:clean": "pnpm run clean:all && pnpm install --frozen-lockfile && pnpm run build:all",
     "release:artifacts": "node scripts/release/package-artifacts.mjs",
     "verify:release:artifacts": "node scripts/release/verify-artifacts.mjs",

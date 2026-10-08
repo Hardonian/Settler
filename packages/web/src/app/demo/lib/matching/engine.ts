@@ -98,10 +98,13 @@ function calculateConfidence(
 }
 
 /**
- * Check if two amounts match within tolerance
+ * Check if two amounts match within tolerance using integer minor units (cents)
+ * to avoid IEEE 754 floating point precision drift.
  */
 function amountsMatch(amount1: number, amount2: number, tolerance = 0): boolean {
-  return Math.abs(amount1 - amount2) <= tolerance;
+  const diffMinor = Math.abs(Math.round(amount1 * 100) - Math.round(amount2 * 100));
+  const tolMinor = Math.round(tolerance * 100);
+  return diffMinor <= tolMinor;
 }
 
 /**

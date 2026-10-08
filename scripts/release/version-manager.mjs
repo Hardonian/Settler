@@ -1,7 +1,5 @@
-#!/usr/bin/env node
-import { readFileSync, writeFileSync } from "node:fs";
+import { globSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
-import { globSync } from "glob";
 
 const repoRoot = process.cwd();
 const semverPattern =

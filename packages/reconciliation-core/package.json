@@ -1,6 +1,6 @@
 {
   "name": "@settler/reconciliation-core",
-  "version": "1.0.0",
+  "version": "1.6.0",
   "description": "Shared canonical reconciliation mapping, merge pagination, and run resolution",
   "license": "PROPRIETARY",
   "main": "dist/index.js",

@@ -1,6 +1,6 @@
 {
   "name": "@settler/edge-ai-core",
-  "version": "1.0.0",
+  "version": "1.6.0",
   "description": "Brand-neutral Edge AI core engine - shared technical components for model optimization, inference, and device management",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
