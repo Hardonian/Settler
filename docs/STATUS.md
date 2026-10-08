@@ -9,6 +9,7 @@
 ## 1. Release Milestone Status
 
 ### ✅ v1.6.0: Hardened Deterministic Foundation
+
 - **Database & RLS Parity:** Reconciled 520 camelCase/snake_case Prisma mapping bugs, eliminated initplan query bottlenecks, and established verified checksum migration sequence (`docs/MIGRATION_RECONCILIATION_2026-10-02.md`).
 - **Security & Supply Chain:** Cleared all known dependency vulnerabilities to pass strict `osv-scanner` CI gate; patched `wasmtime` to 49.0.2 in `crates/settler-kernel`.
 - **Relocatable Replay:** Made cryptographic replay verification cross-platform relocatable (Windows & Linux).

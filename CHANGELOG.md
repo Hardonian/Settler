@@ -7,9 +7,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [Unreleased]
 
 ### 🔒 Moat (Cryptographic Trust & Invariants)
+
 - Consolidation of authenticated matching path onto `@settler/reconciliation-core` minor-unit engine (FCR-003).
 
 ### ⚡ Leverage (Developer Velocity & Multi-Rail Throughput)
+
 - First-customer authenticated pilot verification across PostgreSQL/Supabase and Stripe live test-mode.
 
 ## [v1.6.0] - 2026-10-07
