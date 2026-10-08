@@ -19,6 +19,7 @@
     ".gitleaks.toml",
     ".husky",
     ".lintstagedrc.js",
+    ".markdownlint.json",
     ".node-version",
     ".npm-auditignore",
     ".npmrc",
