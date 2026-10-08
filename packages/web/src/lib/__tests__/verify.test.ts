@@ -1,4 +1,4 @@
-import { verifyBundle, verifyManifestNative, sha256Hex } from "../verify";
+import { verifyBundle, verifyManifestNative, sha256Hex, loadVerifier } from "../verify";
 import type { EvidenceManifest, NamedFile } from "../../types/verification";
 
 describe("Web Proofpack Verifier", () => {
@@ -31,6 +31,22 @@ describe("Web Proofpack Verifier", () => {
     { path: "records-left.json", bytes: Array.from(fileAContent) },
     { path: "records-right.json", bytes: Array.from(fileBContent) },
   ];
+
+  it("loads and executes settler-verify-wasm WebAssembly module directly", async () => {
+    const verifier = await loadVerifier();
+    expect(verifier).not.toBeNull();
+    expect(typeof verifier?.verify_manifest).toBe("function");
+
+    const manifest = getValidManifest();
+    const files = getFiles();
+    const rawResult = verifier?.verify_manifest(JSON.stringify(manifest), JSON.stringify(files));
+    expect(rawResult).toBeDefined();
+
+    const parsed = JSON.parse(rawResult!);
+    expect(parsed.success).toBe(true);
+    expect(parsed.mismatches).toHaveLength(0);
+    expect(parsed.error).toBeNull();
+  });
 
   it("verifies a valid evidence manifest with 100% cryptographic integrity", async () => {
     const manifest = getValidManifest();

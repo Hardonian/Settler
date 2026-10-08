@@ -1,6 +1,6 @@
 {
   "reportVersion": "2026-03-09.1",
-  "generatedAt": "2026-10-02T19:57:14.931Z",
+  "generatedAt": "2026-10-08T15:10:37.688Z",
   "dimensions": {
     "code_security_status": {
       "status": "PASS",
@@ -13,7 +13,7 @@
       "status": "PASS_WITH_DEGRADED_EVIDENCE",
       "evidenceLevel": "degraded",
       "blocking": true,
-      "reason": "Local dependency audit was degraded: osv-scanner-missing. Authenticated advisory completeness is unauthenticated.",
+      "reason": "Local dependency audit was degraded: accepted-transitive-vulns, osv-scanner-missing. Authenticated advisory completeness is unauthenticated.",
       "nextAction": [
         "Restore registry audit connectivity/auth and rerun `pnpm run audit:deps`.",
         "Provide DEPENDABOT_ALERTS_EXPORT_PATH or set GITHUB_TOKEN/GH_TOKEN with GITHUB_REPOSITORY."

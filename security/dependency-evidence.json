@@ -1,10 +1,10 @@
 {
   "reportVersion": "2026-03-09.1",
-  "generatedAt": "2026-10-02T19:57:14.650Z",
-  "runId": "2026-10-02T19-57-14-642Z",
+  "generatedAt": "2026-10-08T15:10:37.371Z",
+  "runId": "2026-10-08T15-10-37-364Z",
   "status": "PASS_WITH_DEGRADED_EVIDENCE",
   "evidenceState": "DEGRADED",
-  "reason": "Local dependency audit was degraded: osv-scanner-missing. Authenticated advisory completeness is unauthenticated.",
+  "reason": "Local dependency audit was degraded: accepted-transitive-vulns, osv-scanner-missing. Authenticated advisory completeness is unauthenticated.",
   "evidenceCompleteness": "degraded",
   "environmentConstraints": [
     "Package registry audit backend/tooling degraded.",
@@ -42,17 +42,17 @@
   ],
   "localAudit": {
     "available": true,
-    "pass": true,
+    "pass": false,
     "degraded": true,
     "summary": {
       "info": 0,
       "low": 0,
-      "moderate": 0,
-      "high": 0,
+      "moderate": 2,
+      "high": 1,
       "critical": 0,
       "total": 0
     },
-    "outcome": "passed"
+    "outcome": "passed-with-accepted-exceptions"
   },
   "advisoryCompleteness": {
     "status": "unauthenticated",

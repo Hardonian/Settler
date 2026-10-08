@@ -48,5 +48,5 @@
 - [x] Deduplicated pnpm workspace overrides
 - [x] Integer minor-unit matching unification across all surfaces
 - [ ] Live PostgreSQL cross-tenant isolation negative suite in CI (`pnpm run test:cross-tenant`)
-- [ ] Browser-side WASM verification in production operator console (`crates/settler-verify-wasm`)
+- [x] Browser-side WASM verification in production operator console (`crates/settler-verify-wasm`)
 - [ ] Stripe live test-mode end-to-end reconciliation closure

@@ -47,8 +47,9 @@ function calculateConfidence(
   amountDiff: number,
   dateDiff: number
 ): number {
+  if (!amountMatch) return 0;
   let confidence = 0;
-  if (amountMatch) confidence += amountDiff === 0 ? 0.5 : 0.4;
+  confidence += amountDiff === 0 ? 0.5 : 0.15;
   if (dateMatch) confidence += dateDiff === 0 ? 0.4 : 0.3;
   if (merchantMatch) confidence += 0.3;
   return Math.min(1, confidence);
@@ -186,7 +187,7 @@ export function matchTransactions(
       matches.push({
         sourceTransactionId: source.id,
         targetTransactionId: best.target.id,
-        matchType: best.confidence >= 0.9 ? "exact" : "fuzzy",
+        matchType: best.confidence >= 0.9 && best.amountDiff === 0 ? "exact" : "fuzzy",
         confidence: best.confidence,
         amountDiff: best.amountDiff,
         dateDiff: Math.round(best.dateDiff),

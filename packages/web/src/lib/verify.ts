@@ -15,10 +15,51 @@ export async function loadVerifier(): Promise<typeof wasmModule> {
     return wasmModule;
   }
   try {
-    // @ts-expect-error -- WASM module is loaded dynamically at runtime from public/wasm/ and has no type definitions; module path is runtime-resolved
-    const importedModule = await import(/* webpackIgnore: true */ "/wasm/settler_verify_wasm.js");
-    wasmModule = importedModule as typeof wasmModule;
-    return wasmModule;
+    let importedModule: any;
+    const isNode = typeof process !== "undefined" && Boolean(process.versions?.node);
+    if (!isNode && typeof window !== "undefined") {
+      // Real browser environment: load from public web path
+      // @ts-expect-error -- Module path is runtime-resolved in browser
+      importedModule = await import(/* webpackIgnore: true */ "/wasm/settler_verify_wasm.js");
+      if (typeof importedModule.default === "function") {
+        await importedModule.default("/wasm/settler_verify_wasm_bg.wasm");
+      }
+    } else {
+      const path = await import("path");
+      const fs = await import("fs");
+      const { pathToFileURL } = await import("url");
+
+      const candidates = [
+        path.resolve(process.cwd(), "public/wasm"),
+        path.resolve(process.cwd(), "packages/web/public/wasm"),
+        path.resolve(__dirname, "../../../public/wasm"),
+        path.resolve(__dirname, "../../public/wasm"),
+      ];
+      const foundDir = candidates.find((dir) =>
+        fs.existsSync(path.join(dir, "settler_verify_wasm.js"))
+      );
+
+      if (!foundDir) {
+        throw new Error("settler_verify_wasm.js not found in expected public/wasm directories");
+      }
+
+      const jsUrl = pathToFileURL(path.join(foundDir, "settler_verify_wasm.js")).href;
+      importedModule = await import(jsUrl);
+
+      if (typeof importedModule.initSync === "function") {
+        const wasmPath = path.join(foundDir, "settler_verify_wasm_bg.wasm");
+        if (fs.existsSync(wasmPath)) {
+          const bytes = fs.readFileSync(wasmPath);
+          importedModule.initSync({ module: bytes });
+        }
+      }
+    }
+
+    if (importedModule && typeof importedModule.verify_manifest === "function") {
+      wasmModule = importedModule as typeof wasmModule;
+      return wasmModule;
+    }
+    return null;
   } catch (error) {
     console.warn(
       "[verify] wasm verifier unavailable, falling back to native Web Crypto verifier",
