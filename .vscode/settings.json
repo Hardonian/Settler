@@ -1,13 +1,6 @@
 {
   "typescript.tsdk": "node_modules/typescript/lib",
   "typescript.enablePromptUseWorkspaceTsdk": true,
-  "markdownlint.config": {
-    "default": true,
-    "MD013": false,
-    "MD024": {
-      "siblings_only": true
-    }
-  },
   "cSpell.words": [
     "Adyen",
     "anaisbetts",
