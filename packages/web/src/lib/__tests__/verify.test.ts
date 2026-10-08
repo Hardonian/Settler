@@ -1,5 +1,5 @@
 import { verifyBundle, verifyManifestNative, sha256Hex } from "../verify";
-import type { EvidenceManifest, NamedFile } from "@/types/verification";
+import type { EvidenceManifest, NamedFile } from "../../types/verification";
 
 describe("Web Proofpack Verifier", () => {
   const encoder = new TextEncoder();

@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useBackoffPolling } from "@/hooks/use-backoff-polling";
 import { useSearchParams } from "next/navigation";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { DataTable, DataTableColumn } from "@/components/ui/data-table";
@@ -22,7 +22,6 @@ import {
   Layers,
   Wand2,
   CheckCircle2,
-  Clock,
   Coins,
   ShieldCheck,
   Check,

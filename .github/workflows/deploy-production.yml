@@ -28,13 +28,14 @@ on:
 
 env:
   NODE_ENV: production
-  TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
-  TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
 
 jobs:
   validate:
     name: Validate Before Deployment
     runs-on: ubuntu-24.04
+    env:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
     steps:
       - uses: actions/checkout@v7
         with:
@@ -268,17 +269,20 @@ jobs:
     needs: [deploy-staging]
     environment: production
     env:
-      DEPLOY_URL: ${{ needs.deploy-staging.outputs.deployment-url || secrets.PRODUCTION_URL }}
+      STAGING_URL: ${{ needs.deploy-staging.outputs.deployment-url }}
+      PRODUCTION_URL: ${{ secrets.PRODUCTION_URL }}
       TARGET_SHA: ${{ github.sha }}
     steps:
       - name: Enforce Deployment Target URL
         run: |
+          DEPLOY_URL="${STAGING_URL:-$PRODUCTION_URL}"
           if [ -z "${DEPLOY_URL}" ]; then
             echo "❌ Error: Neither preview URL nor PRODUCTION_URL secret is available."
             echo "Deployment smoke checks cannot be skipped in production release workflow."
             exit 1
           fi
           echo "Target deployment URL: ${DEPLOY_URL}"
+          echo "DEPLOY_URL=${DEPLOY_URL}" >> "$GITHUB_ENV"
 
       - name: Probe Health Endpoints
         run: |
