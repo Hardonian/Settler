@@ -21,6 +21,7 @@ import {
 import { motion } from "framer-motion";
 import { ZeroTrustVerifier } from "@/components/cognitive/zero-trust-verifier";
 import { cn } from "@/lib/utils";
+import { verifySmt } from "@/lib/verify";
 
 async function sha256Hex(buffer: string): Promise<string> {
   const encoder = new TextEncoder();
@@ -90,7 +91,20 @@ export default function VerifyPage() {
         return;
       }
 
-      // Format 3: Merkle Tree Proofpack with leaves array
+      // Format 3: Sparse Merkle Tree (SMT) cryptographic proof (verified via WASM kernel)
+      if (parsed.siblings_hex && parsed.root_hex && parsed.key_hex) {
+        const smtResult = await verifySmt(parsed);
+        setCustomResult({
+          valid: smtResult.valid,
+          computedRoot: smtResult.computed_root || "COMPUTATION_FAILED",
+          declaredRoot: smtResult.expected_root || parsed.root_hex,
+          leavesCount: parsed.siblings_hex.length,
+          error: smtResult.error || undefined,
+        });
+        return;
+      }
+
+      // Format 4: Merkle Tree Proofpack with leaves array
       const declaredRoot = parsed.declaredMerkleRoot || parsed.manifestHash || parsed.merkleRoot;
       const leaves = parsed.leaves || parsed.records || [];
 
@@ -101,7 +115,7 @@ export default function VerifyPage() {
           declaredRoot: declaredRoot || "MISSING",
           leavesCount: leaves.length,
           error:
-            "Invalid proofpack schema. Expected Settler proofpack (trace/state_hash), evidence manifest (hash_chain), or Merkle bundle (leaves).",
+            "Invalid proofpack schema. Expected Settler proofpack (trace/state_hash), evidence manifest (hash_chain), SMT proof (siblings_hex/root_hex), or Merkle bundle (leaves).",
         });
         return;
       }

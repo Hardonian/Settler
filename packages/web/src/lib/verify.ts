@@ -1,4 +1,10 @@
-import type { EvidenceManifest, NamedFile, VerificationResult } from "@/types/verification";
+import type {
+  EvidenceManifest,
+  NamedFile,
+  SmtProof,
+  SmtVerificationResult,
+  VerificationResult,
+} from "@/types/verification";
 import { safeJsonParse } from "@/lib/utils/safe-parse";
 
 export type WasmVerificationResponse = {
@@ -7,8 +13,10 @@ export type WasmVerificationResponse = {
   error?: string;
 };
 
-let wasmModule: { verify_manifest: (manifestJson: string, filesJson: string) => string } | null =
-  null;
+let wasmModule: {
+  verify_manifest: (manifestJson: string, filesJson: string) => string;
+  verify_smt?: (proofJson: string) => string;
+} | null = null;
 
 export async function loadVerifier(): Promise<typeof wasmModule> {
   if (wasmModule) {
@@ -189,4 +197,30 @@ export async function verifyBundle(
 
   // 2. Fall back to deterministic Web Crypto native verifier (zero-server-compute, offline-ready)
   return verifyManifestNative(manifest, files);
+}
+
+export async function verifySmt(proof: SmtProof): Promise<SmtVerificationResult> {
+  try {
+    const wasmModuleInstance = await loadVerifier();
+    if (wasmModuleInstance && typeof wasmModuleInstance.verify_smt === "function") {
+      const responseJson = wasmModuleInstance.verify_smt(JSON.stringify(proof));
+      const response = safeJsonParse<SmtVerificationResult>(
+        responseJson,
+        "WASM SMT verification response"
+      );
+      if (response) {
+        return response;
+      }
+    }
+  } catch (error) {
+    console.warn("[verify] WASM SMT verification execution error", error);
+  }
+
+  return {
+    valid: false,
+    computed_root: "",
+    expected_root: proof.root_hex,
+    is_non_inclusion: !proof.value_hex,
+    error: "WASM SMT verifier unavailable or execution failed",
+  };
 }

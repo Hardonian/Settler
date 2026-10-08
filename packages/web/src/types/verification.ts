@@ -24,3 +24,19 @@ export type VerificationResult = {
   success: boolean;
   mismatches: VerificationMismatch[];
 };
+
+export type SmtProof = {
+  key_hex: string;
+  value_hex?: string | null;
+  siblings_hex: string[];
+  root_hex: string;
+  is_inclusion: boolean;
+};
+
+export type SmtVerificationResult = {
+  valid: boolean;
+  computed_root: string;
+  expected_root: string;
+  is_non_inclusion: boolean;
+  error?: string | null;
+};
