@@ -97,14 +97,20 @@ function calculateConfidence(
   return "none";
 }
 
+import { amountsMatchWithinTolerance } from "@settler/reconciliation-core";
+
 /**
- * Check if two amounts match within tolerance using integer minor units (cents)
- * to avoid IEEE 754 floating point precision drift.
+ * Check if two amounts match within tolerance using canonical minor units
+ * from @settler/reconciliation-core, avoiding IEEE 754 precision drift
+ * across arbitrary currency exponents.
  */
-function amountsMatch(amount1: number, amount2: number, tolerance = 0): boolean {
-  const diffMinor = Math.abs(Math.round(amount1 * 100) - Math.round(amount2 * 100));
-  const tolMinor = Math.round(tolerance * 100);
-  return diffMinor <= tolMinor;
+function amountsMatch(
+  amount1: number,
+  amount2: number,
+  tolerance = 0,
+  currency: string = "USD"
+): boolean {
+  return amountsMatchWithinTolerance(amount1, amount2, tolerance, currency);
 }
 
 /**
@@ -156,7 +162,7 @@ function matchWithRule(
 
   switch (rule.type) {
     case "amount_exact": {
-      if (amountsMatch(source.amount, target.amount, 0)) {
+      if (amountsMatch(source.amount, target.amount, 0, source.currency)) {
         evidence.push({
           field: "amount",
           source_value: source.amount,
@@ -171,7 +177,7 @@ function matchWithRule(
     case "amount_tolerance": {
       const tolerance = rule.tolerance ?? 0.01;
       const diff = Math.abs(source.amount - target.amount);
-      if (amountsMatch(source.amount, target.amount, tolerance)) {
+      if (amountsMatch(source.amount, target.amount, tolerance, source.currency)) {
         evidence.push({
           field: "amount",
           source_value: source.amount,

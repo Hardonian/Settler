@@ -29,10 +29,15 @@ function normalizeMerchant(text: string | null | undefined): string {
   return text.trim().toLowerCase().replace(/\s+/g, " ");
 }
 
-function amountsMatch(amount1: number, amount2: number, tolerance = 0.01): boolean {
-  const diffMinor = Math.abs(Math.round(amount1 * 100) - Math.round(amount2 * 100));
-  const tolMinor = Math.round(tolerance * 100);
-  return diffMinor <= tolMinor;
+import { amountsMatchWithinTolerance } from "@settler/reconciliation-core";
+
+function amountsMatch(
+  amount1: number,
+  amount2: number,
+  tolerance = 0.01,
+  currency: string = "USD"
+): boolean {
+  return amountsMatchWithinTolerance(amount1, amount2, tolerance, currency);
 }
 
 function calculateConfidence(
@@ -145,7 +150,12 @@ export function matchTransactions(
       if (usedTargetIds.has(target.id)) continue;
 
       const amountDiff = Math.abs(source.amount - target.amount);
-      const amountMatch = amountsMatch(source.amount, target.amount, amountTolerance);
+      const amountMatch = amountsMatch(
+        source.amount,
+        target.amount,
+        amountTolerance,
+        source.currency
+      );
       const dateDiff =
         Math.abs(source.date.getTime() - target.date.getTime()) / (1000 * 60 * 60 * 24);
       const dateMatch = dateDiff <= (rules.dateWindowDays ?? 3);

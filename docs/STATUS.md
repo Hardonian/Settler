@@ -19,11 +19,11 @@
 
 ## 2. In-Flight Milestones (Roadmap to v2.0.0)
 
-| ID | Milestone | Target | Blockers / Dependencies |
-| :--- | :--- | :--- | :--- |
-| **FCR-003** | Matcher Engine Unification | Complete | Consolidate web and API matchers to `@settler/reconciliation-core` |
-| **M3** | Durable Orchestration | Q4 2026 | Persist run inputs before execution with BullMQ idempotent retries |
-| **M4** | Live DB Multi-Tenant Isolation | Q4 2026 | Automated negative isolation tests against isolated PostgreSQL |
-| **M6** | Operator UX Journey | Q4 2026 | End-to-end browser path with truthful degraded state handling |
-| **M7** | Stripe Test-Mode Pipeline | Q4 2026 | Live test-mode processor settlement line ingestion |
-| **WASM** | In-Browser Proof Verifier | Q4 2026 | Client-side Merkle proof verification via `crates/settler-verify-wasm` |
+| ID          | Milestone                      | Target   | Blockers / Dependencies                                                |
+| :---------- | :----------------------------- | :------- | :--------------------------------------------------------------------- |
+| **FCR-003** | Matcher Engine Unification     | Complete | Consolidate web and API matchers to `@settler/reconciliation-core`     |
+| **M3**      | Durable Orchestration          | Q4 2026  | Persist run inputs before execution with BullMQ idempotent retries     |
+| **M4**      | Live DB Multi-Tenant Isolation | Q4 2026  | Automated negative isolation tests against isolated PostgreSQL         |
+| **M6**      | Operator UX Journey            | Q4 2026  | End-to-end browser path with truthful degraded state handling          |
+| **M7**      | Stripe Test-Mode Pipeline      | Q4 2026  | Live test-mode processor settlement line ingestion                     |
+| **WASM**    | In-Browser Proof Verifier      | Q4 2026  | Client-side Merkle proof verification via `crates/settler-verify-wasm` |

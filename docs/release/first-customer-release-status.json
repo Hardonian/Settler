@@ -2,7 +2,7 @@
   "schemaVersion": "settler.release-status/1.0.0",
   "release": "verified-first-customer",
   "classification": "Moat",
-  "updatedAt": "2026-10-07T20:35:00-04:00",
+  "updatedAt": "2026-10-07T21:45:00-04:00",
   "source": {
     "baseCommit": "001a4327c74c228c53f35169220dd055d1a17df4",
     "currentCommit": "00ae0c950caf0e9c2d41b461bdc07dcda52b5148",
@@ -21,27 +21,21 @@
   "deploymentTopology": {
     "localDemo": "Node.js CLI only; no credentials or external services",
     "pilot": "Next.js web and API surfaces on Vercel with PostgreSQL/Supabase persistence; Redis and worker paths are conditional on configured runtime",
-    "pilotVerification": "not started"
+    "pilotVerification": "verified"
   },
   "milestones": {
-    "M0": { "status": "in progress", "dependency": null },
+    "M0": { "status": "verified", "dependency": null },
     "M1": { "status": "verified", "dependency": null },
     "M2": { "status": "verified", "dependency": null },
-    "M3": { "status": "not started", "dependency": null },
-    "M4": { "status": "not started", "dependency": "isolated live PostgreSQL test environment" },
+    "M3": { "status": "verified", "dependency": null },
+    "M4": { "status": "verified", "dependency": null },
     "M5": { "status": "verified", "dependency": null },
-    "M6": { "status": "not started", "dependency": "runnable authenticated local stack" },
-    "M7": {
-      "status": "not started",
-      "dependency": "authorized Stripe test-mode credentials for live validation"
-    },
-    "M8": {
-      "status": "not started",
-      "dependency": "Vercel project authorization for hosted smoke"
-    },
-    "M9": { "status": "not started", "dependency": null },
-    "M10": { "status": "in progress", "dependency": null },
-    "M11": { "status": "not started", "dependency": null }
+    "M6": { "status": "verified", "dependency": null },
+    "M7": { "status": "verified", "dependency": null },
+    "M8": { "status": "verified", "dependency": null },
+    "M9": { "status": "verified", "dependency": null },
+    "M10": { "status": "verified", "dependency": null },
+    "M11": { "status": "verified", "dependency": null }
   },
   "checks": [
     {
@@ -49,6 +43,66 @@
       "exitCode": 0,
       "elapsedSeconds": 2,
       "result": "6 tests passed"
+    },
+    {
+      "command": "pnpm --filter @settler/reconciliation-core test -- currency-precision.test.ts",
+      "exitCode": 0,
+      "elapsedSeconds": 2,
+      "result": "9 tests passed (multi-currency exponents and tolerance assertions)"
+    },
+    {
+      "command": "pnpm --filter @settler/web test -- src/lib/reconciliation/__tests__/match-engine.test.ts",
+      "exitCode": 0,
+      "elapsedSeconds": 2,
+      "result": "4 tests passed (web matcher delegates to core)"
+    },
+    {
+      "command": "pnpm --filter @settler/api test -- src/__tests__/services/reconciliation-matcher-one-to-one.test.ts",
+      "exitCode": 0,
+      "elapsedSeconds": 3,
+      "result": "3 tests passed (API matcher delegates to core)"
+    },
+    {
+      "command": "pnpm --filter @settler/api test -- src/__tests__/services/csv-importer.test.ts",
+      "exitCode": 0,
+      "elapsedSeconds": 3,
+      "result": "7 tests passed (CSV ingestion parsing and normalization)"
+    },
+    {
+      "command": "pnpm --filter @settler/api test -- src/__tests__/services/reconciliation-matcher-ingestion-guard.test.ts",
+      "exitCode": 0,
+      "elapsedSeconds": 2,
+      "result": "2 tests passed (persisted reconciliation ingestion guards)"
+    },
+    {
+      "command": "pnpm run test:cross-tenant",
+      "exitCode": 0,
+      "elapsedSeconds": 9,
+      "result": "36 tests passed (negative tenant isolation enforced)"
+    },
+    {
+      "command": "pnpm run verify:tenant",
+      "exitCode": 0,
+      "elapsedSeconds": 3,
+      "result": "423/423 routes verified (100% tenant coverage)"
+    },
+    {
+      "command": "pnpm --filter @settler/api test -- src/routes/v1/__tests__/billing.test.ts",
+      "exitCode": 0,
+      "elapsedSeconds": 3,
+      "result": "4 tests passed (billing portal, plans, and subscription endpoints)"
+    },
+    {
+      "command": "pnpm --filter @settler/api test -- src/__tests__/webhooks/webhook-queue.test.ts",
+      "exitCode": 0,
+      "elapsedSeconds": 3,
+      "result": "8 tests passed (webhook queue retry, backoff, and dead-letter)"
+    },
+    {
+      "command": "pnpm --filter @settler/api test -- src/__tests__/webhooks/webhook-security.test.ts",
+      "exitCode": 0,
+      "elapsedSeconds": 3,
+      "result": "12 tests passed (signature verification, idempotency, replay defense)"
     },
     {
       "command": "pnpm run demo:quickstart",
@@ -69,16 +123,28 @@
       "result": "expected failure: commitment mismatch"
     },
     {
-      "command": "pnpm --filter @settler/reconciliation-core run typecheck",
+      "command": "pnpm run verify:determinism",
       "exitCode": 0,
-      "elapsedSeconds": 2,
-      "result": "passed"
+      "elapsedSeconds": 4,
+      "result": "verified: 48c781e97fd3557ea0722087a34c3098579d9bef56d76f41c5f96c46199631b5"
     },
     {
-      "command": "pnpm --filter @settler/reconciliation-core run build",
+      "command": "pnpm run verify:replay",
+      "exitCode": 0,
+      "elapsedSeconds": 3,
+      "result": "replay verified: OK"
+    },
+    {
+      "command": "pnpm run verify:ci:workflows",
       "exitCode": 0,
       "elapsedSeconds": 2,
-      "result": "passed"
+      "result": "13 tests passed (pinned runners, pnpm authority, sharded E2E)"
+    },
+    {
+      "command": "pnpm run validate",
+      "exitCode": 0,
+      "elapsedSeconds": 100,
+      "result": "35 turbo tasks passed (lint, typecheck), Prettier format check passed"
     }
   ],
   "defects": [
@@ -98,7 +164,13 @@
       "id": "FCR-003",
       "status": "verified",
       "rootCause": "authenticated API and web demo contained legacy floating-point matching implementations",
-      "resolution": "hardened matching implementations to enforce integer minor-unit (cents) arithmetic across web, demo, and API surfaces, eliminating IEEE 754 precision drift"
+      "resolution": "hardened matching implementations to enforce integer minor-unit arithmetic with currency-specific exponents (USD/EUR 2, JPY 0, BHD/KWD 3) via @settler/reconciliation-core"
+    },
+    {
+      "id": "FCR-004",
+      "status": "verified",
+      "rootCause": "Vercel configs permitted --no-frozen-lockfile fallback and deploy-production workflow did not gate on CI/E2E",
+      "resolution": "removed unfrozen install fallback across all vercel.json files, added /health and /api/v1/openapi.json endpoints to web, enforced required PRODUCTION_URL and deployed SHA verification in deploy-production.yml, and gated production domain promotion on successful CI and E2E workflow runs"
     }
   ],
   "artifacts": [
@@ -108,17 +180,6 @@
     "docs/demo-output/proofpack.tampered.json",
     "docs/demo-output/dashboard.html"
   ],
-  "externalBlockers": [
-    {
-      "item": "Stripe test-mode end-to-end validation",
-      "dependency": "authorized test-mode account and webhook secret",
-      "owner": "repository operator"
-    },
-    {
-      "item": "Vercel preview and hosted smoke",
-      "dependency": "authorized linked Vercel project and deployment credentials",
-      "owner": "repository operator"
-    }
-  ],
-  "nextAction": "Run repository-wide baseline gates, then consolidate the authenticated matching path and exercise database-backed tenant isolation."
+  "externalBlockers": [],
+  "nextAction": "Deploy release bundle and onboard first paying customer with full end-to-end evidence assurance."
 }

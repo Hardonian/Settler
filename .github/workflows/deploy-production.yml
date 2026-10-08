@@ -1,6 +1,8 @@
 name: Deploy to Production
 permissions:
   contents: read
+  actions: read
+  deployments: write
 
 on:
   push:
@@ -143,16 +145,103 @@ jobs:
             packages/sdk/dist
           retention-days: 7
 
-  deploy:
-    name: Deploy to Production
+  gate-ci-and-e2e:
+    name: Require CI and E2E Checks
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Verify CI and E2E Workflows Concluded Successfully
+        uses: actions/github-script@v9
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const requiredWorkflows = ['CI', 'E2E & Visual Regression Tests'];
+            const targetSha = context.sha;
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+
+            core.info(`Verifying required workflow checks for commit: ${targetSha}`);
+            const startTime = Date.now();
+            const timeoutMs = 30 * 60 * 1000; // 30 minutes
+            const pollIntervalMs = 15 * 1000; // 15 seconds
+
+            while (Date.now() - startTime < timeoutMs) {
+              const { data: runsData } = await github.rest.actions.listWorkflowRunsForRepo({
+                owner,
+                repo,
+                head_sha: targetSha,
+              });
+
+              const runs = runsData.workflow_runs || [];
+              const targetRuns = runs.filter(r => requiredWorkflows.includes(r.name));
+
+              if (targetRuns.length === 0) {
+                const { data: checkData } = await github.rest.checks.listForRef({
+                  owner,
+                  repo,
+                  ref: targetSha,
+                });
+                const checks = checkData.check_runs || [];
+                const failedChecks = checks.filter(c => c.conclusion === 'failure');
+                if (failedChecks.length > 0) {
+                  core.setFailed(`Detected failing check runs on ${targetSha}: ${failedChecks.map(c => c.name).join(', ')}`);
+                  return;
+                }
+                core.info(`Waiting for required workflows (${requiredWorkflows.join(', ')}) to appear...`);
+                await new Promise(r => setTimeout(r, pollIntervalMs));
+                continue;
+              }
+
+              const statusMap = {};
+              for (const name of requiredWorkflows) {
+                const matching = targetRuns.filter(r => r.name === name);
+                if (matching.length === 0) {
+                  statusMap[name] = { status: 'pending', conclusion: null };
+                } else {
+                  const latest = matching.sort((a, b) => b.run_number - a.run_number)[0];
+                  statusMap[name] = { status: latest.status, conclusion: latest.conclusion, id: latest.id };
+                }
+              }
+
+              let allCompleted = true;
+              let hasFailure = false;
+
+              for (const [name, info] of Object.entries(statusMap)) {
+                core.info(`Workflow '${name}': status=${info.status}, conclusion=${info.conclusion}`);
+                if (info.status !== 'completed') {
+                  allCompleted = false;
+                } else if (info.conclusion !== 'success') {
+                  hasFailure = true;
+                }
+              }
+
+              if (hasFailure) {
+                core.setFailed(`Gate failure: One or more required workflows failed for SHA ${targetSha}: ${JSON.stringify(statusMap, null, 2)}`);
+                return;
+              }
+
+              if (allCompleted && Object.keys(statusMap).length === requiredWorkflows.length) {
+                core.info(`✅ All required workflows passed successfully: ${JSON.stringify(statusMap, null, 2)}`);
+                return;
+              }
+
+              core.info(`Waiting for workflows to complete... (${Math.round((Date.now() - startTime) / 1000)}s elapsed)`);
+              await new Promise(r => setTimeout(r, pollIntervalMs));
+            }
+
+            core.setFailed(`Timed out waiting for CI and E2E to complete after 30 minutes`);
+
+  deploy-staging:
+    name: Deploy Staged Artifacts
     runs-on: ubuntu-24.04
     needs: [build]
-    environment: production
+    outputs:
+      deployment-url: ${{ steps.deploy.outputs.preview-url }}
     steps:
       - uses: actions/checkout@v7
       - name: Setup pnpm
         uses: pnpm/action-setup@v6
-      - uses: actions/setup-node@v7
+      - name: Setup Node
+        uses: actions/setup-node@v7
         with:
           node-version-file: ".nvmrc"
 
@@ -161,71 +250,140 @@ jobs:
         with:
           name: build-artifacts
           path: .
-      - name: Deploy to Vercel
-        if: env.VERCEL_TOKEN != ''
-        env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-        run: |
-          echo "🚀 Deploying to Vercel..."
-          # Vercel deployment happens automatically on push to main
-          # This step verifies deployment readiness
-          echo "✅ Deployment initiated"
-      - name: Wait for deployment
-        run: |
-          echo "⏳ Waiting for deployment to complete..."
-          sleep 15
+      - name: Deploy to Vercel Preview
+        id: deploy
+        if: ${{ secrets.VERCEL_TOKEN != '' }}
+        uses: amondnet/vercel-action@v42
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          vercel-args: "--yes"
 
   verify:
-    name: Verify Deployment
+    name: Verify Deployment Smoke Checks
     runs-on: ubuntu-24.04
-    needs: [deploy]
+    needs: [deploy-staging]
     env:
-      PRODUCTION_URL: ${{ secrets.PRODUCTION_URL }}
+      DEPLOY_URL: ${{ needs.deploy-staging.outputs.deployment-url || secrets.PRODUCTION_URL }}
+      TARGET_SHA: ${{ github.sha }}
     steps:
-      - name: Health check
+      - name: Enforce Deployment Target URL
         run: |
-          echo "🔍 Running health checks..."
-          if [ -z "${PRODUCTION_URL}" ]; then
-            echo "⚠️ PRODUCTION_URL secret not set, skipping remote health checks"
-            exit 0
+          if [ -z "${DEPLOY_URL}" ]; then
+            echo "❌ Error: Neither preview URL nor PRODUCTION_URL secret is available."
+            echo "Deployment smoke checks cannot be skipped in production release workflow."
+            exit 1
           fi
-          for i in {1..10}; do
-            if curl -f ${PRODUCTION_URL}/health && curl -f ${PRODUCTION_URL}/health/detailed; then
-              echo "✅ Health check passed (attempt $i)"
-              exit 0
+          echo "Target deployment URL: ${DEPLOY_URL}"
+
+      - name: Probe Health Endpoints
+        run: |
+          set -euo pipefail
+          echo "🔍 Probing /health and /health/detailed..."
+
+          HEALTH_OK=false
+          for i in {1..12}; do
+            echo "Attempt $i/12..."
+            if curl -sfS --max-time 10 "${DEPLOY_URL}/health" > /tmp/health.json 2>/dev/null && \
+               curl -sfS --max-time 10 "${DEPLOY_URL}/health/detailed" > /tmp/health_detailed.json 2>/dev/null; then
+              HEALTH_OK=true
+              break
             fi
-            echo "⏳ Retry $i/10..."
-            sleep 3
+            sleep 5
           done
-          echo "❌ Health check failed after 10 retries"
-          exit 1
-      - name: Verify API endpoints
-        run: |
-          echo "🔍 Verifying API endpoints..."
-          if [ -z "${PRODUCTION_URL}" ]; then
-            echo "⚠️ PRODUCTION_URL secret not set, skipping API endpoint checks"
-            exit 0
+
+          if [ "$HEALTH_OK" != "true" ]; then
+            echo "❌ Health check endpoints (/health and /health/detailed) failed after retries"
+            exit 1
           fi
-          curl -f ${PRODUCTION_URL}/api/v1/openapi.json && echo "✅ OpenAPI endpoint OK" || echo "❌ OpenAPI endpoint failed"
-          curl -f ${PRODUCTION_URL}/api/v1/health && echo "✅ API health endpoint OK" || echo "❌ API health endpoint failed"
+
+          echo "Response from /health:"
+          cat /tmp/health.json
+          echo ""
+          jq -e '.status == "ok" or .status == "healthy"' /tmp/health.json > /dev/null || (echo "❌ /health status mismatch" && exit 1)
+          echo "✅ /health endpoint OK"
+
+          echo "Response from /health/detailed:"
+          cat /tmp/health_detailed.json
+          echo ""
+          jq -e '.status == "healthy" or .status == "ok"' /tmp/health_detailed.json > /dev/null || (echo "❌ /health/detailed status mismatch" && exit 1)
+          echo "✅ /health/detailed endpoint OK"
+
+      - name: Verify API Endpoints
+        run: |
+          set -euo pipefail
+          echo "🔍 Verifying API endpoints..."
+
+          curl -sfS --max-time 10 "${DEPLOY_URL}/api/v1/health" > /tmp/api_health.json
+          echo "Response from /api/v1/health:"
+          cat /tmp/api_health.json
+          echo ""
+          jq -e '.status == "ok" or .status == "healthy"' /tmp/api_health.json > /dev/null || (echo "❌ /api/v1/health status mismatch" && exit 1)
+          echo "✅ /api/v1/health endpoint OK"
+
+          curl -sfS --max-time 10 "${DEPLOY_URL}/api/v1/openapi.json" > /tmp/openapi.json
+          jq -e '.openapi != null' /tmp/openapi.json > /dev/null || (echo "❌ /api/v1/openapi.json invalid" && exit 1)
+          echo "✅ /api/v1/openapi.json endpoint OK"
+
+      - name: Verify Deployed Commit SHA
+        run: |
+          set -euo pipefail
+          echo "🔍 Verifying deployed commit SHA..."
+          META_RESP=$(curl -sfS --max-time 10 "${DEPLOY_URL}/api/v1/meta" 2>/dev/null || curl -sfS --max-time 10 "${DEPLOY_URL}/health/detailed" 2>/dev/null)
+          echo "Meta payload: $META_RESP"
+          DEPLOYED_SHA=$(echo "$META_RESP" | jq -r '.build // .version // empty')
+          echo "Deployed SHA: '$DEPLOYED_SHA', Expected SHA: '$TARGET_SHA'"
+
+          if [ -z "$DEPLOYED_SHA" ] || [ "$DEPLOYED_SHA" = "local" ]; then
+            echo "⚠️ Warning: Server reported local/unset build SHA ($DEPLOYED_SHA)"
+          else
+            if [[ "${TARGET_SHA}" == "${DEPLOYED_SHA}"* ]] || [[ "${DEPLOYED_SHA}" == "${TARGET_SHA}"* ]]; then
+              echo "✅ Deployed SHA matches target commit ($DEPLOYED_SHA)"
+            else
+              echo "❌ Deployed SHA ($DEPLOYED_SHA) does not match expected SHA ($TARGET_SHA)"
+              exit 1
+            fi
+          fi
+
+  assign-production-domain:
+    name: Assign Production Domain
+    runs-on: ubuntu-24.04
+    needs: [verify, gate-ci-and-e2e]
+    environment: production
+    steps:
+      - uses: actions/checkout@v7
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+      - name: Setup Node
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: ".nvmrc"
+
+      - name: Promote Deployment to Production
+        if: ${{ secrets.VERCEL_TOKEN != '' }}
+        uses: amondnet/vercel-action@v42
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          vercel-args: "--prod --yes"
+
       - name: Create deployment summary
         run: |
           echo "## 🚀 Production Deployment Complete" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "**Commit:** \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
           echo "**Branch:** \`${{ github.ref }}\`" >> $GITHUB_STEP_SUMMARY
-          echo "**Status:** ✅ All checks passed" >> $GITHUB_STEP_SUMMARY
+          echo "**Status:** ✅ CI, E2E, Smoke Checks, and Production Domain Assignment verified" >> $GITHUB_STEP_SUMMARY
 
   notify:
     name: Notify on Failure
     runs-on: ubuntu-24.04
-    needs: [verify]
+    needs: [assign-production-domain]
     if: failure()
     steps:
       - name: Create failure alert
         run: |
-          echo "🚨 Production deployment failed"
-          # Alert will be handled by automated-alerting system
+          echo "🚨 Production deployment or domain assignment failed"
           echo "DEPLOYMENT_FAILURE=true" >> $GITHUB_ENV

@@ -4,7 +4,7 @@ export const SETTLEMENT_ENGINE_VERSION = "settlement-reconciliation/1.0.0";
 export const NORMALIZATION_VERSION = "financial-record/1.0.0";
 export const PROOFPACK_SCHEMA_VERSION = "settler.demo-proofpack/1.0.0";
 
-const CURRENCY_EXPONENTS: Readonly<Record<string, number>> = Object.freeze({
+export const CURRENCY_EXPONENTS: Readonly<Record<string, number>> = Object.freeze({
   BHD: 3,
   CAD: 2,
   CHF: 2,
@@ -116,6 +116,36 @@ export function parseDecimalToMinorUnits(amount: string, currency: string): bigi
   const fractional = BigInt((fraction + "0".repeat(exponent)).slice(0, exponent) || "0");
   const value = whole * scale + fractional;
   return match[1] === "-" ? -value : value;
+}
+
+export function getCurrencyExponent(currency: string = "USD"): number {
+  const normalized = currency.trim().toUpperCase();
+  return CURRENCY_EXPONENTS[normalized] ?? 2;
+}
+
+export function toMinorUnits(amount: number | string, currency: string = "USD"): bigint {
+  const norm = currency.trim().toUpperCase();
+  if (typeof amount === "string") {
+    return parseDecimalToMinorUnits(amount, norm);
+  }
+  const exp = getCurrencyExponent(norm);
+  const factor = 10 ** exp;
+  const rounded = Math.round(amount * factor);
+  return BigInt(rounded);
+}
+
+export function amountsMatchWithinTolerance(
+  amount1: number | string,
+  amount2: number | string,
+  tolerance: number | string = 0,
+  currency: string = "USD"
+): boolean {
+  const m1 = toMinorUnits(amount1, currency);
+  const m2 = toMinorUnits(amount2, currency);
+  const tol = toMinorUnits(tolerance, currency);
+  const diff = m1 >= m2 ? m1 - m2 : m2 - m1;
+  const absTol = tol >= 0n ? tol : -tol;
+  return diff <= absTol;
 }
 
 function parseIsoDate(value: string): number {
