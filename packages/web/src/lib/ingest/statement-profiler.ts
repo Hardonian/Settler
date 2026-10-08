@@ -372,7 +372,6 @@ function profileDelimited(
 }
 
 function profileMt940(rawText: string, sha256: string, maxPreview: number): StatementProfile {
-  const lines = rawText.split(/\r?\n/);
   const previewRows: NormalizedPreviewRow[] = [];
   let creditCount = 0;
   let debitCount = 0;

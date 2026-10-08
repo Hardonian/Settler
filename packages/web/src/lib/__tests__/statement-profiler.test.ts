@@ -11,6 +11,10 @@ describe("Statement Profiler & Pre-Validator", () => {
 2026-09-02,300.00,USD,Stripe Payout,PAY-002
 2026-09-03,-15.50,USD,Processing Fee,FEE-001`;
 
+    expect(sniffDelimiter(["a,b,c", "1,2,3"])).toBe(",");
+    expect(sniffDelimiter(["a;b;c", "1;2;3"])).toBe(";");
+    expect(sniffDelimiter(["a\tb\tc", "1\t2\t3"])).toBe("\t");
+
     const profile = await profileStatement(csvContent);
     expect(profile.format).toBe("csv");
     expect(profile.delimiter).toBe(",");
