@@ -234,6 +234,8 @@ jobs:
     name: Deploy Staged Artifacts
     runs-on: ubuntu-24.04
     needs: [build]
+    env:
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
     outputs:
       deployment-url: ${{ steps.deploy.outputs.preview-url }}
     steps:
@@ -252,7 +254,7 @@ jobs:
           path: .
       - name: Deploy to Vercel Preview
         id: deploy
-        if: ${{ secrets.VERCEL_TOKEN != '' }}
+        if: env.VERCEL_TOKEN != ''
         uses: amondnet/vercel-action@v42
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
@@ -264,6 +266,7 @@ jobs:
     name: Verify Deployment Smoke Checks
     runs-on: ubuntu-24.04
     needs: [deploy-staging]
+    environment: production
     env:
       DEPLOY_URL: ${{ needs.deploy-staging.outputs.deployment-url || secrets.PRODUCTION_URL }}
       TARGET_SHA: ${{ github.sha }}
@@ -351,6 +354,8 @@ jobs:
     runs-on: ubuntu-24.04
     needs: [verify, gate-ci-and-e2e]
     environment: production
+    env:
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
     steps:
       - uses: actions/checkout@v7
       - name: Setup pnpm
@@ -361,7 +366,7 @@ jobs:
           node-version-file: ".nvmrc"
 
       - name: Promote Deployment to Production
-        if: ${{ secrets.VERCEL_TOKEN != '' }}
+        if: env.VERCEL_TOKEN != ''
         uses: amondnet/vercel-action@v42
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
