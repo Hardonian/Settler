@@ -30,7 +30,10 @@ pub fn run_cli(cli: Cli) -> Result<bool, Box<dyn std::error::Error>> {
             return Ok(false);
         }
 
-        println!("SMT verification succeeded (computed root: {})", result.computed_root);
+        println!(
+            "SMT verification succeeded (computed root: {})",
+            result.computed_root
+        );
         return Ok(true);
     }
 
@@ -131,7 +134,11 @@ mod tests {
     fn test_cli_manifest_verification_tamper_detected() {
         let temp_dir = tempfile::tempdir().unwrap();
         let file_path = temp_dir.path().join("data.json");
-        fs::write(&file_path, b"{\"transaction_id\":\"tx_01\",\"amount\":9999999}").unwrap();
+        fs::write(
+            &file_path,
+            b"{\"transaction_id\":\"tx_01\",\"amount\":9999999}",
+        )
+        .unwrap();
 
         let manifest = EvidenceManifest {
             input_hashes: BTreeMap::new(),
@@ -139,7 +146,8 @@ mod tests {
             output_hashes: BTreeMap::new(),
             files: vec![ManifestFile {
                 path: "data.json".to_string(),
-                sha256: "0000000000000000000000000000000000000000000000000000000000000000".to_string(),
+                sha256: "0000000000000000000000000000000000000000000000000000000000000000"
+                    .to_string(),
                 role: "input".to_string(),
             }],
             kernel_version: "1.6.0".to_string(),
