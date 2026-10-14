@@ -22,14 +22,14 @@
     "test": "jest --runInBand --forceExit"
   },
   "dependencies": {
-    "@ai-sdk/openai": "^4.0.78",
+    "@ai-sdk/openai": "^4.0.91",
     "@settler/types": "workspace:*",
-    "ai": "^7.0.127",
-    "zod": "^4.6.5"
+    "ai": "^7.0.137",
+    "zod": "^4.6.6"
   },
   "devDependencies": {
     "@types/jest": "^30.0.0",
-    "@types/node": "^26.6.4",
+    "@types/node": "^26.6.5",
     "@vitest/coverage-v8": "^5.0.2",
     "jest": "^30.5.2",
     "ts-jest": "^29.4.14",

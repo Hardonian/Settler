@@ -19,13 +19,13 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@ai-sdk/openai": "^4.0.78",
-    "ai": "^7.0.127",
-    "zod": "^4.6.5"
+    "@ai-sdk/openai": "^4.0.91",
+    "ai": "^7.0.137",
+    "zod": "^4.6.6"
   },
   "devDependencies": {
     "@jobforge/typescript-config": "workspace:*",
-    "@types/node": "^26.6.4",
+    "@types/node": "^26.6.5",
     "@vitest/coverage-v8": "^5.0.2",
     "eslint": "^9.39.4",
     "typescript": "^6.0.3",
