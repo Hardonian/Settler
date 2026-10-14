@@ -11,10 +11,10 @@
     "test": "node --test dist/__tests__/legacy-agents.test.js dist/__tests__/security-agent.test.js"
   },
   "dependencies": {
-    "@ai-sdk/openai": "^4.0.78",
+    "@ai-sdk/openai": "^4.0.91",
     "@settler/logger": "workspace:*",
-    "ai": "^7.0.127",
-    "zod": "^4.6.5"
+    "ai": "^7.0.137",
+    "zod": "^4.6.6"
   },
   "devDependencies": {
     "@vitest/coverage-v8": "^5.0.2",

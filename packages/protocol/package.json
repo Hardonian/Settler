@@ -24,9 +24,9 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@ai-sdk/openai": "^4.0.78",
-    "@types/node": "^26.6.4",
-    "ai": "^7.0.127",
+    "@ai-sdk/openai": "^4.0.91",
+    "@types/node": "^26.6.5",
+    "ai": "^7.0.137",
     "typescript": "^6.0.3"
   },
   "keywords": [
