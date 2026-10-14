@@ -29,7 +29,7 @@
     "@types/node": "^26.6.5",
     "ai": "^7.0.137",
     "typescript": "^6.0.3",
-    "uuid": "^14.0.2"
+    "uuid": "^14.0.3"
   },
   "devDependencies": {
     "@types/jest": "^30.0.0",

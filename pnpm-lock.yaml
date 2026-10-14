@@ -432,7 +432,7 @@ importers:
         version: 0.17.9
       uuid:
         specifier: ^13.0.1
-        version: 13.0.2
+        version: 14.0.3
       winston:
         specifier: ^3.19.0
         version: 3.19.0
@@ -619,7 +619,7 @@ importers:
         version: 6.0.3
       uuid:
         specifier: ^13.0.1
-        version: 13.0.2
+        version: 14.0.3
     devDependencies:
       '@types/jest':
         specifier: ^30.0.0
@@ -692,7 +692,7 @@ importers:
         version: 4.6.0
       uuid:
         specifier: ^13.0.1
-        version: 13.0.2
+        version: 14.0.3
       winston:
         specifier: ^3.19.0
         version: 3.19.0
@@ -1405,7 +1405,7 @@ importers:
         version: 3.4.19(tsx@4.23.15)(yaml@2.9.1)
       uuid:
         specifier: ^13.0.1
-        version: 13.0.2
+        version: 14.0.3
       xstate:
         specifier: ^5.33.2
         version: 5.33.2
@@ -9375,8 +9375,8 @@ packages:
     resolution: {integrity: sha512-pMZTvIkT1d+TFGvDOqodOclx0QWkkgi6Tdoa8gC8ffGAAqz9pzPTZWAybbsHHoED/ztMtkv/VoYTYyShUn81hA==}
     engines: {node: '>= 0.4.0'}
 
-  uuid@13.0.2:
-    resolution: {integrity: sha512-vzi9uRZ926x4XV73S/4qQaTwPXM2JBj6/6lI/byHH1jOpCzb0zDbfytgA9LcN/hzb2l7WQSQnxITOVx5un/wGw==}
+  uuid@14.0.3:
+    resolution: {integrity: sha512-Sc5u1VVln93y1Xnz4R+CunOZc7R9LUcTmhj7Rc7Eg3HVcf7rVn2FOoa812fe0W8p3jD7xeoGSYbfqCGGH2B6xw==}
     hasBin: true
 
   v8-to-istanbul@9.3.0:
@@ -18736,7 +18736,7 @@ snapshots:
 
   utils-merge@1.0.1: {}
 
-  uuid@13.0.2: {}
+  uuid@14.0.3: {}
 
   v8-to-istanbul@9.3.0:
     dependencies:
