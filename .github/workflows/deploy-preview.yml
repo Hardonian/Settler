@@ -22,6 +22,7 @@ jobs:
     name: Deploy Preview
     runs-on: ubuntu-24.04
     timeout-minutes: 10
+    if: github.actor != 'github-actions[bot]' && github.actor != 'dependabot[bot]'
     steps:
       - uses: actions/checkout@v7
       - name: Setup pnpm
