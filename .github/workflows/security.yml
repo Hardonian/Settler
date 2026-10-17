@@ -3,10 +3,19 @@ name: Security Invariants & Audit
 on:
   push:
     branches: [main, develop]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - '.vscode/**'
   pull_request:
     branches: [main, develop]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - '.vscode/**'
   schedule:
-    - cron: "0 6 * * 1" # Weekly audit on Monday at 06:00 UTC
+    - cron: "0 6 * * 1"  # weekly Mon 06:00 UTC
+  workflow_dispatch:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}

@@ -34,10 +34,15 @@ env:
   SECURITY_HEADER_PROBE_STRICT: "1"
   SECURITY_HEADER_PROBE_ALLOW_DEGRADED: "1"
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   generate-bundle:
     name: Generate Release Evidence Bundle
     runs-on: ubuntu-24.04
+    timeout-minutes: 10
 
     # Required permissions for artifact attestation (Sigstore OIDC signing)
     permissions:

@@ -22,6 +22,10 @@ on:
 env:
   TIGERBEETLE_VERSION: "0.17.9"
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   tigerbeetle-cluster:
     name: TigerBeetle 3-Node Cluster

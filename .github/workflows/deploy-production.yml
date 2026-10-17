@@ -29,10 +29,15 @@ on:
 env:
   NODE_ENV: production
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   validate:
     name: Validate Before Deployment
     runs-on: ubuntu-24.04
+    timeout-minutes: 10
     env:
       TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
       TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
@@ -60,6 +65,7 @@ jobs:
   test:
     name: Run Tests
     runs-on: ubuntu-24.04
+    timeout-minutes: 10
     needs: [validate]
     if: github.event.inputs.skip_tests != 'true'
     services:
@@ -120,6 +126,7 @@ jobs:
   build:
     name: Build Application
     runs-on: ubuntu-24.04
+    timeout-minutes: 10
     needs: [test]
     steps:
       - uses: actions/checkout@v7
@@ -149,6 +156,7 @@ jobs:
   gate-ci-and-e2e:
     name: Require CI and E2E Checks
     runs-on: ubuntu-24.04
+    timeout-minutes: 10
     steps:
       - name: Verify CI and E2E Workflows Concluded Successfully
         uses: actions/github-script@v9
@@ -234,6 +242,7 @@ jobs:
   deploy-staging:
     name: Deploy Staged Artifacts
     runs-on: ubuntu-24.04
+    timeout-minutes: 10
     needs: [build]
     env:
       VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
@@ -266,6 +275,7 @@ jobs:
   verify:
     name: Verify Deployment Smoke Checks
     runs-on: ubuntu-24.04
+    timeout-minutes: 10
     needs: [deploy-staging]
     environment: production
     env:
@@ -356,6 +366,7 @@ jobs:
   assign-production-domain:
     name: Assign Production Domain
     runs-on: ubuntu-24.04
+    timeout-minutes: 10
     needs: [verify, gate-ci-and-e2e]
     environment: production
     env:
@@ -389,6 +400,7 @@ jobs:
   notify:
     name: Notify on Failure
     runs-on: ubuntu-24.04
+    timeout-minutes: 10
     needs: [assign-production-domain]
     if: failure()
     steps:

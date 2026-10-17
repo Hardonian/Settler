@@ -1,10 +1,18 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
+  "git": {
+    "deploymentEnabled": {
+      "main": true
+    }
+  },
+  "ignoreCommand": "if [ \"$VERCEL_GIT_COMMIT_AUTHOR_LOGIN\" = \"github-actions[bot]\" ] || [ \"$VERCEL_GIT_COMMIT_AUTHOR_LOGIN\" = \"dependabot[bot]\" ]; then exit 0; else exit 1; fi",
   "buildCommand": "export PATH=\"$(npm prefix -g)/bin:$PATH\" && pnpm --filter @settler/web... build",
   "devCommand": "pnpm --filter @settler/web dev",
   "installCommand": "export PATH=\"$(npm prefix -g)/bin:$PATH\" && npm install --global pnpm@10.13.1 && (ln -sf \"$(npm prefix -g)/bin/pnpm\" /pnpm6/node_modules/.bin/pnpm 2>/dev/null || true) && pnpm install --frozen-lockfile",
   "framework": "nextjs",
-  "regions": ["iad1"],
+  "regions": [
+    "iad1"
+  ],
   "headers": [
     {
       "source": "/(.*)",

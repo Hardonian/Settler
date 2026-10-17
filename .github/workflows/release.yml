@@ -21,10 +21,15 @@ env:
   TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
   TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   validate-version:
     name: Validate Semver
     runs-on: ubuntu-24.04
+    timeout-minutes: 10
     if: github.event_name == 'workflow_dispatch'
     steps:
       - uses: actions/checkout@v7
@@ -50,6 +55,7 @@ jobs:
   release:
     name: Create Release
     runs-on: ubuntu-24.04
+    timeout-minutes: 10
     needs: validate-version
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
     steps:
@@ -150,6 +156,7 @@ jobs:
   version-bump:
     name: Bump Version
     runs-on: ubuntu-24.04
+    timeout-minutes: 10
     needs: validate-version
     if: github.event_name == 'workflow_dispatch'
     steps:

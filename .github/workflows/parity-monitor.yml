@@ -2,7 +2,7 @@ name: Parity & Drift Monitor
 
 on:
   schedule:
-    - cron: "17 6 * * *"
+    - cron: "0 6 * * 1"  # weekly Mon 06:00 UTC
   workflow_dispatch:
 
 concurrency:
