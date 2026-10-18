@@ -1440,6 +1440,8 @@ model ReconciliationRun {
   @@index([userId])
   @@index([status])
   @@index([startedAt(sort: Desc)])
+  @@index([tenantId, createdAt(sort: Desc)])
+  @@index([tenantId, status])
   @@map("reconciliation_runs")
 }
 
@@ -1483,6 +1485,8 @@ model ReconciliationMatch {
   @@index([reviewed])
   @@index([tenantId, status, assignedTo])
   @@index([tenantId, status, severity])
+  @@index([tenantId, createdAt(sort: Desc)])
+  @@index([tenantId, status])
   @@map("reconciliation_matches")
 }
 
@@ -1620,6 +1624,7 @@ model ExceptionAdjudicationMemory {
   
   // Provenance chain
   entryHash         String     @map("entry_hash") // Hash for audit chain integrity
+  status           String?   @default("resolved")
   metadata          Json      @default("{}")
   createdAt        DateTime  @default(now()) @map("created_at")
   updatedAt        DateTime  @updatedAt @map("updated_at")
@@ -1637,6 +1642,8 @@ model ExceptionAdjudicationMemory {
   @@index([outcome])
   @@index([createdAt(sort: Desc)])
   @@index([tenantId, resolution, createdAt(sort: Desc)])
+  @@index([tenantId, createdAt(sort: Desc)])
+  @@index([tenantId, status])
   @@map("exception_adjudication_memory")
 }
 
@@ -1933,6 +1940,8 @@ model ProofPackage {
   @@index([packageType])
   @@index([status])
   @@index([createdAt(sort: Desc)])
+  @@index([tenantId, createdAt(sort: Desc)])
+  @@index([tenantId, status])
   @@map("proof_packages")
 }
 

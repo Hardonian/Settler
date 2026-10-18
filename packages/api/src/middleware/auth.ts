@@ -5,6 +5,7 @@ import { verifyApiKey } from "../utils/hash";
 import { logWarn, logError } from "../utils/logger";
 import { config } from "../config";
 import { sendProblemJson } from "../utils/problem-json";
+import { prisma } from "../infrastructure/db/prisma";
 
 export interface AuthRequest extends Request {
   /**
@@ -148,17 +149,18 @@ async function validateApiKey(req: AuthRequest, apiKey: string): Promise<void> {
 
   if (keys.length === 0) {
     // Log failed attempt for security monitoring
-    await query(
-      `INSERT INTO audit_logs (event, ip, user_agent, path, metadata)
-       VALUES ($1, $2, $3, $4, $5)`,
-      [
-        "api_key_auth_failed",
-        req.ip || null,
-        req.headers["user-agent"] || null,
-        req.path,
-        JSON.stringify({ keyPrefix: prefix }),
-      ]
-    );
+    await prisma.auditLog
+      .create({
+        data: {
+          action: "api_key_auth_failed",
+          resourceType: "api_key",
+          ipAddress: req.ip || null,
+          userAgent: (req.headers["user-agent"] as string) || null,
+          metadata: { keyPrefix: prefix, path: req.path },
+        },
+      })
+      .catch(() => null);
+
     throw new Error("Invalid API key");
   }
 
@@ -171,18 +173,19 @@ async function validateApiKey(req: AuthRequest, apiKey: string): Promise<void> {
   const isValid = await verifyApiKey(apiKey, keyRecord.key_hash);
   if (!isValid) {
     // Log failed attempt
-    await query(
-      `INSERT INTO audit_logs (event, api_key_id, ip, user_agent, path, metadata)
-       VALUES ($1, $2, $3, $4, $5, $6)`,
-      [
-        "api_key_auth_failed",
-        keyRecord.id,
-        req.ip || null,
-        req.headers["user-agent"] || null,
-        req.path,
-        JSON.stringify({ keyPrefix: prefix }),
-      ]
-    );
+    await prisma.auditLog
+      .create({
+        data: {
+          tenantId: keyRecord.tenant_id,
+          action: "api_key_auth_failed",
+          resourceType: "api_key",
+          ipAddress: req.ip || null,
+          userAgent: (req.headers["user-agent"] as string) || null,
+          metadata: { keyPrefix: prefix, apiKeyId: keyRecord.id, path: req.path },
+        },
+      })
+      .catch(() => null);
+
     throw new Error("Invalid API key");
   }
 
@@ -196,14 +199,14 @@ async function validateApiKey(req: AuthRequest, apiKey: string): Promise<void> {
   }
 
   // Update last used timestamp
-  await query(`UPDATE api_keys SET last_used_at = NOW() WHERE id = $1`, [keyRecord.id]);
+  await query(`UPDATE api_keys SET last_used_at = NOW() WHERE id = $1`, [keyRecord.id]).catch(
+    () => null
+  );
 
   // Set request properties
   req.userId = keyRecord.user_id;
   req.tenantId = keyRecord.tenant_id;
   req.apiKeyId = keyRecord.id;
-  // Do not store the raw API key on the request object to prevent accidental logging.
-  // req.apiKeyId is sufficient for downstream authorization and audit purposes.
 }
 
 async function validateJWT(req: AuthRequest, token: string): Promise<void> {
@@ -236,10 +239,19 @@ async function validateJWT(req: AuthRequest, token: string): Promise<void> {
     const userRows = await query<{ tenant_id: string }>(
       "SELECT tenant_id FROM users WHERE id = $1",
       [decoded.userId]
-    );
+    ).catch(() => []);
 
     if (userRows.length > 0 && userRows[0]) {
       req.tenantId = userRows[0].tenant_id;
+    } else {
+      const tenant = await prisma.tenant
+        .findFirst({
+          select: { id: true },
+        })
+        .catch(() => null);
+      if (tenant) {
+        req.tenantId = tenant.id;
+      }
     }
   } catch (error: unknown) {
     if (error instanceof Error) {

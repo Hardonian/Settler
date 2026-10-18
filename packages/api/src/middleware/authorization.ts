@@ -8,6 +8,9 @@ import { TenantRequest } from "./tenant";
 import { Permission, PermissionChecker } from "../infrastructure/security/Permissions";
 import { UserRole } from "../domain/entities/User";
 import { query } from "../db";
+import { UserRepository } from "../infrastructure/repositories/UserRepository";
+import { getOpenFgaAuthorizationService } from "../services/authz/openfga-authorization-service";
+import { prisma } from "../infrastructure/db/prisma";
 
 export interface AuthorizedRequest extends TenantRequest {
   permissions?: Permission[];
@@ -16,10 +19,55 @@ export interface AuthorizedRequest extends TenantRequest {
 // Export UserRole as Role for backward compatibility
 export { UserRole as Role };
 
+const userRepository = new UserRepository();
+
+async function resolveUserRoleAndScopes(
+  userId: string,
+  tenantId: string,
+  apiKeyId?: string
+): Promise<{ role: UserRole; scopes: string[] } | null> {
+  try {
+    const user = await userRepository.findById(userId, tenantId);
+    if (user) {
+      let scopes: string[] = [];
+      if (apiKeyId) {
+        const keyRows = await query<{ scopes: string[] }>(
+          `SELECT scopes FROM api_keys WHERE id = $1 AND user_id = $2`,
+          [apiKeyId, userId]
+        ).catch(() => []);
+        scopes = keyRows[0]?.scopes || [];
+      }
+      return { role: user.role, scopes };
+    }
+  } catch {
+    // fallback to SQL below
+  }
+
+  const user = await query<{ role: UserRole; scopes: string[] }>(
+    `SELECT u.role, COALESCE(ak.scopes, ARRAY[]::TEXT[]) as scopes
+     FROM users u
+     LEFT JOIN api_keys ak ON ak.user_id = u.id AND ak.id = $2
+     WHERE u.id = $1 AND u.tenant_id = $3`,
+    [userId, apiKeyId || null, tenantId]
+  ).catch(() => []);
+
+  if (user.length === 0 || !user[0]) {
+    return null;
+  }
+  return user[0];
+}
+
 /**
- * Require specific permission(s)
+ * Require specific permission(s) or OpenFGA relation on an objectType.
+ * Supported signatures:
+ * - requirePermission(relation: string, objectType: string)
+ * - requirePermission(...permissions: Permission[])
  */
-export function requirePermission(...permissions: Permission[]) {
+export function requirePermission(
+  relationOrPermission: Permission | string,
+  objectTypeOrPermission?: string | Permission,
+  ...restPermissions: Permission[]
+) {
   return async (req: AuthorizedRequest, res: Response, next: NextFunction): Promise<void> => {
     try {
       if (!req.userId || !req.tenantId) {
@@ -30,16 +78,8 @@ export function requirePermission(...permissions: Permission[]) {
         return;
       }
 
-      // Get user role and scopes
-      const user = await query<{ role: UserRole; scopes: string[] }>(
-        `SELECT u.role, COALESCE(ak.scopes, ARRAY[]::TEXT[]) as scopes
-         FROM users u
-         LEFT JOIN api_keys ak ON ak.user_id = u.id AND ak.id = $2
-         WHERE u.id = $1 AND u.tenant_id = $3`,
-        [req.userId, req.apiKeyId || null, req.tenantId]
-      );
-
-      if (user.length === 0 || !user[0]) {
+      const userRecord = await resolveUserRoleAndScopes(req.userId, req.tenantId, req.apiKeyId);
+      if (!userRecord) {
         res.status(403).json({
           error: "Forbidden",
           message: "User not found",
@@ -47,37 +87,97 @@ export function requirePermission(...permissions: Permission[]) {
         return;
       }
 
-      const userRecord = user[0];
       const { role, scopes } = userRecord;
 
-      // Check permissions
-      const hasPermission = PermissionChecker.hasAllPermissions(role, scopes, permissions);
+      const isRelationFga =
+        typeof relationOrPermission === "string" &&
+        !Object.values(Permission).includes(relationOrPermission as Permission) &&
+        (typeof objectTypeOrPermission === "string" || objectTypeOrPermission === undefined);
 
-      if (!hasPermission) {
-        // Log unauthorized access attempt
-        await query(
-          `INSERT INTO audit_logs (event, user_id, tenant_id, ip, user_agent, path, metadata)
-           VALUES ($1, $2, $3, $4, $5, $6, $7)`,
-          [
-            "unauthorized_access",
+      let allowed = false;
+
+      if (isRelationFga) {
+        const relation = relationOrPermission as string;
+        const objectType = (objectTypeOrPermission as string) || "tenant";
+        const fgaService = getOpenFgaAuthorizationService();
+
+        if (process.env.OPENFGA_ENABLED === "true" && process.env.OPENFGA_API_URL) {
+          const authResult = await fgaService.authorizeTenantAction(
             req.userId,
             req.tenantId,
-            req.ip || null,
-            req.headers["user-agent"] || null,
-            req.path,
-            JSON.stringify({ requiredPermissions: permissions }),
-          ]
-        );
+            `${objectType}.${relation}` as any
+          );
+          allowed = authResult.allowed;
+        } else {
+          // Deterministic local RBAC/ABAC policy evaluator fallback (offline / no-Argon mode)
+          if (role === UserRole.OWNER) {
+            allowed = true;
+          } else if (role === UserRole.ADMIN) {
+            allowed = relation !== "can_delete_tenant";
+          } else if (role === UserRole.DEVELOPER) {
+            allowed =
+              relation.startsWith("can_view") ||
+              relation.startsWith("can_read") ||
+              relation.startsWith("can_execute") ||
+              relation.startsWith("read");
+          } else if (role === UserRole.VIEWER) {
+            allowed =
+              relation.startsWith("can_view") ||
+              relation.startsWith("can_read") ||
+              relation.startsWith("read");
+          }
+        }
+      } else {
+        const requiredPermissions: Permission[] = [
+          relationOrPermission as Permission,
+          ...(objectTypeOrPermission &&
+          Object.values(Permission).includes(objectTypeOrPermission as Permission)
+            ? [objectTypeOrPermission as Permission]
+            : []),
+          ...restPermissions,
+        ];
+
+        allowed = PermissionChecker.hasAllPermissions(role, scopes, requiredPermissions);
+      }
+
+      if (!allowed) {
+        await prisma.auditLog
+          .create({
+            data: {
+              tenantId: req.tenantId,
+              userId: req.userId,
+              action: "unauthorized_access",
+              resourceType: isRelationFga
+                ? String(objectTypeOrPermission || "tenant")
+                : "permission",
+              ipAddress: req.ip || null,
+              userAgent: (req.headers["user-agent"] as string) || null,
+              metadata: {
+                path: req.path,
+                required: isRelationFga
+                  ? { relation: relationOrPermission, objectType: objectTypeOrPermission }
+                  : {
+                      requiredPermissions: [
+                        relationOrPermission,
+                        objectTypeOrPermission,
+                        ...restPermissions,
+                      ].filter((p): p is Permission => Boolean(p)),
+                    },
+              } as any,
+            },
+          })
+          .catch(() => null);
 
         res.status(403).json({
           error: "Forbidden",
           message: "Insufficient permissions",
-          required: permissions,
+          required: isRelationFga
+            ? `${relationOrPermission} on ${objectTypeOrPermission || "tenant"}`
+            : relationOrPermission,
         });
         return;
       }
 
-      // Store permissions in request for downstream use
       req.permissions = PermissionChecker.getPermissionsForRole(role);
       next();
     } catch (error) {

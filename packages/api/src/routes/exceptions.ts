@@ -34,35 +34,41 @@ import { logInfo } from "../utils/logger";
 
 type ExceptionRequest = AuthRequest & Request;
 
-type ExceptionForMapping = Prisma.ReconciliationMatchGetPayload<{
-  include: {
-    run: {
-      select: {
-        id: true;
-        status: true;
-        startedAt: true;
-        completedAt: true;
-      };
+export interface ExceptionRecordInput {
+  id: string;
+  runId: string;
+  sourceTransactionId: string;
+  targetTransactionId?: string | null;
+  matchType: string;
+  confidence: number | string | Prisma.Decimal;
+  severity?: string | null;
+  status?: string | null;
+  reviewed?: boolean;
+  reviewedAt?: Date | null;
+  reviewedBy?: string | null;
+  assignedTo?: string | null;
+  resolutionReason?: string | null;
+  notes?: string | null;
+  matchReason?: string | null;
+  amountDiff?: number | string | Prisma.Decimal | null;
+  dateDiff?: number | null;
+  createdAt: Date;
+  updatedAt: Date;
+  sourceTransaction?: {
+    category?: string | null;
+    description?: string | null;
+    amount?: number | string | Prisma.Decimal | null;
+    currency?: string | null;
+  } | null;
+  archetypeClassifications?: Array<{
+    confidence: number | string | Prisma.Decimal;
+    archetypeId?: string;
+    archetype?: {
+      code: string;
+      label: string;
     };
-    sourceTransaction: true;
-    targetTransaction: {
-      select: {
-        id: true;
-        category: true;
-        description: true;
-        amount: true;
-        currency: true;
-        date: true;
-      };
-    };
-    adjudicationMemories: true;
-    archetypeClassifications: {
-      include: { archetype: true };
-      orderBy: { confidence: "desc" };
-      take: 5;
-    };
-  };
-}>;
+  }>;
+}
 
 const router: Router = Router();
 const provenanceService = new ProvenanceService(prisma);
@@ -71,6 +77,51 @@ const adjudicationMemoryService = new AdjudicationMemoryService(prisma);
 const exceptionQueryService = new ExceptionQueryService();
 
 const CANONICAL_EXCEPTION_MATCH_TYPES = ["unmatched", "conflict"] as const;
+
+export const ExceptionResponseDTOSchema = z.object({
+  id: z.string(),
+  runId: z.string(),
+  jobId: z.string(),
+  executionId: z.string(),
+  sourceTransactionId: z.string(),
+  targetTransactionId: z.string().nullable(),
+  matchType: z.string(),
+  confidence: z.number(),
+  severity: z.string(),
+  category: z.string(),
+  description: z.string().nullable(),
+  amount: z.number().nullable(),
+  currency: z.string(),
+  status: z.enum(["open", "in_progress", "resolved", "dismissed"]),
+  assignedTo: z.string().nullable(),
+  resolutionReason: z.string().nullable(),
+  notes: z.string().nullable(),
+  matchReason: z.string().nullable(),
+  amountDiff: z.number().nullable(),
+  dateDiff: z.number().nullable(),
+  resolvedAt: z.string().nullable(),
+  resolvedBy: z.string().nullable(),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+  archetypes: z.array(
+    z.object({
+      code: z.string(),
+      label: z.string(),
+      confidence: z.number(),
+    })
+  ),
+});
+
+export type ExceptionResponseDTO = z.infer<typeof ExceptionResponseDTOSchema>;
+
+export const AdjudicateExceptionInputSchema = z.object({
+  resolution: z.enum(["matched", "ignored", "adjusted", "escalated", "manual"]),
+  resolutionReason: z.string().optional(),
+  resolutionCode: z.string().optional(),
+  notes: z.string().max(2000).optional(),
+});
+
+export type AdjudicateExceptionInput = z.infer<typeof AdjudicateExceptionInputSchema>;
 
 // ─── Validation Schemas ──────────────────────────────────────────────────────
 
@@ -204,11 +255,27 @@ function appendAdjudicationHistory(
   };
 }
 
-function mapExceptionToResponse(e: ExceptionForMapping) {
-  let status: "open" | "in_progress" | "resolved" | "dismissed" = (e.status as any) || "open";
-  if (!e.status && e.reviewed) {
-    status = e.matchReason?.toLowerCase().includes("ignored") ? "dismissed" : "resolved";
+function parseExceptionStatus(
+  rawStatus: string | null | undefined,
+  reviewed: boolean,
+  matchReason: string | null | undefined
+): "open" | "in_progress" | "resolved" | "dismissed" {
+  if (
+    rawStatus === "open" ||
+    rawStatus === "in_progress" ||
+    rawStatus === "resolved" ||
+    rawStatus === "dismissed"
+  ) {
+    return rawStatus;
   }
+  if (!rawStatus && reviewed) {
+    return matchReason?.toLowerCase().includes("ignored") ? "dismissed" : "resolved";
+  }
+  return "open";
+}
+
+function mapExceptionToResponse(e: ExceptionRecordInput): ExceptionResponseDTO {
+  const status = parseExceptionStatus(e.status, Boolean(e.reviewed), e.matchReason);
 
   return {
     id: e.id,
@@ -222,7 +289,7 @@ function mapExceptionToResponse(e: ExceptionForMapping) {
     severity: e.severity || "medium",
     category: e.sourceTransaction?.category || "uncategorized",
     description: e.sourceTransaction?.description || null,
-    amount: e.sourceTransaction?.amount || null,
+    amount: e.sourceTransaction?.amount ? Number(e.sourceTransaction.amount) : null,
     currency: e.sourceTransaction?.currency || "USD",
     status,
     assignedTo: e.assignedTo || null,
@@ -236,9 +303,9 @@ function mapExceptionToResponse(e: ExceptionForMapping) {
     createdAt: e.createdAt.toISOString(),
     updatedAt: e.updatedAt.toISOString(),
     archetypes:
-      e.archetypeClassifications?.map((c: any) => ({
-        code: c.archetype.code,
-        label: c.archetype.label,
+      e.archetypeClassifications?.map((c) => ({
+        code: c.archetype?.code || c.archetypeId || "UNKNOWN",
+        label: c.archetype?.label || "Unknown Archetype",
         confidence: Number(c.confidence),
       })) || [],
   };
@@ -302,7 +369,7 @@ router.get(
         ];
       }
 
-      const orderByMap: Record<string, any> = {
+      const orderByMap: Record<string, Prisma.ReconciliationMatchOrderByWithRelationInput> = {
         createdAt: { createdAt: sortOrder },
         severity: { severity: sortOrder },
         status: { status: sortOrder },
@@ -477,14 +544,14 @@ router.get(
 
       const metadata = (exception.metadata ?? {}) as Record<string, unknown>;
       const adjudicationHistoryFromMetadata = Array.isArray(metadata.adjudicationHistory)
-        ? metadata.adjudicationHistory
+        ? (metadata.adjudicationHistory as Array<Record<string, unknown>>)
         : [];
-      const adjudicationHistoryFromMemory = adjudicationMemories.map((memory: any) => ({
+      const adjudicationHistoryFromMemory = adjudicationMemories.map((memory) => ({
         actorId: memory.adjudicatorId,
         action: memory.outcome,
         timestamp: memory.completedAt?.toISOString() ?? memory.createdAt.toISOString(),
       }));
-      const adjudicationHistoryFromProvenance = provenance.map((entry: any) => ({
+      const adjudicationHistoryFromProvenance = provenance.map((entry) => ({
         actorId: entry.actorUserId ?? entry.actorType,
         action: entry.eventType,
         timestamp: entry.createdAt.toISOString(),
@@ -496,19 +563,19 @@ router.get(
           : adjudicationHistoryFromMetadata.length > 0
             ? adjudicationHistoryFromMetadata
             : adjudicationHistoryFromProvenance;
-      const scopedProofPackages = proofPackages.filter((pkg: any) => {
-        const scopeIds = Array.isArray(pkg.scopeIds) ? pkg.scopeIds : [];
-        return scopeIds.length === 0 || scopeIds.some((scopeId: any) => String(scopeId) === id);
+      const scopedProofPackages = proofPackages.filter((pkg) => {
+        const scopeIds = Array.isArray(pkg.scopeIds) ? (pkg.scopeIds as unknown[]) : [];
+        return scopeIds.length === 0 || scopeIds.some((scopeId) => String(scopeId) === id);
       });
       const proofSummary = {
         total: scopedProofPackages.length,
-        finalized: scopedProofPackages.filter((item: any) => item.status === "finalized").length,
+        finalized: scopedProofPackages.filter((item) => item.status === "finalized").length,
       };
 
       res.json({
         data: {
-          ...mapExceptionToResponse(exception as any),
-          run: (exception as any).run,
+          ...mapExceptionToResponse(exception),
+          run: exception.run,
           sourceTransaction: exception.sourceTransaction,
           targetTransaction: null,
           institutionalMemory: adjudicationMemories,
