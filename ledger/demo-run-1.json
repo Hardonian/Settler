@@ -2,14 +2,14 @@
   "execution_id": "demo-run-1",
   "tenant_id": "demo-tenant",
   "trace_id": "48c781e97fd3557ea0722087a34c3098579d9bef56d76f41c5f96c46199631b5",
-  "timestamp": "2026-10-18T22:18:36.724Z",
+  "timestamp": "2026-10-18T22:53:14.208Z",
   "policy_version": "1.0.0",
   "input_hash": "9a559adb3bd0ad6528fd96f713ce4c451caf0e67ef18eb935b9d981f9aeeb0b9",
   "output_hash": "8bc6d217bf8413d884037f6a3e2e6c0e0bb5701e29130f4d7d69780189176064",
   "status": "success",
-  "duration": 7,
+  "duration": 11,
   "initiator": "worker",
   "tool_calls": [],
-  "previous_execution_hash": "63a783521eb4365b5bbab638f4b942e2ecb53fab6c78e6e5099083a685f30bef",
-  "execution_hash": "24b084a57bb18a7dea4df261d7b33953b2f385f4125801284b91539349338756"
+  "previous_execution_hash": "a032f40271f2b089b8b140f61d07c82c861790ee552c7e7558fd5b695a02a15b",
+  "execution_hash": "9ff66638330b56c16a052e513637b67147b972f4ee1fec5320ac54eae0d65aad"
 }
