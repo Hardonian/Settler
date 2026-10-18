@@ -17,8 +17,12 @@ import { recoveryRouter } from "./recovery";
 import { daemonRouter } from "./daemon";
 import { dossierRouter } from "./dossier";
 import { parityRouter } from "./parity";
+import { erpRouter } from "./erp";
 
 export const v2Router: Router = Router();
+
+// Autonomous ERP Journal Entry & NetSuite/SAP Sync
+v2Router.use("/erp", erpRouter);
 
 // TigerBeetle Dual-Ledger Invariant Parity Monitor
 v2Router.use("/ledger/parity", parityRouter);
