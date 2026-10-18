@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
+import Link from "next/link";
 import {
   Activity,
   Play,
@@ -14,6 +15,8 @@ import {
   Layers,
   AlertCircle,
   Database,
+  Scale,
+  History,
 } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -225,7 +228,29 @@ export function AutonomousDaemonWorkbench() {
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
+          <Button
+            asChild
+            variant="outline"
+            size="sm"
+            className="border-slate-700 bg-slate-800/60 text-slate-300 hover:text-white text-xs gap-1.5"
+          >
+            <Link href="/console/ledger-parity">
+              <Scale className="w-3.5 h-3.5 text-emerald-400" /> Ledger Parity
+            </Link>
+          </Button>
+
+          <Button
+            asChild
+            variant="outline"
+            size="sm"
+            className="border-slate-700 bg-slate-800/60 text-slate-300 hover:text-white text-xs gap-1.5"
+          >
+            <Link href="/console/time-travel">
+              <History className="w-3.5 h-3.5 text-cyan-400" /> Time-Travel
+            </Link>
+          </Button>
+
           <Button
             variant="outline"
             size="sm"

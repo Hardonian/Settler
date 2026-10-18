@@ -28,6 +28,7 @@ const featureNavigationItems = [
   { href: "/compare", label: "Compare" },
   { href: "/open-source", label: "Open Source" },
   { href: "/changelog", label: "Changelog" },
+  { href: "/console", label: "Console" },
 ];
 
 // Secondary navigation items (in "More" dropdown on desktop, accordion on mobile)

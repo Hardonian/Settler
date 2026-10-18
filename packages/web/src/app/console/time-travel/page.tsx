@@ -1,4 +1,4 @@
-import { Metadata } from "next";
+import type { Metadata } from "next";
 import { TimeTravelDebuggerWorkbench } from "@/components/console/TimeTravelDebuggerWorkbench";
 import { ConsoleErrorBoundary } from "@/components/console/ErrorBoundary";
 

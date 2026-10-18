@@ -15,6 +15,10 @@ import {
   Sliders,
   PlayCircle,
   FileCheck,
+  History,
+  Scale,
+  FileText,
+  Sparkles,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
@@ -94,6 +98,36 @@ export function CommandPalette() {
       icon: <CreditCard className="text-teal-400" />,
       label: "Enterprise Identity & Security Status",
       action: () => router.push("/console/settings/security"),
+    },
+    {
+      id: "time-travel-debugger",
+      icon: <History className="text-cyan-400" />,
+      label: "Time-Travel Forensic Financial Debugger",
+      action: () => router.push("/console/time-travel"),
+    },
+    {
+      id: "ledger-parity",
+      icon: <Scale className="text-emerald-400" />,
+      label: "TigerBeetle Live Parity Cockpit",
+      action: () => router.push("/console/ledger-parity"),
+    },
+    {
+      id: "settlement-daemon",
+      icon: <Bot className="text-purple-400" />,
+      label: "Autonomous Continuous Settlement Daemon",
+      action: () => router.push("/console/daemon"),
+    },
+    {
+      id: "audit-dossier",
+      icon: <FileText className="text-blue-400" />,
+      label: "Cryptographic Audit Dossier Explorer",
+      action: () => router.push("/console/audit-dossier"),
+    },
+    {
+      id: "autonomous-changelog",
+      icon: <Sparkles className="text-amber-400" />,
+      label: "Autonomous Frontier Release Changelog",
+      action: () => router.push("/changelog"),
     },
   ];
 

@@ -36,6 +36,12 @@ import {
   Database,
   BrainCircuit,
   DollarSign,
+  Activity,
+  CalendarCheck,
+  FileSpreadsheet,
+  FileCheck,
+  FileCode,
+  Gauge,
   type LucideIcon,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -57,6 +63,7 @@ const navSectionOrder = [
 
 const labelToIcon: Record<string, LucideIcon> = {
   Dashboard: LayoutDashboard,
+  Workbench: LayoutDashboard,
   Reconciliations: Scale,
   Runs: PlayCircle,
   Exceptions: AlertTriangle,
@@ -86,9 +93,16 @@ const labelToIcon: Record<string, LucideIcon> = {
   "CX Support": Headphones,
   "Agent Governance": ShieldCheck,
   "Autonomous Daemon": Bot,
+  "Settlement Daemon": Bot,
   "Audit Dossier": ClipboardCheck,
   "Ledger Parity": Scale,
   "Time-Travel Debugger": ScanSearch,
+  "Source Reliability": Activity,
+  "Financial Close": CalendarCheck,
+  "GL Export": FileSpreadsheet,
+  "SOC 2 Evidence": FileCheck,
+  "SIEM Export": FileCode,
+  "Trust Score": Gauge,
 };
 
 function maturityBadge(entry: ConsoleRouteEntry) {

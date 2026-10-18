@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
+import Link from "next/link";
 import {
   History,
   Play,
@@ -17,6 +18,8 @@ import {
   TrendingUp,
   Database,
   Hash,
+  Scale,
+  ShieldCheck,
 } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -338,7 +341,29 @@ export function TimeTravelDebuggerWorkbench() {
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          <Button
+            asChild
+            variant="outline"
+            size="sm"
+            className="border-zinc-800 bg-zinc-900/60 hover:bg-zinc-800 text-xs gap-1.5 text-zinc-300"
+          >
+            <Link href="/console/ledger-parity">
+              <Scale className="w-3.5 h-3.5 text-emerald-400" />
+              Ledger Parity
+            </Link>
+          </Button>
+          <Button
+            asChild
+            variant="outline"
+            size="sm"
+            className="border-zinc-800 bg-zinc-900/60 hover:bg-zinc-800 text-xs gap-1.5 text-zinc-300"
+          >
+            <Link href="/console/audit-dossier">
+              <ShieldCheck className="w-3.5 h-3.5 text-blue-400" />
+              Audit Dossier
+            </Link>
+          </Button>
           <Badge
             variant="outline"
             className={

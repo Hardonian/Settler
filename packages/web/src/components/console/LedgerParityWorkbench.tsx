@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
+import Link from "next/link";
 import {
   Scale,
   RefreshCw,
@@ -13,6 +14,8 @@ import {
   ArrowRightLeft,
   Copy,
   Check,
+  History,
+  Bot,
 } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -208,7 +211,29 @@ export function LedgerParityWorkbench() {
           </p>
         </div>
 
-        <div className="flex items-center gap-2.5">
+        <div className="flex flex-wrap items-center gap-2.5">
+          <Button
+            asChild
+            variant="outline"
+            size="sm"
+            className="border-slate-700 bg-slate-800/60 text-slate-300 hover:text-white text-xs gap-1.5"
+          >
+            <Link href="/console/time-travel">
+              <History className="w-3.5 h-3.5 text-cyan-400" /> Time-Travel
+            </Link>
+          </Button>
+
+          <Button
+            asChild
+            variant="outline"
+            size="sm"
+            className="border-slate-700 bg-slate-800/60 text-slate-300 hover:text-white text-xs gap-1.5"
+          >
+            <Link href="/console/daemon">
+              <Bot className="w-3.5 h-3.5 text-purple-400" /> Daemon
+            </Link>
+          </Button>
+
           <Button
             variant="outline"
             size="sm"

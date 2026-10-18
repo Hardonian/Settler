@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import {
   ShieldCheck,
   FileText,
@@ -13,6 +14,8 @@ import {
   Sparkles,
   CheckCircle2,
   Hash,
+  History,
+  Scale,
 } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -191,6 +194,28 @@ export function AuditDossierWorkbench() {
         </div>
 
         <div className="flex flex-wrap items-center gap-2.5">
+          <Button
+            asChild
+            variant="outline"
+            size="sm"
+            className="border-slate-700 bg-slate-800/60 text-slate-300 hover:text-white text-xs gap-1.5"
+          >
+            <Link href="/console/time-travel">
+              <History className="w-3.5 h-3.5 text-cyan-400" /> Time-Travel
+            </Link>
+          </Button>
+
+          <Button
+            asChild
+            variant="outline"
+            size="sm"
+            className="border-slate-700 bg-slate-800/60 text-slate-300 hover:text-white text-xs gap-1.5"
+          >
+            <Link href="/console/ledger-parity">
+              <Scale className="w-3.5 h-3.5 text-emerald-400" /> Ledger Parity
+            </Link>
+          </Button>
+
           <Button
             variant="outline"
             size="sm"
