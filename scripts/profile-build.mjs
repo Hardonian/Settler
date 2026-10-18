@@ -25,10 +25,16 @@ const args = [
 ];
 if (!warm) args.push("--force");
 
-const command = process.platform === "win32" ? "pnpm.cmd" : "pnpm";
+const pnpmEntrypoint = process.env.npm_execpath;
+const command = pnpmEntrypoint
+  ? process.execPath
+  : process.platform === "win32"
+    ? "pnpm.cmd"
+    : "pnpm";
+const commandArgs = pnpmEntrypoint ? [pnpmEntrypoint, ...args] : args;
 const startedAt = new Date().toISOString();
 const started = performance.now();
-const result = spawnSync(command, args, {
+const result = spawnSync(command, commandArgs, {
   cwd: repoRoot,
   env: process.env,
   stdio: "inherit",
@@ -57,7 +63,7 @@ const report = {
   mode: warm ? "warm-cache" : "forced-execution",
   startedAt,
   durationMs,
-  command: [command, ...args],
+  command: [command, ...commandArgs],
   turboRunSummary,
   nextTrace: existsSync(tracePath) ? relative(repoRoot, tracePath) : null,
   nextLongestSpans,

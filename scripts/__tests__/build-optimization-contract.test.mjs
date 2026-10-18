@@ -55,3 +55,11 @@ test("cache diagnostics never print token material", () => {
   assert.doesNotMatch(checker, /process\.env\.TURBO_TOKEN\.slice|substring\(/);
   assert.doesNotMatch(legacyWrapper, /TURBO_TOKEN:/);
 });
+
+test("build profiler launches pnpm without a Windows command-shell dependency", () => {
+  const profiler = readFileSync("scripts/profile-build.mjs", "utf8");
+
+  assert.match(profiler, /process\.env\.npm_execpath/);
+  assert.match(profiler, /process\.execPath/);
+  assert.doesNotMatch(profiler, /shell:\s*true/);
+});
