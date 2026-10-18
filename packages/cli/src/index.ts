@@ -284,6 +284,13 @@ const commandRegistry: Record<
       return { command: auditCommand };
     },
   },
+  parity: {
+    description: "TigerBeetle dual-ledger parity invariant monitor and verification operations",
+    load: async () => {
+      const { parityCommand } = await import("./commands/parity");
+      return { command: parityCommand };
+    },
+  },
 
   demo: {
     description: "Run deterministic one-command demo",

@@ -99,3 +99,78 @@ triangularRouter.post(
     }
   }
 );
+
+/**
+ * GET /api/v2/reconciliation/triangular/staging
+ * Returns staging buffer status and completed triangular settlements
+ */
+triangularRouter.get(
+  "/staging",
+  async (req: Request, res: Response, _next: NextFunction): Promise<void> => {
+    try {
+      const authReq = req as AuthRequest;
+      const headerTenant = req.headers["x-tenant-id"] as string | undefined;
+      const queryTenant = typeof req.query?.tenantId === "string" ? req.query.tenantId : undefined;
+      const tenantId =
+        authReq.tenantId ?? headerTenant ?? (authReq.user as any)?.tenantId ?? queryTenant;
+
+      if (!tenantId) {
+        res.status(400).json({ error: "Tenant context is required" });
+        return;
+      }
+
+      const { triangularWebhookAdapter } =
+        await import("../../services/ingestion/triangular-webhook-adapter");
+      const staging = triangularWebhookAdapter.getStagingStatus(tenantId);
+
+      res.status(200).json({
+        success: true,
+        data: staging,
+      });
+    } catch (err: any) {
+      res.status(500).json({ error: err?.message ?? "Internal error" });
+    }
+  }
+);
+
+/**
+ * POST /api/v2/reconciliation/triangular/ingest
+ * Ingests an individual webhook event directly into the triangular matching queue
+ */
+triangularRouter.post(
+  "/ingest",
+  async (req: Request, res: Response, _next: NextFunction): Promise<void> => {
+    try {
+      const authReq = req as AuthRequest;
+      const headerTenant = req.headers["x-tenant-id"] as string | undefined;
+      const callerTenant = authReq.tenantId ?? headerTenant;
+      const tenantId = callerTenant ?? (authReq.user as any)?.tenantId ?? req.body?.tenantId;
+
+      if (!tenantId) {
+        res.status(400).json({ error: "Tenant context is required" });
+        return;
+      }
+
+      if (callerTenant && req.body?.tenantId && req.body.tenantId !== callerTenant) {
+        res.status(403).json({ error: "Tenant mismatch" });
+        return;
+      }
+
+      const { triangularWebhookAdapter } =
+        await import("../../services/ingestion/triangular-webhook-adapter");
+      const result = await triangularWebhookAdapter.ingestWebhookEvent({
+        tenantId,
+        adapter: req.body?.adapter || "generic",
+        eventType: req.body?.eventType,
+        payload: req.body?.payload || req.body,
+      });
+
+      res.status(200).json({
+        success: true,
+        data: result,
+      });
+    } catch (err: any) {
+      res.status(500).json({ error: err?.message ?? "Internal error" });
+    }
+  }
+);

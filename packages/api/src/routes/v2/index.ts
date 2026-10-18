@@ -16,8 +16,12 @@ import { streamRouter } from "./stream";
 import { recoveryRouter } from "./recovery";
 import { daemonRouter } from "./daemon";
 import { dossierRouter } from "./dossier";
+import { parityRouter } from "./parity";
 
 export const v2Router: Router = Router();
+
+// TigerBeetle Dual-Ledger Invariant Parity Monitor
+v2Router.use("/ledger/parity", parityRouter);
 
 // Autonomous Continuous Settlement Daemon
 v2Router.use("/daemon", daemonRouter);
