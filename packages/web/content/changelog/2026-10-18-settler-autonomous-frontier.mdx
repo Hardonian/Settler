@@ -1,0 +1,63 @@
+---
+title: "Settler Autonomous Sovereign Frontier: Real-Time ERP Sync, Interchange++ Forensic Margin Recovery & Time-Travel Debugger"
+date: "2026-10-18"
+description: "Major release introducing autonomous real-time NetSuite/SAP journal entry synthesis, Interchange++ fee deconstruction with automated Revenue OS dispute filing, and microsecond time-travel state replay."
+author: "Settler Engineering"
+---
+
+## Overview
+
+Settler 1.6.0 introduces three flagship capabilities advancing sovereign financial architecture, real-time settlement intelligence, and continuous zero-trust auditability.
+
+---
+
+### 1. Autonomous Real-Time ERP General Ledger Sync Engine
+
+Continuous reconciliation converges triangular transaction triplets (Order, Gateway, Bank) into perfectly balanced compound GAAP/IFRS double-entry journal records.
+
+- **Zero-Sum Compound Journal Balancing**: Evaluates multi-rail settlements ($\sum \text{Debits} = \sum \text{Credits}$) and isolates fee variances into dedicated dispute clearing accounts without breaking general ledger balancing.
+- **Embedded Deterministic Merkle Proofs**: Every journal line item and memo embeds an immutable state proof hash (`settler_proof_0x...`), providing end-to-end cryptographic traceability from bank settlement to the general ledger.
+- **Native NetSuite & SAP S/4HANA Exports**: Export native payloads directly into **NetSuite SuiteTalk REST** or **SAP S/4HANA OData** (`A_JournalEntryCreate`) with proper `Soll` (`S`) and `Haben` (`H`) posting codes.
+- **Tenant-Scoped Chart of Accounts**: Customize ledger codes (`1010` Operating Cash, `1020` Clearing, `4010` Gross Revenue, `5010` Processing Expense, `1099` Dispute Clearing) with strict tenant isolation.
+
+---
+
+### 2. Interchange++ Forensic Margin Recovery & Scheme Downgrade Classifier
+
+Payment processors routinely downgrade card transactions into non-qualified, higher-tier fee tiers due to missing metadata or transit delays, silently eroding merchant operating margin.
+
+- **Multi-Party Fee Decomposition**: Deconstructs bundled payment fees into base card scheme interchange (Visa, Mastercard, Amex, Discover), network assessment fees (FANF, NABU, Scheme Surcharges), and acquirer/processor markup.
+- **Downgrade Classification Engine**:
+  - **Level 2/3 B2B Data Omissions**: Detects commercial, corporate, and purchasing cards downgraded from optimal Level 3 rates (~1.85%) to standard Level 1 rates (~2.95%) due to missing tax amount, customer code, or line item details.
+  - **EIRF Settlement Cutoff Delays**: Identifies settlement capture transit delays exceeding 48 hours that trigger Electronic Interchange Reimbursement Fee (EIRF) penalties.
+  - **Durbin Amendment Overcharges**: Flags US regulated debit card transactions charged exceeding the statutory cap of 0.05% + 22¢.
+- **Automated Revenue OS Dispute Filing**: Generates cryptographic dispute packages and files actionable claims directly into Settler's autonomous recovery pipeline.
+
+---
+
+### 3. Time-Travel Forensic Financial Debugger & Deterministic State Replay
+
+Operators and institutional auditors can now replay and inspect financial state backward and forward in time across TigerBeetle and relational ledgers.
+
+- **Microsecond Timeline Flight Recorder**: Interactive console scrubber (`/console/time-travel`) with Play/Pause, step-by-step playback, 1x/5x/10x speeds, and jump-to-discrepancy navigation.
+- **Sparse Merkle Tree (SMT-256) Inspection**: Inspect sorted cryptographic leaf hashes for each ledger account and verify deterministic state root transitions (`0x...`).
+- **Dual-Ledger Balance Verification**: Real-time comparison of TigerBeetle posted debits/credits, two-phase commit escrow balances, and relational matched clearing volumes.
+- **Microsecond Delta Inspector**: Pinpoints the exact transfer and account delta that triggered each state transition.
+
+---
+
+### 4. Supporting Sovereign Infrastructure Updates
+
+- **Autonomous Settlement Daemon Workbench** (`/console/daemon`): Real-time telemetry, tick controls, and memory inspection for background continuous matching.
+- **Cryptographic Audit Dossier Explorer** (`/console/audit-dossier`): 100% census transaction population attestation bundles with client-side offline WASM verification scripts.
+- **TigerBeetle Live Parity Cockpit** (`/console/ledger-parity`): Invariant monitoring verifying zero float drift between high-throughput TigerBeetle transfers and relational tables.
+
+---
+
+## Getting Started
+
+Explore the new workbenches directly in the Operator Console:
+- [Time-Travel Debugger](/console/time-travel)
+- [Audit Dossiers](/console/audit-dossier)
+- [Autonomous Daemon](/console/daemon)
+- [Ledger Parity Cockpit](/console/ledger-parity)

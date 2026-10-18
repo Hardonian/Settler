@@ -85,6 +85,10 @@ const labelToIcon: Record<string, LucideIcon> = {
   "Liquidity Metrics": DollarSign,
   "CX Support": Headphones,
   "Agent Governance": ShieldCheck,
+  "Autonomous Daemon": Bot,
+  "Audit Dossier": ClipboardCheck,
+  "Ledger Parity": Scale,
+  "Time-Travel Debugger": ScanSearch,
 };
 
 function maturityBadge(entry: ConsoleRouteEntry) {

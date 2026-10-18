@@ -80,7 +80,9 @@ pub fn run_chaos_fuzz(iterations: usize, seed: u64) -> ChaosFuzzReport {
         let target_idx = (rng.next_u64() as usize) % num_keys;
         let target_key = keys[target_idx];
 
-        let proof = smt.prove_inclusion(&target_key).expect("Target key must exist");
+        let proof = smt
+            .prove_inclusion(&target_key)
+            .expect("Target key must exist");
         let v_res = verify_smt_proof(&proof);
         assert!(v_res.is_ok());
 
@@ -99,7 +101,8 @@ pub fn run_chaos_fuzz(iterations: usize, seed: u64) -> ChaosFuzzReport {
         let mut sibling_tampered_proof = proof.clone();
         if !sibling_tampered_proof.siblings_hex.is_empty() {
             let mutate_idx = (rng.next_u64() as usize) % sibling_tampered_proof.siblings_hex.len();
-            let mut sib_bytes = hex::decode(&sibling_tampered_proof.siblings_hex[mutate_idx]).unwrap();
+            let mut sib_bytes =
+                hex::decode(&sibling_tampered_proof.siblings_hex[mutate_idx]).unwrap();
             sib_bytes[15] ^= 0x42;
             sibling_tampered_proof.siblings_hex[mutate_idx] = hex::encode(sib_bytes);
 
@@ -116,7 +119,9 @@ pub fn run_chaos_fuzz(iterations: usize, seed: u64) -> ChaosFuzzReport {
             non_existent_key[1] ^= 0x01;
         }
 
-        let non_inc_proof = smt.prove_non_inclusion(&non_existent_key).expect("Key must not exist");
+        let non_inc_proof = smt
+            .prove_non_inclusion(&non_existent_key)
+            .expect("Key must not exist");
         assert!(!non_inc_proof.is_inclusion);
         let non_inc_res = verify_smt_proof(&non_inc_proof);
         if non_inc_res.is_ok() {
