@@ -6,6 +6,9 @@ import { zkpSyncRouter } from "../zkp-sync";
 import { erpSyncRouter } from "../erp-sync";
 import { vendorDisputesRouter } from "../vendor-disputes";
 
+process.env.PROOF_COMMITMENT_SECRET =
+  "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef";
+
 jest.mock("../../middleware/authorization", () => ({
   requirePermission: () => (_req: unknown, _res: unknown, next: () => void) => next(),
 }));
@@ -54,6 +57,14 @@ jest.mock("../../infrastructure/db/prisma", () => ({
       create: jest.fn().mockResolvedValue({ id: "audit-01" }),
     },
   },
+}));
+
+jest.mock("../../services/intelligence/proof-package-orchestrator", () => ({
+  createRunProofPackageWithArtifacts: jest.fn().mockResolvedValue({
+    proofPackageId: "pp-01",
+    evidenceIds: ["ev-01"],
+    packageHash: "hash-01",
+  }),
 }));
 
 describe("Hardened API Routes Integration", () => {

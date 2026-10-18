@@ -21,6 +21,9 @@ jest.mock("../../../services/ai-agents/orchestrator", () => ({
     registerAgent: jest.fn(),
     initializeAll: jest.fn(async () => undefined),
     execute: jest.fn(),
+    on: jest.fn(),
+    emit: jest.fn(),
+    off: jest.fn(),
   },
 }));
 

@@ -152,7 +152,10 @@ router.post(
       // If full parameters provided, recompute and verify the HMAC commitment
       let isValid = true;
       if (merkleRoot && tenantId && targetTenantId && runId) {
-        const secret = process.env.COOKIE_SECRET || "settler-zkp-sovereign-master";
+        const secret =
+          process.env.PROOF_COMMITMENT_SECRET ??
+          process.env.COOKIE_SECRET ??
+          "settler-zkp-sovereign-master";
         const expectedHash = crypto
           .createHmac("sha256", secret)
           .update(`${tenantId}:${targetTenantId}:${runId}:${merkleRoot}`)

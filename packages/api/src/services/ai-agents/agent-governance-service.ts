@@ -67,7 +67,9 @@ export class AgentGovernanceService {
 
   constructor() {
     this.listenToAgentDrafts();
-    agentOrchestrator.on("agent_registered", (agentId: string) => this.attachAgent(agentId));
+    if (typeof (agentOrchestrator as any)?.on === "function") {
+      agentOrchestrator.on("agent_registered", (agentId: string) => this.attachAgent(agentId));
+    }
   }
 
   private listenToAgentDrafts(): void {
