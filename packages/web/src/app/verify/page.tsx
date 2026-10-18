@@ -21,7 +21,7 @@ import {
 import { motion } from "framer-motion";
 import { ZeroTrustVerifier } from "@/components/cognitive/zero-trust-verifier";
 import { cn } from "@/lib/utils";
-import { verifySmt } from "@/lib/verify";
+import { verifySmt } from "@/lib/verify.browser";
 
 async function sha256Hex(buffer: string): Promise<string> {
   const encoder = new TextEncoder();

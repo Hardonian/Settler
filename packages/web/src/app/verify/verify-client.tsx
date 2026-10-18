@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import type { EvidenceManifest, NamedFile, VerificationResult } from "@/types/verification";
-import { verifyBundle } from "@/lib/verify";
+import { verifyBundle } from "@/lib/verify.browser";
 
 const bytesFromFile = async (file: File): Promise<number[]> => {
   const buffer = await file.arrayBuffer();

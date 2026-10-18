@@ -1,4 +1,10 @@
-import { verifyBundle, verifyManifestNative, sha256Hex, loadVerifier, verifySmt } from "../verify";
+import {
+  verifyBundle,
+  verifyManifestNative,
+  sha256Hex,
+  loadVerifier,
+  verifySmt,
+} from "../verify.node";
 import type { EvidenceManifest, NamedFile, SmtProof } from "../../types/verification";
 
 describe("Web Proofpack Verifier", () => {

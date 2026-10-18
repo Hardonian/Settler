@@ -62,8 +62,15 @@
   ],
   "tasks": {
     "build": {
-      "dependsOn": ["^build"],
-      "outputs": ["dist/**", ".next/**", "build/**", ".next/tsconfig.tsbuildinfo"],
+      "dependsOn": ["//#prisma:generate", "^build"],
+      "outputs": [
+        "dist/**",
+        ".next/**",
+        "!.next/cache/**",
+        "!.next/dev/**",
+        "build/**",
+        ".next/tsconfig.tsbuildinfo"
+      ],
       "cache": true,
       "inputs": [
         "src/**",
@@ -83,6 +90,17 @@
         "!**/*.spec.tsx",
         "!__tests__/**",
         "!**/*.stories.tsx"
+      ]
+    },
+    "//#prisma:generate": {
+      "cache": false,
+      "outputs": [],
+      "inputs": [
+        "prisma/schema.prisma",
+        "prisma.config.ts",
+        "scripts/prisma-generate.mjs",
+        "package.json",
+        "pnpm-lock.yaml"
       ]
     },
     "dev": {
