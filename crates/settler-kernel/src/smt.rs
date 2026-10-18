@@ -68,6 +68,29 @@ pub struct SmtVerificationResult {
     pub error: Option<String>,
 }
 
+impl SmtVerificationResult {
+    #[inline]
+    pub fn is_ok(&self) -> bool {
+        self.valid
+    }
+
+    #[inline]
+    pub fn is_err(&self) -> bool {
+        !self.valid
+    }
+
+    #[inline]
+    pub fn unwrap(self) -> Self {
+        if !self.valid {
+            panic!(
+                "called `SmtVerificationResult::unwrap()` on an invalid result: {:?}",
+                self.error
+            );
+        }
+        self
+    }
+}
+
 /// In-memory Sparse Merkle Tree (SMT-256)
 #[derive(Debug, Clone)]
 pub struct SparseMerkleTree {
