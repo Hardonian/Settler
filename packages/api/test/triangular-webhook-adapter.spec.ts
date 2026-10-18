@@ -1,9 +1,6 @@
 import express from "express";
 import request from "supertest";
-import {
-  TriangularWebhookAdapter,
-  triangularWebhookAdapter,
-} from "../src/services/ingestion/triangular-webhook-adapter";
+import { TriangularWebhookAdapter } from "../src/services/ingestion/triangular-webhook-adapter";
 import { triangularRouter } from "../src/routes/v2/triangular";
 
 describe("Triangular Webhook Ingestion Adapter", () => {

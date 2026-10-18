@@ -1,5 +1,5 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { AutonomousDaemonWorkbench } from "@/components/console/AutonomousDaemonWorkbench";
+import { AutonomousDaemonWorkbench } from "../../components/console/AutonomousDaemonWorkbench";
 
 describe("AutonomousDaemonWorkbench", () => {
   beforeEach(() => {

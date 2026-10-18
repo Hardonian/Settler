@@ -2,16 +2,16 @@ use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
 use std::collections::{BTreeMap, HashMap, HashSet};
 
+pub mod chaos;
 #[cfg(not(target_arch = "wasm32"))]
 pub mod plugin_runtime;
 pub mod smt;
 pub mod streaming;
-pub mod chaos;
+pub use chaos::{run_chaos_fuzz, ChaosFuzzReport, ChaosRng};
 pub use smt::{
     get_empty_hashes, hash_empty_leaf, hash_leaf, hash_nodes, verify_smt_proof, SmtProof,
     SmtVerificationResult, SparseMerkleTree, SMT_DEPTH,
 };
-pub use chaos::{run_chaos_fuzz, ChaosFuzzReport, ChaosRng};
 
 pub const SCHEMA_VERSION: &str = "v1";
 
@@ -193,9 +193,7 @@ fn write_canonical_json(
             } else if let Some(integer) = value.as_u64() {
                 output.push_str(&integer.to_string());
             } else {
-                output.push_str(&format_ecmascript_number(
-                    value.as_f64().unwrap_or(0.0),
-                ));
+                output.push_str(&format_ecmascript_number(value.as_f64().unwrap_or(0.0)));
             }
         }
         serde_json::Value::String(value) => {
@@ -213,10 +211,7 @@ fn write_canonical_json(
         }
         serde_json::Value::Object(values) => {
             let mut entries = values.iter().collect::<Vec<_>>();
-            entries.sort_by(|(left, _), (right, _)| {
-                left.encode_utf16()
-                    .cmp(right.encode_utf16())
-            });
+            entries.sort_by(|(left, _), (right, _)| left.encode_utf16().cmp(right.encode_utf16()));
 
             output.push('{');
             for (index, (key, value)) in entries.into_iter().enumerate() {
@@ -591,7 +586,10 @@ mod tests {
 
     #[test]
     fn canonical_json_uses_ecmascript_number_serialization() {
-        assert_eq!(canonical_json_bytes(&1e20_f64).unwrap(), b"100000000000000000000");
+        assert_eq!(
+            canonical_json_bytes(&1e20_f64).unwrap(),
+            b"100000000000000000000"
+        );
         assert_eq!(canonical_json_bytes(&1e21_f64).unwrap(), b"1e+21");
         assert_eq!(canonical_json_bytes(&1e-6_f64).unwrap(), b"0.000001");
         assert_eq!(canonical_json_bytes(&1e-7_f64).unwrap(), b"1e-7");

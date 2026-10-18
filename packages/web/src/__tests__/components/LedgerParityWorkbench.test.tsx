@@ -1,5 +1,5 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { LedgerParityWorkbench } from "@/components/console/LedgerParityWorkbench";
+import { LedgerParityWorkbench } from "../../components/console/LedgerParityWorkbench";
 
 describe("LedgerParityWorkbench", () => {
   beforeEach(() => {

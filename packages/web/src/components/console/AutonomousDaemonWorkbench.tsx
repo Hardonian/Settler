@@ -12,7 +12,6 @@ import {
   Zap,
   Server,
   Layers,
-  ArrowUpRight,
   AlertCircle,
   Database,
 } from "lucide-react";
@@ -101,14 +100,12 @@ export function AutonomousDaemonWorkbench() {
     },
   ]);
 
-  const [loading, setLoading] = useState(false);
   const [ticking, setTicking] = useState(false);
   const [autoRefresh, setAutoRefresh] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const fetchMetrics = useCallback(async () => {
     try {
-      setLoading(true);
       setError(null);
       const res = await fetch("/api/console/daemon");
       if (res.ok) {
@@ -124,8 +121,6 @@ export function AutonomousDaemonWorkbench() {
       }
     } catch (err: any) {
       console.warn("Telemetry fallback to local simulation:", err.message);
-    } finally {
-      setLoading(false);
     }
   }, []);
 

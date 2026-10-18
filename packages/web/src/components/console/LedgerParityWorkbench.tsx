@@ -11,11 +11,8 @@ import {
   Database,
   Layers,
   ArrowRightLeft,
-  Server,
-  Lock,
   Copy,
   Check,
-  Zap,
 } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";

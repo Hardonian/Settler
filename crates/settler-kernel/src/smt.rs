@@ -240,9 +240,7 @@ pub fn verify_smt_proof(proof: &SmtProof) -> SmtVerificationResult {
             computed_root: String::new(),
             expected_root: proof.root_hex.clone(),
             is_non_inclusion: !proof.is_inclusion,
-            error: Some(
-                "Proof kind is inconsistent with value_hex presence".to_string(),
-            ),
+            error: Some("Proof kind is inconsistent with value_hex presence".to_string()),
         };
     }
 

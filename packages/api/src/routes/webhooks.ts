@@ -1,5 +1,5 @@
 import { randomBytes } from "crypto";
-import { Router, Request, Response } from "express";
+import { Router, Response } from "express";
 import { z } from "zod";
 import { validateRequest } from "../middleware/validation";
 import { AuthRequest } from "../middleware/auth";
@@ -433,51 +433,5 @@ router.delete(
     }
   }
 );
-
-// E2E Mock Endpoints for Ingestion Boundary Tests
-router.post("/queue", async (req: Request, res: Response) => {
-  const apiKey = req.headers["x-api-key"] as string | undefined;
-  const tenantId = apiKey ? apiKey.replace("test-key-", "") : "unknown-tenant";
-  const idempotencyKey = req.headers["x-idempotency-key"] as string | undefined;
-
-  try {
-    await ingestionBoundary.enforceRateLimit(tenantId);
-
-    if (idempotencyKey) {
-      const { isDuplicate, response } = await ingestionBoundary.checkIdempotency(
-        tenantId,
-        idempotencyKey
-      );
-      if (isDuplicate) {
-        return res.status(200).json({ duplicate: true, ...response });
-      }
-    }
-
-    const responseData = { success: true, queued: true };
-    if (idempotencyKey) {
-      await ingestionBoundary.markIdempotencyCompleted(tenantId, idempotencyKey, responseData);
-    }
-    return res.status(200).json(responseData);
-  } catch (err: any) {
-    return res
-      .status(err.status === 429 ? 429 : 500)
-      .json({ error: err.status === 429 ? "RATE_LIMIT_EXCEEDED" : "INTERNAL_SERVER_ERROR" });
-  }
-});
-
-router.post("/shopify", createRawBodyMiddleware(), async (req: RawBodyRequest, res: Response) => {
-  const signature = req.headers["x-shopify-hmac-sha256"] as string;
-  if (signature === "invalid-signature-123") {
-    await ingestionBoundary.sendToDLQ(
-      "unknown",
-      "shopify",
-      req.rawBodyString || JSON.stringify(req.body),
-      req.headers,
-      "Invalid Signature"
-    );
-    return res.status(401).json({ error: "Invalid signature" });
-  }
-  return res.status(200).json({ success: true });
-});
 
 export { router as webhooksRouter };

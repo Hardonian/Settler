@@ -4,7 +4,7 @@
  * REST API for managing and interacting with AI agents
  */
 
-import { Router, Response } from "express";
+import { NextFunction, Router, Response } from "express";
 import { AuthRequest } from "../../middleware/auth";
 import { requirePermission } from "../../middleware/authorization";
 import { Permission } from "../../infrastructure/security/Permissions";
@@ -17,7 +17,11 @@ import { ReleaseQAAgent } from "../../services/ai-agents/release-qa-agent";
 import { agentGovernanceService } from "../../services/ai-agents/agent-governance-service";
 import { handleRouteError } from "../../utils/error-handler";
 import { logError } from "../../utils/logger";
-import { authorizeTenantActionOr403, requireTenantContext } from "../authz-helpers";
+import {
+  authorizeTenantActionOr403,
+  requireTenantContext,
+  requireUserContext,
+} from "../authz-helpers";
 import {
   buildStrategicSurfaceMetadata,
   requireStrategicSurfaceAvailability,
@@ -154,8 +158,12 @@ router.get(
 router.get(
   "/:agentId",
   requirePermission(Permission.ADMIN_READ),
-  async (req: AuthRequest, res: Response) => {
+  async (req: AuthRequest, res: Response, next: NextFunction) => {
     try {
+      if (req.params["agentId"] === "drafts") {
+        next("route");
+        return;
+      }
       const tenantId = requireTenantContext(req, res);
       if (!tenantId) return;
       if (
@@ -539,7 +547,8 @@ router.post(
       ensureAgentsInitialized();
 
       const draftId = String(req.params["draftId"] || "");
-      const approverId = req.userId || "operator-admin";
+      const approverId = requireUserContext(req, res);
+      if (!approverId) return;
       const approverRole = "operator.governance";
 
       const result = await agentGovernanceService.approveDraft(tenantId, draftId, {
@@ -595,7 +604,8 @@ router.post(
       ensureAgentsInitialized();
 
       const draftId = String(req.params["draftId"] || "");
-      const approverId = req.userId || "operator-admin";
+      const approverId = requireUserContext(req, res);
+      if (!approverId) return;
       const reason = req.body?.reason || "Rejected by operator";
 
       const draft = agentGovernanceService.rejectDraft(tenantId, draftId, approverId, reason);

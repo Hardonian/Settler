@@ -1,5 +1,5 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { AuditDossierWorkbench } from "@/components/console/AuditDossierWorkbench";
+import { AuditDossierWorkbench } from "../../components/console/AuditDossierWorkbench";
 
 describe("AuditDossierWorkbench", () => {
   beforeEach(() => {

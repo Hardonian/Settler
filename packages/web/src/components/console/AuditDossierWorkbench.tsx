@@ -10,11 +10,8 @@ import {
   Play,
   Terminal,
   Lock,
-  Layers,
   Sparkles,
   CheckCircle2,
-  Calendar,
-  Search,
   Hash,
 } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -55,10 +52,7 @@ interface AuditDossier {
 }
 
 export function AuditDossierWorkbench() {
-  const [query, setQuery] = useState(
-    "SOC-1 Type II Formal Census Settlement & Dual-Ledger Attestation"
-  );
-  const [period, setPeriod] = useState("30d");
+  const query = "SOC-1 Type II Formal Census Settlement & Dual-Ledger Attestation";
   const [generating, setGenerating] = useState(false);
   const [copiedField, setCopiedField] = useState<string | null>(null);
 
