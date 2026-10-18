@@ -5,7 +5,7 @@
     "outDir": "./dist-test",
     "isolatedModules": true
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "test/**/*"],
   "exclude": [
     "node_modules",
     "dist",

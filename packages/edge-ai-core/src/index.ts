@@ -31,3 +31,6 @@ export * from "./model-distribution";
 
 // Security
 export * from "./security";
+
+// Deterministic Mathematical Discrepancy Classification
+export * from "./discrepancy-classifier";

@@ -57,9 +57,10 @@ export class ExceptionQueryService {
     limit: number,
     offset: number
   ) {
+    const scopedWhere: Prisma.ReconciliationMatchWhereInput = { ...where, tenantId };
     const [exceptions, total] = await Promise.all([
       prisma.reconciliationMatch.findMany({
-        where,
+        where: scopedWhere,
         include: {
           run: {
             select: {
@@ -91,26 +92,31 @@ export class ExceptionQueryService {
         take: limit,
         skip: offset,
       }),
-      prisma.reconciliationMatch.count({ where }),
+      prisma.reconciliationMatch.count({ where: scopedWhere }),
     ]);
 
     return { exceptions, total };
   }
 
-  async getExceptionStats(whereBase: Prisma.ReconciliationMatchWhereInput) {
+  async getExceptionStats(tenantId: string, whereBase: Prisma.ReconciliationMatchWhereInput = {}) {
+    const scopedWhereBase: Prisma.ReconciliationMatchWhereInput = { ...whereBase, tenantId };
     const [total, open, inProgress, resolved, dismissed, critical, high, medium, low, unassigned] =
       await Promise.all([
-        prisma.reconciliationMatch.count({ where: whereBase }),
-        prisma.reconciliationMatch.count({ where: { ...whereBase, status: "open" } }),
-        prisma.reconciliationMatch.count({ where: { ...whereBase, status: "in_progress" } }),
-        prisma.reconciliationMatch.count({ where: { ...whereBase, status: "resolved" } }),
-        prisma.reconciliationMatch.count({ where: { ...whereBase, status: "dismissed" } }),
-        prisma.reconciliationMatch.count({ where: { ...whereBase, severity: "critical" } }),
-        prisma.reconciliationMatch.count({ where: { ...whereBase, severity: "high" } }),
-        prisma.reconciliationMatch.count({ where: { ...whereBase, severity: "medium" } }),
-        prisma.reconciliationMatch.count({ where: { ...whereBase, severity: "low" } }),
+        prisma.reconciliationMatch.count({ where: scopedWhereBase }),
+        prisma.reconciliationMatch.count({ where: { ...scopedWhereBase, status: "open" } }),
+        prisma.reconciliationMatch.count({ where: { ...scopedWhereBase, status: "in_progress" } }),
+        prisma.reconciliationMatch.count({ where: { ...scopedWhereBase, status: "resolved" } }),
+        prisma.reconciliationMatch.count({ where: { ...scopedWhereBase, status: "dismissed" } }),
+        prisma.reconciliationMatch.count({ where: { ...scopedWhereBase, severity: "critical" } }),
+        prisma.reconciliationMatch.count({ where: { ...scopedWhereBase, severity: "high" } }),
+        prisma.reconciliationMatch.count({ where: { ...scopedWhereBase, severity: "medium" } }),
+        prisma.reconciliationMatch.count({ where: { ...scopedWhereBase, severity: "low" } }),
         prisma.reconciliationMatch.count({
-          where: { ...whereBase, assignedTo: null, status: { notIn: ["resolved", "dismissed"] } },
+          where: {
+            ...scopedWhereBase,
+            assignedTo: null,
+            status: { notIn: ["resolved", "dismissed"] },
+          },
         }),
       ]);
 

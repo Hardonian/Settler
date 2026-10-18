@@ -5,9 +5,10 @@ use std::collections::HashMap;
 /// Tree depth for 256-bit keys (SHA-256 digests)
 pub const SMT_DEPTH: usize = 256;
 
-/// Deterministically computes the SHA-256 hash of two 32-byte chunks
+/// Deterministically computes the SHA-256 hash of two 32-byte chunks with domain separator (0x01)
 pub fn hash_nodes(left: &[u8; 32], right: &[u8; 32]) -> [u8; 32] {
     let mut hasher = Sha256::new();
+    hasher.update([0x01]); // Domain separator for internal node
     hasher.update(left);
     hasher.update(right);
     hasher.finalize().into()

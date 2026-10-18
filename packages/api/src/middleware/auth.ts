@@ -244,14 +244,7 @@ async function validateJWT(req: AuthRequest, token: string): Promise<void> {
     if (userRows.length > 0 && userRows[0]) {
       req.tenantId = userRows[0].tenant_id;
     } else {
-      const tenant = await prisma.tenant
-        .findFirst({
-          select: { id: true },
-        })
-        .catch(() => null);
-      if (tenant) {
-        req.tenantId = tenant.id;
-      }
+      throw new Error("User has no associated tenant context");
     }
   } catch (error: unknown) {
     if (error instanceof Error) {

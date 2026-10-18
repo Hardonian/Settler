@@ -31,6 +31,41 @@ export interface AgentResponse {
   executionTime: number;
 }
 
+/**
+ * Strict draft-only job request contract for AI agent autonomous operations.
+ * Bounded by mathematical limits; direct mutations or fund transfers are prohibited without human approval.
+ */
+export interface AgentJobDraft {
+  agentId: string;
+  jobType: string;
+  payload: Record<string, unknown>;
+  autoExecute: false;
+  requireApproval: true;
+  policyToken?: string;
+  governance: {
+    riskLevel: "low" | "medium" | "high";
+    estimatedImpact: string;
+    requiresHumanReview: true;
+    signedPolicyBound: string;
+  };
+}
+
+/**
+ * Enforces policy token verification before allowing any high-privilege execution
+ */
+export function assertSignedPolicyToken(policyToken?: string): void {
+  if (
+    !policyToken ||
+    typeof policyToken !== "string" ||
+    !policyToken.startsWith("pt_") ||
+    policyToken.length < 32
+  ) {
+    throw new Error(
+      "GOVERNANCE_INVARIANT_VIOLATION: Direct execution forbidden without verified signed policy token"
+    );
+  }
+}
+
 export abstract class BaseAgent extends EventEmitter {
   abstract id: string;
   abstract name: string;

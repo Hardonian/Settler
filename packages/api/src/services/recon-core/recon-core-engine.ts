@@ -577,16 +577,24 @@ export class ReconCoreEngine {
   /**
    * Export reconciliation results to CSV
    */
-  async exportResults(reconResultId: string, format: "csv" | "json" = "csv"): Promise<string> {
-    // Query matches using raw SQL since reconMatch table may not be in Prisma schema yet
+  async exportResults(
+    tenantId: string,
+    reconResultId: string,
+    format: "csv" | "json" = "csv"
+  ): Promise<string> {
+    // Query matches using raw SQL scoped strictly by tenantId
     let matches: any[] = [];
     try {
       matches = await this.prisma.$queryRaw`
-        SELECT * FROM "ReconMatch" WHERE "executionId" = ${reconResultId}
+        SELECT * FROM "ReconMatch" WHERE "executionId" = ${reconResultId} AND "tenantId" = ${tenantId}
       `;
     } catch (error) {
       // Table doesn't exist, try alternative query or return empty
-      logWarn("ReconMatch table not found, returning empty results", { error });
+      logWarn("ReconMatch table not found, returning empty results", {
+        error,
+        tenantId,
+        reconResultId,
+      });
       matches = [];
     }
 

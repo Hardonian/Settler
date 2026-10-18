@@ -11,6 +11,9 @@ import { Permission } from "../../infrastructure/security/Permissions";
 import { agentOrchestrator } from "../../services/ai-agents/orchestrator";
 import { InfrastructureOptimizerAgent } from "../../services/ai-agents/infrastructure-optimizer";
 import { AnomalyDetectorAgent } from "../../services/ai-agents/anomaly-detector";
+import { SyntheticUserSimulatorAgent } from "../../services/ai-agents/synthetic-user-simulator";
+import { SupportCopilotAgent } from "../../services/ai-agents/support-copilot";
+import { ReleaseQAAgent } from "../../services/ai-agents/release-qa-agent";
 import { handleRouteError } from "../../utils/error-handler";
 import { logError } from "../../utils/logger";
 import { authorizeTenantActionOr403, requireTenantContext } from "../authz-helpers";
@@ -35,15 +38,18 @@ function ensureAgentsInitialized(): void {
     return;
   }
 
-  const infrastructureOptimizer = new InfrastructureOptimizerAgent({});
-  const anomalyDetector = new AnomalyDetectorAgent({});
+  const agents = [
+    new InfrastructureOptimizerAgent({}),
+    new AnomalyDetectorAgent({}),
+    new SyntheticUserSimulatorAgent({}),
+    new SupportCopilotAgent({}),
+    new ReleaseQAAgent({}),
+  ];
 
-  if (!agentOrchestrator.getAgent(infrastructureOptimizer.id)) {
-    agentOrchestrator.registerAgent(infrastructureOptimizer);
-  }
-
-  if (!agentOrchestrator.getAgent(anomalyDetector.id)) {
-    agentOrchestrator.registerAgent(anomalyDetector);
+  for (const agent of agents) {
+    if (!agentOrchestrator.getAgent(agent.id)) {
+      agentOrchestrator.registerAgent(agent);
+    }
   }
 
   agentsInitialized = true;

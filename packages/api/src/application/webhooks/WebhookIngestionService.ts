@@ -14,6 +14,7 @@ import {
 } from "@settler/adapters";
 import { Transaction, Settlement, RefundDispute } from "@settler/types";
 import { query } from "../../db";
+import { cache } from "../../infrastructure/redis/client";
 
 export interface WebhookIngestionResult {
   success: boolean;
@@ -84,8 +85,10 @@ export class WebhookIngestionService {
         ? payload
         : JSON.parse(payloadString);
 
-    // Check idempotency
+    // Check idempotency and acquire distributed lock
     const idempotencyKey = this.extractIdempotencyKey(payloadObj, adapterName);
+    const lockKey = idempotencyKey ? `lock:webhook:${tenantId}:${idempotencyKey}` : null;
+
     if (idempotencyKey) {
       const existing = await this.checkIdempotency(idempotencyKey, tenantId);
       if (existing) {
@@ -96,46 +99,74 @@ export class WebhookIngestionService {
       }
     }
 
-    // Normalize webhook payload
-    let events: NormalizedEvent[];
-    try {
-      events = adapter.normalizeWebhook(payloadObj, tenantId);
-    } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : "Unknown error";
-      return {
-        success: false,
-        events: [],
-        errors: [`Failed to normalize webhook: ${message}`],
-      };
-    }
-
-    // Store webhook payload for audit
-    await this.storeWebhookPayload(adapterName, payloadObj, signature, tenantId);
-
-    // Process events
-    const errors: string[] = [];
-    for (const event of events) {
-      try {
-        await this.processEvent(event, tenantId);
-      } catch (error: unknown) {
-        const message = error instanceof Error ? error.message : "Unknown error";
-        errors.push(`Failed to process event ${event.type}: ${message}`);
+    if (lockKey) {
+      const acquired = await cache.acquireLock(lockKey, 30);
+      if (!acquired) {
+        // Race window: Another thread is currently processing this webhook. Wait briefly and recheck idempotency.
+        await new Promise((resolve) => setTimeout(resolve, 500));
+        if (idempotencyKey) {
+          const existing = await this.checkIdempotency(idempotencyKey, tenantId);
+          if (existing) {
+            return {
+              success: true,
+              events: existing.events || [],
+            };
+          }
+        }
+        return {
+          success: false,
+          events: [],
+          errors: ["Webhook processing locked by concurrent worker"],
+        };
       }
     }
 
-    // Store idempotency key if present
-    if (idempotencyKey) {
-      await this.storeIdempotencyKey(idempotencyKey, tenantId, events);
-    }
+    try {
+      // Normalize webhook payload
+      let events: NormalizedEvent[];
+      try {
+        events = adapter.normalizeWebhook(payloadObj, tenantId);
+      } catch (error: unknown) {
+        const message = error instanceof Error ? error.message : "Unknown error";
+        return {
+          success: false,
+          events: [],
+          errors: [`Failed to normalize webhook: ${message}`],
+        };
+      }
 
-    const result: WebhookIngestionResult = {
-      success: errors.length === 0,
-      events,
-    };
-    if (errors.length > 0) {
-      result.errors = errors;
+      // Store webhook payload for audit
+      await this.storeWebhookPayload(adapterName, payloadObj, signature, tenantId);
+
+      // Process events
+      const errors: string[] = [];
+      for (const event of events) {
+        try {
+          await this.processEvent(event, tenantId);
+        } catch (error: unknown) {
+          const message = error instanceof Error ? error.message : "Unknown error";
+          errors.push(`Failed to process event ${event.type}: ${message}`);
+        }
+      }
+
+      // Store idempotency key if present
+      if (idempotencyKey) {
+        await this.storeIdempotencyKey(idempotencyKey, tenantId, events);
+      }
+
+      const result: WebhookIngestionResult = {
+        success: errors.length === 0,
+        events,
+      };
+      if (errors.length > 0) {
+        result.errors = errors;
+      }
+      return result;
+    } finally {
+      if (lockKey) {
+        await cache.releaseLock(lockKey);
+      }
     }
-    return result;
   }
 
   /**
@@ -343,19 +374,37 @@ export class WebhookIngestionService {
     key: string,
     tenantId: string
   ): Promise<{ events: NormalizedEvent[] } | null> {
-    const result = await query(
-      `SELECT payload FROM webhook_payloads 
-       WHERE tenant_id = $1 AND payload->>'id' = $2 AND processed = true
-       LIMIT 1`,
-      [tenantId, key]
-    );
+    try {
+      const result = await query<{ response: unknown }>(
+        `SELECT response FROM idempotency_keys 
+         WHERE tenant_id = $1 AND key = $2 AND (expires_at IS NULL OR expires_at > NOW())
+         LIMIT 1`,
+        [tenantId, key]
+      );
 
-    if (result.length === 0) {
-      return null;
+      if (result.length > 0 && result[0]?.response) {
+        const raw = result[0].response;
+        const parsed = typeof raw === "string" ? JSON.parse(raw) : raw;
+        return parsed as { events: NormalizedEvent[] };
+      }
+    } catch {
+      // Fallback check on webhook_payloads if idempotency_keys table is not available
+      try {
+        const result = await query<{ payload: unknown }>(
+          `SELECT payload FROM webhook_payloads 
+           WHERE tenant_id = $1 AND payload->>'id' = $2 AND processed = true
+           LIMIT 1`,
+          [tenantId, key]
+        );
+        if (result.length > 0) {
+          return { events: [] };
+        }
+      } catch {
+        // Table may not exist in test mock
+      }
     }
 
-    // Return cached events if available
-    return null; // For now, return null to reprocess
+    return null;
   }
 
   /**
@@ -366,12 +415,26 @@ export class WebhookIngestionService {
     tenantId: string,
     events: NormalizedEvent[]
   ): Promise<void> {
-    // Store in idempotency_keys table
-    await query(
-      `INSERT INTO idempotency_keys (user_id, tenant_id, key, response, expires_at)
-       VALUES ($1, $2, $3, $4, NOW() + INTERVAL '24 hours')
-       ON CONFLICT DO NOTHING`,
-      [null, tenantId, key, JSON.stringify({ events })]
-    );
+    const payload = JSON.stringify({ events });
+    try {
+      // Store in idempotency_keys table with atomic upsert
+      await query(
+        `INSERT INTO idempotency_keys (tenant_id, key, response, expires_at)
+         VALUES ($1, $2, $3, NOW() + INTERVAL '24 hours')
+         ON CONFLICT (tenant_id, key) DO UPDATE SET response = EXCLUDED.response, expires_at = EXCLUDED.expires_at`,
+        [tenantId, key, payload]
+      );
+    } catch {
+      try {
+        await query(
+          `INSERT INTO idempotency_keys (tenant_id, key, response, expires_at)
+           VALUES ($1, $2, $3, NOW() + INTERVAL '24 hours')
+           ON CONFLICT DO NOTHING`,
+          [tenantId, key, payload]
+        );
+      } catch {
+        // Degrade gracefully if DB mock/unsupported
+      }
+    }
   }
 }

@@ -7,13 +7,26 @@ function normalizeString(value: string): string {
 }
 
 function canonicalize(value: unknown): unknown {
+  if (value === null || value === undefined) return value;
   if (typeof value === "string") return normalizeString(value);
+  if (typeof value === "number") {
+    if (!Number.isFinite(value)) {
+      throw new TypeError("RFC 8785 (JCS): Non-finite numbers are not permitted");
+    }
+    // Normalize -0 to 0
+    return Object.is(value, -0) ? 0 : value;
+  }
   if (Array.isArray(value)) return value.map((v) => canonicalize(v));
-  if (value && typeof value === "object") {
-    return Object.keys(value as Record<string, unknown>)
+  if (typeof value === "object") {
+    const record = value as Record<string, unknown>;
+    // Sort keys strictly by UTF-16 code units as required by RFC 8785
+    return Object.keys(record)
       .sort()
       .reduce<Record<string, unknown>>((acc, key) => {
-        acc[normalizeString(key)] = canonicalize((value as Record<string, unknown>)[key]);
+        const val = record[key];
+        if (val !== undefined && typeof val !== "function" && typeof val !== "symbol") {
+          acc[normalizeString(key)] = canonicalize(val);
+        }
         return acc;
       }, {});
   }

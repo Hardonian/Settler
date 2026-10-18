@@ -8,7 +8,7 @@
  * - Capacity planning
  */
 
-import { BaseAgent } from "./orchestrator";
+import { BaseAgent, AgentJobDraft, assertSignedPolicyToken } from "./orchestrator";
 import { logError, logInfo } from "../../utils/logger";
 import { prisma } from "../../infrastructure/db/prisma";
 
@@ -118,19 +118,36 @@ export class InfrastructureOptimizerAgent extends BaseAgent {
     this.optimizationHistory = opportunities;
     this.lastOptimization = new Date();
 
-    // Auto-apply low-risk optimizations
+    // SECURITY INVARIANT: Autonomous agents output strictly draft-only job requests
     for (const opportunity of opportunities) {
-      if (
-        opportunity.recommendedAction === "auto-apply" &&
-        opportunity.expectedImpact.riskLevel === "low"
-      ) {
-        await this.applyOptimization(opportunity).catch((error) => {
-          logError(`Failed to apply optimization ${opportunity.id}`, error);
-        });
-      }
+      const draft = this.createDraftJob(opportunity);
+      this.emit("draft_job_created", draft);
     }
 
     return opportunities;
+  }
+
+  /**
+   * Generates draft-only job requests for review via JobForgeClient
+   */
+  createDraftJob(opportunity: OptimizationOpportunity): AgentJobDraft {
+    return {
+      agentId: this.id,
+      jobType: `infrastructure.optimize.${opportunity.type}`,
+      payload: {
+        opportunityId: opportunity.id,
+        currentState: opportunity.currentState,
+        proposedChange: opportunity.proposedChange,
+      },
+      autoExecute: false,
+      requireApproval: true,
+      governance: {
+        riskLevel: opportunity.expectedImpact.riskLevel,
+        estimatedImpact: `Cost savings: $${opportunity.expectedImpact.costSavings || 0}, perf: ${opportunity.expectedImpact.performanceImprovement || 0}%`,
+        requiresHumanReview: true,
+        signedPolicyBound: "pb_infra_opt_draft_v1",
+      },
+    };
   }
 
   /**
@@ -495,6 +512,9 @@ export class InfrastructureOptimizerAgent extends BaseAgent {
    */
   private async applyOptimization(opportunity: OptimizationOpportunity): Promise<void> {
     logInfo(`Applying optimization: ${opportunity.id}`, { opportunityId: opportunity.id });
+
+    // POLICY GOVERNANCE INVARIANT: Direct infrastructure changes require signed policy token
+    assertSignedPolicyToken(opportunity.proposedChange?.policyToken as string | undefined);
 
     try {
       switch (opportunity.type) {

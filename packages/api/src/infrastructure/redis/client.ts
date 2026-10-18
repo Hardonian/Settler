@@ -208,4 +208,49 @@ export const cache = {
       return false;
     }
   },
+
+  /**
+   * Acquire distributed lock with TTL (SET key NX EX ttl)
+   */
+  async acquireLock(key: string, ttlSeconds = 30): Promise<boolean> {
+    const client = getRedisClient();
+    if (!client) {
+      return memoryAcquireLock(key, ttlSeconds);
+    }
+    try {
+      if (redis) {
+        const result = await redis.set(key, "1", { nx: true, ex: ttlSeconds });
+        return result === "OK" || (result as unknown) === true;
+      } else {
+        const result = await client.set(key, "1", "EX", ttlSeconds, "NX");
+        return result === "OK";
+      }
+    } catch {
+      return memoryAcquireLock(key, ttlSeconds);
+    }
+  },
+
+  /**
+   * Release distributed lock
+   */
+  async releaseLock(key: string): Promise<void> {
+    memoryReleaseLock(key);
+    await cache.del(key);
+  },
 };
+
+const inMemoryLocks = new Map<string, number>();
+
+function memoryAcquireLock(key: string, ttlSeconds = 30): boolean {
+  const now = Date.now();
+  const expiresAt = inMemoryLocks.get(key);
+  if (expiresAt && expiresAt > now) {
+    return false;
+  }
+  inMemoryLocks.set(key, now + ttlSeconds * 1000);
+  return true;
+}
+
+function memoryReleaseLock(key: string): void {
+  inMemoryLocks.delete(key);
+}

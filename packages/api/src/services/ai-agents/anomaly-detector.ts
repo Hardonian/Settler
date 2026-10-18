@@ -4,7 +4,7 @@
  * Detects anomalies in reconciliation data, API usage patterns, and security threats.
  */
 
-import { BaseAgent } from "./orchestrator";
+import { BaseAgent, AgentJobDraft, assertSignedPolicyToken } from "./orchestrator";
 import { logInfo, logError, logWarn } from "../../utils/logger";
 import { prisma } from "../../infrastructure/db/prisma";
 
@@ -65,6 +65,10 @@ export class AnomalyDetectorAgent extends BaseAgent {
       case "get_stats":
         return await this.getStatus();
 
+      case "apply_remediation":
+        assertSignedPolicyToken(params.policyToken as string | undefined);
+        return { status: "remediation_applied_under_policy", anomalyId: params.anomalyId };
+
       default:
         throw new Error(`Unknown action: ${action}`);
     }
@@ -118,8 +122,10 @@ export class AnomalyDetectorAgent extends BaseAgent {
     this.detectedAnomalies.push(...anomalies);
     this.lastDetection = new Date();
 
-    // Alert on critical/high severity anomalies
+    // Emit draft-only job requests requiring human approval (Pillar 4 Invariant)
     for (const anomaly of anomalies) {
+      const draft = this.createDraftJob(anomaly);
+      this.emit("draft_job_created", draft);
       if (anomaly.severity === "critical" || anomaly.severity === "high") {
         this.emit("anomaly_detected", anomaly);
         await this.sendAlert(anomaly);
@@ -127,6 +133,30 @@ export class AnomalyDetectorAgent extends BaseAgent {
     }
 
     return anomalies;
+  }
+
+  /**
+   * Generates strictly draft-only job request for anomaly remediation via JobForgeClient
+   */
+  createDraftJob(anomaly: Anomaly): AgentJobDraft {
+    return {
+      agentId: this.id,
+      jobType: `anomaly.remediation.${anomaly.type}`,
+      payload: {
+        anomalyId: anomaly.id,
+        severity: anomaly.severity,
+        evidence: anomaly.evidence,
+        recommendedAction: anomaly.recommendedAction,
+      },
+      autoExecute: false,
+      requireApproval: true,
+      governance: {
+        riskLevel: anomaly.severity === "critical" ? "high" : anomaly.severity,
+        estimatedImpact: anomaly.description,
+        requiresHumanReview: true,
+        signedPolicyBound: "pb_anomaly_remediation_draft_v1",
+      },
+    };
   }
 
   /**
