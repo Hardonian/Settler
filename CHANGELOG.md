@@ -6,13 +6,32 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+## [v1.7.0] - 2026-10-18
+
 ### 🔒 Moat (Cryptographic Trust & Invariants)
 
-- Consolidation of authenticated matching path onto `@settler/reconciliation-core` minor-unit engine (FCR-003).
+- **Autonomous ERP Journal Synthesis Engine** (`@settler/reconciliation-core` & `@settler/api`): Balanced compound GAAP/IFRS zero-sum journal entries with cryptographic Merkle proofpack hashes, automated NetSuite SuiteTalk REST and SAP S/4HANA OData payloads, and tenant-isolated `/api/v2/erp/journals` API.
+- **Interchange++ Margin Recovery & Card Scheme Surcharge Disputing** (`@settler/edge-ai-core` & `@settler/api`): Multi-party fee deconstruction isolating interchange, scheme, and acquirer margins; Durbin debit cap ($0.21 + 5 bps) compliance enforcement; EIRF late settlement qualification downgrade detection (>48h); Level 2/3 line-item omission audits; automated dispute claim generation via `/api/v2/interchange/disputes`.
+- **Time-Travel Forensic Financial Debugger Engine** (`@settler/api` & `@settler/reconciliation-core`): Microsecond dual-ledger balance reconstruction (TigerBeetle + PostgreSQL) with deterministic Sparse Merkle Tree (SMT-256) state transitions at any historical epoch via `/api/v2/time-travel/replay`.
+- **SMT-256 Chaos Metamorphic Property Fuzzing** (`crates/settler-kernel`): Formal fuzzing engine verifying monotonic root stability under permutation, adversarial single-bit value inversion tamper detection, and sibling mutation path rejection with zero false positives.
+- **Client/Node Cryptographic Boundary Separation** (`@settler/web`): Dedicated Web Crypto API (`crypto.subtle.digest`) for zero-trust browser bundles and Node.js native `crypto.createHash` for SSR/server paths with zero Node built-ins leaked to client bundles.
 
 ### ⚡ Leverage (Developer Velocity & Multi-Rail Throughput)
 
-- First-customer authenticated pilot verification across PostgreSQL/Supabase and Stripe live test-mode.
+- **Interactive Time-Travel Scrubber Workbench** (`/console/time-travel`): Visual playback controls (0.5x–5x), microsecond historical scrubber, dual-ledger balance comparison, SMT leaf hash inspector, and reciprocal navigation.
+- **TigerBeetle Live Parity Cockpit** (`/console/ledger-parity`): Real-time zero-sum balance sheet monitoring, two-phase commit (2PC) pending transfer tracking, cross-ledger volume invariant verification, and quick-action execution sweeps.
+- **Autonomous Continuous Settlement Daemon Console** (`/console/daemon`): Real-time telemetry cockpit monitoring autonomous background micro-settlement loops, distributed lease status, and circuit breaker health.
+- **Cryptographic Audit Dossier Explorer** (`/console/audit-dossier`): 100% census reconciliation population evidence generation with client-side WebAssembly zero-trust proofpack verification and CLI command export.
+- **Command Palette (`Cmd+K`) Omnisearch**: Instant keyboard navigation to all marquee ledger tools, documentation, playgrounds, and release changelogs.
+- **Turbo Graph Build Optimization**: Decoupled Prisma generation into explicit graph tasks (`//#prisma:generate`), eliminating redundant prebuild rebuild loops, caching framework outputs, and reducing full pipeline cycle times.
+
+### 🛠️ Maintenance (Polish, Hygiene & Conformance)
+
+- **Console Navigation Iconography**: 100% Lucide icon mapping coverage across all 39 console routes in `ConsoleLayout.tsx`.
+- **Console Page Header Standardization**: Accessible breadcrumbs and cross-navigation action bars across all console pages.
+- **Navigation Contract Test Suite**: Comprehensive automated contract test suite (`console-navigation.test.ts`) guaranteeing route registry uniqueness, page file existence, and operational maturity.
+- **100.00% Tenant Isolation Maintained**: Strict tenant membership validation and SQL tenant guards across all 468 discovered routes (442 verified, 26 exempt, 0 unreadable).
+- **Synchronized Versioning**: Bumped and synchronized workspace package versions to `1.7.0` across all 27 monorepo packages.
 
 ## [v1.6.0] - 2026-10-07
 

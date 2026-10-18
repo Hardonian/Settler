@@ -62,4 +62,16 @@ test("build profiler launches pnpm without a Windows command-shell dependency", 
   assert.match(profiler, /process\.env\.npm_execpath/);
   assert.match(profiler, /process\.execPath/);
   assert.doesNotMatch(profiler, /shell:\s*true/);
+  assert.match(profiler, /traceRepresentsCurrentExecution/);
+  assert.match(profiler, /webTaskCacheStatus/);
+});
+
+test("Windows production E2E harness uses bounded hidden processes and cleanup", () => {
+  const harness = readFileSync("scripts/run-production-e2e.ps1", "utf8");
+
+  assert.match(harness, /-WindowStyle Hidden/g);
+  assert.match(harness, /for \(\$attempt = 1; \$attempt -le 60; \$attempt\+\+\)/);
+  assert.match(harness, /finally \{/);
+  assert.match(harness, /Stop-ProcessTree \$web\.Id/);
+  assert.match(harness, /Stop-ProcessTree \$api\.Id/);
 });

@@ -6,6 +6,7 @@
 Deterministic transaction matching · Hash-linked evidence · Enterprise-grade tenant isolation
 
 [![CI](https://github.com/Hardonian/Settler/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/Hardonian/Settler/actions/workflows/ci.yml)
+[![Version](https://img.shields.io/badge/version-1.7.0-blue.svg)](CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript&logoColor=white)
 ![Node.js](https://img.shields.io/badge/Node.js-24%2B-339933?logo=node.js&logoColor=white)
@@ -25,6 +26,17 @@ Deterministic transaction matching · Hash-linked evidence · Enterprise-grade t
 Settler replaces spreadsheet reconciliation and custom scripts with a deterministic, API-first matching engine. It ingests financial records from multiple sources, matches them using configurable tolerance rules, flags exceptions into structured adjudication workflows, and exports hash-linked evidence bundles — all tenant-isolated and replayable from scratch.
 
 **Every reconciliation run produces byte-for-byte reproducible results.** No probabilistic guessing. No silent degradation. Auditors get verifiable proofpacks, not screenshots.
+
+## What's New in v1.7.0 — Autonomous Frontier & Financial Replay Engine
+
+Settler v1.7.0 introduces autonomous continuous settlement, microsecond time-travel forensics, and multi-party margin recovery:
+
+- **Autonomous Continuous Settlement Daemon** (`/console/daemon`): Continuous background matching loop across TigerBeetle and relational ledgers with sub-second finality, distributed lease fencing, and adaptive circuit breaking.
+- **TigerBeetle Live Parity Cockpit** (`/console/ledger-parity`): Real-time zero-sum balance sheet invariant monitoring and cross-ledger volume verification between TigerBeetle and relational datastores.
+- **Microsecond Time-Travel Forensic Debugger** (`/console/time-travel`): Interactive timeline scrubber reconstructing exact historical dual-ledger balance sheets and Sparse Merkle Tree (SMT-256) state transitions at any epoch.
+- **Autonomous ERP Journal Synthesis Engine** (`/api/v2/erp/journals`): Zero-sum balanced compound GAAP/IFRS journal entries with cryptographic Merkle proofpack hashes for NetSuite SuiteTalk REST and SAP S/4HANA OData.
+- **Interchange++ Margin Recovery & Scheme Surcharge Audits** (`/api/v2/interchange`): Multi-party fee deconstruction, Durbin debit cap ($0.21 + 5 bps) compliance, EIRF late clearing detection (>48h), and automated dispute claim generation.
+- **Cryptographic Audit Dossier Explorer** (`/console/audit-dossier`): 100% census reconciliation population evidence dossiers with client-side WebAssembly zero-trust proofpack verification.
 
 ## Architecture
 
@@ -198,9 +210,9 @@ pnpm test:e2e      # Playwright-based end-to-end tests
 ```
 
 ## API
-
-Versioned routes under `/api/v1/`. Key endpoints:
-
+ 
+Versioned routes under `/api/v1/` and `/api/v2/`. Key endpoints:
+ 
 | Endpoint | Method | Description |
 | --- | --- | --- |
 | `/api/v1/ingestion` | POST | Ingest source/target records (CSV, JSON, webhooks) |
@@ -211,7 +223,14 @@ Versioned routes under `/api/v1/`. Key endpoints:
 | `/api/v1/approvals` | POST/GET | SOX maker-checker workflows |
 | `/api/v1/sla` | GET | SLA monitoring dashboard data |
 | `/api/v1/billing/status` | GET | Subscription and usage status |
-
+| `/api/v2/erp/journals` | POST | Synthesize GAAP/IFRS zero-sum journals (NetSuite & SAP) |
+| `/api/v2/interchange/analyze` | POST | Deconstruct multi-party Interchange++ fees and detect overcharges |
+| `/api/v2/interchange/disputes` | POST | Generate automated card scheme dispute recovery claims |
+| `/api/v2/time-travel/replay` | GET/POST | Microsecond historical balance reconstruction & SMT state roots |
+| `/api/v2/daemon/status` | GET | Autonomous continuous settlement daemon telemetry and lease state |
+| `/api/v2/ledger/parity/status` | GET | Live TigerBeetle vs PostgreSQL zero-sum invariant monitoring |
+| `/api/v2/audit/dossier` | POST | Generate 100% census population cryptographic audit dossiers |
+ 
 Full API reference: [docs/API_REFERENCE.md](docs/API_REFERENCE.md)
 
 ## Documentation

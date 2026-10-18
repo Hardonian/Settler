@@ -2,7 +2,7 @@
 
 ## Toolchain (pinned)
 
-- Node.js: `24.12.0` (`.nvmrc` and `.node-version`)
+- Node.js: `24.15.0` (`.nvmrc` and `.node-version`)
 - Package manager: `pnpm@10.13.1` (`package.json#packageManager`)
 - Install command (local/CI): `pnpm run pnpm:ci:install`
 
@@ -25,7 +25,7 @@
 - `vercel.json` uses:
   - `installCommand`: `corepack enable && corepack prepare pnpm@10.13.1 --activate && pnpm install --frozen-lockfile`
   - `buildCommand`: `pnpm --filter @settler/web... build`
-  - Node runtime: controlled by root `package.json#engines.node` (`>=24.0.0 <25.0.0`) because `nodeVersion` is not a valid Vercel config key.
+  - Node runtime: controlled by root `package.json#engines.node` (`>=24.15.0 <25.0.0`) because `nodeVersion` is not a valid Vercel config key.
 - CI and Vercel use the same Node major and pnpm version.
 
 ## Environment checklist (Preview + Production)
@@ -60,7 +60,7 @@
 - High/Critical vulnerabilities fail verify until remediated.
 - Do not bypass with `--force`; patch dependency ranges or overrides explicitly.
 
-## Build performance baseline and safe optimization backlog
+## Build performance baseline and optimization status
 
 Baseline captured on 2026-10-18 with Node.js 24.15.0, pnpm 10.13.1, and Turbo 2.11.7 on Windows:
 
@@ -71,13 +71,22 @@ Baseline captured on 2026-10-18 with Node.js 24.15.0, pnpm 10.13.1, and Turbo 2.
 - `packages/api` and `packages/web` prebuild scripts rebuilt dependencies that Turbo had already scheduled, and each regenerated Prisma Client.
 - The `/verify` bundle emitted `fs` resolution and expression-based dynamic import warnings from `packages/web/src/lib/verify.ts`.
 
-Prioritized future work, subject to before/after measurement and full verification:
+Implemented on 2026-10-18:
 
-1. Configure authenticated Turbo remote caching for CI and trusted developer environments.
-2. Model generated Prisma artifacts and package outputs explicitly in the Turbo graph, then remove redundant package builds from API/web prebuild scripts only after proving equivalent dependency and freshness guarantees.
-3. Audit Turbo inputs for the web task so API-only changes do not invalidate the web build unless they change a declared web dependency.
-4. Split the Node-only proof verifier from the browser/WASM verifier so the `/verify` client bundle cannot traverse `fs` or expression-based imports.
-5. Profile Next.js compilation and trace finalization separately before considering route or bundler changes.
+1. Main CI now passes `TURBO_TOKEN` and `TURBO_TEAM` from repository secrets. Vercel builds connect to managed remote caching automatically. Run `pnpm turbo:cache:check` to verify local/external-CI configuration without printing credentials.
+2. Prisma generation is one uncached root task with narrow declared inputs. API and web prebuild hooks no longer rebuild dependencies already ordered by Turbo.
+3. `.next/cache` and `.next/dev` are excluded from Turbo artifacts. The web-to-API dependency remains intentionally: web routes import API email-lifecycle, activation-funnel, and billing-hardening outputs, so API changes can legitimately affect the web build.
+4. Browser, Node, and shared proof verification are separate modules. The production build no longer emits `fs` resolution or expression-import warnings for `/verify`.
+5. `pnpm build:profile` records an uncached execution profile, Turbo run summary, and parsed Next.js trace under ignored `artifacts/`. Use `pnpm build:profile -- --warm` for a cache replay measurement.
+
+Post-change measurements on the same host:
+
+- Forced diagnostic execution: 388.2s wall time; this intentionally bypasses cache reads and is not a direct release-build comparison.
+- Cache-miss builds while concurrent commits were landing: 252.0-274.8s wall time, with all 12 reusable dependency tasks hitting cache after the first run.
+- Stable warm replay at web hash `0734a0c60e3e0556`: 6.0s wall time, 13 of 14 tasks cached; only the intentionally uncached Prisma generation task ran.
+- The Next.js trace attributes the dominant miss-path cost to webpack (92-180s) and build-trace collection (66-80s), not static generation (about 5s).
+
+Remote caching cannot be activated in an unauthenticated shell by repository code alone. External CI requires the `TURBO_TOKEN` and `TURBO_TEAM` secrets; `pnpm turbo:cache:check -- --require` fails closed when they are absent. No token material is committed or logged.
 
 Optimization guardrails:
 

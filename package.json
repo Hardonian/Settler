@@ -1,6 +1,6 @@
 {
   "name": "settler-monorepo",
-  "version": "1.6.0",
+  "version": "1.7.0",
   "private": true,
   "description": "Settler - Open Source Reconciliation Engine",
   "packageManager": "pnpm@10.13.1",
@@ -27,6 +27,7 @@
     "test:ci:verify": "pnpm --filter @settler/api exec jest --runInBand --silent",
     "test:ci:verify:open-handles": "pnpm --filter @settler/api exec jest --runInBand --detectOpenHandles",
     "test:e2e": "playwright test --project=ci-critical",
+    "test:e2e:production:windows": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/run-production-e2e.ps1",
     "test:smoke": "tsx scripts/smoke-test.ts",
     "test:csv-upload": "tsx scripts/test-csv-upload.ts",
     "stripe:listen": "tsx scripts/stripe-test-harness.ts listen",

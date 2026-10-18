@@ -1136,7 +1136,7 @@ dependencies = [
 
 [[package]]
 name = "settler-kernel"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "hex",
  "pretty_assertions",
@@ -1184,7 +1184,7 @@ dependencies = [
 
 [[package]]
 name = "settler-verify-wasm"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "serde",
  "serde_json",

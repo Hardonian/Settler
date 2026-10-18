@@ -50,13 +50,22 @@ if (existsSync(tracePath)) {
 }
 
 let turboRunSummary = null;
+let webTaskCacheStatus = null;
 if (existsSync(turboRunsDir)) {
   const summaries = readdirSync(turboRunsDir)
     .filter((entry) => entry.endsWith(".json"))
     .map((entry) => join(turboRunsDir, entry))
     .sort((left, right) => statSync(right).mtimeMs - statSync(left).mtimeMs);
-  if (summaries[0]) turboRunSummary = relative(repoRoot, summaries[0]);
+  if (summaries[0]) {
+    turboRunSummary = relative(repoRoot, summaries[0]);
+    const summary = JSON.parse(readFileSync(summaries[0], "utf8"));
+    const webTask = summary.tasks?.find((task) => task.taskId === "@settler/web#build");
+    webTaskCacheStatus = webTask?.cache?.status ?? null;
+  }
 }
+
+const traceRepresentsCurrentExecution = webTaskCacheStatus !== "HIT";
+if (!traceRepresentsCurrentExecution) nextLongestSpans = [];
 
 const report = {
   schemaVersion: 1,
@@ -65,7 +74,9 @@ const report = {
   durationMs,
   command: [command, ...commandArgs],
   turboRunSummary,
+  webTaskCacheStatus,
   nextTrace: existsSync(tracePath) ? relative(repoRoot, tracePath) : null,
+  traceRepresentsCurrentExecution,
   nextLongestSpans,
 };
 
@@ -74,6 +85,7 @@ writeFileSync(reportPath, `${JSON.stringify(report, null, 2)}\n`, "utf8");
 
 console.log(`Build profile written to ${relative(repoRoot, reportPath)}`);
 console.log(`Wall time: ${(durationMs / 1_000).toFixed(1)}s`);
+console.log(`Web task cache: ${webTaskCacheStatus ?? "unknown"}`);
 for (const span of nextLongestSpans.slice(0, 10)) {
   console.log(`  ${span.name}: ${span.durationMs.toFixed(1)}ms`);
 }

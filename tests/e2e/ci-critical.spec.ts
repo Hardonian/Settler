@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { createHash } from "node:crypto";
 
 const API_URL = process.env.API_URL || "http://localhost:4000";
 
@@ -62,5 +63,42 @@ test.describe("CI critical production journeys", () => {
     expect(response.status()).toBe(401);
     expect(body.code).toBe("UNAUTHORIZED");
     expect(body.message).toBeTruthy();
+  });
+
+  test("proof verifier validates a bundle entirely in the browser", async ({ page }) => {
+    const consoleErrors: string[] = [];
+    page.on("console", (message) => {
+      if (message.type() === "error") consoleErrors.push(message.text());
+    });
+
+    const response = await page.goto("/verify", { waitUntil: "domcontentloaded" });
+    expect(response?.status()).toBe(200);
+    await expect(
+      page.getByRole("heading", { level: 1, name: "Zero-Trust Proofpack Verifier" })
+    ).toBeVisible();
+
+    const hash = (value: string) => createHash("sha256").update(value).digest("hex");
+    const leafHashes = [hash("left-record"), hash("right-record")];
+    const declaredMerkleRoot = hash(leafHashes.join(":"));
+    const proofpack = JSON.stringify({
+      declaredMerkleRoot,
+      leaves: ["left-record", "right-record"],
+    });
+
+    const apiRequests: string[] = [];
+    page.on("request", (request) => {
+      if (new URL(request.url()).pathname.startsWith("/api/")) apiRequests.push(request.url());
+    });
+
+    await page.locator('input[type="file"][accept=".json"]').setInputFiles({
+      name: "browser-proofpack.json",
+      mimeType: "application/json",
+      buffer: Buffer.from(proofpack),
+    });
+
+    await expect(page.getByText("PROOFPACK VERIFIED: Cryptographic Census Match")).toBeVisible();
+    await expect(page.getByText(declaredMerkleRoot, { exact: false }).first()).toBeVisible();
+    expect(apiRequests).toEqual([]);
+    expect(consoleErrors).toEqual([]);
   });
 });
