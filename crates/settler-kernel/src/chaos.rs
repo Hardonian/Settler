@@ -82,7 +82,7 @@ pub fn run_chaos_fuzz(iterations: usize, seed: u64) -> ChaosFuzzReport {
 
         let proof = smt.prove_inclusion(&target_key).expect("Target key must exist");
         let v_res = verify_smt_proof(&proof);
-        assert!(v_res.valid);
+        assert!(v_res.is_ok());
 
         // 2. Adversarial Bit-Flip: Flip 1 bit in value -> must detect tamper
         let mut tampered_proof = proof.clone();
@@ -91,7 +91,7 @@ pub fn run_chaos_fuzz(iterations: usize, seed: u64) -> ChaosFuzzReport {
         tampered_proof.value_hex = Some(hex::encode(val_bytes));
 
         let tamper_res = verify_smt_proof(&tampered_proof);
-        if !tamper_res.valid {
+        if tamper_res.is_err() {
             bit_flip_tamper_detections += 1;
         }
 
@@ -104,7 +104,7 @@ pub fn run_chaos_fuzz(iterations: usize, seed: u64) -> ChaosFuzzReport {
             sibling_tampered_proof.siblings_hex[mutate_idx] = hex::encode(sib_bytes);
 
             let sib_res = verify_smt_proof(&sibling_tampered_proof);
-            if !sib_res.valid {
+            if sib_res.is_err() {
                 sibling_mutation_rejections += 1;
             }
         }
@@ -119,7 +119,7 @@ pub fn run_chaos_fuzz(iterations: usize, seed: u64) -> ChaosFuzzReport {
         let non_inc_proof = smt.prove_non_inclusion(&non_existent_key).expect("Key must not exist");
         assert!(!non_inc_proof.is_inclusion);
         let non_inc_res = verify_smt_proof(&non_inc_proof);
-        if non_inc_res.valid {
+        if non_inc_res.is_ok() {
             non_inclusion_soundness_passes += 1;
         }
     }
