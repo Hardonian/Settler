@@ -1836,7 +1836,7 @@ export async function getOfflineWorkbenchSnapshot(
       offset,
       tenantId,
     };
-  } catch (_error) {
+  } catch {
     return {
       mode: "offline_fixture",
       items: [],

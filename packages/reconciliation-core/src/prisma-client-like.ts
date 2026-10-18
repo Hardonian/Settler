@@ -7,5 +7,11 @@
  */
 export interface ReconciliationCorePrismaClient {
   $queryRaw<T = unknown>(query: TemplateStringsArray, ...values: unknown[]): Promise<T>;
+  reconciliationRun?: any;
+  reconJob?: any;
+  reconResult?: any;
+  reconciliationMatch?: any;
+  exceptionAdjudicationMemory?: any;
+  proofPackage?: any;
   [delegate: string]: any;
 }

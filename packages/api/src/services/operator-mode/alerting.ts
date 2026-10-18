@@ -363,11 +363,18 @@ async function sendAlertNotifications(
 
   const delivered = await dispatchAlert(payload, providers, router);
 
-  for (const delivery of delivered) {
+  if (delivered.length > 0) {
+    const valuePlaceholders: string[] = [];
+    const params: unknown[] = [alertId];
+    delivered.forEach((delivery, idx) => {
+      const baseIdx = 2 + idx * 3;
+      valuePlaceholders.push(`($1, $${baseIdx}, $${baseIdx + 1}, $${baseIdx + 2}, NOW())`);
+      params.push(delivery.channel, delivery.channel, "sent");
+    });
     await query(
       `INSERT INTO alert_notifications (alert_id, notification_type, recipient, status, sent_at)
-       VALUES ($1, $2, $3, $4, NOW())`,
-      [alertId, delivery.channel, delivery.channel, "sent"]
+       VALUES ${valuePlaceholders.join(", ")}`,
+      params as any
     );
   }
 

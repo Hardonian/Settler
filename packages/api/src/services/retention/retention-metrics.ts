@@ -249,17 +249,27 @@ export class RetentionMetricsService {
 
       const metrics: TenantRetentionMetrics[] = [];
 
+      const tenantIds = results
+        .map((r) => r.tenantId)
+        .filter((id): id is string => typeof id === "string" && id.length > 0);
+
+      const tenants =
+        tenantIds.length > 0
+          ? await prisma.tenant.findMany({
+              where: { id: { in: tenantIds } },
+              select: { id: true, name: true },
+            })
+          : [];
+      const tenantMap = new Map(tenants.map((t) => [t.id, t.name]));
+
       for (const row of results) {
         if (!row.tenantId) continue;
 
-        const tenant = await prisma.tenant.findUnique({
-          where: { id: row.tenantId },
-          select: { name: true },
-        });
+        const tenantName = tenantMap.get(row.tenantId) || "Unknown";
 
         metrics.push({
           tenantId: row.tenantId,
-          tenantName: tenant?.name || "Unknown",
+          tenantName,
           prunedArtifactCount: row._sum.prunedCount || 0,
           storageReclaimedBytes: Number(row._sum.storageBytes || 0n),
           retentionPolicyViolations: row._sum.violations || 0,

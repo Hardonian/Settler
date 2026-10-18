@@ -38,6 +38,57 @@ function snapshotFromProofpackIndex(index: RunProofpackIndex): ExceptionRunCompa
 }
 
 /**
+ * Resolve ReconciliationRun.id -> ReconJob.id mapping before indexing comparisons.
+ */
+export async function resolveCanonicalRunAndJobIds(
+  prisma: ReconciliationCorePrismaClient,
+  tenantId: string,
+  incomingIds: string[]
+): Promise<{
+  uniqueIncomingIds: string[];
+  resolvedJobIds: string[];
+  runIdToJobIdMap: Map<string, string>;
+}> {
+  const uniqueIncomingIds = Array.from(
+    new Set(incomingIds.map((id) => id?.trim()).filter((id): id is string => Boolean(id)))
+  );
+
+  if (uniqueIncomingIds.length === 0) {
+    return { uniqueIncomingIds: [], resolvedJobIds: [], runIdToJobIdMap: new Map() };
+  }
+
+  const runs = await prisma.reconciliationRun.findMany({
+    where: { tenantId, id: { in: uniqueIncomingIds } },
+    select: {
+      id: true,
+      jobId: true,
+      status: true,
+      startedAt: true,
+      completedAt: true,
+      inputHash: true,
+      outputHash: true,
+      merkleRoot: true,
+    },
+  });
+
+  const runIdToJobIdMap = new Map<string, string>();
+  const jobIdSet = new Set<string>(uniqueIncomingIds);
+
+  for (const run of runs) {
+    if (run.jobId) {
+      runIdToJobIdMap.set(run.id, run.jobId);
+      jobIdSet.add(run.jobId);
+    }
+  }
+
+  return {
+    uniqueIncomingIds,
+    resolvedJobIds: Array.from(jobIdSet),
+    runIdToJobIdMap,
+  };
+}
+
+/**
  * Resolve whether each run id is a recon job or ingestion-scoped reconciliation run.
  * When both exist (UUID collision), prefers recon job — consistent with {@link resolveReconciliationRunForTenants}.
  */
@@ -85,14 +136,19 @@ export async function buildExceptionRunComparisonSnapshotForRunIds(
   tenantId: string,
   runIds: string[]
 ): Promise<Map<string, ExceptionRunComparisonSnapshot>> {
-  const unique = [...new Set(runIds)];
+  const { uniqueIncomingIds, resolvedJobIds, runIdToJobIdMap } = await resolveCanonicalRunAndJobIds(
+    prisma,
+    tenantId,
+    runIds
+  );
+
   const out = new Map<string, ExceptionRunComparisonSnapshot>();
-  if (unique.length === 0) {
+  if (uniqueIncomingIds.length === 0) {
     return out;
   }
 
-  const kinds = await resolveRunKindsForTenantRunIds(prisma, tenantId, unique);
-  const reconIds = unique.filter((id) => kinds.get(id) === "recon_job");
+  const kinds = await resolveRunKindsForTenantRunIds(prisma, tenantId, resolvedJobIds);
+  const reconIds = resolvedJobIds.filter((id) => kinds.get(id) === "recon_job");
 
   const indexByRun =
     reconIds.length > 0
@@ -103,7 +159,7 @@ export async function buildExceptionRunComparisonSnapshotForRunIds(
         })
       : new Map<string, RunProofpackIndex>();
 
-  for (const id of unique) {
+  for (const id of resolvedJobIds) {
     const kind = kinds.get(id);
     if (kind === "recon_job") {
       const index =
@@ -124,6 +180,15 @@ export async function buildExceptionRunComparisonSnapshotForRunIds(
       id,
       snapshotFromProofpackIndex(unavailableRunProofpackIndex("proofpack_index_unavailable"))
     );
+  }
+
+  // Index the returned snapshot entries under BOTH run.id and job.id so callers passing
+  // reconciliation_matches.run_id receive the full prior-run comparison snapshot.
+  for (const [runId, jobId] of runIdToJobIdMap.entries()) {
+    const jobSnapshot = out.get(jobId);
+    if (jobSnapshot) {
+      out.set(runId, jobSnapshot);
+    }
   }
 
   return out;

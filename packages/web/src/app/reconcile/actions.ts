@@ -2,22 +2,32 @@
 
 import { prisma } from "@/shared/db/prismaClient";
 import { revalidatePath } from "next/cache";
+import { getTenantContext } from "@/lib/tenant/server";
 
 export async function acceptMatch(
   sourceTransactionId: string,
   targetTransactionId: string | null,
-  sourceTxDto: any
+  sourceTxDto: Record<string, unknown>
 ) {
   try {
-    const tenantAction = await getOrCreateTenant(sourceTxDto);
+    const tenantContext = await getTenantContext();
+    const tenantId = tenantContext.tenantId;
+    if (!tenantId) {
+      return {
+        success: false,
+        error: "SECURITY_INVARIANT_VIOLATION: Unauthenticated tenant action rejected.",
+      };
+    }
 
-    // Upsert or create the review record.
+    const tenantAction = await getOrCreateTenantScope(tenantId, sourceTxDto);
+
+    // Upsert or create the review record strictly scoped by tenantId
     const match = await prisma.reconciliationMatch.create({
       data: {
         runId: tenantAction.runId,
         sourceTransactionId,
         targetTransactionId,
-        tenantId: tenantAction.tenantId,
+        tenantId,
         matchType: "manual",
         confidence: 1.0,
         reviewed: true,
@@ -41,17 +51,26 @@ export async function modifyMatch(
   sourceTransactionId: string,
   newTargetTransactionId: string | null,
   notes: string,
-  sourceTxDto: any
+  sourceTxDto: Record<string, unknown>
 ) {
   try {
-    const tenantAction = await getOrCreateTenant(sourceTxDto);
+    const tenantContext = await getTenantContext();
+    const tenantId = tenantContext.tenantId;
+    if (!tenantId) {
+      return {
+        success: false,
+        error: "SECURITY_INVARIANT_VIOLATION: Unauthenticated tenant action rejected.",
+      };
+    }
+
+    const tenantAction = await getOrCreateTenantScope(tenantId, sourceTxDto);
 
     const match = await prisma.reconciliationMatch.create({
       data: {
         runId: tenantAction.runId,
         sourceTransactionId,
         targetTransactionId: newTargetTransactionId,
-        tenantId: tenantAction.tenantId,
+        tenantId,
         matchType: "manual",
         confidence: 1.0,
         reviewed: true,
@@ -74,17 +93,26 @@ export async function modifyMatch(
 export async function overrideMatch(
   sourceTransactionId: string,
   overrideReason: string,
-  sourceTxDto: any
+  sourceTxDto: Record<string, unknown>
 ) {
   try {
-    const tenantAction = await getOrCreateTenant(sourceTxDto);
+    const tenantContext = await getTenantContext();
+    const tenantId = tenantContext.tenantId;
+    if (!tenantId) {
+      return {
+        success: false,
+        error: "SECURITY_INVARIANT_VIOLATION: Unauthenticated tenant action rejected.",
+      };
+    }
+
+    const tenantAction = await getOrCreateTenantScope(tenantId, sourceTxDto);
 
     const match = await prisma.reconciliationMatch.create({
       data: {
         runId: tenantAction.runId,
         sourceTransactionId,
         targetTransactionId: null, // Force unmatched or skipped
-        tenantId: tenantAction.tenantId,
+        tenantId,
         matchType: "manual",
         confidence: 1.0,
         reviewed: true,
@@ -104,10 +132,19 @@ export async function overrideMatch(
   }
 }
 
-export async function fetchReviewState(sourceTransactionId: string) {
+export async function fetchReviewState(sourceTransactionId: string, explicitTenantId?: string) {
   try {
+    const tenantContext = await getTenantContext();
+    const tenantId = explicitTenantId || tenantContext.tenantId;
+    if (!tenantId) {
+      return null;
+    }
+
     const review = await prisma.reconciliationMatch.findFirst({
-      where: { sourceTransactionId },
+      where: {
+        tenantId,
+        sourceTransactionId,
+      },
       orderBy: { createdAt: "desc" },
     });
     return review;
@@ -117,74 +154,77 @@ export async function fetchReviewState(sourceTransactionId: string) {
   }
 }
 
-// Fallback helper to ensure we satisfy Foreign Key constraints for demo local
-async function getOrCreateTenant(sourceTxDto: any) {
-  let tenant = await prisma.tenant.findFirst();
-  if (!tenant) {
-    tenant = await prisma.tenant.create({
-      data: { name: "System Tenant", slug: "system", isActive: true },
-    });
-  }
-
-  // Ensure source adapter / ingestion exists
-  let source = await prisma.ingestionSource.findFirst({ where: { tenantId: tenant.id } });
+// Scoped helper to ensure foreign key constraints are satisfied within the authenticated tenant
+async function getOrCreateTenantScope(tenantId: string, sourceTxDto: Record<string, unknown>) {
+  // Ensure source adapter / ingestion exists for this tenant
+  let source = await prisma.ingestionSource.findFirst({ where: { tenantId } });
   if (!source) {
     const user = "00000000-0000-0000-0000-000000000000";
     source = await prisma.ingestionSource.create({
-      data: { tenantId: tenant.id, userId: user, name: "Demo Import", type: "manual" },
+      data: { tenantId, userId: user, name: "Tenant Ingestion Source", type: "manual" },
     });
   }
 
-  // Ensure ingestion
-  let ingestion = await prisma.ingestion.findFirst({ where: { sourceId: source.id } });
+  // Ensure ingestion exists for this tenant
+  let ingestion = await prisma.ingestion.findFirst({ where: { tenantId, sourceId: source.id } });
   if (!ingestion) {
     const user = "00000000-0000-0000-0000-000000000000";
     ingestion = await prisma.ingestion.create({
-      data: { sourceId: source.id, tenantId: tenant.id, userId: user, status: "completed" },
+      data: { sourceId: source.id, tenantId, userId: user, status: "completed" },
     });
   }
 
-  // Upsert the specific NormalizedTransaction to satisfy the Foreign Key constraint
-  let normTx = await prisma.normalizedTransaction.findUnique({
-    where: { id: sourceTxDto.id },
-  });
+  const txId = typeof sourceTxDto.id === "string" ? sourceTxDto.id : undefined;
 
-  if (!normTx && sourceTxDto.id.length === 36) {
-    // Ensure validity as UUID, fallback if fake UUIDs are used in loaders
-    normTx = await prisma.normalizedTransaction.create({
-      data: {
-        id: sourceTxDto.id,
-        tenantId: tenant.id,
-        sourceId: source.id,
-        ingestionId: ingestion.id,
-        amount: Math.abs(sourceTxDto.amount),
-        currency: sourceTxDto.currency || "USD",
-        date: new Date(sourceTxDto.timestamp),
-        description: sourceTxDto.description || "Demo fallback transaction",
-      },
+  // Upsert the specific NormalizedTransaction to satisfy the Foreign Key constraint if UUID is valid
+  if (txId && txId.length === 36) {
+    const existingNormTx = await prisma.normalizedTransaction.findFirst({
+      where: { id: txId, tenantId },
     });
+
+    if (!existingNormTx) {
+      const amount = typeof sourceTxDto.amount === "number" ? Math.abs(sourceTxDto.amount) : 0;
+      const currency = typeof sourceTxDto.currency === "string" ? sourceTxDto.currency : "USD";
+      const timestamp =
+        typeof sourceTxDto.timestamp === "string" || typeof sourceTxDto.timestamp === "number"
+          ? new Date(sourceTxDto.timestamp)
+          : new Date();
+      const description =
+        typeof sourceTxDto.description === "string"
+          ? sourceTxDto.description
+          : "Reconciliation transaction";
+
+      await prisma.normalizedTransaction.create({
+        data: {
+          id: txId,
+          tenantId,
+          sourceId: source.id,
+          ingestionId: ingestion.id,
+          amount,
+          currency,
+          date: timestamp,
+          description,
+        },
+      });
+    }
   }
 
-  // Create a dummy recon run for the demo tracking
+  // Find or create a recon run for this tenant
   let run = await prisma.reconciliationRun.findFirst({
-    where: { tenantId: tenant.id },
+    where: { tenantId },
   });
 
   if (!run) {
     const user = "00000000-0000-0000-0000-000000000000";
-    try {
-      run = await prisma.reconciliationRun.create({
-        data: {
-          tenantId: tenant.id,
-          userId: user,
-          name: "Demo Review Scope",
-          status: "completed",
-        },
-      });
-    } catch (e) {
-      throw e;
-    }
+    run = await prisma.reconciliationRun.create({
+      data: {
+        tenantId,
+        userId: user,
+        name: "Operator Adjudication Scope",
+        status: "completed",
+      },
+    });
   }
 
-  return { tenantId: tenant.id, runId: run.id };
+  return { tenantId, runId: run.id };
 }

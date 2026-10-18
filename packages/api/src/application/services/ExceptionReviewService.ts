@@ -11,10 +11,7 @@ import {
 export type ExceptionResolution = "matched" | "manual" | "ignored" | "duplicate";
 export type ExceptionStatus = "open" | "in_progress" | "resolved" | "dismissed";
 export type ExceptionReviewOutcome =
-  | "resolved"
-  | "re_adjudicated"
-  | "already_resolved"
-  | "workflow_step";
+  "resolved" | "re_adjudicated" | "already_resolved" | "workflow_step";
 
 export interface ResolveExceptionInput {
   tenantId: string;
@@ -599,10 +596,81 @@ export class ExceptionReviewService {
           ? 0.75
           : 0.6;
 
+    // 1. Predict archetype and upsert canonical ExceptionArchetype inside transaction
+    const prediction = predictExceptionArchetype({
+      matchType: existing.matchType,
+      amountDiff: existing.amountDiff != null ? Number(existing.amountDiff) : null,
+      dateDiff: existing.dateDiff,
+      confidence: Number(existing.confidence),
+      hasTargetTransaction: Boolean(existing.targetTransactionId),
+      matchReason: existing.matchReason,
+    });
+
+    const archetypeCode = normalizedResolution.resolutionCode || prediction.code;
+    const exceptionArchetypeModel = (tx as any).exceptionArchetype;
+    const archetype = await exceptionArchetypeModel.upsert({
+      where: {
+        tenantId_code: {
+          tenantId: input.tenantId,
+          code: archetypeCode,
+        },
+      },
+      create: {
+        tenantId: input.tenantId,
+        code: archetypeCode,
+        label: prediction.label,
+        category: prediction.category,
+        severityDefault: prediction.severityDefault,
+        typicalResolution: prediction.typicalResolutionCode,
+        resolutionTaxonomy: prediction.resolutionTaxonomy as Prisma.InputJsonValue,
+        matchPattern: {
+          category: prediction.category,
+          reasonCode: normalizedResolution.resolutionCode,
+          discrepancyPattern: prediction.code,
+        } as Prisma.InputJsonValue,
+        matchFieldWeights: prediction.matchFeatures as Prisma.InputJsonValue,
+        isSystem: true,
+        occurrenceCount: 1,
+        lastOccurrenceAt: reviewedAt,
+      },
+      update: {
+        occurrenceCount: { increment: 1 },
+        lastOccurrenceAt: reviewedAt,
+      },
+    });
+
+    // 2. Compute SHA-256 hash chain (previousMemoryHash -> currentMemoryHash)
+    const previousMemory = await adjudicationMemoryModel.findFirst({
+      where: { tenantId: input.tenantId, exceptionId: existing.id },
+      orderBy: { createdAt: "desc" },
+      select: { id: true, entryHash: true },
+    });
+    const previousMemoryHash =
+      previousMemory?.entryHash ??
+      "0000000000000000000000000000000000000000000000000000000000000000";
+    const currentMemoryHash = crypto
+      .createHash("sha256")
+      .update(
+        JSON.stringify({
+          previousMemoryHash,
+          exceptionId: existing.id,
+          tenantId: input.tenantId,
+          archetypeId: archetype.id,
+          resolution: input.resolution,
+          resolutionReason: normalizedResolutionReason,
+          resolutionCode: normalizedResolution.resolutionCode,
+          reviewedAt: reviewedAt.toISOString(),
+          userId: input.userId,
+        })
+      )
+      .digest("hex");
+
     const memory = await adjudicationMemoryModel.create({
       data: {
         tenantId: input.tenantId,
         exceptionId: existing.id,
+        archetypeId: archetype.id,
+        parentMemoryId: previousMemory?.id ?? null,
         resolution: input.resolution,
         resolutionReason: normalizedResolutionReason,
         resolutionCode: normalizedResolution.resolutionCode,
@@ -625,13 +693,12 @@ export class ExceptionReviewService {
           requestId: input.requestId,
         } as Prisma.InputJsonValue,
         operatorNotes: input.notes?.trim() || null,
-        systemNotes: "Decision recorded by ExceptionReviewService.",
-        entryHash: buildHash({
-          exceptionId: existing.id,
-          resolution: input.resolution,
-          reviewedAt: reviewedAt.toISOString(),
-          userId: input.userId,
-        }),
+        systemNotes: "Decision recorded by ExceptionReviewService with immutable hash chain.",
+        entryHash: currentMemoryHash,
+        metadata: {
+          previousMemoryHash,
+          currentMemoryHash,
+        } as Prisma.InputJsonValue,
       },
     });
 
@@ -696,27 +763,43 @@ export class ExceptionReviewService {
       matchReason: existing.matchReason,
     });
 
-    const metadata = buildAdjudicationMetadata(existing.metadata, {
-      actorId: input.userId,
-      resolution: input.resolution,
-      notes: input.notes?.trim() || null,
-      reason: normalizedReason,
-      resolutionReason: normalizedResolutionReason,
-      resolutionCode: normalizedResolution.resolutionCode,
+    // 3. Derive metadata.adjudicationHistory strictly as a backward-compatible read projection from ExceptionAdjudicationMemory
+    const allMemoriesForException = await adjudicationMemoryModel.findMany({
+      where: { tenantId: input.tenantId, exceptionId: existing.id },
+      orderBy: { createdAt: "asc" },
+      take: 50,
+    });
+
+    const projectedAdjudicationHistory = allMemoriesForException.map((m: any) => ({
+      actorId: m.adjudicatorId,
+      resolution: m.resolution,
+      notes: m.operatorNotes,
+      reason: m.resolutionReason,
+      resolutionReason: m.resolutionReason,
+      resolutionCode: m.resolutionCode,
       previousState: existing.reviewed ? "reviewed" : "pending_review",
       resultingState: "reviewed",
       previousResolution,
       previousStatus: existing.status,
       previousReason: existing.matchReason,
-      outcome,
-      occurredAt: reviewedAt.toISOString(),
+      outcome: m.outcome,
+      occurredAt: m.createdAt.toISOString(),
       traceId: sanitizeTraceUuid(input.traceId) ?? undefined,
       requestId: input.requestId,
       status,
-      memoryId: memory.id,
-      evidenceIds,
+      memoryId: m.id,
+      entryHash: m.entryHash,
+      evidenceIds: m.evidenceIds,
       proofPackageId: proofPackage.id,
-    });
+    }));
+
+    const baseMetadata = asMetadataObject(existing.metadata);
+    const metadata = {
+      ...baseMetadata,
+      latestAdjudication:
+        projectedAdjudicationHistory[projectedAdjudicationHistory.length - 1] ?? null,
+      adjudicationHistory: projectedAdjudicationHistory,
+    } as Prisma.InputJsonValue;
 
     await exceptionMatchModel.update({
       where: { id: existing.id },
@@ -1247,5 +1330,101 @@ export class ExceptionReviewService {
       }
     }
     return count;
+  }
+
+  /**
+   * Suggests an evidence-linked resolution from historical adjudication memory and archetype patterns
+   */
+  async suggestResolutionFromMemory(
+    tenantId: string,
+    exception: {
+      id: string;
+      matchType?: string;
+      amountDiff?: number | null;
+      dateDiff?: number | null;
+      confidence?: number | null;
+      hasTargetTransaction?: boolean;
+      matchReason?: string | null;
+    }
+  ): Promise<{
+    suggestedResolution: ExceptionResolution;
+    resolutionReason: string;
+    resolutionCode: string;
+    confidence: number;
+    archetypeId: string | null;
+    archetypeCode: string | null;
+    archetypeLabel: string | null;
+    explanation: string;
+    evidenceCitations: string[];
+    historicalPrecedentsCount: number;
+  }> {
+    const prediction = predictExceptionArchetype({
+      matchType: exception.matchType || "unmatched",
+      amountDiff: exception.amountDiff ?? null,
+      dateDiff: exception.dateDiff ?? null,
+      confidence: exception.confidence ?? 0.5,
+      hasTargetTransaction: exception.hasTargetTransaction ?? false,
+      matchReason: exception.matchReason ?? null,
+    });
+
+    const archetype = await (this.prisma as any).exceptionArchetype.findFirst({
+      where: {
+        tenantId,
+        code: prediction.code,
+      },
+    });
+
+    const memories = await (this.prisma as any).exceptionAdjudicationMemory.findMany({
+      where: {
+        tenantId,
+        ...(archetype ? { archetypeId: archetype.id } : {}),
+      },
+      select: {
+        id: true,
+        resolution: true,
+        resolutionReason: true,
+        resolutionCode: true,
+        confidence: true,
+        sourceTrustScore: true,
+        operatorNotes: true,
+      },
+      orderBy: { createdAt: "desc" },
+      take: 20,
+    });
+
+    const resolutionCounts: Record<string, number> = {};
+    for (const mem of memories) {
+      resolutionCounts[mem.resolution] = (resolutionCounts[mem.resolution] || 0) + 1;
+    }
+
+    let topResolution = prediction.typicalResolutionCode === "accepted" ? "matched" : "manual";
+    let maxCount = 0;
+    for (const [res, count] of Object.entries(resolutionCounts)) {
+      if (count > maxCount) {
+        maxCount = count;
+        topResolution = res;
+      }
+    }
+
+    const confidenceBoost = Math.min(0.2, memories.length * 0.04);
+    const finalConfidence = Math.min(
+      0.99,
+      Number((prediction.confidence + confidenceBoost).toFixed(4))
+    );
+
+    const citations = memories.slice(0, 3).map((m: any) => `memory:${m.id}`);
+
+    return {
+      suggestedResolution: (asResolution(topResolution) || "manual") as ExceptionResolution,
+      resolutionReason: prediction.label,
+      resolutionCode: prediction.code,
+      confidence: finalConfidence,
+      archetypeId: archetype?.id ?? null,
+      archetypeCode: archetype?.code ?? prediction.code,
+      archetypeLabel: archetype?.label ?? prediction.label,
+      explanation: `Historical memory analysis matched archetype '${prediction.label}' with ${memories.length} historical adjudication precedents.`,
+      evidenceCitations: citations,
+      historicalPrecedentsCount: memories.length,
+    };
   }
 }

@@ -14,17 +14,49 @@ export interface CSVExportOptions {
   columns: string[]; // Column names to include
   includeFees: boolean;
   includeUnmatched: boolean;
+  limit?: number;
+  cursor?: string;
+}
+
+export async function prefetchRelatedEntitiesById<T extends { id: string }>(
+  ids: Iterable<string | null | undefined>,
+  fetcher: (batchIds: string[]) => Promise<T[]>,
+  chunkSize = 1000
+): Promise<Map<string, T>> {
+  const uniqueIds = Array.from(
+    new Set(Array.from(ids).filter((id): id is string => typeof id === "string" && id.length > 0))
+  );
+  const resultMap = new Map<string, T>();
+
+  for (let i = 0; i < uniqueIds.length; i += chunkSize) {
+    const chunk = uniqueIds.slice(i, i + chunkSize);
+    const records = await fetcher(chunk);
+    for (const record of records) {
+      resultMap.set(record.id, record);
+    }
+  }
+
+  return resultMap;
 }
 
 export class CSVExporter {
   /**
-   * Export to generic CSV format
+   * Export to generic CSV format with batch prefetching to prevent N+1 loop queries
    */
   async exportToCSV(tenantId: string, jobId: string, options: CSVExportOptions): Promise<string> {
-    const { dateRange, columns, includeFees, includeUnmatched } = options;
+    const { dateRange, columns, includeFees, includeUnmatched, limit = 10000, cursor } = options;
+
+    const queryParams: unknown[] = [tenantId, jobId, dateRange.start, dateRange.end];
+    let cursorClause = "";
+    if (cursor) {
+      queryParams.push(cursor);
+      cursorClause = `AND rm.id < $${queryParams.length}`;
+    }
+    queryParams.push(limit);
+    const limitClause = `LIMIT $${queryParams.length}`;
 
     // Get matched transactions
-    const matches = await query(
+    const matches = await query<Record<string, unknown>>(
       `SELECT 
         rm.id as match_id,
         t.id as transaction_id,
@@ -49,8 +81,10 @@ export class CSVExporter {
         AND rm.job_id = $2
         AND t.created_at >= $3
         AND t.created_at <= $4
-      ORDER BY t.created_at DESC`,
-      [tenantId, jobId, dateRange.start, dateRange.end]
+        ${cursorClause}
+      ORDER BY t.created_at DESC, rm.id DESC
+      ${limitClause}`,
+      queryParams as any
     );
 
     // Build CSV
@@ -69,17 +103,39 @@ export class CSVExporter {
       csvRows.push(row.join(","));
     }
 
-    // Add fees if included
-    if (includeFees) {
+    // Prefetch all fees in chunked batches before loop to eradicate N+1 queries
+    if (includeFees && matches.length > 0) {
+      const uniqueTxIds = Array.from(
+        new Set(
+          matches
+            .map((m) => m.transaction_id)
+            .filter((id): id is string => typeof id === "string" && id.length > 0)
+        )
+      );
+
+      const feesByTxId = new Map<string, Array<Record<string, unknown>>>();
+      const chunkSize = 1000;
+      for (let i = 0; i < uniqueTxIds.length; i += chunkSize) {
+        const chunk = uniqueTxIds.slice(i, i + chunkSize);
+        const feesChunk = await query<Record<string, unknown>>(
+          `SELECT transaction_id, type, amount_value, amount_currency, description 
+           FROM fees 
+           WHERE transaction_id = ANY($1::uuid[]) AND tenant_id = $2`,
+          [chunk, tenantId]
+        );
+        for (const fee of feesChunk) {
+          const txId = fee.transaction_id as string;
+          const list = feesByTxId.get(txId) || [];
+          list.push(fee);
+          feesByTxId.set(txId, list);
+        }
+      }
+
+      // Add fees using O(1) in-memory map lookup
       for (const match of matches) {
         const transactionId = match.transaction_id;
         if (typeof transactionId === "string") {
-          const fees = await query(
-            `SELECT type, amount_value, amount_currency, description 
-             FROM fees WHERE transaction_id = $1 AND tenant_id = $2`,
-            [transactionId, tenantId]
-          );
-
+          const fees = feesByTxId.get(transactionId) || [];
           for (const fee of fees) {
             const row: string[] = [];
             for (const col of columns) {
@@ -94,7 +150,7 @@ export class CSVExporter {
 
     // Add unmatched if included
     if (includeUnmatched) {
-      const unmatched = await query(
+      const unmatched = await query<Record<string, unknown>>(
         `SELECT 
           t.id as transaction_id,
           t.provider_transaction_id,
