@@ -265,7 +265,7 @@ export class TriangularWebhookAdapter {
             id: `disc_${crypto.randomUUID()}`,
             rootCause: "PROCESSOR_FEE_DEDUCTION",
             sourceAmount: capture.capturedAmountCents,
-            varianceAmount: feeDiscrepancyCents > 0 ? feeDiscrepancyCents : 100,
+            varianceAmount: (feeDiscrepancyCents > 0 ? feeDiscrepancyCents : 100) / 100,
             currency: order.currency,
             processorName: "STRIPE",
             sourceReferenceId: capture.gatewayTransactionId,

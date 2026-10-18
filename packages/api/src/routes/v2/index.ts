@@ -18,8 +18,18 @@ import { daemonRouter } from "./daemon";
 import { dossierRouter } from "./dossier";
 import { parityRouter } from "./parity";
 import { erpRouter } from "./erp";
+import { interchangeRouter } from "./interchange";
+import { timeTravelRouter } from "./time-travel";
 
 export const v2Router: Router = Router();
+
+// Time-Travel Forensic Financial Debugger
+v2Router.use("/ledger/time-travel", timeTravelRouter);
+v2Router.use("/time-travel", timeTravelRouter);
+
+// Interchange++ Forensic Margin Recovery
+v2Router.use("/recovery/interchange", interchangeRouter);
+v2Router.use("/interchange", interchangeRouter);
 
 // Autonomous ERP Journal Entry & NetSuite/SAP Sync
 v2Router.use("/erp", erpRouter);

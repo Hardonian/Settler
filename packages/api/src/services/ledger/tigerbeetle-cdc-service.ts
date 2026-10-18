@@ -351,6 +351,14 @@ export class TigerBeetleCDCService {
   }
 
   /**
+   * Returns an immutable view of the tenant transfer stream for replay consumers.
+   */
+  listTransfers(tenantId: string): readonly DualLedgerTransfer[] {
+    this.ensureTenantStores(tenantId);
+    return [...(this.tenantTransfers.get(tenantId) ?? [])];
+  }
+
+  /**
    * Retrieves an individual account snapshot
    */
   getSnapshot(tenantId: string, accountId: string): AccountBalanceSnapshot | null {

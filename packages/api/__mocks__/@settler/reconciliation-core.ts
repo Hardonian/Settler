@@ -75,3 +75,6 @@ try {
   actualCore = jest.requireActual("@settler/reconciliation-core");
 } catch {}
 export const reconcileTriangular = actualCore.reconcileTriangular ?? jest.fn();
+export const erpJournalSynthesizer = actualCore.erpJournalSynthesizer;
+export const DEFAULT_ERP_CHART_OF_ACCOUNTS = actualCore.DEFAULT_ERP_CHART_OF_ACCOUNTS;
+export class ErpJournalSynthesizer extends (actualCore.ErpJournalSynthesizer ?? class {}) {}

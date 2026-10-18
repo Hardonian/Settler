@@ -14,18 +14,7 @@ import { handleRouteError } from "../../utils/error-handler";
 export const erpRouter: Router = Router();
 
 function resolveTenantId(req: Request): string | null {
-  const authReq = req as AuthRequest;
-  const headerTenant = req.headers["x-tenant-id"] as string | undefined;
-  const queryTenant = typeof req.query?.tenantId === "string" ? req.query.tenantId : undefined;
-  const bodyTenant = typeof req.body?.tenantId === "string" ? req.body.tenantId : undefined;
-  return (
-    authReq.tenantId ??
-    headerTenant ??
-    (authReq.user as any)?.tenantId ??
-    queryTenant ??
-    bodyTenant ??
-    null
-  );
+  return (req as AuthRequest).tenantId ?? null;
 }
 
 /**
@@ -36,7 +25,6 @@ erpRouter.post(
   "/journal/synthesize",
   async (req: Request, res: Response, _next: NextFunction): Promise<void> => {
     try {
-      const authReq = req as AuthRequest;
       const tenantId = resolveTenantId(req);
 
       if (!tenantId || !isValidTenantUuid(tenantId)) {
@@ -44,7 +32,7 @@ erpRouter.post(
         return;
       }
 
-      if (authReq.tenantId && req.body?.tenantId && req.body.tenantId !== authReq.tenantId) {
+      if (req.body?.tenantId && req.body.tenantId !== tenantId) {
         res.status(403).json({ error: "Tenant mismatch" });
         return;
       }

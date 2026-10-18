@@ -16,7 +16,7 @@ import {
   SapS4HanaJournalPayload,
 } from "@settler/reconciliation-core";
 import { isValidTenantUuid } from "../../utils/tenant-id";
-import { logInfo, logWarn } from "../../utils/logger";
+import { logInfo } from "../../utils/logger";
 
 export interface ErpExportResult {
   journalId: string;

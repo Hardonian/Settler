@@ -857,6 +857,28 @@ export const CONSOLE_ROUTE_REGISTRY: readonly ConsoleRouteEntry[] = [
     ctaRestrictions: "none",
     dataMode: "operational",
   },
+  {
+    href: "/console/time-travel",
+    label: "Time-Travel Debugger",
+    section: "Reconciliation core",
+    domain: "reconciliations",
+    maturity: "runtime-operational",
+    runtimeDependency: "hybrid",
+    authRequired: true,
+    tenantScopeRequired: true,
+    roleRestriction: "none",
+    envRequired: true,
+    databaseRequired: true,
+    stripeRequired: false,
+    supabaseRequired: true,
+    externalProviderRequired: false,
+    explicitDisclosureRequired: false,
+    degradedBehavior:
+      "Reconstructs historical ledger balances and Sparse Merkle Tree state transitions at any epoch.",
+    navTreatment: "primary",
+    ctaRestrictions: "none",
+    dataMode: "operational",
+  },
 ] as const;
 
 export function getConsoleRouteMeta(href: string): ConsoleRouteEntry | undefined {

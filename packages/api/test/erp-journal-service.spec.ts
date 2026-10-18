@@ -11,6 +11,12 @@ describe("Autonomous ERP Journal Entry Service & Routes", () => {
   beforeAll(() => {
     app = express();
     app.use(express.json());
+    app.use((req, _res, next) => {
+      const tenantId = req.headers["x-tenant-id"];
+      if (typeof tenantId === "string")
+        (req as express.Request & { tenantId?: string }).tenantId = tenantId;
+      next();
+    });
     app.use("/api/v2/erp", erpRouter);
   });
 

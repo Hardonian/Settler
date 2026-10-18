@@ -93,6 +93,17 @@ function governanceViolation(): never {
   );
 }
 
+function decodeCanonicalBase64Url(segment: string): Buffer {
+  if (!/^[A-Za-z0-9_-]+$/.test(segment)) {
+    return governanceViolation();
+  }
+  const decoded = Buffer.from(segment, "base64url");
+  if (decoded.toString("base64url") !== segment) {
+    return governanceViolation();
+  }
+  return decoded;
+}
+
 function policyTokenSecret(): string {
   const secret = process.env.AGENT_POLICY_TOKEN_SECRET ?? process.env.POLICY_TOKEN_SECRET;
   if (!secret || Buffer.byteLength(secret, "utf8") < 32) {
@@ -147,8 +158,8 @@ export function assertSignedPolicyToken(
   let suppliedSignature: Buffer;
   let claims: PolicyTokenClaims;
   try {
-    suppliedSignature = Buffer.from(signatureSegment, "base64url");
-    claims = JSON.parse(Buffer.from(payloadSegment, "base64url").toString("utf8"));
+    suppliedSignature = decodeCanonicalBase64Url(signatureSegment);
+    claims = JSON.parse(decodeCanonicalBase64Url(payloadSegment).toString("utf8"));
   } catch {
     return governanceViolation();
   }

@@ -37,3 +37,6 @@ export * from "./discrepancy-classifier";
 
 // Adjudication Memory -> Rule Synthesis Feedback Loop
 export * from "./rule-synthesizer";
+
+// Interchange++ Forensic Margin Recovery & Downgrade Classifier
+export * from "./interchange-margin-analyzer";
