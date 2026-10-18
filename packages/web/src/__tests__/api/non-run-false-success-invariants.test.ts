@@ -159,7 +159,11 @@ describe("non-run false-success invariants", () => {
 
     authenticateApiKeyMock.mockResolvedValue(null);
     requireAuthMock.mockResolvedValue({ userId: "user-a", tenantId: "tenant-a" });
-    requireAdminMock.mockResolvedValue({ isAdmin: true, user: { id: "admin-a" } });
+    requireAdminMock.mockResolvedValue({
+      isAdmin: true,
+      role: "super_admin",
+      user: { id: "admin-a" },
+    });
     resolveTenantMembershipScopeMock.mockResolvedValue({
       tenantIds: ["tenant-a"],
       userId: "user-a",
