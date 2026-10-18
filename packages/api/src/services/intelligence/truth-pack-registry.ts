@@ -11,6 +11,7 @@
 import crypto from "node:crypto";
 import { PrismaClient } from "@prisma/client";
 import { logInfo } from "../../utils/logger";
+import { createRunProofPackageWithArtifacts } from "./proof-package-orchestrator";
 
 export interface TruthPack {
   fingerprint: string;
@@ -93,6 +94,17 @@ export class TruthPackRegistry {
         },
       },
     });
+
+    // Create relational ProofPackage and linked EvidenceArtifacts
+    await createRunProofPackageWithArtifacts(this.prisma, {
+      tenantId,
+      runId,
+      merkleRoot: fingerprint,
+      inputFingerprint: dataHash,
+      outputFingerprint: fingerprint,
+      ruleSetHash: configHash,
+      packageType: "run_summary",
+    }).catch(() => null);
 
     return truthPack;
   }

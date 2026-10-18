@@ -525,6 +525,62 @@ router.get(
 );
 
 /**
+ * GET /api/exceptions/:id/suggest-resolution
+ * Queries ExceptionAdjudicationMemory and ExceptionArchetype to return
+ * evidence-linked resolution suggestions with confidence scores.
+ */
+router.get(
+  "/exceptions/:id/suggest-resolution",
+  requirePermission(Permission.REPORTS_READ),
+  validateRequest(getExceptionSchema),
+  async (req: ExceptionRequest, res: Response) => {
+    try {
+      const idParam = req.params["id"];
+      const id = Array.isArray(idParam) ? (idParam[0] ?? "") : (idParam ?? "");
+      const tenantId = req.tenantId!;
+
+      const exception = await prisma.reconciliationMatch.findFirst({
+        where: {
+          id,
+          tenantId,
+          matchType: { in: [...CANONICAL_EXCEPTION_MATCH_TYPES] },
+        },
+        include: {
+          sourceTransaction: true,
+          targetTransaction: true,
+        },
+      });
+
+      if (!exception) {
+        throw new NotFoundError("Exception not found", "exception", id);
+      }
+
+      const suggestion = await exceptionReviewService.suggestResolutionFromMemory(tenantId, {
+        id: exception.id,
+        matchType: exception.matchType,
+        amountDiff: exception.amountDiff ? Number(exception.amountDiff) : null,
+        dateDiff: exception.dateDiff,
+        confidence: exception.confidence ? Number(exception.confidence) : 0.5,
+        hasTargetTransaction: Boolean(exception.targetTransactionId),
+        matchReason: exception.matchReason,
+      });
+
+      res.json({
+        data: {
+          exceptionId: id,
+          tenantId,
+          ...suggestion,
+        },
+      });
+    } catch (error: unknown) {
+      handleRouteError(res, error, "Failed to get resolution suggestion", 500, {
+        userId: req.userId,
+      });
+    }
+  }
+);
+
+/**
  * POST /api/exceptions/:id/resolve
  * Resolve an exception with structured resolution reason and audit trail
  */

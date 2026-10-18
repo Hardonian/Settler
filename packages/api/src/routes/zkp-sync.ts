@@ -5,6 +5,7 @@ import { requirePermission } from "../middleware/authorization";
 import { Permission } from "../infrastructure/security/Permissions";
 import { handleRouteError } from "../utils/error-handler";
 import { prisma } from "../infrastructure/db/prisma";
+import { createRunProofPackageWithArtifacts } from "../services/intelligence/proof-package-orchestrator";
 
 const router: Router = Router();
 
@@ -72,6 +73,17 @@ router.post(
         .createHmac("sha256", secret)
         .update(`${tenantId}:${targetTenantId}:${runId}:${merkleRoot}`)
         .digest("hex");
+
+      // Bind relational ProofPackage and EvidenceArtifact records for bilateral Merkle root completion
+      await createRunProofPackageWithArtifacts(prisma, {
+        tenantId,
+        runId,
+        merkleRoot,
+        inputFingerprint: leaves[0]!,
+        outputFingerprint: leaves[1]!,
+        ruleSetHash: leaves[2]!,
+        packageType: "audit_export",
+      }).catch(() => null);
 
       return res.json({
         data: {
