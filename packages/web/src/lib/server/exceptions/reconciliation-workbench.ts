@@ -104,6 +104,15 @@ export type ReconciliationWorkbenchListItem = {
   };
 };
 
+export type OfflineWorkbenchSnapshot = {
+  mode: "offline_fixture" | "authenticated_tenant";
+  items: ReconciliationWorkbenchListItem[];
+  total: number;
+  limit: number;
+  offset: number;
+  tenantId?: string | null;
+};
+
 export type ReconciliationWorkbenchDetail = ReconciliationWorkbenchListItem & {
   notes?: string | null;
   sourceSystem?: string | null;
@@ -1780,4 +1789,61 @@ export async function getReconciliationWorkbenchExceptionDetail(
     similarCases: scoredSimilarCases,
     whyFlagged,
   };
+}
+
+export async function getOfflineWorkbenchSnapshot(
+  tenantId?: string | null,
+  options?: { limit?: number; offset?: number }
+): Promise<OfflineWorkbenchSnapshot> {
+  const limit = options?.limit ?? 50;
+  const offset = options?.offset ?? 0;
+
+  if (!tenantId || tenantId.trim() === "") {
+    return {
+      mode: "offline_fixture",
+      items: [],
+      total: 0,
+      limit,
+      offset,
+      tenantId: null,
+    };
+  }
+
+  try {
+    const { prisma } = await import("@/shared/db/prismaClient");
+    const result = await listReconciliationWorkbenchExceptions(prisma, {
+      tenantId,
+      limit,
+      offset,
+    });
+
+    if (result.kind === "ok") {
+      return {
+        mode: "authenticated_tenant",
+        items: result.data.items,
+        total: result.data.total,
+        limit,
+        offset,
+        tenantId,
+      };
+    }
+
+    return {
+      mode: "offline_fixture",
+      items: [],
+      total: 0,
+      limit,
+      offset,
+      tenantId,
+    };
+  } catch (_error) {
+    return {
+      mode: "offline_fixture",
+      items: [],
+      total: 0,
+      limit,
+      offset,
+      tenantId,
+    };
+  }
 }
