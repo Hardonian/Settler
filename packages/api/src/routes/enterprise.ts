@@ -13,6 +13,7 @@ import { sendProblemJson } from "../utils/problem-json";
 
 // For backwards compatibility
 export const requireAuth = authMiddleware;
+export const requireEnterprisePermission = requirePermission(Permission.ADMIN_READ);
 
 const router: Router = Router();
 
@@ -24,7 +25,6 @@ const enterpriseSetupSteps = [
   "Back enterprise metrics with production analytics aggregates.",
 ];
 
-router.use(requirePermission(Permission.ADMIN_READ));
 router.use((req, res) => {
   sendProblemJson(req as any, res, {
     status: 503,
