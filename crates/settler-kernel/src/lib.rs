@@ -6,10 +6,12 @@ use std::collections::{BTreeMap, HashMap, HashSet};
 pub mod plugin_runtime;
 pub mod smt;
 pub mod streaming;
+pub mod chaos;
 pub use smt::{
     get_empty_hashes, hash_empty_leaf, hash_leaf, hash_nodes, verify_smt_proof, SmtProof,
     SmtVerificationResult, SparseMerkleTree, SMT_DEPTH,
 };
+pub use chaos::{run_chaos_fuzz, ChaosFuzzReport, ChaosRng};
 
 pub const SCHEMA_VERSION: &str = "v1";
 

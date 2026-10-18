@@ -263,6 +263,13 @@ const commandRegistry: Record<
       return { command: ledgerCommand };
     },
   },
+  recovery: {
+    description: "Revenue OS autonomous discrepancy recovery and processor dispute generation",
+    load: async () => {
+      const { recoveryCommand } = await import("./commands/recovery");
+      return { command: recoveryCommand };
+    },
+  },
 
   demo: {
     description: "Run deterministic one-command demo",

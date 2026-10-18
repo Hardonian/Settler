@@ -34,3 +34,6 @@ export * from "./security";
 
 // Deterministic Mathematical Discrepancy Classification
 export * from "./discrepancy-classifier";
+
+// Adjudication Memory -> Rule Synthesis Feedback Loop
+export * from "./rule-synthesizer";

@@ -1,0 +1,128 @@
+version: "3.8"
+
+# Settler Enterprise Sovereign & Air-Gapped Stack
+# Zero outbound internet connectivity requirements (EGRESS_LOCKED=true)
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: settler-enterprise-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: settler_enterprise
+      POSTGRES_USER: settler_operator
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-settler_sovereign_secure_2026}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - settler-airgapped-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U settler_operator -d settler_enterprise"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  tigerbeetle:
+    image: ghcr.io/tigerbeetle/tigerbeetle:0.17.9
+    container_name: settler-enterprise-tigerbeetle
+    restart: unless-stopped
+    command: start --addresses=0.0.0.0:3000 /data/0_0.tigerbeetle
+    volumes:
+      - tigerbeetle-data:/data
+    networks:
+      - settler-airgapped-net
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z 127.0.0.1 3000 || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: settler-enterprise-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-settler_redis_secure_2026}
+    volumes:
+      - redis-data:/data
+    networks:
+      - settler-airgapped-net
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD:-settler_redis_secure_2026}", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  settler-api:
+    image: ghcr.io/settler/api:1.6.0
+    container_name: settler-enterprise-api
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      tigerbeetle:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: 4000
+      DATABASE_URL: postgresql://settler_operator:${POSTGRES_PASSWORD:-settler_sovereign_secure_2026}@postgres:5432/settler_enterprise?schema=public
+      REDIS_URL: redis://:${REDIS_PASSWORD:-settler_redis_secure_2026}@redis:6379
+      TB_ADDRESSES: tigerbeetle:3000
+      TB_CLUSTER_ID: "0"
+      EGRESS_LOCKED: "true"
+      OFFLINE_MODE: "true"
+      JWT_SECRET: ${JWT_SECRET:-settler_jwt_enterprise_secret_32_bytes_long}
+    ports:
+      - "4000:4000"
+    networks:
+      - settler-airgapped-net
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "wget --no-verbose --tries=1 --spider http://127.0.0.1:4000/api/v1/health || exit 1",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  settler-web:
+    image: ghcr.io/settler/web:1.6.0
+    container_name: settler-enterprise-web
+    restart: unless-stopped
+    depends_on:
+      settler-api:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      SETTLER_API_URL: http://settler-api:4000
+      NEXTAUTH_URL: http://localhost:3000
+      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET:-settler_nextauth_enterprise_secret_32_bytes}
+      EGRESS_LOCKED: "true"
+      OFFLINE_MODE: "true"
+    ports:
+      - "3000:3000"
+    networks:
+      - settler-airgapped-net
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "wget --no-verbose --tries=1 --spider http://127.0.0.1:3000/api/v1/health || exit 1",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+networks:
+  settler-airgapped-net:
+    driver: bridge
+    # internal: true guarantees zero egress outside this bridge network
+    internal: true
+
+volumes:
+  postgres-data:
+  tigerbeetle-data:
+  redis-data:

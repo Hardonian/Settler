@@ -1,0 +1,41 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "settler.fullname" . }}-airgapped-isolation
+  labels:
+    {{- include "settler.labels" . | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+      {{- include "settler.selectorLabels" . | nindent 6 }}
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    # Allow ingress within the namespace and from ingress controller
+    - from:
+        - podSelector: {}
+        - namespaceSelector: {}
+      ports:
+        - protocol: TCP
+          port: {{ .Values.service.api.port }}
+        - protocol: TCP
+          port: {{ .Values.service.web.port }}
+  egress:
+    # Zero Public Egress: Only permit communication to internal cluster DNS, PostgreSQL, Redis, and TigerBeetle
+    - to:
+        - podSelector: {}
+        - namespaceSelector: {}
+      ports:
+        - protocol: TCP
+          port: 53 # CoreDNS
+        - protocol: UDP
+          port: 53 # CoreDNS
+        - protocol: TCP
+          port: 5432 # PostgreSQL
+        - protocol: TCP
+          port: 6379 # Redis
+        - protocol: TCP
+          port: 3000 # TigerBeetle internal
+        - protocol: TCP
+          port: 3001 # TigerBeetle internal

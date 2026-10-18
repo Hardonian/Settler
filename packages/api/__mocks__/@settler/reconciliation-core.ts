@@ -61,3 +61,9 @@ export const geminiCognitiveEngine = {
   generateAdversarialVectors: jest.fn(),
 };
 export class GeminiCognitiveEngine {}
+
+let actualCore: any = {};
+try {
+  actualCore = jest.requireActual("@settler/reconciliation-core");
+} catch {}
+export const reconcileTriangular = actualCore.reconcileTriangular ?? jest.fn();
