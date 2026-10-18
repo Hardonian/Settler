@@ -71,6 +71,8 @@ test("Windows production E2E harness uses bounded hidden processes and cleanup",
 
   assert.match(harness, /-WindowStyle Hidden/g);
   assert.match(harness, /for \(\$attempt = 1; \$attempt -le 60; \$attempt\+\+\)/);
+  assert.match(harness, /\$api\.HasExited -or \$web\.HasExited/);
+  assert.match(harness, /test-secret-min-32-chars-long-for-testing/);
   assert.match(harness, /finally \{/);
   assert.match(harness, /Stop-ProcessTree \$web\.Id/);
   assert.match(harness, /Stop-ProcessTree \$api\.Id/);

@@ -20,12 +20,24 @@ $apiErr = Join-Path $artifactDir "e2e-api.err.log"
 $webOut = Join-Path $artifactDir "e2e-web.out.log"
 $webErr = Join-Path $artifactDir "e2e-web.err.log"
 
+$testEnvironment = @{
+  NODE_ENV = "test"
+  DB_PASSWORD = "postgres"
+  JWT_SECRET = "test-secret-min-32-chars-long-for-testing"
+  ENCRYPTION_KEY = "test-encryption-key-32-chars-long!!"
+}
+
 function Stop-ProcessTree([int]$ProcessId) {
   Get-CimInstance Win32_Process -Filter "ParentProcessId = $ProcessId" -ErrorAction SilentlyContinue |
     ForEach-Object { Stop-ProcessTree $_.ProcessId }
   Stop-Process -Id $ProcessId -Force -ErrorAction SilentlyContinue
 }
 
+$previousEnvironment = @{}
+foreach ($name in $testEnvironment.Keys) {
+  $previousEnvironment[$name] = [Environment]::GetEnvironmentVariable($name, "Process")
+  [Environment]::SetEnvironmentVariable($name, $testEnvironment[$name], "Process")
+}
 $previousPort = $env:PORT
 $env:PORT = "$ApiPort"
 $api = Start-Process -FilePath $pnpm `
@@ -36,6 +48,9 @@ $api = Start-Process -FilePath $pnpm `
   -PassThru `
   -WindowStyle Hidden
 $env:PORT = $previousPort
+foreach ($name in $testEnvironment.Keys) {
+  [Environment]::SetEnvironmentVariable($name, $previousEnvironment[$name], "Process")
+}
 
 $web = Start-Process -FilePath $pnpm `
   -ArgumentList @("--filter", "@settler/web", "exec", "next", "start", "-p", "$WebPort") `
@@ -49,6 +64,9 @@ try {
   $webReady = $false
   $apiReady = $false
   for ($attempt = 1; $attempt -le 60; $attempt++) {
+    if ($api.HasExited -or $web.HasExited) {
+      break
+    }
     if (-not $webReady) {
       try {
         $response = Invoke-WebRequest -UseBasicParsing "http://localhost:$WebPort/verify" -TimeoutSec 3
