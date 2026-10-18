@@ -15,11 +15,13 @@ export interface QueryOptions {
  * Get reconciliation summary using Prisma
  */
 export async function getReconciliationSummary(
+  tenantId: string,
   jobId: string,
   dateRange?: { start: Date; end: Date },
   _options: QueryOptions = {}
 ): Promise<any> {
   const where = {
+    tenantId,
     reconJobId: jobId,
     ...(dateRange && {
       createdAt: {
@@ -53,9 +55,13 @@ export async function getReconciliationSummary(
 /**
  * Get job performance metrics using Prisma
  */
-export async function getJobPerformance(jobId: string, _options: QueryOptions = {}): Promise<any> {
-  const job = await prisma.reconJob.findUnique({
-    where: { id: jobId },
+export async function getJobPerformance(
+  tenantId: string,
+  jobId: string,
+  _options: QueryOptions = {}
+): Promise<any> {
+  const job = await prisma.reconJob.findFirst({
+    where: { id: jobId, tenantId },
     include: {
       results: {
         orderBy: {
@@ -71,19 +77,19 @@ export async function getJobPerformance(jobId: string, _options: QueryOptions = 
   }
 
   const totalExecutions = await prisma.reconResult.count({
-    where: { reconJobId: jobId },
+    where: { reconJobId: jobId, tenantId },
   });
 
   const successfulExecutions = await prisma.reconResult.count({
-    where: { reconJobId: jobId, status: "completed" },
+    where: { reconJobId: jobId, tenantId, status: "completed" },
   });
 
   const failedExecutions = await prisma.reconResult.count({
-    where: { reconJobId: jobId, status: "failed" },
+    where: { reconJobId: jobId, tenantId, status: "failed" },
   });
 
   const avgExecutionTime = await prisma.reconResult.aggregate({
-    where: { reconJobId: jobId, status: "completed" },
+    where: { reconJobId: jobId, tenantId, status: "completed" },
     _avg: {
       durationMs: true,
     },
@@ -115,8 +121,13 @@ export async function getTenantUsage(
 /**
  * Get match accuracy by job using Prisma
  */
-export async function getMatchAccuracy(jobId?: string, _options: QueryOptions = {}): Promise<any> {
+export async function getMatchAccuracy(
+  tenantId: string,
+  jobId?: string,
+  _options: QueryOptions = {}
+): Promise<any> {
   const where = {
+    tenantId,
     ...(jobId && { reconJobId: jobId }),
   };
 

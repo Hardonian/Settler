@@ -60,6 +60,7 @@ export default function RunPage() {
   const runId = Array.isArray(params.runId) ? params.runId[0] : params.runId;
   const [autoRefresh, setAutoRefresh] = useState(true);
   const [exporting, setExporting] = useState(false);
+  const [downloadingAirgapped, setDownloadingAirgapped] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
   const [freezeError, setFreezeError] = useState<GovernanceFreezeErrorDetails | null>(null);
   const { isFrozen, governanceState } = useGovernanceState();
@@ -121,6 +122,29 @@ export default function RunPage() {
       setActionError(err instanceof Error ? err.message : "Failed to retry run");
     }
   }, [router, runId, run, refetch]);
+
+  const handleDownloadAirgapped = useCallback(async () => {
+    if (!runId) return;
+    setDownloadingAirgapped(true);
+    setActionError(null);
+    try {
+      const res = await fetch(`/api/runs/${runId}/proofpack/airgapped`);
+      if (!res.ok) {
+        throw new Error(`Failed to download air-gapped proofpack bundle (${res.status})`);
+      }
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+      anchor.href = url;
+      anchor.download = `proofpack-${runId.slice(0, 8)}.tar.gz`;
+      anchor.click();
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      setActionError(err instanceof Error ? err.message : "Proofpack download failed");
+    } finally {
+      setDownloadingAirgapped(false);
+    }
+  }, [runId]);
 
   const handleExport = useCallback(async () => {
     if (!runId) return;
@@ -271,6 +295,20 @@ export default function RunPage() {
             )}
             {exporting ? "Exporting…" : "Export results"}
           </FreezeBlockedButton>
+          <Button
+            variant="outline"
+            disabled={downloadingAirgapped}
+            onClick={() => void handleDownloadAirgapped()}
+            className="border-primary/30 hover:border-primary/60 text-primary font-semibold"
+            title="Download self-contained offline proofpack with RFC 8785 manifest, SMT inclusion proofs, and standalone verifier"
+          >
+            {downloadingAirgapped ? (
+              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+            ) : (
+              <Shield className="w-4 h-4 mr-2 text-primary" />
+            )}
+            {downloadingAirgapped ? "Exporting Bundle…" : "Air-Gapped Proofpack (.tar.gz)"}
+          </Button>
           <FreezeBlockedButton
             className="bg-primary text-primary-foreground font-bold shadow-lg shadow-primary/20"
             disabled={!run.isTerminal}

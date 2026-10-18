@@ -6,35 +6,26 @@ Accepted
 
 ## Context
 
-Financial reconciliation engines operating under enterprise governance cannot tolerate non-deterministic or generative hallucination in variance analysis. Previous industry architectures that relied on off-the-shelf Large Language Models (LLMs) to explain discrepancies suffered from critical vulnerabilities:
-
-1. **Generative Hallucination**: LLMs frequently invent speculative narratives for balance variances (e.g., alleging exchange rate shifts or chargebacks) without verifying arithmetic proofs against raw ledger entries.
-2. **Data Egress and Confidentiality Risk**: Transmitting sensitive transaction amounts, customer identifiers, and account numbers to third-party cloud LLM APIs violates data sovereignty and PCI-DSS / SOC 2 requirements.
-3. **Unbounded Autonomous Agency**: Autonomous background agents that directly trigger ledger adjustments or database mutations introduce operational failure modes, including runaway balance corrections and unintended funds movement.
+Generative text is not evidence for a financial discrepancy. Agent output also crosses a privilege boundary: proposing work and executing work are different capabilities. A tenant, action, or payload change after approval must invalidate authorization.
 
 ## Decision
 
-We establish a strict dual-layer governance architecture for all automated discrepancy intelligence and AI agent operations:
-
-### 1. Deterministic Local Edge AI (`@settler/edge-ai-core`)
-- Root-cause discrepancy classification (`PROCESSOR_FEE_DEDUCTION`, `FX_CONVERSION_SPREAD`, `SETTLEMENT_TIMING_DRIFT`, `REFERENCE_ID_MUTATION`) must be computed **purely via deterministic mathematical proofs** calculated locally from numeric field deltas and ISO-8601 timestamps.
-- **Zero Generative Hallucination**: No textual explanation is presented without an accompanying deterministic mathematical proof. If delta checks fail tolerance thresholds (e.g., fee formula verification fails or FX rates deviate from ECB reference rates), the engine flags an unclassified exception rather than guessing.
-- **Zero Egress**: All classifications execute locally in-process without outbound cloud API requests or external telemetry egress.
-
-### 2. Autonomous Agent Policy-Token Bounded Governance (`JobForgeClient`)
-- All 5 autonomous agents in `packages/api/src/services/ai-agents/` (`InfrastructureOptimizerAgent`, `AnomalyDetectorAgent`, `SyntheticUserSimulatorAgent`, `SupportCopilotAgent`, `ReleaseQAAgent`):
-  - Strictly output **draft-only job requests** (`autoExecute: false, requireApproval: true`).
-  - Declare explicit governance metadata: `riskLevel`, `estimatedImpact`, `requiresHumanReview: true`, and `signedPolicyBound`.
-  - Are formally barred from bypassing `JobForgeClient` or executing direct database mutations/ledger transfers.
-- **Enforced Execution Invariant**: Direct execution of any high-privilege action strictly enforces `assertSignedPolicyToken(policyToken)`, requiring an authenticated, cryptographically signed policy token issued after human approval.
+- `@settler/edge-ai-core` classifies only from supplied numeric fields, declared fee/rate schedules, bounded timestamp differences, and reference similarity. Missing benchmarks or out-of-bound deltas return an unknown/unproven result rather than a guessed cause.
+- Classification is local and has no network dependency. Narrative UI may summarize the returned arithmetic proof but may not upgrade its certainty.
+- Each of the five API agents emits `AgentJobDraft` with `autoExecute: false`, `requireApproval: true`, and `requiresHumanReview: true`.
+- The API governance broker is the approval boundary. JobForge is an optional durable dispatch transport after approval; its presence does not replace authorization checks in the handler.
+- A policy token is HMAC-SHA-256 signed and bounded to tenant, agent, execution action, canonical payload hash, approval nonce, issue time, and expiry (maximum 15 minutes). Missing or weak signing configuration fails closed.
+- Tenant context is resolved from the authenticated request. Agent payloads cannot select or override it. Tenant-scoped agent histories and database queries include that context.
+- Direct mutations are permitted only in an explicitly privileged handler after token verification. Draft creation, analysis, and explanation paths do not mutate ledger state.
 
 ## Consequences
 
-### Positive
-- **100% Deterministic Financial Explanations**: Variance classifications are mathematically guaranteed by arithmetic proofs.
-- **Full Data Sovereignty**: All analysis is local-first, offline-capable, and private.
-- **Elimination of Agent Runaway Risk**: No AI agent can autonomously mutate financial records or trigger transfers without human-in-the-loop signoff.
+- Novel discrepancy types remain unclassified until a reviewed deterministic rule exists.
+- Human approval adds latency to remediation.
+- In-memory draft storage is preview-only. Production durability and cross-instance token replay prevention require the JobForge/database-backed deployment path; the strategic surface must remain gated until configured.
 
-### Negative / Trade-offs
-- Novel, unmodeled discrepancy types require explicit formula definitions rather than relying on generative approximations.
-- Human review is required to approve draft remediation jobs before execution.
+## Verification
+
+- `packages/edge-ai-core/src/__tests__/discrepancy-classifier.test.ts`
+- `packages/api/src/services/ai-agents/__tests__/agent-governance.test.ts`
+- API route authorization and tenant-isolation tests

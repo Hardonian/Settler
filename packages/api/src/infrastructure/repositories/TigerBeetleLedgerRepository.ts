@@ -21,6 +21,7 @@ import {
   CreateAccountStatus,
   CreateTransferStatus,
 } from "tigerbeetle-node";
+import { createHash } from "node:crypto";
 
 import type {
   LedgerAccount,
@@ -69,65 +70,66 @@ interface TigerBeetleConfig {
  * Convert decimal amount to TigerBeetle's int128 (cents/smallest unit)
  */
 function toTigerBeetleAmount(value: number, _currency: string): bigint {
-  // For most currencies, we use 2 decimal places (cents)
-  return BigInt(Math.round(value * 100));
+  if (!Number.isFinite(value) || value < 0) {
+    throw new LedgerOperationError("amount", "Amount must be a finite non-negative number");
+  }
+  const decimal = value.toFixed(2);
+  if (Number(decimal) !== value) {
+    throw new LedgerOperationError("amount", "Amount must have at most two decimal minor units");
+  }
+  const [whole = "0", fraction = "00"] = decimal.split(".");
+  const minorUnits = BigInt(whole) * 100n + BigInt(fraction.padEnd(2, "0"));
+  if (minorUnits > BigInt(Number.MAX_SAFE_INTEGER)) {
+    throw new LedgerOperationError("amount", "Amount exceeds safe public input bounds");
+  }
+  return minorUnits;
 }
 
 /**
  * Convert TigerBeetle's int128 back to decimal
  */
 function fromTigerBeetleAmount(amount: bigint, _currency: string): number {
+  if (amount > BigInt(Number.MAX_SAFE_INTEGER) || amount < BigInt(Number.MIN_SAFE_INTEGER)) {
+    throw new LedgerOperationError(
+      "amount",
+      "Ledger amount exceeds the safe numeric range of the public Money contract"
+    );
+  }
   return Number(amount) / 100;
+}
+
+function hashToUint128(domain: string, value: string): bigint {
+  const digest = createHash("sha256")
+    .update(domain, "utf8")
+    .update("\0")
+    .update(value, "utf8")
+    .digest();
+  return BigInt(`0x${digest.subarray(0, 16).toString("hex")}`) || 1n;
+}
+
+function tenantFingerprint(tenantId: string): bigint {
+  return hashToUint128("settler:tigerbeetle:tenant:v1", tenantId);
 }
 
 /**
  * Generate a deterministic account ID from tenantId and account type/name
  *
- * SECURITY: Tenant information is encoded in the HIGH bits of the bigint to ensure
- * complete tenant isolation in TigerBeetle's global ledger. This prevents any
- * possibility of cross-tenant account collision, even with hash collisions.
- *
- * Format: [tenantIdHash (48 bits)][accountType (16 bits)][nameHash (48 bits)]
+ * The full 128-bit identifier is derived with SHA-256 domain separation. Tenant
+ * ownership is independently committed in TigerBeetle's user_data_128 field and
+ * verified on every lookup; the identifier alone is never treated as authorization.
  */
 function generateAccountId(tenantId: string, accountType: string, name?: string): bigint {
-  // Hash tenantId into the high bits (48 bits) - ensures tenant isolation
-  let tenantHash = 0n;
-  for (let i = 0; i < tenantId.length; i++) {
-    tenantHash = (tenantHash << 5n) - tenantHash + BigInt(tenantId.charCodeAt(i));
-    tenantHash = tenantHash & 0xffffffffffffn; // 48 bits
-  }
-
-  // Encode account type in the next 16 bits
-  const typeCode = accountTypeToCode(accountType as AccountType);
-
-  // Hash name into the lower bits (48 bits) if provided
-  let nameHash = 0n;
-  if (name) {
-    for (let i = 0; i < name.length; i++) {
-      nameHash = (nameHash << 5n) - nameHash + BigInt(name.charCodeAt(i));
-      nameHash = nameHash & 0xffffffffffffn; // 48 bits
-    }
-  }
-
-  // Combine: [tenantHash:48][typeCode:16][nameHash:48]
-  // This ensures tenant A can NEVER collide with tenant B
-  const accountId = (tenantHash << 64n) | (BigInt(typeCode) << 48n) | nameHash;
-
-  return accountId === 0n ? 1n : accountId;
+  return hashToUint128(
+    "settler:tigerbeetle:account:v1",
+    `${tenantId}\0${accountType}\0${name ?? ""}`
+  );
 }
 
 /**
  * Generate a transfer ID from idempotency key
  */
 function generateTransferId(idempotencyKey: string, tenantId: string): bigint {
-  let hash = 0n;
-  const input = `${tenantId}:${idempotencyKey}`;
-  for (let i = 0; i < input.length; i++) {
-    const char = input.charCodeAt(i);
-    hash = (hash << 5n) - hash + BigInt(char);
-    hash = hash & 0xffffffffffffffffffffffffffffffffn;
-  }
-  return hash === 0n ? 1n : hash;
+  return hashToUint128("settler:tigerbeetle:transfer:v1", `${tenantId}\0${idempotencyKey}`);
 }
 
 /**
@@ -143,7 +145,14 @@ function bigintToString(id: bigint): string {
  */
 function stringToBigint(str: string): bigint {
   const hex = str.replace(/-/g, "");
-  return BigInt(`0x${hex}`);
+  if (!/^[0-9a-fA-F]{32}$/.test(hex)) {
+    throw new LedgerOperationError("identifier", "Expected a 128-bit UUID-formatted identifier");
+  }
+  const value = BigInt(`0x${hex}`);
+  if (value === 0n) {
+    throw new LedgerOperationError("identifier", "TigerBeetle identifiers must be non-zero");
+  }
+  return value;
 }
 
 /**
@@ -295,7 +304,7 @@ export class TigerBeetleLedgerRepository implements ILedgerRepository {
         credits_posted: 0n,
         debits_pending: 0n,
         credits_pending: 0n,
-        user_data_128: BigInt(0),
+        user_data_128: tenantFingerprint(input.tenantId),
         user_data_64: BigInt(0),
         user_data_32: 0,
         timestamp: 0n,
@@ -338,6 +347,9 @@ export class TigerBeetleLedgerRepository implements ILedgerRepository {
       }
 
       const account = accounts[0];
+      if (account.user_data_128 !== tenantFingerprint(tenantId)) {
+        return null;
+      }
       const type = codeToAccountType(account.code);
 
       let balance: Money;
@@ -427,6 +439,24 @@ export class TigerBeetleLedgerRepository implements ILedgerRepository {
 
       const debitAccountId = stringToBigint(input.debitAccountId);
       const creditAccountId = stringToBigint(input.creditAccountId);
+      if (debitAccountId === creditAccountId) {
+        throw new LedgerOperationError(
+          "createTransfer",
+          "Debit and credit accounts must be distinct"
+        );
+      }
+
+      const accounts = await client.lookupAccounts([debitAccountId, creditAccountId]);
+      const fingerprint = tenantFingerprint(input.tenantId);
+      if (
+        accounts.length !== 2 ||
+        accounts.some((account) => account.user_data_128 !== fingerprint)
+      ) {
+        throw new LedgerOperationError(
+          "createTransfer",
+          "Debit and credit accounts must both belong to the authenticated tenant"
+        );
+      }
 
       const now = new Date();
       const transfer: Transfer = {
@@ -439,7 +469,7 @@ export class TigerBeetleLedgerRepository implements ILedgerRepository {
         ledger: 1,
         code: 1,
         flags: postImmediately ? TransferFlags.none : TransferFlags.pending,
-        user_data_128: BigInt(0),
+        user_data_128: fingerprint,
         user_data_64: BigInt(0),
         user_data_32: 0,
         timestamp: 0n,
@@ -447,7 +477,11 @@ export class TigerBeetleLedgerRepository implements ILedgerRepository {
 
       const results = await client.createTransfers([transfer]);
       const result = results[0];
-      if (!result || result.status !== CreateTransferStatus.created) {
+      if (
+        !result ||
+        (result.status !== CreateTransferStatus.created &&
+          result.status !== CreateTransferStatus.exists)
+      ) {
         throw new LedgerOperationError(
           "createTransfer",
           `TigerBeetle error code: ${result?.status ?? "missing result"}`
@@ -516,6 +550,13 @@ export class TigerBeetleLedgerRepository implements ILedgerRepository {
         );
         return { items: [], total: 0, page: filters.page || 1, limit, hasMore: false };
       }
+      const scopedAccount = await client.lookupAccounts([stringToBigint(accountId)]);
+      if (
+        !scopedAccount[0] ||
+        scopedAccount[0].user_data_128 !== tenantFingerprint(filters.tenantId)
+      ) {
+        throw new AccountNotFoundError(accountId, filters.tenantId);
+      }
       const transfers = await client.getAccountTransfers({
         account_id: stringToBigint(accountId),
         user_data_128: 0n,
@@ -528,26 +569,34 @@ export class TigerBeetleLedgerRepository implements ILedgerRepository {
         flags: 0,
       });
 
-      const items: LedgerTransfer[] = transfers.map((t) => ({
-        id: bigintToString(t.id),
-        debitAccountId: bigintToString(t.debit_account_id),
-        creditAccountId: bigintToString(t.credit_account_id),
-        amount: {
-          value: fromTigerBeetleAmount(t.amount, "USD"),
-          currency: "USD",
-        },
-        status: "posted",
-        idempotencyKey: "",
-        externalId: "",
-        metadata: {
-          code: t.code,
-          ledger: t.ledger,
-        },
-        createdAt: new Date(Number(t.timestamp) / 1_000_000),
-        updatedAt: new Date(Number(t.timestamp) / 1_000_000),
-        postedAt: new Date(Number(t.timestamp) / 1_000_000),
-        tenantId: filters.tenantId,
-      }));
+      const fingerprint = tenantFingerprint(filters.tenantId);
+      const items: LedgerTransfer[] = transfers
+        .filter((transfer) => transfer.user_data_128 === fingerprint)
+        .map((t) => ({
+          id: bigintToString(t.id),
+          debitAccountId: bigintToString(t.debit_account_id),
+          creditAccountId: bigintToString(t.credit_account_id),
+          amount: {
+            value: fromTigerBeetleAmount(t.amount, "USD"),
+            currency: "USD",
+          },
+          status:
+            t.flags & TransferFlags.pending
+              ? "pending"
+              : t.flags & TransferFlags.void_pending_transfer
+                ? "reversed"
+                : "posted",
+          idempotencyKey: "",
+          externalId: "",
+          metadata: {
+            code: t.code,
+            ledger: t.ledger,
+          },
+          createdAt: new Date(Number(t.timestamp) / 1_000_000),
+          updatedAt: new Date(Number(t.timestamp) / 1_000_000),
+          postedAt: new Date(Number(t.timestamp) / 1_000_000),
+          tenantId: filters.tenantId,
+        }));
 
       return {
         items,
@@ -574,6 +623,9 @@ export class TigerBeetleLedgerRepository implements ILedgerRepository {
       }
 
       const account = accounts[0];
+      if (account.user_data_128 !== tenantFingerprint(tenantId)) {
+        throw new AccountNotFoundError(accountId, tenantId);
+      }
       const type = codeToAccountType(account.code);
 
       let balance: number;
@@ -630,13 +682,14 @@ export class TigerBeetleLedgerRepository implements ILedgerRepository {
       const client = await this.ensureInitialized();
       const tbAccountIds = accountIds.map(stringToBigint);
       const accounts = await client.lookupAccounts(tbAccountIds);
+      const fingerprint = tenantFingerprint(tenantId);
 
       const balances: LedgerBalance[] = [];
 
       for (const accountId of accountIds) {
         const account = accounts.find((a) => bigintToString(a.id) === accountId);
 
-        if (account) {
+        if (account?.user_data_128 === fingerprint) {
           const type = codeToAccountType(account.code);
           let balance: number;
 
@@ -655,14 +708,7 @@ export class TigerBeetleLedgerRepository implements ILedgerRepository {
             asOf: new Date(),
           });
         } else {
-          balances.push({
-            accountId,
-            tenantId,
-            balance: { value: 0, currency: "USD" },
-            pendingBalance: { value: 0, currency: "USD" },
-            settledBalance: { value: 0, currency: "USD" },
-            asOf: new Date(),
-          });
+          throw new AccountNotFoundError(accountId, tenantId);
         }
       }
 
@@ -685,21 +731,28 @@ export class TigerBeetleLedgerRepository implements ILedgerRepository {
       }
 
       const original = originalTransfers[0];
+      if (original.user_data_128 !== tenantFingerprint(input.tenantId)) {
+        throw new TransferNotFoundError(input.transferId, input.tenantId);
+      }
 
-      const reversalId = generateTransferId(`reversal-${input.transferId}`, input.tenantId);
+      const isPending = Boolean(original.flags & TransferFlags.pending);
+      const reversalId = generateTransferId(
+        `${isPending ? "void" : "reversal"}-${input.transferId}`,
+        input.tenantId
+      );
       const now = new Date();
 
       const reversalTransfer: Transfer = {
         id: reversalId,
-        debit_account_id: original.credit_account_id,
-        credit_account_id: original.debit_account_id,
-        amount: original.amount,
-        pending_id: 0n,
+        debit_account_id: isPending ? original.debit_account_id : original.credit_account_id,
+        credit_account_id: isPending ? original.credit_account_id : original.debit_account_id,
+        amount: isPending ? 0n : original.amount,
+        pending_id: isPending ? originalTransferId : 0n,
         timeout: 0,
         ledger: 1,
         code: 1,
-        flags: 0,
-        user_data_128: originalTransferId,
+        flags: isPending ? TransferFlags.void_pending_transfer : TransferFlags.none,
+        user_data_128: tenantFingerprint(input.tenantId),
         user_data_64: BigInt(0),
         user_data_32: 0,
         timestamp: 0n,
@@ -707,7 +760,11 @@ export class TigerBeetleLedgerRepository implements ILedgerRepository {
 
       const results = await client.createTransfers([reversalTransfer]);
       const result = results[0];
-      if (!result || result.status !== CreateTransferStatus.created) {
+      if (
+        !result ||
+        (result.status !== CreateTransferStatus.created &&
+          result.status !== CreateTransferStatus.exists)
+      ) {
         throw new LedgerOperationError(
           "reverseTransfer",
           `TigerBeetle error code: ${result?.status ?? "missing result"}`
@@ -717,14 +774,14 @@ export class TigerBeetleLedgerRepository implements ILedgerRepository {
       return {
         id: bigintToString(reversalId),
         tenantId: input.tenantId,
-        debitAccountId: bigintToString(original.credit_account_id),
-        creditAccountId: bigintToString(original.debit_account_id),
+        debitAccountId: bigintToString(reversalTransfer.debit_account_id),
+        creditAccountId: bigintToString(reversalTransfer.credit_account_id),
         amount: {
           value: fromTigerBeetleAmount(original.amount, "USD"),
           currency: "USD",
         },
         status: "reversed",
-        idempotencyKey: `reversal-${input.transferId}`,
+        idempotencyKey: `${isPending ? "void" : "reversal"}-${input.transferId}`,
         reversalReason: input.reason,
         reversedByTransferId: input.transferId,
         createdAt: now,
@@ -752,6 +809,9 @@ export class TigerBeetleLedgerRepository implements ILedgerRepository {
       }
 
       const original = transfers[0];
+      if (original.user_data_128 !== tenantFingerprint(tenantId)) {
+        return null;
+      }
       if (!(original.flags & TransferFlags.pending)) {
         throw new InvalidTransferStateError(transferId, "posted", "pending");
       }
@@ -767,7 +827,11 @@ export class TigerBeetleLedgerRepository implements ILedgerRepository {
 
       const results = await client.createTransfers([postTransfer]);
       const result = results[0];
-      if (!result || result.status !== CreateTransferStatus.created) {
+      if (
+        !result ||
+        (result.status !== CreateTransferStatus.created &&
+          result.status !== CreateTransferStatus.exists)
+      ) {
         throw new LedgerOperationError(
           "postPendingTransfer",
           `TB Error: ${result?.status ?? "missing result"}`
@@ -803,6 +867,9 @@ export class TigerBeetleLedgerRepository implements ILedgerRepository {
       }
 
       const original = transfers[0];
+      if (original.user_data_128 !== tenantFingerprint(tenantId)) {
+        return null;
+      }
       if (!(original.flags & TransferFlags.pending)) {
         throw new InvalidTransferStateError(transferId, "voided", "pending");
       }
@@ -811,6 +878,7 @@ export class TigerBeetleLedgerRepository implements ILedgerRepository {
       const voidTransfer: Transfer = {
         ...original,
         id: generateTransferId(`void-${transferId}`, tenantId),
+        amount: 0n,
         pending_id: tbTransferId,
         flags: TransferFlags.void_pending_transfer,
         timestamp: 0n,
@@ -818,7 +886,11 @@ export class TigerBeetleLedgerRepository implements ILedgerRepository {
 
       const results = await client.createTransfers([voidTransfer]);
       const result = results[0];
-      if (!result || result.status !== CreateTransferStatus.created) {
+      if (
+        !result ||
+        (result.status !== CreateTransferStatus.created &&
+          result.status !== CreateTransferStatus.exists)
+      ) {
         throw new LedgerOperationError(
           "voidPendingTransfer",
           `TB Error: ${result?.status ?? "missing result"}`
@@ -854,6 +926,9 @@ export class TigerBeetleLedgerRepository implements ILedgerRepository {
       }
 
       const t = transfers[0];
+      if (t.user_data_128 !== tenantFingerprint(tenantId)) {
+        return null;
+      }
 
       return {
         id: bigintToString(t.id),
@@ -864,7 +939,12 @@ export class TigerBeetleLedgerRepository implements ILedgerRepository {
           value: fromTigerBeetleAmount(t.amount, "USD"),
           currency: "USD",
         },
-        status: t.flags & TransferFlags.pending ? "pending" : "posted",
+        status:
+          t.flags & TransferFlags.pending
+            ? "pending"
+            : t.flags & TransferFlags.void_pending_transfer
+              ? "reversed"
+              : "posted",
         idempotencyKey: "",
         createdAt: new Date(Number(t.timestamp) / 1_000_000),
         updatedAt: new Date(Number(t.timestamp) / 1_000_000),

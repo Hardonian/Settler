@@ -98,6 +98,7 @@ export async function requireAuth(request: NextRequest): Promise<{
 export async function requireAdmin(request: NextRequest): Promise<{
   isAdmin: boolean;
   user?: { id: string; email?: string };
+  role?: "admin" | "super_admin";
   error?: NextResponse;
 }> {
   const authResult = await requireAuth(request);
@@ -144,6 +145,7 @@ export async function requireAdmin(request: NextRequest): Promise<{
     return {
       isAdmin: true,
       user: authResult.user,
+      role: profileRole as "admin" | "super_admin",
     };
   } catch (error) {
     await logger.error("Admin check failed", {

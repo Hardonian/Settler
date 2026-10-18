@@ -34,19 +34,13 @@ describe("computePayloadHash", () => {
     expect(numberHash).not.toBe(boolHash);
   });
 
-  it("throws TypeError when payload is null or undefined", () => {
-    // Current implementation uses Object.keys(payload) without checking for null/undefined
-    expect(() => computePayloadHash(null)).toThrow(TypeError);
+  it("handles null or undefined payload per RFC 8785 specification", () => {
+    const nullHash = computePayloadHash(null);
+    expect(nullHash).toMatch(/^[a-f0-9]{64}$/);
     expect(() => computePayloadHash(undefined)).toThrow(TypeError);
   });
 
-  it("computes consistent hash for complex nested structures (shallow sorting caveat)", () => {
-    // Note: current implementation only sorts top-level keys
-    // because JSON.stringify with replacer array only filters top-level,
-    // and for nested objects, it filters them using the same array of keys!
-    // So `{a: 1, b: {c: 2}}` with keys `['a', 'b']` works, but if `c` is not in top-level,
-    // JSON.stringify will drop `c`!
-    // This test just documents current behavior to prevent regressions
+  it("computes consistent hash for complex nested structures using RFC 8785 canonicalization", () => {
     const payload = {
       user: { id: "u1" },
       amount: 100,
@@ -56,18 +50,15 @@ describe("computePayloadHash", () => {
     expect(hash).toMatch(/^[a-f0-9]{64}$/);
   });
 
-  it("drops nested properties that do not match top-level keys", () => {
-    // Top level keys are ['a', 'b'].
-    // The nested object { c: 2 } does not contain keys from the top level.
-    // JSON.stringify will drop 'c' and output {"a":1,"b":{}}.
+  it("preserves nested properties and distinguishes different nested structures", () => {
     const payload1 = { a: 1, b: { c: 2 } };
     const payload2 = { a: 1, b: { d: 3 } };
 
     const hash1 = computePayloadHash(payload1);
     const hash2 = computePayloadHash(payload2);
 
-    // Because nested properties that don't match top level keys are dropped, the hashes will be exactly the same!
-    expect(hash1).toBe(hash2);
+    // RFC 8785 canonical JSON preserves all nested structures without dropping keys
+    expect(hash1).not.toBe(hash2);
   });
 
   it("handles arrays deterministically but filters them as objects", () => {

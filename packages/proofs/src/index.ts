@@ -13,3 +13,4 @@
 export * from "./evidence/index.js";
 export * from "./proofpack/index.js";
 export * from "./audit-sampling.js";
+export { canonicalJson, canonicalSha256 } from "./canonical-json.js";

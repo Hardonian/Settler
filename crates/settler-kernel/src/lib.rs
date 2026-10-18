@@ -7,8 +7,8 @@ pub mod plugin_runtime;
 pub mod smt;
 pub mod streaming;
 pub use smt::{
-    get_empty_hashes, hash_leaf, hash_nodes, verify_smt_proof, SmtProof, SmtVerificationResult,
-    SparseMerkleTree, SMT_DEPTH,
+    get_empty_hashes, hash_empty_leaf, hash_leaf, hash_nodes, verify_smt_proof, SmtProof,
+    SmtVerificationResult, SparseMerkleTree, SMT_DEPTH,
 };
 
 pub const SCHEMA_VERSION: &str = "v1";
@@ -126,8 +126,123 @@ fn hash_bytes(bytes: &[u8]) -> String {
     hex::encode(hasher.finalize())
 }
 
+fn format_ecmascript_number(value: f64) -> String {
+    if value == 0.0 {
+        return "0".to_string();
+    }
+
+    let mut buffer = ryu::Buffer::new();
+    let rendered = buffer.format_finite(value);
+    let (sign, unsigned) = rendered
+        .strip_prefix('-')
+        .map_or(("", rendered), |rest| ("-", rest));
+    let (mantissa, explicit_exponent) = unsigned
+        .split_once(['e', 'E'])
+        .map_or((unsigned, 0), |(mantissa, exponent)| {
+            (mantissa, exponent.parse::<i32>().unwrap_or(0))
+        });
+    let fractional_digits = mantissa
+        .split_once('.')
+        .map_or(0, |(_, fraction)| fraction.len() as i32);
+    let digits = mantissa.replace('.', "");
+    let decimal_position = digits.len() as i32 + explicit_exponent - fractional_digits;
+
+    let body = if decimal_position > 0 && decimal_position <= 21 {
+        let decimal_position = decimal_position as usize;
+        if decimal_position >= digits.len() {
+            format!("{}{}", digits, "0".repeat(decimal_position - digits.len()))
+        } else {
+            format!(
+                "{}.{}",
+                &digits[..decimal_position],
+                &digits[decimal_position..]
+            )
+        }
+    } else if decimal_position <= 0 && decimal_position > -6 {
+        format!("0.{}{}", "0".repeat((-decimal_position) as usize), digits)
+    } else {
+        let exponent = decimal_position - 1;
+        let coefficient = if digits.len() == 1 {
+            digits
+        } else {
+            format!("{}.{}", &digits[..1], &digits[1..])
+        };
+        format!(
+            "{}e{}{}",
+            coefficient,
+            if exponent >= 0 { "+" } else { "" },
+            exponent
+        )
+    };
+
+    format!("{sign}{body}")
+}
+
+fn write_canonical_json(
+    value: &serde_json::Value,
+    output: &mut String,
+) -> Result<(), serde_json::Error> {
+    match value {
+        serde_json::Value::Null => output.push_str("null"),
+        serde_json::Value::Bool(value) => output.push_str(if *value { "true" } else { "false" }),
+        serde_json::Value::Number(value) => {
+            if let Some(integer) = value.as_i64() {
+                output.push_str(&integer.to_string());
+            } else if let Some(integer) = value.as_u64() {
+                output.push_str(&integer.to_string());
+            } else {
+                output.push_str(&format_ecmascript_number(
+                    value.as_f64().unwrap_or(0.0),
+                ));
+            }
+        }
+        serde_json::Value::String(value) => {
+            output.push_str(&serde_json::to_string(value)?);
+        }
+        serde_json::Value::Array(values) => {
+            output.push('[');
+            for (index, value) in values.iter().enumerate() {
+                if index > 0 {
+                    output.push(',');
+                }
+                write_canonical_json(value, output)?;
+            }
+            output.push(']');
+        }
+        serde_json::Value::Object(values) => {
+            let mut entries = values.iter().collect::<Vec<_>>();
+            entries.sort_by(|(left, _), (right, _)| {
+                left.encode_utf16()
+                    .cmp(right.encode_utf16())
+            });
+
+            output.push('{');
+            for (index, (key, value)) in entries.into_iter().enumerate() {
+                if index > 0 {
+                    output.push(',');
+                }
+                output.push_str(&serde_json::to_string(key)?);
+                output.push(':');
+                write_canonical_json(value, output)?;
+            }
+            output.push('}');
+        }
+    }
+    Ok(())
+}
+
+/// Serializes a value using RFC 8785 property ordering and JSON string rules.
+/// Settler kernel commitments use integer monetary values, avoiding cross-runtime
+/// floating-point representation as a cryptographic input.
+pub fn canonical_json_bytes<T: Serialize>(value: &T) -> Result<Vec<u8>, serde_json::Error> {
+    let value = serde_json::to_value(value)?;
+    let mut output = String::new();
+    write_canonical_json(&value, &mut output)?;
+    Ok(output.into_bytes())
+}
+
 fn hash_json<T: Serialize>(value: &T) -> Result<String, serde_json::Error> {
-    let bytes = serde_json::to_vec(value)?;
+    let bytes = canonical_json_bytes(value)?;
     Ok(hash_bytes(&bytes))
 }
 
@@ -471,6 +586,19 @@ pub fn verify_manifest(manifest: &EvidenceManifest, files: &[NamedFile]) -> Veri
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn canonical_json_uses_ecmascript_number_serialization() {
+        assert_eq!(canonical_json_bytes(&1e20_f64).unwrap(), b"100000000000000000000");
+        assert_eq!(canonical_json_bytes(&1e21_f64).unwrap(), b"1e+21");
+        assert_eq!(canonical_json_bytes(&1e-6_f64).unwrap(), b"0.000001");
+        assert_eq!(canonical_json_bytes(&1e-7_f64).unwrap(), b"1e-7");
+        assert_eq!(canonical_json_bytes(&-0.0_f64).unwrap(), b"0");
+        assert_eq!(
+            canonical_json_bytes(&333333333.33333329_f64).unwrap(),
+            b"333333333.3333333"
+        );
+    }
     use pretty_assertions::assert_eq;
 
     fn sample_records() -> (Vec<NormalizedRecord>, Vec<NormalizedRecord>) {

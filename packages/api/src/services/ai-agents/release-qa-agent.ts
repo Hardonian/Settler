@@ -9,11 +9,18 @@
  * or state-mutating actions strictly require human approval and signed policy tokens.
  */
 
-import { BaseAgent, AgentJobDraft, assertSignedPolicyToken } from "./orchestrator";
+import {
+  BaseAgent,
+  AgentJobDraft,
+  AgentExecutionContext,
+  assertSignedPolicyToken,
+  policyPayloadHash,
+} from "./orchestrator";
 import { logInfo } from "../../utils/logger";
 
 export interface ReleaseCheckSuite {
   suiteId: string;
+  tenantId: string;
   releaseVersion: string;
   checks: Array<{
     name: string;
@@ -38,19 +45,33 @@ export class ReleaseQAAgent extends BaseAgent {
     logInfo("Release QA Agent initialized in draft-governed mode");
   }
 
-  async execute(action: string, params: Record<string, unknown>): Promise<unknown> {
+  async execute(
+    action: string,
+    params: Record<string, unknown>,
+    context?: AgentExecutionContext
+  ): Promise<unknown> {
+    const tenantId = context?.tenantId;
+    if (!tenantId) {
+      throw new Error("Tenant context is required for release QA agent execution");
+    }
+
     switch (action) {
       case "evaluate_release":
-        return this.evaluateRelease(params);
+        return this.evaluateRelease({ ...params, tenantId });
 
       case "promote_release":
-        return await this.promoteRelease(params);
+        return await this.promoteRelease(params, context);
 
       case "get_suites":
-        return Array.from(this.testSuites.values());
+        return Array.from(this.testSuites.values()).filter((suite) => suite.tenantId === tenantId);
 
       case "get_stats":
-        return await this.getStatus();
+        return {
+          activeSuites: Array.from(this.testSuites.values()).filter(
+            (suite) => suite.tenantId === tenantId
+          ).length,
+          governanceMode: "draft_only_approval_required",
+        };
 
       default:
         throw new Error(`Unknown action: ${action}`);
@@ -81,23 +102,37 @@ export class ReleaseQAAgent extends BaseAgent {
     draftJob: AgentJobDraft;
   } {
     const version = (params.version as string) || "v1.6.0-release-candidate";
+    const tenantId = params.tenantId as string;
+    if (!tenantId) throw new Error("Tenant context is required to evaluate a release");
     const suiteId = `qa_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
+
+    const suppliedChecks = Array.isArray(params.checks) ? params.checks : [];
+    const checks = suppliedChecks.filter(
+      (check): check is ReleaseCheckSuite["checks"][number] =>
+        typeof check === "object" &&
+        check !== null &&
+        typeof (check as { name?: unknown }).name === "string" &&
+        [
+          "determinism",
+          "tenant_isolation",
+          "proofpack_integrity",
+          "reconciliation_parity",
+        ].includes(String((check as { category?: unknown }).category)) &&
+        ["pending", "passed", "failed"].includes(String((check as { status?: unknown }).status))
+    );
+    const passed = checks.filter((check) => check.status === "passed").length;
+    const readinessScore = checks.length === 0 ? 0 : Math.floor((passed / checks.length) * 100);
 
     const suite: ReleaseCheckSuite = {
       suiteId,
+      tenantId,
       releaseVersion: version,
-      checks: [
-        { name: "Determinism & Replay", category: "determinism", status: "passed" },
-        { name: "Cross-Tenant Isolation", category: "tenant_isolation", status: "passed" },
-        { name: "Sparse Merkle Tree Soundness", category: "proofpack_integrity", status: "passed" },
-        {
-          name: "Dual-Ledger TigerBeetle Parity",
-          category: "reconciliation_parity",
-          status: "passed",
-        },
-      ],
-      overallStatus: "ready_for_review",
-      readinessScore: 100,
+      checks,
+      overallStatus:
+        checks.length > 0 && checks.every((check) => check.status === "passed")
+          ? "ready_for_review"
+          : "blocked",
+      readinessScore,
     };
 
     this.testSuites.set(suiteId, suite);
@@ -118,6 +153,7 @@ export class ReleaseQAAgent extends BaseAgent {
       jobType: "qa.release.promotion.draft",
       payload: {
         suiteId: suite.suiteId,
+        tenantId: suite.tenantId,
         releaseVersion: suite.releaseVersion,
         checks: suite.checks,
         readinessScore: suite.readinessScore,
@@ -136,16 +172,33 @@ export class ReleaseQAAgent extends BaseAgent {
   /**
    * Promotes release - requires verified signed policy token
    */
-  private async promoteRelease(params: Record<string, unknown>): Promise<{
+  private async promoteRelease(
+    params: Record<string, unknown>,
+    context?: AgentExecutionContext
+  ): Promise<{
     suiteId: string;
     version: string;
     status: string;
   }> {
     // SECURITY INVARIANT: Autonomous release promotion forbidden without verified signed policy token
-    assertSignedPolicyToken(params.policyToken as string | undefined);
+    assertSignedPolicyToken(params.policyToken as string | undefined, {
+      tenantId: context?.tenantId ?? "",
+      agentId: this.id,
+      action: "promote_release",
+      payloadHash: policyPayloadHash(params),
+      nonce: params.policyNonce as string | undefined,
+    });
 
     const suiteId = (params.suiteId as string) || "unknown";
     const version = (params.version as string) || "v1.6.0";
+    const suite = this.testSuites.get(suiteId);
+    if (
+      !suite ||
+      suite.tenantId !== context?.tenantId ||
+      suite.overallStatus !== "ready_for_review"
+    ) {
+      throw new Error("Verified release suite not found or not ready for tenant");
+    }
 
     logInfo(`Release promoted under verified policy token: ${version} (suite ${suiteId})`);
 

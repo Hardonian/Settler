@@ -5,6 +5,8 @@
  * Uses in-memory cache (can be replaced with Redis for distributed systems).
  */
 
+import { createHash } from "node:crypto";
+
 interface CacheEntry<T> {
   data: T;
   expiresAt: number;
@@ -39,13 +41,19 @@ export interface CacheConfig {
 export function generateCacheKey(request: Request, prefix: string = "api"): string {
   const url = new URL(request.url);
   const method = request.method;
-  const userId = request.headers.get("x-user-id") || "anonymous";
+  const tenantId = request.headers.get("x-tenant-id") || "tenant-unresolved";
+  const identityMaterial = [
+    request.headers.get("authorization") || "",
+    request.headers.get("cookie") || "",
+    request.headers.get("x-user-id") || "",
+  ].join("\u0000");
+  const identityHash = createHash("sha256").update(identityMaterial, "utf8").digest("hex");
 
   // Include query params in key
   const queryString = url.searchParams.toString();
   const queryHash = queryString ? `:${queryString}` : "";
 
-  return `${prefix}:${method}:${url.pathname}${queryHash}:${userId}`;
+  return `${prefix}:${method}:${url.pathname}${queryHash}:${tenantId}:${identityHash}`;
 }
 
 /**

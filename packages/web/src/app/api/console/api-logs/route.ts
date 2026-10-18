@@ -18,6 +18,10 @@ import { withCache, CACHE_CONFIGS } from "@/lib/cache/api-cache";
 import { validatePagination } from "@/lib/security/request-validator";
 import { withApiLogging } from "@/middleware/api-logger";
 import { appLogger } from "@/lib/utils/logger";
+import {
+  resolveTenantForMutation,
+  resolveTenantMembershipScope,
+} from "@/lib/supabase/tenant-membership";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -47,7 +51,9 @@ async function handleGet(request: NextRequest) {
   }
 
   // Parse filters
-  const tenantId = searchParams.get("tenantId") || undefined;
+  const requestedTenantId = searchParams.get("tenantId") || null;
+  const membershipScope = await resolveTenantMembershipScope();
+  const tenantId = resolveTenantForMutation(membershipScope.tenantIds, requestedTenantId);
   const userId = searchParams.get("userId") || undefined;
   const method = searchParams.get("method") || undefined;
   const path = searchParams.get("path") || undefined;
@@ -59,7 +65,7 @@ async function handleGet(request: NextRequest) {
   const endDate = endDateParam ? new Date(endDateParam) : undefined;
 
   const filters = {
-    ...(tenantId ? { tenantId } : {}),
+    tenantId,
     ...(userId ? { userId } : {}),
     ...(method ? { method } : {}),
     ...(path ? { path } : {}),

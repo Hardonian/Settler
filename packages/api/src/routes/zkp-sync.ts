@@ -9,13 +9,25 @@ import { createRunProofPackageWithArtifacts } from "../services/intelligence/pro
 
 const router: Router = Router();
 
-function sha256(content: string): string {
-  return crypto.createHash("sha256").update(content).digest("hex");
+function hashLeaf(content: string): string {
+  return crypto
+    .createHash("sha256")
+    .update(Buffer.concat([Buffer.from([0x00]), Buffer.from(content, "utf8")]))
+    .digest("hex");
+}
+
+function hashNode(left: string, right: string): string {
+  return crypto
+    .createHash("sha256")
+    .update(
+      Buffer.concat([Buffer.from([0x01]), Buffer.from(left, "hex"), Buffer.from(right, "hex")])
+    )
+    .digest("hex");
 }
 
 /**
  * POST /api/intelligence/zkp/generate
- * Generates a cryptographic Merkle-commitment proof for cross-tenant ledger parity without leaking PII.
+ * Generates a signed Merkle commitment for later counterparty verification.
  */
 router.post(
   "/zkp/generate",
@@ -27,48 +39,53 @@ router.post(
         return res.status(400).json({ error: "Missing required tenant context" });
       }
 
-      const { targetTenantId, runId, salt = "settler-zkp-sovereign-salt" } = req.body;
+      const { targetTenantId, runId, salt = "" } = req.body;
       if (!targetTenantId || !runId) {
         return res
           .status(400)
           .json({ error: "Missing required parameters: targetTenantId and runId" });
       }
+      if (typeof salt !== "string" || salt.length > 256) {
+        return res.status(400).json({ error: "Invalid commitment salt" });
+      }
 
       // Query the run scoped to this tenant
-      const run = await prisma.reconciliationRun
-        .findFirst({
-          where: { id: runId, tenantId },
-          select: {
-            id: true,
-            status: true,
-            sourceCount: true,
-            targetCount: true,
-            matchedCount: true,
-            unmatchedSourceCount: true,
-            createdAt: true,
-          },
-        })
-        .catch(() => null);
+      const run = await prisma.reconciliationRun.findFirst({
+        where: { id: runId, tenantId },
+        select: {
+          id: true,
+          status: true,
+          sourceCount: true,
+          targetCount: true,
+          matchedCount: true,
+          unmatchedSourceCount: true,
+          createdAt: true,
+        },
+      });
+      if (!run) return res.status(404).json({ error: "Reconciliation run not found" });
 
-      const total = (run?.sourceCount ?? 0) + (run?.targetCount ?? 0) || 100;
-      const matched = run?.matchedCount ?? 98;
-      const unmatched = run?.unmatchedSourceCount ?? 2;
+      const total = run.sourceCount + run.targetCount;
+      const matched = run.matchedCount;
+      const unmatched = run.unmatchedSourceCount;
 
-      // Construct zero-knowledge leaf commitments for parity validation
+      // Construct domain-separated leaf commitments for parity validation.
       const leaves = [
-        sha256(`${tenantId}:${runId}:total:${total}:${salt}`),
-        sha256(`${tenantId}:${runId}:matched:${matched}:${salt}`),
-        sha256(`${tenantId}:${runId}:unmatched:${unmatched}:${salt}`),
-        sha256(`${tenantId}:${targetTenantId}:counterparty_anchor:${salt}`),
+        hashLeaf(`${tenantId}:${runId}:total:${total}:${salt}`),
+        hashLeaf(`${tenantId}:${runId}:matched:${matched}:${salt}`),
+        hashLeaf(`${tenantId}:${runId}:unmatched:${unmatched}:${salt}`),
+        hashLeaf(`${tenantId}:${targetTenantId}:counterparty_anchor:${salt}`),
       ];
 
       // 2-level Merkle root
-      const parentLeft = sha256(leaves[0]! + leaves[1]!);
-      const parentRight = sha256(leaves[2]! + leaves[3]!);
-      const merkleRoot = sha256(parentLeft + parentRight);
+      const parentLeft = hashNode(leaves[0]!, leaves[1]!);
+      const parentRight = hashNode(leaves[2]!, leaves[3]!);
+      const merkleRoot = hashNode(parentLeft, parentRight);
 
       // Commitment hash incorporating the secret key
-      const secret = process.env.COOKIE_SECRET || "settler-zkp-sovereign-master";
+      const secret = process.env.PROOF_COMMITMENT_SECRET ?? process.env.COOKIE_SECRET;
+      if (!secret || Buffer.byteLength(secret, "utf8") < 32) {
+        return res.status(503).json({ error: "Proof commitment signing is not configured" });
+      }
       const proofHash = crypto
         .createHmac("sha256", secret)
         .update(`${tenantId}:${targetTenantId}:${runId}:${merkleRoot}`)
@@ -83,7 +100,7 @@ router.post(
         outputFingerprint: leaves[1]!,
         ruleSetHash: leaves[2]!,
         packageType: "audit_export",
-      }).catch(() => null);
+      });
 
       return res.json({
         data: {
@@ -98,12 +115,12 @@ router.post(
             leafCount: leaves.length,
             depth: 2,
             recordCountCommitment: leaves[0],
-            statusCommitment: sha256(run?.status ?? "completed"),
+            statusCommitment: hashLeaf(run.status),
           },
           generatedAt: new Date().toISOString(),
-          status: "verified",
+          status: "commitment_generated",
           message:
-            "Zero-Knowledge Proof commitment successfully generated for cross-tenant parity without revealing sensitive data.",
+            "Merkle-HMAC commitment generated. This artifact is not a zero-knowledge proof and requires counterparty verification.",
         },
       });
     } catch (error: unknown) {

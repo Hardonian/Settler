@@ -5,6 +5,8 @@
  */
 
 import { EventEmitter } from "events";
+import { createHmac, timingSafeEqual } from "node:crypto";
+import { canonicalSha256 } from "@settler/proofs";
 import { logError } from "../../utils/logger";
 
 export interface AgentConfig {
@@ -19,7 +21,13 @@ export interface AgentRequest {
   agentId: string;
   action: string;
   params: Record<string, unknown>;
-  context?: Record<string, unknown>;
+  context?: AgentExecutionContext;
+}
+
+export interface AgentExecutionContext {
+  tenantId: string;
+  userId?: string | null;
+  traceId?: string | null;
 }
 
 export interface AgentResponse {
@@ -53,17 +61,125 @@ export interface AgentJobDraft {
 /**
  * Enforces policy token verification before allowing any high-privilege execution
  */
-export function assertSignedPolicyToken(policyToken?: string): void {
-  if (
-    !policyToken ||
-    typeof policyToken !== "string" ||
-    !policyToken.startsWith("pt_") ||
-    policyToken.length < 32
-  ) {
-    throw new Error(
-      "GOVERNANCE_INVARIANT_VIOLATION: Direct execution forbidden without verified signed policy token"
-    );
+interface PolicyTokenClaims {
+  version: 1;
+  tenantId: string;
+  agentId: string;
+  action: string;
+  payloadHash: string;
+  issuedAt: number;
+  expiresAt: number;
+  nonce: string;
+}
+
+export interface ExpectedPolicyBounds {
+  tenantId: string;
+  agentId: string;
+  action: string;
+  payloadHash: string;
+  nonce?: string;
+}
+
+export function policyPayloadHash(params: Record<string, unknown>): string {
+  const { policyToken: _policyToken, ...payload } = params;
+  void _policyToken;
+  const jsonValue = JSON.parse(JSON.stringify(payload)) as unknown;
+  return canonicalSha256(jsonValue);
+}
+
+function governanceViolation(): never {
+  throw new Error(
+    "GOVERNANCE_INVARIANT_VIOLATION: Direct execution forbidden without verified signed policy token"
+  );
+}
+
+function policyTokenSecret(): string {
+  const secret = process.env.AGENT_POLICY_TOKEN_SECRET ?? process.env.POLICY_TOKEN_SECRET;
+  if (!secret || Buffer.byteLength(secret, "utf8") < 32) {
+    return governanceViolation();
   }
+  return secret;
+}
+
+export function createSignedPolicyToken(
+  bounds: ExpectedPolicyBounds,
+  nonce: string,
+  issuedAt = Math.floor(Date.now() / 1000),
+  expiresAt = issuedAt + 900
+): string {
+  if (nonce.length < 16 || expiresAt <= issuedAt || expiresAt - issuedAt > 900) {
+    return governanceViolation();
+  }
+  const claims: PolicyTokenClaims = {
+    version: 1,
+    ...bounds,
+    issuedAt,
+    expiresAt,
+    nonce,
+  };
+  const payloadSegment = Buffer.from(JSON.stringify(claims), "utf8").toString("base64url");
+  const signatureSegment = createHmac("sha256", policyTokenSecret())
+    .update(`pt_v1.${payloadSegment}`, "utf8")
+    .digest("base64url");
+  return `pt_v1.${payloadSegment}.${signatureSegment}`;
+}
+
+export function assertSignedPolicyToken(
+  policyToken: string | undefined,
+  expected: ExpectedPolicyBounds
+): PolicyTokenClaims {
+  if (!policyToken) {
+    return governanceViolation();
+  }
+  const secret = policyTokenSecret();
+
+  const segments = policyToken.split(".");
+  if (segments.length !== 3 || segments[0] !== "pt_v1") {
+    return governanceViolation();
+  }
+
+  const payloadSegment = segments[1]!;
+  const signatureSegment = segments[2]!;
+  const expectedSignature = createHmac("sha256", secret)
+    .update(`pt_v1.${payloadSegment}`, "utf8")
+    .digest();
+
+  let suppliedSignature: Buffer;
+  let claims: PolicyTokenClaims;
+  try {
+    suppliedSignature = Buffer.from(signatureSegment, "base64url");
+    claims = JSON.parse(Buffer.from(payloadSegment, "base64url").toString("utf8"));
+  } catch {
+    return governanceViolation();
+  }
+
+  if (
+    suppliedSignature.length !== expectedSignature.length ||
+    !timingSafeEqual(suppliedSignature, expectedSignature)
+  ) {
+    return governanceViolation();
+  }
+
+  const now = Math.floor(Date.now() / 1000);
+  if (
+    claims.version !== 1 ||
+    claims.tenantId !== expected.tenantId ||
+    claims.agentId !== expected.agentId ||
+    claims.action !== expected.action ||
+    claims.payloadHash !== expected.payloadHash ||
+    (expected.nonce !== undefined && claims.nonce !== expected.nonce) ||
+    !Number.isSafeInteger(claims.issuedAt) ||
+    !Number.isSafeInteger(claims.expiresAt) ||
+    claims.issuedAt > now + 30 ||
+    claims.expiresAt <= now ||
+    claims.expiresAt - claims.issuedAt > 900 ||
+    typeof claims.nonce !== "string" ||
+    claims.nonce.length < 16
+  ) {
+    return governanceViolation();
+  }
+
+  return claims;
 }
 
 export abstract class BaseAgent extends EventEmitter {
@@ -87,7 +203,11 @@ export abstract class BaseAgent extends EventEmitter {
   /**
    * Execute an action
    */
-  abstract execute(action: string, params: Record<string, unknown>): Promise<unknown>;
+  abstract execute(
+    action: string,
+    params: Record<string, unknown>,
+    context?: AgentExecutionContext
+  ): Promise<unknown>;
 
   /**
    * Get agent status
@@ -175,7 +295,7 @@ export class AgentOrchestrator extends EventEmitter {
     const startTime = Date.now();
 
     try {
-      const data = await agent.execute(request.action, request.params);
+      const data = await agent.execute(request.action, request.params, request.context);
       const executionTime = Date.now() - startTime;
 
       return {

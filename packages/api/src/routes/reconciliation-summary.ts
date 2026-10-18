@@ -55,6 +55,7 @@ router.get(
       const jobIdParam = req.params["jobId"];
       const jobId = Array.isArray(jobIdParam) ? (jobIdParam[0] ?? "") : (jobIdParam ?? "");
       const { start, end, useView = true, refreshView = false } = req.query;
+      const tenantId = req.tenantId!;
 
       if (!jobId) {
         return sendError(res, 400, "BAD_REQUEST", "Job ID is required");
@@ -65,7 +66,7 @@ router.get(
           ? { start: new Date(start as string), end: new Date(end as string) }
           : undefined;
 
-      const summary = await getReconciliationSummary(jobId, dateRange, {
+      const summary = await getReconciliationSummary(tenantId, jobId, dateRange, {
         useMaterializedView: useView as boolean,
         refreshView: refreshView as boolean,
         cache: true,
@@ -91,10 +92,11 @@ router.get(
     try {
       const jobIdParam2 = req.params["jobId"];
       const jobId = Array.isArray(jobIdParam2) ? (jobIdParam2[0] ?? "") : (jobIdParam2 ?? "");
+      const tenantId = req.tenantId!;
       if (!jobId) {
         return sendError(res, 400, "BAD_REQUEST", "Job ID is required");
       }
-      const performance = await getJobPerformance(jobId, {
+      const performance = await getJobPerformance(tenantId, jobId, {
         useMaterializedView: true,
         cache: true,
       });
@@ -122,10 +124,11 @@ router.get(
     try {
       const jobIdParam3 = req.params["jobId"];
       const jobId = Array.isArray(jobIdParam3) ? (jobIdParam3[0] ?? "") : (jobIdParam3 ?? "");
+      const tenantId = req.tenantId!;
       if (!jobId) {
         return sendError(res, 400, "BAD_REQUEST", "Job ID is required");
       }
-      const accuracy = await getMatchAccuracy(jobId, {
+      const accuracy = await getMatchAccuracy(tenantId, jobId, {
         useMaterializedView: true,
         cache: true,
       });

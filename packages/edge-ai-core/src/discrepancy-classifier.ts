@@ -34,7 +34,7 @@ export interface DiscrepancyClassificationInput {
   targetReferenceId?: string | null;
   processorFeeSchedule?: {
     basisPoints: number; // e.g. 290 for 2.9%
-    fixedFeeMinorUnits: number; // e.g. 0.30
+    fixedFeeMinorUnits: number; // Legacy field name; value is expressed in major units (for example 0.30 USD)
   };
   declaredFxRate?: number | null;
   fxTolerancePercentage?: number; // e.g. 0.02
@@ -87,8 +87,15 @@ export function classifyDiscrepancy(
     targetReferenceId,
   } = input;
 
+  if (!Number.isFinite(sourceAmount) || (targetAmount != null && !Number.isFinite(targetAmount))) {
+    throw new TypeError("Discrepancy amounts must be finite numbers");
+  }
+
   const srcTime = new Date(sourceTimestamp).getTime();
   const tgtTime = targetTimestamp ? new Date(targetTimestamp).getTime() : null;
+  if (!Number.isFinite(srcTime) || (tgtTime != null && !Number.isFinite(tgtTime))) {
+    throw new TypeError("Discrepancy timestamps must be valid dates");
+  }
 
   // 1. Check Reference ID Mutation (Exact edit distance & prefix/suffix stripping)
   if (sourceReferenceId && targetReferenceId && sourceReferenceId !== targetReferenceId) {
@@ -103,7 +110,8 @@ export function classifyDiscrepancy(
       cleanSrc.replace(/^(ch_|py_|sq_|pi_|txn_|inv_)/, "") === cleanTgt ||
       cleanTgt.replace(/^(ch_|py_|sq_|pi_|txn_|inv_)/, "") === cleanSrc;
 
-    if (isPrefixStripped || similarity >= 0.75 || dist <= 3) {
+    const isBoundedEdit = maxLen >= 8 && similarity >= 0.75 && dist <= 3;
+    if (isPrefixStripped || isBoundedEdit) {
       return {
         rootCause: "REFERENCE_ID_MUTATION",
         confidence: isPrefixStripped ? 0.99 : Number(similarity.toFixed(4)),
@@ -139,22 +147,23 @@ export function classifyDiscrepancy(
     sourceAmount > 0
   ) {
     const impliedRate = targetAmount / sourceAmount;
-    const declaredRate = input.declaredFxRate || null;
-    const tolerance = input.fxTolerancePercentage || 0.03; // Default 3% spread bound
+    const declaredRate = input.declaredFxRate ?? null;
+    const tolerance = input.fxTolerancePercentage ?? 0.03; // Default 3% spread bound
 
     let isWithinBounds = false;
     let rateDelta = 0;
 
-    if (declaredRate) {
+    if (!Number.isFinite(tolerance) || tolerance < 0) {
+      throw new TypeError("FX tolerance must be a finite non-negative number");
+    }
+    if (declaredRate != null && Number.isFinite(declaredRate) && declaredRate > 0) {
       rateDelta = Math.abs(impliedRate - declaredRate) / declaredRate;
       isWithinBounds = rateDelta <= tolerance;
-    } else {
-      isWithinBounds = impliedRate > 0;
     }
 
     return {
       rootCause: "FX_CONVERSION_SPREAD",
-      confidence: declaredRate && isWithinBounds ? 0.96 : 0.88,
+      confidence: isWithinBounds ? 0.96 : 0.45,
       proof: {
         formula: "abs(targetAmount / sourceAmount - declaredRate) / declaredRate <= tolerance",
         expectedValue: declaredRate ? Number(declaredRate.toFixed(4)) : "N/A",
@@ -179,27 +188,60 @@ export function classifyDiscrepancy(
   }
 
   // 3. Check Processor Fee Deduction (e.g. 2.9% + $0.30 or declared fee schedule)
-  if (targetAmount != null && sourceAmount > targetAmount) {
-    const feeDiff = sourceAmount - targetAmount;
-    const feeSchedule = input.processorFeeSchedule || { basisPoints: 290, fixedFeeMinorUnits: 0.3 };
-    const expectedFee =
-      sourceAmount * (feeSchedule.basisPoints / 10000) + feeSchedule.fixedFeeMinorUnits;
-    const arithmeticDelta = Math.abs(feeDiff - expectedFee);
-    const feeRatio = feeDiff / sourceAmount;
+  if (
+    targetAmount != null &&
+    sourceAmount > 0 &&
+    targetAmount >= 0 &&
+    sourceAmount > targetAmount
+  ) {
+    const sourceMinor = Math.round(sourceAmount * 100);
+    const targetMinor = Math.round(targetAmount * 100);
+    if (!Number.isSafeInteger(sourceMinor) || !Number.isSafeInteger(targetMinor)) {
+      throw new RangeError("Discrepancy amounts exceed safe minor-unit bounds");
+    }
 
-    // Matches if fee is within 0.50 cents of expected schedule or between 0.5% and 6.0% fee bracket
-    const isFeeMatch = arithmeticDelta <= 0.5 || (feeRatio >= 0.005 && feeRatio <= 0.06);
+    const feeSchedule = input.processorFeeSchedule || { basisPoints: 290, fixedFeeMinorUnits: 0.3 };
+    if (
+      !Number.isSafeInteger(feeSchedule.basisPoints) ||
+      feeSchedule.basisPoints < 0 ||
+      !Number.isFinite(feeSchedule.fixedFeeMinorUnits) ||
+      feeSchedule.fixedFeeMinorUnits < 0
+    ) {
+      throw new TypeError("Processor fee schedule must contain finite non-negative values");
+    }
+    const sourceMinorBigInt = BigInt(sourceMinor);
+    const targetMinorBigInt = BigInt(targetMinor);
+    const proportionalFeeMinor =
+      (sourceMinorBigInt * BigInt(feeSchedule.basisPoints) + 5000n) / 10000n;
+    const fixedFeeMinorNumber = Math.round(feeSchedule.fixedFeeMinorUnits * 100);
+    if (!Number.isSafeInteger(fixedFeeMinorNumber)) {
+      throw new RangeError("Processor fixed fee exceeds safe minor-unit bounds");
+    }
+    const fixedFeeMinor = BigInt(fixedFeeMinorNumber);
+    const expectedFeeMinor = proportionalFeeMinor + fixedFeeMinor;
+    const actualFeeMinor = sourceMinorBigInt - targetMinorBigInt;
+    const arithmeticDeltaMinor =
+      actualFeeMinor >= expectedFeeMinor
+        ? actualFeeMinor - expectedFeeMinor
+        : expectedFeeMinor - actualFeeMinor;
+    const feeDiff = Number(actualFeeMinor) / 100;
+    const expectedFee = Number(expectedFeeMinor) / 100;
+    const arithmeticDelta = Number(arithmeticDeltaMinor) / 100;
+    const feeRatio = Number(actualFeeMinor) / Number(sourceMinorBigInt);
+
+    // A fee explanation is proven only when the declared schedule reconciles within one minor unit.
+    const isFeeMatch = arithmeticDeltaMinor <= 1n;
 
     if (isFeeMatch) {
       return {
         rootCause: "PROCESSOR_FEE_DEDUCTION",
-        confidence: arithmeticDelta <= 0.05 ? 0.98 : 0.91,
+        confidence: arithmeticDeltaMinor === 0n ? 0.98 : 0.95,
         proof: {
           formula: "targetAmount == sourceAmount - (sourceAmount * bps/10000 + fixedFee)",
           expectedValue: Number((sourceAmount - expectedFee).toFixed(2)),
           actualValue: Number(targetAmount.toFixed(2)),
           delta: Number(arithmeticDelta.toFixed(4)),
-          tolerance: 0.5,
+          tolerance: 0.01,
           isMathematicallyProven: true,
           explanation: `Discrepancy matches processor interchange fee arithmetic: Gross $${sourceAmount.toFixed(2)} - Net $${targetAmount.toFixed(2)} = $${feeDiff.toFixed(2)} fee (${(feeRatio * 100).toFixed(2)}%). Delta from expected schedule: $${arithmeticDelta.toFixed(2)}.`,
         },
@@ -230,7 +272,8 @@ export function classifyDiscrepancy(
       tgtDate.getUTCDay() === 0 ||
       tgtDate.getUTCDay() === 6;
 
-    if (deltaHours >= 12) {
+    const toleranceDays = spansWeekend ? 4.0 : 2.0;
+    if (deltaHours >= 12 && deltaDays <= toleranceDays) {
       return {
         rootCause: "SETTLEMENT_TIMING_DRIFT",
         confidence: spansWeekend ? 0.95 : 0.89,
@@ -239,7 +282,7 @@ export function classifyDiscrepancy(
           expectedValue: srcDate.toISOString(),
           actualValue: tgtDate.toISOString(),
           delta: Number(deltaDays.toFixed(2)),
-          tolerance: spansWeekend ? 4.0 : 2.0,
+          tolerance: toleranceDays,
           isMathematicallyProven: true,
           explanation:
             `Settlement drift of ${deltaHours.toFixed(1)} hours (${deltaDays.toFixed(2)} days). ` +

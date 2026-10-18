@@ -7,9 +7,9 @@
  * Purpose: Move from "Trust us, it's matched" to "Here is the proof of the match".
  */
 
-import crypto from "node:crypto";
 import { PrismaClient, Prisma } from "@prisma/client";
 import { logInfo } from "../../utils/logger";
+import { canonicalSha256 } from "@settler/proofs";
 
 export interface ProofPackageRequest {
   tenantId: string;
@@ -39,8 +39,8 @@ export class ProofPackageOrchestrator {
     logInfo(`Assembling proof package for run ${runId}`, { tenantId, packageType });
 
     // 1. Fetch Run and related data
-    const run = await this.prisma.reconciliationRun.findUnique({
-      where: { id: runId },
+    const run = await this.prisma.reconciliationRun.findFirst({
+      where: { id: runId, tenantId },
       include: {
         matches: {
           include: {
@@ -52,7 +52,7 @@ export class ProofPackageOrchestrator {
       },
     });
 
-    if (!run || run.tenantId !== tenantId) {
+    if (!run) {
       throw new Error(`Reconciliation run ${runId} not found or access denied`);
     }
 
@@ -66,7 +66,7 @@ export class ProofPackageOrchestrator {
 
     const evidenceIds = artifacts.map((a) => a.id);
 
-    // 3. Generate Package Key
+    // Non-deterministic identifier boundary; excluded from the cryptographic commitment.
     const packageKey = `proof:${packageType}:${runId}:${Date.now()}`;
 
     // 4. Compute Completeness Score
@@ -78,8 +78,8 @@ export class ProofPackageOrchestrator {
     // 6. Build Package Summary
     const summary = {
       runId,
-      startedAt: run.startedAt,
-      completedAt: run.completedAt,
+      startedAt: run.startedAt?.toISOString() ?? null,
+      completedAt: run.completedAt?.toISOString() ?? null,
       sourceCount: run.sourceCount,
       targetCount: run.targetCount,
       matchedCount: run.matchedCount,
@@ -91,7 +91,14 @@ export class ProofPackageOrchestrator {
     };
 
     // 7. Compute Integrity Hash
-    const packageHash = this.computePackageHash(summary, evidenceIds, narrative);
+    const packageHash = this.computePackageHash(
+      tenantId,
+      runId,
+      packageType,
+      summary,
+      evidenceIds,
+      narrative
+    );
 
     // 8. Create Proof Package Record
     const proofPackage = await this.prisma.proofPackage.create({
@@ -141,33 +148,43 @@ export class ProofPackageOrchestrator {
   }
 
   private generateDefaultNarrative(run: any): string {
+    const matchRate = run.sourceCount > 0 ? (run.matchedCount / run.sourceCount) * 100 : 0;
     return (
-      `Reconciliation run completed on ${run.completedAt?.toLocaleString()}. ` +
+      `Reconciliation run completed on ${run.completedAt?.toISOString() ?? "unknown"}. ` +
       `Analyzed ${run.sourceCount} source records and ${run.targetCount} target records. ` +
-      `Successfully matched ${run.matchedCount} items (${((run.matchedCount / run.sourceCount) * 100).toFixed(1)}%). ` +
+      `Successfully matched ${run.matchedCount} items (${matchRate.toFixed(1)}%). ` +
       `${run.unmatchedSourceCount + run.unmatchedTargetCount} exceptions were identified and processed.`
     );
   }
 
-  private computePackageHash(summary: any, evidenceIds: string[], narrative: string): string {
-    const payload = JSON.stringify({
+  private computePackageHash(
+    tenantId: string,
+    runId: string,
+    packageType: string,
+    summary: any,
+    evidenceIds: string[],
+    narrative: string
+  ): string {
+    return canonicalSha256({
+      domain: "settler:proof-package:v2",
+      tenantId,
+      runId,
+      packageType,
       summary,
-      evidenceIds: evidenceIds.sort(),
+      evidenceIds: [...evidenceIds].sort(),
       narrative,
-      salt: "settler_moat_v1",
     });
-    return crypto.createHash("sha256").update(payload).digest("hex");
   }
 
   /**
    * Validates the integrity of an existing proof package
    */
   async validateProofPackage(proofPackageId: string, tenantId: string): Promise<boolean> {
-    const pkg = await this.prisma.proofPackage.findUnique({
-      where: { id: proofPackageId },
+    const pkg = await this.prisma.proofPackage.findFirst({
+      where: { id: proofPackageId, tenantId },
     });
 
-    if (!pkg || pkg.tenantId !== tenantId) {
+    if (!pkg) {
       logInfo(`[ProofPackage] Validation failed: Package not found or unauthorized`, {
         proofPackageId,
         tenantId,
@@ -177,6 +194,9 @@ export class ProofPackageOrchestrator {
     }
 
     const recomputedHash = this.computePackageHash(
+      tenantId,
+      String((pkg.scopeIds as string[] | null)?.[0] ?? ""),
+      pkg.packageType,
       pkg.summary,
       (pkg.evidenceIds as string[]) || [],
       pkg.narrative || ""
@@ -222,18 +242,24 @@ export async function createRunProofPackageWithArtifacts(
 
   const evidenceIds: string[] = [];
 
+  for (const [name, value] of [
+    ["merkleRoot", merkleRoot],
+    ["inputFingerprint", inputFingerprint],
+    ["outputFingerprint", outputFingerprint],
+    ["ruleSetHash", ruleSetHash],
+  ] as const) {
+    if (!value || !/^(?:sha256:)?[0-9a-f]{64}$/i.test(value)) {
+      throw new Error(`${name} must be a SHA-256 commitment`);
+    }
+  }
+
   // 1. Source batch manifest artifact
   const sourcePayload = params.sourceBatch ?? {
     runId,
     tenantId,
-    inputFingerprint:
-      inputFingerprint ?? "sha256:0000000000000000000000000000000000000000000000000000000000000000",
-    capturedAt: new Date().toISOString(),
+    inputFingerprint,
   };
-  const sourceHash = crypto
-    .createHash("sha256")
-    .update(JSON.stringify(sourcePayload))
-    .digest("hex");
+  const sourceHash = canonicalSha256(sourcePayload);
   const sourceArtifact = await evidenceArtifactModel.create({
     data: {
       tenantId,
@@ -241,11 +267,11 @@ export async function createRunProofPackageWithArtifacts(
       artifactKey: `run:${runId}:source_batch:${Date.now()}`,
       payload: sourcePayload as Prisma.InputJsonValue,
       payloadHash: sourceHash,
-      payloadSizeBytes: JSON.stringify(sourcePayload).length,
+      payloadSizeBytes: Buffer.byteLength(JSON.stringify(sourcePayload), "utf8"),
       sourceType: "source_batch",
       sourceId: runId,
       runId,
-      reliabilityScore: 0.98,
+      reliabilityScore: 1,
       degraded: false,
     },
   });
@@ -255,17 +281,10 @@ export async function createRunProofPackageWithArtifacts(
   const settlementPayload = params.settlementManifest ?? {
     runId,
     tenantId,
-    outputFingerprint:
-      outputFingerprint ??
-      "sha256:0000000000000000000000000000000000000000000000000000000000000000",
-    ruleSetHash:
-      ruleSetHash ?? "sha256:0000000000000000000000000000000000000000000000000000000000000000",
-    settledAt: new Date().toISOString(),
+    outputFingerprint,
+    ruleSetHash,
   };
-  const settlementHash = crypto
-    .createHash("sha256")
-    .update(JSON.stringify(settlementPayload))
-    .digest("hex");
+  const settlementHash = canonicalSha256(settlementPayload);
   const settlementArtifact = await evidenceArtifactModel.create({
     data: {
       tenantId,
@@ -273,11 +292,11 @@ export async function createRunProofPackageWithArtifacts(
       artifactKey: `run:${runId}:settlement_manifest:${Date.now()}`,
       payload: settlementPayload as Prisma.InputJsonValue,
       payloadHash: settlementHash,
-      payloadSizeBytes: JSON.stringify(settlementPayload).length,
+      payloadSizeBytes: Buffer.byteLength(JSON.stringify(settlementPayload), "utf8"),
       sourceType: "settlement_manifest",
       sourceId: runId,
       runId,
-      reliabilityScore: 0.95,
+      reliabilityScore: 1,
       degraded: false,
     },
   });
@@ -287,11 +306,12 @@ export async function createRunProofPackageWithArtifacts(
   const smtPayload = params.smtProofBranches ?? {
     runId,
     tenantId,
-    merkleRoot: merkleRoot ?? "0000000000000000000000000000000000000000000000000000000000000000",
+    merkleRoot,
     depth: 256,
-    verifiedBranches: true,
+    verifiedBranches: false,
+    reason: "proof_branches_not_supplied",
   };
-  const smtHash = crypto.createHash("sha256").update(JSON.stringify(smtPayload)).digest("hex");
+  const smtHash = canonicalSha256(smtPayload);
   const smtArtifact = await evidenceArtifactModel.create({
     data: {
       tenantId,
@@ -299,12 +319,13 @@ export async function createRunProofPackageWithArtifacts(
       artifactKey: `run:${runId}:smt_proof_branches:${Date.now()}`,
       payload: smtPayload as Prisma.InputJsonValue,
       payloadHash: smtHash,
-      payloadSizeBytes: JSON.stringify(smtPayload).length,
+      payloadSizeBytes: Buffer.byteLength(JSON.stringify(smtPayload), "utf8"),
       sourceType: "smt_engine",
       sourceId: runId,
       runId,
-      reliabilityScore: 1.0,
-      degraded: false,
+      reliabilityScore: params.smtProofBranches === undefined ? 0 : 0.5,
+      degraded: true,
+      degradedReason: "SMT branches require kernel verification before finalization",
     },
   });
   evidenceIds.push(smtArtifact.id);
@@ -314,20 +335,22 @@ export async function createRunProofPackageWithArtifacts(
   const packageKey = `proof:${packageType}:${runId}:${Date.now()}`;
   const summaryPayload = {
     runId,
-    merkleRoot: merkleRoot || smtHash,
+    merkleRoot,
     inputFingerprint,
     outputFingerprint,
     ruleSetHash,
     evidenceCount: evidenceIds.length,
-    finalizedAt: new Date().toISOString(),
+    verificationState: "pending_kernel_verification",
   };
 
-  const packageHash =
-    merkleRoot ||
-    crypto
-      .createHash("sha256")
-      .update(JSON.stringify({ summaryPayload, evidenceIds }))
-      .digest("hex");
+  const packageHash = canonicalSha256({
+    domain: "settler:proof-package:v2",
+    tenantId,
+    runId,
+    packageType,
+    summary: summaryPayload,
+    evidenceHashes: [sourceHash, settlementHash, smtHash].sort(),
+  });
 
   const proofPackage = await proofPackageModel.create({
     data: {
@@ -336,16 +359,16 @@ export async function createRunProofPackageWithArtifacts(
       packageKey,
       evidenceIds: evidenceIds as any,
       summary: summaryPayload as Prisma.InputJsonValue,
-      narrative: `Proof package for run ${runId} with Merkle Root ${merkleRoot || smtHash}.`,
-      completenessScore: 1.0,
+      narrative: `Draft proof package for run ${runId}; SMT branches require kernel verification.`,
+      completenessScore: params.smtProofBranches === undefined ? 0.67 : 0.8,
       packageHash,
-      status: "finalized",
-      finalizedAt: new Date(),
+      status: "draft",
+      finalizedAt: null,
       scope: "run",
       scopeIds: [runId] as any,
       metadata: {
         runId,
-        merkleRoot: merkleRoot || smtHash,
+        merkleRoot,
         inputFingerprint,
         outputFingerprint,
         ruleSetHash,

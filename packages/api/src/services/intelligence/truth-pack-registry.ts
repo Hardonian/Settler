@@ -8,8 +8,8 @@
  * Moat: Prior-run comparison truth + Audit/Export trust.
  */
 
-import crypto from "node:crypto";
 import { PrismaClient } from "@prisma/client";
+import { canonicalSha256 } from "@settler/proofs";
 import { logInfo } from "../../utils/logger";
 import { createRunProofPackageWithArtifacts } from "./proof-package-orchestrator";
 
@@ -31,8 +31,8 @@ export class TruthPackRegistry {
    * Create a verifiable truth pack for a run
    */
   async sealTruthPack(runId: string, tenantId: string): Promise<TruthPack> {
-    const run = await this.prisma.reconciliationRun.findUnique({
-      where: { id: runId },
+    const run = await this.prisma.reconciliationRun.findFirst({
+      where: { id: runId, tenantId },
       include: {
         ingestion: {
           include: {
@@ -42,13 +42,13 @@ export class TruthPackRegistry {
       },
     });
 
-    if (!run || run.tenantId !== tenantId) {
+    if (!run) {
       throw new Error(`Run ${runId} not found`);
     }
 
     // Capture the snapshot of the world
     const snapshot = await this.prisma.runSnapshot.findFirst({
-      where: { reconJobId: runId }, // Assuming reconJobId links the snapshot for now
+      where: { reconJobId: runId, tenantId }, // Assuming reconJobId links the snapshot for now
       orderBy: { createdAt: "desc" },
     });
 
@@ -85,8 +85,8 @@ export class TruthPackRegistry {
     };
 
     // Store in metadata for now (or a dedicated table if we had one)
-    await this.prisma.reconciliationRun.update({
-      where: { id: runId },
+    await this.prisma.reconciliationRun.updateMany({
+      where: { id: runId, tenantId },
       data: {
         metadata: {
           ...(run.metadata as any),
@@ -95,16 +95,20 @@ export class TruthPackRegistry {
       },
     });
 
-    // Create relational ProofPackage and linked EvidenceArtifacts
-    await createRunProofPackageWithArtifacts(this.prisma, {
-      tenantId,
-      runId,
-      merkleRoot: fingerprint,
-      inputFingerprint: dataHash,
-      outputFingerprint: fingerprint,
-      ruleSetHash: configHash,
-      packageType: "run_summary",
-    }).catch(() => null);
+    const isSha256 = (value: string) => /^[0-9a-f]{64}$/i.test(value);
+    if (isSha256(dataHash) && isSha256(configHash)) {
+      await createRunProofPackageWithArtifacts(this.prisma, {
+        tenantId,
+        runId,
+        merkleRoot: fingerprint,
+        inputFingerprint: dataHash,
+        outputFingerprint: fingerprint,
+        ruleSetHash: configHash,
+        packageType: "run_summary",
+      });
+    } else {
+      logInfo(`Skipped proof package creation for degraded truth pack ${runId}`, { tenantId });
+    }
 
     return truthPack;
   }
@@ -128,7 +132,7 @@ export class TruthPackRegistry {
   }
 
   private async getTruthPack(runId: string, tenantId: string): Promise<TruthPack> {
-    const run = await this.prisma.reconciliationRun.findUnique({
+    const run = await this.prisma.reconciliationRun.findFirst({
       where: { id: runId, tenantId },
       select: { metadata: true },
     });
@@ -139,10 +143,10 @@ export class TruthPackRegistry {
   }
 
   private hashJson(obj: any): string {
-    return crypto.createHash("sha256").update(JSON.stringify(obj)).digest("hex");
+    return canonicalSha256(obj);
   }
 
   private computeFingerprint(data: any): string {
-    return crypto.createHash("sha256").update(JSON.stringify(data)).digest("hex");
+    return canonicalSha256({ domain: "settler:truth-pack:v1", ...data });
   }
 }

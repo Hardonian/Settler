@@ -7,6 +7,10 @@
   "types": "./dist/index.d.ts",
   "exports": {
     ".": "./dist/index.js",
+    "./canonical-json": {
+      "types": "./dist/canonical-json.d.ts",
+      "default": "./dist/canonical-json.js"
+    },
     "./evidence": "./dist/evidence/index.js",
     "./proofpack": "./dist/proofpack/index.js"
   },

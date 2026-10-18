@@ -5,12 +5,23 @@ import { getOfflineWorkbenchSnapshot } from "@/lib/server/exceptions/reconciliat
 import { Workbench } from "@/components/console/Workbench";
 import { ErrorBoundary } from "@/components/shared/error-boundary";
 import { PageLoadingSkeleton } from "@/components/shared/loading-state";
+import {
+  resolveTenantForMutation,
+  resolveTenantMembershipScope,
+} from "@/lib/supabase/tenant-membership";
 
 export const dynamic = "force-dynamic";
 
 export default async function ReconcilePage() {
-  const tenantContext = await getTenantContext();
-  const snapshot = await getOfflineWorkbenchSnapshot(tenantContext.tenantId);
+  const [tenantContext, membershipScope] = await Promise.all([
+    getTenantContext(),
+    resolveTenantMembershipScope(),
+  ]);
+  const tenantId = resolveTenantForMutation(
+    membershipScope.tenantIds,
+    tenantContext.tenantId || null
+  );
+  const snapshot = await getOfflineWorkbenchSnapshot(tenantId);
 
   return (
     <ErrorBoundary context="Operator Workbench (/reconcile)">

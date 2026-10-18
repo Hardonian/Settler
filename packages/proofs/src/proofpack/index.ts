@@ -8,7 +8,7 @@
  * with integrity verification and completeness assessment.
  */
 
-import crypto from "node:crypto";
+import { canonicalSha256 } from "../canonical-json.js";
 import type {
   EvidenceArtifact,
   EvidenceArtifactType,
@@ -116,7 +116,7 @@ export function computePackageHash(
     packageType,
     scopeIds: [...scopeIds].sort(),
   };
-  return crypto.createHash("sha256").update(JSON.stringify(payload)).digest("hex");
+  return canonicalSha256(payload);
 }
 
 /**
@@ -346,16 +346,11 @@ export function verifyProofIntegrity(exported: ProofPackageExport): ProofIntegri
   const warnings: string[] = [];
 
   // Verify package hash
-  const computedHash = crypto
-    .createHash("sha256")
-    .update(
-      JSON.stringify({
-        evidenceIds: exported.evidence.map((e) => e.id).sort(),
-        packageType: exported.package.type,
-        scopeIds: exported.package.scopeIds.sort(),
-      })
-    )
-    .digest("hex");
+  const computedHash = canonicalSha256({
+    evidenceIds: exported.evidence.map((e) => e.id).sort(),
+    packageType: exported.package.type,
+    scopeIds: [...exported.package.scopeIds].sort(),
+  });
 
   if (computedHash !== exported.package.packageHash) {
     errors.push("Package hash mismatch - evidence may have been tampered with");
@@ -363,13 +358,7 @@ export function verifyProofIntegrity(exported: ProofPackageExport): ProofIntegri
 
   // Verify evidence hashes
   for (const artifact of exported.evidence) {
-    const payload = artifact.payload as Record<string, unknown> | null;
-    const sortedKeys =
-      payload && typeof payload === "object" ? Object.keys(payload).sort() : undefined;
-    const computedArtifactHash = crypto
-      .createHash("sha256")
-      .update(sortedKeys ? JSON.stringify(payload, sortedKeys) : JSON.stringify(artifact.payload))
-      .digest("hex");
+    const computedArtifactHash = canonicalSha256(artifact.payload);
 
     if (computedArtifactHash !== artifact.payloadHash) {
       errors.push(`Evidence artifact ${artifact.id} hash mismatch`);
@@ -395,3 +384,5 @@ export function verifyProofIntegrity(exported: ProofPackageExport): ProofIntegri
     verifiedAt: new Date().toISOString(),
   };
 }
+
+export * from "./airgapped.js";

@@ -12,6 +12,7 @@
  */
 
 import crypto from "node:crypto";
+import { canonicalJson } from "../canonical-json.js";
 
 export type EvidenceArtifactType =
   | "source_snapshot"
@@ -109,7 +110,7 @@ export interface EvidenceQueryOptions {
  * Compute SHA-256 hash of evidence payload
  */
 export function computePayloadHash(payload: unknown): string {
-  const normalized = JSON.stringify(payload, Object.keys(payload as object).sort());
+  const normalized = canonicalJson(payload);
   return crypto.createHash("sha256").update(normalized).digest("hex");
 }
 

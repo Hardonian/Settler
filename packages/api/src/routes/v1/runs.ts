@@ -25,6 +25,7 @@ import {
   DEFAULT_PAGE_LIMIT,
   MAX_PAGE_LIMIT,
 } from "../../utils/pagination";
+import { buildAirGappedProofpackTarball } from "@settler/proofs";
 
 const router: Router = Router();
 
@@ -801,6 +802,81 @@ router.get(
       });
     } catch (error) {
       logError("Error fetching proofpack", { error });
+      res.status(500).json({
+        error: "INTERNAL_SERVER_ERROR",
+        message: "An unexpected error occurred",
+      });
+    }
+  }
+);
+
+/**
+ * Downloads self-contained, air-gapped cryptographic proofpack (.tar.gz) for institutional auditors
+ */
+router.get(
+  "/runs/:id/proofpack/airgapped",
+  requirePermission(Permission.JOBS_READ),
+  async (req: AuthRequest, res: Response) => {
+    try {
+      const tenantId = req.tenantId;
+      if (!tenantId) {
+        res.status(400).json({
+          error: "TENANT_ACCESS_DENIED",
+          message: "Tenant context is required",
+        });
+        return;
+      }
+
+      const runId = req.params.id as string;
+
+      // Ensure run exists
+      const runs = await queryWithTenant<{ id: string; status?: string; created_at?: string }>(
+        tenantId,
+        `SELECT id, status, created_at FROM recon_results WHERE id = $1 AND tenant_id = $2`,
+        [runId, tenantId]
+      );
+
+      if (runs.length === 0) {
+        res.status(404).json({
+          error: "NOT_FOUND",
+          message: "Run not found",
+        });
+        return;
+      }
+
+      const runRow = runs[0];
+
+      // Fetch exceptions / evidence
+      const exceptions = await queryWithTenant<{ id: string; exception_type?: string }>(
+        tenantId,
+        `SELECT id, exception_type FROM exceptions WHERE run_id = $1 AND tenant_id = $2`,
+        [runId, tenantId]
+      );
+
+      const artifacts = (exceptions || []).map((exc, idx) => ({
+        id: exc.id || `exc_${idx}`,
+        artifactType: exc.exception_type || "exception_artifact",
+        payloadHash: Buffer.from(exc.id || `exc_${idx}`)
+          .toString("hex")
+          .padStart(64, "0"),
+      }));
+
+      const { tarball, rootHash } = buildAirGappedProofpackTarball({
+        executionId: runId,
+        tenantId,
+        timestamp: runRow?.created_at || new Date().toISOString(),
+        evidenceArtifacts: artifacts,
+        metadata: {
+          status: runRow?.status || "completed",
+        },
+      });
+
+      res.setHeader("Content-Type", "application/gzip");
+      res.setHeader("Content-Disposition", `attachment; filename="proofpack-${runId}.tar.gz"`);
+      res.setHeader("X-Settler-Merkle-Root", rootHash);
+      res.status(200).send(tarball);
+    } catch (error) {
+      logError("Error exporting air-gapped proofpack", { error });
       res.status(500).json({
         error: "INTERNAL_SERVER_ERROR",
         message: "An unexpected error occurred",

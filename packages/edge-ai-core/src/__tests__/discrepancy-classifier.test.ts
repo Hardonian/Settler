@@ -77,4 +77,61 @@ describe("Deterministic Discrepancy Classifier (Edge AI Core)", () => {
     expect(result.groundedAttributes.prefixStripped).toBe(true);
     expect(verifyDiscrepancyArithmeticProof(result)).toBe(true);
   });
+
+  it("does not call a generic fee-range heuristic a mathematical proof", () => {
+    const result = classifyDiscrepancy({
+      sourceAmount: 100,
+      targetAmount: 98,
+      sourceCurrency: "USD",
+      targetCurrency: "USD",
+      sourceTimestamp: "2026-10-18T10:00:00Z",
+      targetTimestamp: "2026-10-18T10:00:00Z",
+      processorFeeSchedule: { basisPoints: 290, fixedFeeMinorUnits: 0.3 },
+    });
+
+    expect(result.rootCause).toBe("UNKNOWN_DISCREPANCY");
+    expect(verifyDiscrepancyArithmeticProof(result)).toBe(false);
+  });
+
+  it("does not prove an FX spread without a declared comparison rate", () => {
+    const result = classifyDiscrepancy({
+      sourceAmount: 100,
+      targetAmount: 91,
+      sourceCurrency: "USD",
+      targetCurrency: "EUR",
+      sourceTimestamp: "2026-10-18T10:00:00Z",
+      targetTimestamp: "2026-10-18T10:00:00Z",
+    });
+
+    expect(result.rootCause).toBe("FX_CONVERSION_SPREAD");
+    expect(result.proof.isMathematicallyProven).toBe(false);
+    expect(verifyDiscrepancyArithmeticProof(result)).toBe(false);
+  });
+
+  it("rejects timing deltas outside the stated clearing bound", () => {
+    const result = classifyDiscrepancy({
+      sourceAmount: 100,
+      targetAmount: 100,
+      sourceCurrency: "USD",
+      targetCurrency: "USD",
+      sourceTimestamp: "2026-09-01T10:00:00Z",
+      targetTimestamp: "2026-10-18T10:00:00Z",
+    });
+
+    expect(result.rootCause).toBe("UNKNOWN_DISCREPANCY");
+    expect(result.proof.isMathematicallyProven).toBe(false);
+  });
+
+  it("rejects non-finite inputs instead of emitting a false proof", () => {
+    expect(() =>
+      classifyDiscrepancy({
+        sourceAmount: Number.NaN,
+        targetAmount: 100,
+        sourceCurrency: "USD",
+        targetCurrency: "USD",
+        sourceTimestamp: "2026-10-18T10:00:00Z",
+        targetTimestamp: "2026-10-18T10:00:00Z",
+      })
+    ).toThrow(/finite/);
+  });
 });

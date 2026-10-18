@@ -14,7 +14,6 @@ import { handleRouteError } from "../utils/error-handler";
 import rateLimit from "express-rate-limit";
 import { isValidEventType, getPublicEvents } from "../services/webhooks/event-registry";
 import { createRawBodyMiddleware, RawBodyRequest } from "../middleware/raw-body";
-import { cache, isRedisAvailable } from "../infrastructure/redis/client";
 import {
   buildWebhookReplayKey,
   isAllowedWebhookAdapter,
@@ -32,8 +31,6 @@ import {
 const ingestionBoundary = new IngestionBoundary({ query: queryWithTenant } as any);
 
 const router: Router = Router();
-const localReplayCache = new Map<string, number>();
-const WEBHOOK_REPLAY_WINDOW_SECONDS = 600;
 
 // Rate limiting for webhook receive endpoint
 const webhookReceiveLimiter = rateLimit({
@@ -62,33 +59,6 @@ const getWebhookSchema = z.object({
     id: z.string().uuid(),
   }),
 });
-
-async function hasSeenWebhookReplayKey(replayKey: string): Promise<"distributed" | "local" | null> {
-  if (isRedisAvailable()) {
-    const exists = await cache.exists(replayKey);
-    if (exists) {
-      return "distributed";
-    }
-
-    await cache.set(replayKey, { seen: true }, WEBHOOK_REPLAY_WINDOW_SECONDS);
-    return null;
-  }
-
-  const now = Date.now();
-  for (const [key, expiresAt] of localReplayCache.entries()) {
-    if (expiresAt <= now) {
-      localReplayCache.delete(key);
-    }
-  }
-
-  const existingExpiry = localReplayCache.get(replayKey);
-  if (existingExpiry && existingExpiry > now) {
-    return "local";
-  }
-
-  localReplayCache.set(replayKey, now + WEBHOOK_REPLAY_WINDOW_SECONDS * 1000);
-  return null;
-}
 
 router.post(
   "/",
@@ -241,6 +211,7 @@ router.post(
   webhookReceiveLimiter,
   createRawBodyMiddleware(),
   async (req: RawBodyRequest, res: Response) => {
+    let idempotencyClaim: { tenantId: string; key: string } | null = null;
     try {
       const adapterParam = req.params["adapter"];
       const adapter = (
@@ -270,17 +241,6 @@ router.post(
             .json({ error: "RATE_LIMIT_EXCEEDED", retryAfter: error.retryAfter });
         }
         throw error;
-      }
-
-      if (idempotencyKey) {
-        const { isDuplicate, response } = await ingestionBoundary.checkIdempotency(
-          tenantId,
-          idempotencyKey
-        );
-        if (isDuplicate) {
-          logInfo("Rejected duplicate webhook via idempotency key", { adapter, idempotencyKey });
-          return res.status(200).json({ duplicate: true, ...response });
-        }
       }
 
       if (!adapter || !isAllowedWebhookAdapter(adapter)) {
@@ -337,20 +297,6 @@ router.post(
         });
       }
 
-      const replayKey = buildWebhookReplayKey(adapter, signature, timestampHeader!);
-      const replayHit = await hasSeenWebhookReplayKey(replayKey);
-      if (replayHit) {
-        logWarn("Rejected replayed webhook", { adapter, mode: replayHit });
-        return res.status(409).json({
-          error: "WEBHOOK_REPLAY_DETECTED",
-          mode: replayHit,
-          message:
-            replayHit === "distributed"
-              ? "Webhook already processed in distributed replay window"
-              : "Webhook already processed in local replay window",
-        });
-      }
-
       try {
         const isValid = await verifyWebhookSignature(adapter, rawBody, signature, tenantId);
         if (!isValid) {
@@ -372,6 +318,28 @@ router.post(
         return res.status(400).json({ error: message });
       }
 
+      const replayKey = buildWebhookReplayKey(adapter, signature, timestampHeader!);
+      const claimKey = idempotencyKey ?? replayKey;
+      {
+        const { isDuplicate, response } = await ingestionBoundary.checkIdempotency(
+          tenantId,
+          claimKey
+        );
+        if (isDuplicate) {
+          if (idempotencyKey) {
+            logInfo("Rejected duplicate webhook via idempotency key", { adapter, idempotencyKey });
+            return res.status(200).json({ duplicate: true, ...response });
+          }
+          logWarn("Rejected replayed webhook", { adapter, mode: "database" });
+          return res.status(409).json({
+            error: "WEBHOOK_REPLAY_DETECTED",
+            mode: "database",
+            message: "Webhook already processed in replay window",
+          });
+        }
+        idempotencyClaim = { tenantId, key: claimKey };
+      }
+
       await queryWithTenant(
         tenantId,
         `INSERT INTO webhook_payloads (adapter, payload, signature, received_at)
@@ -379,25 +347,31 @@ router.post(
         [adapter, JSON.stringify(req.body), signature]
       );
 
-      if (idempotencyKey) {
-        await ingestionBoundary.markIdempotencyCompleted(tenantId, idempotencyKey, {
-          received: true,
-          mode: isRedisAvailable() ? "distributed" : "local_only",
-        });
-      }
+      await ingestionBoundary.markIdempotencyCompleted(tenantId, claimKey, {
+        received: true,
+        mode: "database",
+      });
+      idempotencyClaim = null;
 
       logInfo("Webhook received", {
         adapter,
-        replayProtection: isRedisAvailable() ? "distributed" : "local_only",
+        replayProtection: "database",
       });
 
       res.status(202).json({
         received: true,
-        mode: isRedisAvailable() ? "distributed" : "local_only",
+        mode: "database",
         message: "Webhook received and queued for processing",
       });
       return;
     } catch (error: unknown) {
+      if (idempotencyClaim) {
+        await ingestionBoundary
+          .markIdempotencyFailed(idempotencyClaim.tenantId, idempotencyClaim.key)
+          .catch((markError: unknown) => {
+            logError("Failed to mark webhook idempotency claim as failed", markError);
+          });
+      }
       handleRouteError(res, error, "Failed to process webhook", 500, {
         adapter: req.params.adapter,
       });

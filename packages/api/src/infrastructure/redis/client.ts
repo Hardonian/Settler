@@ -9,6 +9,7 @@
  */
 
 import { Redis } from "@upstash/redis";
+import { randomUUID } from "crypto";
 
 // Upstash Redis configuration
 const redisUrl = process.env.UPSTASH_REDIS_REST_URL || process.env.REDIS_URL;
@@ -212,45 +213,62 @@ export const cache = {
   /**
    * Acquire distributed lock with TTL (SET key NX EX ttl)
    */
-  async acquireLock(key: string, ttlSeconds = 30): Promise<boolean> {
+  async acquireLock(key: string, ttlSeconds = 30): Promise<string | null> {
+    const token = randomUUID();
     const client = getRedisClient();
     if (!client) {
-      return memoryAcquireLock(key, ttlSeconds);
+      return memoryAcquireLock(key, token, ttlSeconds) ? token : null;
     }
     try {
       if (redis) {
-        const result = await redis.set(key, "1", { nx: true, ex: ttlSeconds });
-        return result === "OK" || (result as unknown) === true;
+        const result = await redis.set(key, token, { nx: true, ex: ttlSeconds });
+        return result === "OK" || (result as unknown) === true ? token : null;
       } else {
-        const result = await client.set(key, "1", "EX", ttlSeconds, "NX");
-        return result === "OK";
+        const result = await client.set(key, token, "EX", ttlSeconds, "NX");
+        return result === "OK" ? token : null;
       }
     } catch {
-      return memoryAcquireLock(key, ttlSeconds);
+      return memoryAcquireLock(key, token, ttlSeconds) ? token : null;
     }
   },
 
   /**
    * Release distributed lock
    */
-  async releaseLock(key: string): Promise<void> {
-    memoryReleaseLock(key);
-    await cache.del(key);
+  async releaseLock(key: string, token: string): Promise<void> {
+    memoryReleaseLock(key, token);
+
+    const client = getRedisClient();
+    if (!client) return;
+
+    const releaseScript =
+      'if redis.call("get", KEYS[1]) == ARGV[1] then return redis.call("del", KEYS[1]) else return 0 end';
+    try {
+      if (redis) {
+        await redis.eval(releaseScript, [key], [token]);
+      } else {
+        await client.eval(releaseScript, 1, key, token);
+      }
+    } catch {
+      // The lease is allowed to expire; never delete a lock we cannot prove we own.
+    }
   },
 };
 
-const inMemoryLocks = new Map<string, number>();
+const inMemoryLocks = new Map<string, { token: string; expiresAt: number }>();
 
-function memoryAcquireLock(key: string, ttlSeconds = 30): boolean {
+function memoryAcquireLock(key: string, token: string, ttlSeconds = 30): boolean {
   const now = Date.now();
-  const expiresAt = inMemoryLocks.get(key);
-  if (expiresAt && expiresAt > now) {
+  const lease = inMemoryLocks.get(key);
+  if (lease && lease.expiresAt > now) {
     return false;
   }
-  inMemoryLocks.set(key, now + ttlSeconds * 1000);
+  inMemoryLocks.set(key, { token, expiresAt: now + ttlSeconds * 1000 });
   return true;
 }
 
-function memoryReleaseLock(key: string): void {
-  inMemoryLocks.delete(key);
+function memoryReleaseLock(key: string, token: string): void {
+  if (inMemoryLocks.get(key)?.token === token) {
+    inMemoryLocks.delete(key);
+  }
 }

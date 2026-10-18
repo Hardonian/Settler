@@ -256,6 +256,13 @@ const commandRegistry: Record<
       return { command: proveCommand };
     },
   },
+  ledger: {
+    description: "Dual-ledger TigerBeetle CDC sync and balance parity verification",
+    load: async () => {
+      const { ledgerCommand } = await import("./commands/ledger");
+      return { command: ledgerCommand };
+    },
+  },
 
   demo: {
     description: "Run deterministic one-command demo",

@@ -84,6 +84,7 @@ const labelToIcon: Record<string, LucideIcon> = {
   "Data Residency": ShieldCheck,
   "Liquidity Metrics": DollarSign,
   "CX Support": Headphones,
+  "Agent Governance": ShieldCheck,
 };
 
 function maturityBadge(entry: ConsoleRouteEntry) {

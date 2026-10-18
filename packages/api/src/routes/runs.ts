@@ -27,6 +27,7 @@ import {
   buildRunProofpackIndexByRunId,
   resolveRunCompactProofSummary,
 } from "@settler/reconciliation-core";
+import { buildAirGappedProofpackTarball } from "@settler/proofs";
 import { handleRouteError } from "../utils/error-handler";
 import {
   ConflictError,
@@ -177,6 +178,77 @@ router.get(
       res.json({ data: detail });
     } catch (error: unknown) {
       handleRouteError(res, error, "Failed to fetch run detail", 500, {
+        userId: req.userId,
+        runId: req.params.runId,
+      });
+    }
+  }
+);
+
+/**
+ * GET /api/runs/:runId/proofpack/airgapped
+ *
+ * Downloads self-contained, air-gapped cryptographic proofpack (.tar.gz)
+ * for institutional auditors with RFC 8785 manifest, SMT inclusion proofs,
+ * and zero-dependency standalone verification script.
+ */
+router.get(
+  "/:runId/proofpack/airgapped",
+  requirePermission(Permission.JOBS_READ),
+  validateRequest(getRunSchema),
+  async (req: AuthRequest, res: Response) => {
+    try {
+      const runIdParam = req.params["runId"];
+      const runId = Array.isArray(runIdParam) ? (runIdParam[0] ?? "") : (runIdParam ?? "");
+      const tenantId = req.tenantId!;
+
+      const outcome = await resolveOperatorRunDetailForTenants(prisma, [tenantId], runId);
+
+      if (outcome.kind === "not_found") {
+        throw new NotFoundError("Run not found or access denied", "run", runId);
+      }
+      if (outcome.kind === "ambiguous_uuid_collision") {
+        throw new ConflictError("Ambiguous run identifier", { code: "RUN_ID_COLLISION" });
+      }
+      if (outcome.kind === "recon_enrichment_failed") {
+        throw new InternalServerError(outcome.message);
+      }
+
+      const detail = outcome.detail;
+
+      // Collect evidence artifacts associated with this run
+      const artifacts = await prisma.evidenceArtifact.findMany({
+        where: { tenantId, runId },
+        select: { id: true, artifactType: true, payloadHash: true },
+      });
+
+      const { tarball, rootHash } = buildAirGappedProofpackTarball({
+        executionId: runId,
+        tenantId,
+        timestamp: detail.completedAt || detail.startedAt || new Date().toISOString(),
+        inputHash: (detail.config as Record<string, unknown> | undefined)?.["inputHash"] as
+          string | undefined,
+        evidenceArtifacts: artifacts,
+        metadata: {
+          status: detail.status,
+          runKind: detail.runKind,
+          jobName: detail.name,
+        },
+      });
+
+      logInfo("Air-gapped proofpack exported", {
+        tenantId,
+        runId,
+        rootHash,
+        byteLength: tarball.length,
+      });
+
+      res.setHeader("Content-Type", "application/gzip");
+      res.setHeader("Content-Disposition", `attachment; filename="proofpack-${runId}.tar.gz"`);
+      res.setHeader("X-Settler-Merkle-Root", rootHash);
+      res.status(200).send(tarball);
+    } catch (error: unknown) {
+      handleRouteError(res, error, "Failed to export air-gapped proofpack", 500, {
         userId: req.userId,
         runId: req.params.runId,
       });

@@ -48,21 +48,21 @@ export default function MatchDetailView({
 
   const submitAccept = () => {
     startTransition(async () => {
-      await acceptMatch(sourceId, matchResult?.targetTransactionId || null, sourceTx);
+      await acceptMatch(sourceId, matchResult?.targetTransactionId || null);
       router.refresh();
     });
   };
 
   const submitModify = () => {
     startTransition(async () => {
-      await modifyMatch(sourceId, selectedTarget, notes, sourceTx);
+      await modifyMatch(sourceId, selectedTarget, notes);
       router.refresh();
     });
   };
 
   const submitOverride = () => {
     startTransition(async () => {
-      await overrideMatch(sourceId, overrideReason, sourceTx);
+      await overrideMatch(sourceId, overrideReason);
       router.refresh();
     });
   };

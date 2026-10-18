@@ -4,7 +4,13 @@
  * Detects anomalies in reconciliation data, API usage patterns, and security threats.
  */
 
-import { BaseAgent, AgentJobDraft, assertSignedPolicyToken } from "./orchestrator";
+import {
+  BaseAgent,
+  AgentJobDraft,
+  AgentExecutionContext,
+  assertSignedPolicyToken,
+  policyPayloadHash,
+} from "./orchestrator";
 import { logInfo, logError, logWarn } from "../../utils/logger";
 import { prisma } from "../../infrastructure/db/prisma";
 
@@ -28,50 +34,57 @@ export class AnomalyDetectorAgent extends BaseAgent {
 
   private detectedAnomalies: Anomaly[] = [];
   private lastDetection?: Date;
-  // Reserved for future rule-based detection
-  private _detectionRules: DetectionRule[] = [];
 
   async initialize(): Promise<void> {
-    // Load detection rules
-    this._detectionRules = await this.loadDetectionRules();
-    void this._detectionRules;
-
-    // Start periodic anomaly detection outside test environments
-    if (process.env.NODE_ENV !== "test") {
-      setInterval(() => {
-        if (this.enabled) {
-          this.detectAnomalies().catch((error) => {
-            logError("Anomaly detection failed", error);
-          });
-        }
-      }, 60000); // Every minute
-    }
-
     this.enabled = true;
   }
 
-  async execute(action: string, params: Record<string, unknown>): Promise<unknown> {
+  async execute(
+    action: string,
+    params: Record<string, unknown>,
+    context?: AgentExecutionContext
+  ): Promise<unknown> {
+    const tenantId = context?.tenantId;
+    if (!tenantId) {
+      throw new Error("Tenant context is required for anomaly agent execution");
+    }
+
     switch (action) {
       case "detect":
-        return await this.detectAnomalies();
+        return await this.detectAnomalies(tenantId);
 
       case "get_anomalies":
         return this.detectedAnomalies.filter((a) => {
+          if (a.metadata?.tenantId !== tenantId) return false;
           if (params.severity) return a.severity === params.severity;
           if (params.type) return a.type === params.type;
           return true;
         });
 
       case "get_stats":
-        return await this.getStatus();
+        return this.getTenantStats(tenantId);
 
       case "apply_remediation":
-        assertSignedPolicyToken(params.policyToken as string | undefined);
+        assertSignedPolicyToken(params.policyToken as string | undefined, {
+          tenantId,
+          agentId: this.id,
+          action,
+          payloadHash: policyPayloadHash(params),
+          nonce: params.policyNonce as string | undefined,
+        });
         return { status: "remediation_applied_under_policy", anomalyId: params.anomalyId };
 
       default:
         throw new Error(`Unknown action: ${action}`);
     }
+  }
+
+  private getTenantStats(tenantId: string): Record<string, unknown> {
+    const anomalies = this.detectedAnomalies.filter((a) => a.metadata?.tenantId === tenantId);
+    return {
+      totalAnomalies: anomalies.length,
+      criticalAnomalies: anomalies.filter((a) => a.severity === "critical").length,
+    };
   }
 
   async getStatus(): Promise<{
@@ -100,31 +113,35 @@ export class AnomalyDetectorAgent extends BaseAgent {
   /**
    * Detect anomalies
    */
-  private async detectAnomalies(): Promise<Anomaly[]> {
+  private async detectAnomalies(tenantId: string): Promise<Anomaly[]> {
     const anomalies: Anomaly[] = [];
 
     // Check reconciliation anomalies
-    const reconciliationAnomalies = await this.detectReconciliationAnomalies();
+    const reconciliationAnomalies = await this.detectReconciliationAnomalies(tenantId);
     anomalies.push(...reconciliationAnomalies);
 
     // Check security threats
-    const securityThreats = await this.detectSecurityThreats();
+    const securityThreats = await this.detectSecurityThreats(tenantId);
     anomalies.push(...securityThreats);
 
     // Check data quality issues
-    const dataQualityIssues = await this.detectDataQualityIssues();
+    const dataQualityIssues = await this.detectDataQualityIssues(tenantId);
     anomalies.push(...dataQualityIssues);
 
     // Check business logic anomalies
-    const businessLogicAnomalies = await this.detectBusinessLogicAnomalies();
+    const businessLogicAnomalies = await this.detectBusinessLogicAnomalies(tenantId);
     anomalies.push(...businessLogicAnomalies);
 
-    this.detectedAnomalies.push(...anomalies);
+    const scopedAnomalies = anomalies.map((anomaly) => ({
+      ...anomaly,
+      metadata: { ...anomaly.metadata, tenantId },
+    }));
+    this.detectedAnomalies.push(...scopedAnomalies);
     this.lastDetection = new Date();
 
     // Emit draft-only job requests requiring human approval (Pillar 4 Invariant)
-    for (const anomaly of anomalies) {
-      const draft = this.createDraftJob(anomaly);
+    for (const anomaly of scopedAnomalies) {
+      const draft = this.createDraftJob(anomaly, tenantId);
       this.emit("draft_job_created", draft);
       if (anomaly.severity === "critical" || anomaly.severity === "high") {
         this.emit("anomaly_detected", anomaly);
@@ -132,18 +149,19 @@ export class AnomalyDetectorAgent extends BaseAgent {
       }
     }
 
-    return anomalies;
+    return scopedAnomalies;
   }
 
   /**
    * Generates strictly draft-only job request for anomaly remediation via JobForgeClient
    */
-  createDraftJob(anomaly: Anomaly): AgentJobDraft {
+  createDraftJob(anomaly: Anomaly, tenantId: string): AgentJobDraft {
     return {
       agentId: this.id,
       jobType: `anomaly.remediation.${anomaly.type}`,
       payload: {
         anomalyId: anomaly.id,
+        tenantId,
         severity: anomaly.severity,
         evidence: anomaly.evidence,
         recommendedAction: anomaly.recommendedAction,
@@ -162,12 +180,13 @@ export class AnomalyDetectorAgent extends BaseAgent {
   /**
    * Detect reconciliation anomalies
    */
-  private async detectReconciliationAnomalies(): Promise<Anomaly[]> {
+  private async detectReconciliationAnomalies(tenantId: string): Promise<Anomaly[]> {
     const anomalies: Anomaly[] = [];
 
     try {
       const recentJobs = await prisma.reconJob.findMany({
         where: {
+          tenantId,
           createdAt: { gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) },
           accuracy: { not: null },
         },
@@ -223,30 +242,16 @@ export class AnomalyDetectorAgent extends BaseAgent {
           }
         }
       }
-      await prisma.$disconnect();
     } catch (error) {
       logError("Failed to detect reconciliation anomalies", error);
     }
-    return anomalies.length > 0
-      ? anomalies
-      : [
-          {
-            id: "anom_recon_demo",
-            type: "reconciliation" as const,
-            severity: "high" as const,
-            description: "Demo: Accuracy drop pattern",
-            detectedAt: new Date(),
-            evidence: { previousAccuracy: 0.98, currentAccuracy: 0.85, dropPercentage: 13.3 },
-            confidence: 85,
-            recommendedAction: "Review matching rules",
-          },
-        ];
+    return anomalies;
   }
 
   /**
    * Detect security threats
    */
-  private async detectSecurityThreats(): Promise<Anomaly[]> {
+  private async detectSecurityThreats(tenantId: string): Promise<Anomaly[]> {
     const threats: Anomaly[] = [];
 
     try {
@@ -255,6 +260,7 @@ export class AnomalyDetectorAgent extends BaseAgent {
 
       const recentLogs = await prisma.usageEvent.findMany({
         where: {
+          tenantId,
           timestamp: {
             gte: new Date(Date.now() - 24 * 60 * 60 * 1000), // Last 24 hours
           },
@@ -350,8 +356,6 @@ export class AnomalyDetectorAgent extends BaseAgent {
         authFailures: authFailures.length,
         potentialLeaks: potentialLeaks.length,
       });
-
-      await prisma.$disconnect();
     } catch (error) {
       logError("Failed to detect security threats", error);
     }
@@ -362,14 +366,14 @@ export class AnomalyDetectorAgent extends BaseAgent {
   /**
    * Detect data quality issues
    */
-  private async detectDataQualityIssues(): Promise<Anomaly[]> {
+  private async detectDataQualityIssues(tenantId: string): Promise<Anomaly[]> {
     const issues: Anomaly[] = [];
     try {
       const missingDataCount = await prisma.normalizedTransaction.count({
         where: {
+          tenantId,
           OR: [
             { amount: { equals: 0 } }, // Decimal check
-            { date: null },
             { description: null },
           ],
           createdAt: { gte: new Date(Date.now() - 24 * 60 * 60 * 1000) },
@@ -388,26 +392,34 @@ export class AnomalyDetectorAgent extends BaseAgent {
           recommendedAction: "Review data import pipeline",
         });
       }
-      const duplicates =
-        (await prisma.$queryRaw`SELECT COUNT(*) as count FROM "normalized_transactions" WHERE "createdAt" >= ${new Date(
-          Date.now() - 24 * 60 * 60 * 1000
-        )} GROUP BY amount, date, description HAVING COUNT(*) > 1 LIMIT 10`) as Array<{
-          count: bigint;
-        }>;
-      if (duplicates.length > 0) {
+      const recent = await prisma.normalizedTransaction.findMany({
+        where: {
+          tenantId,
+          createdAt: { gte: new Date(Date.now() - 24 * 60 * 60 * 1000) },
+        },
+        select: { amount: true, date: true, description: true },
+        take: 10_000,
+      });
+      const fingerprints = new Set<string>();
+      const duplicates = new Set<string>();
+      for (const transaction of recent) {
+        const fingerprint = `${transaction.amount.toString()}\u0000${transaction.date.toISOString()}\u0000${transaction.description ?? ""}`;
+        if (fingerprints.has(fingerprint)) duplicates.add(fingerprint);
+        fingerprints.add(fingerprint);
+      }
+      if (duplicates.size > 0) {
         issues.push({
           id: `dq-dup-${Date.now()}`,
           type: "data_quality",
           severity: "medium",
           title: "Potential Duplicate Transactions",
-          description: `${duplicates.length} groups of duplicates detected`,
+          description: `${duplicates.size} groups of duplicates detected`,
           detectedAt: new Date(),
-          metadata: { duplicateGroups: duplicates.length },
+          metadata: { duplicateGroups: duplicates.size },
           confidence: 75,
           recommendedAction: "Review duplicate detection rules",
         });
       }
-      await prisma.$disconnect();
     } catch (error) {
       logError("Failed to detect data quality issues", error);
     }
@@ -417,17 +429,26 @@ export class AnomalyDetectorAgent extends BaseAgent {
   /**
    * Detect business logic anomalies
    */
-  private async detectBusinessLogicAnomalies(): Promise<Anomaly[]> {
+  private async detectBusinessLogicAnomalies(tenantId: string): Promise<Anomaly[]> {
     const anomalies: Anomaly[] = [];
     try {
-      const stats =
-        (await prisma.$queryRaw`SELECT AVG(ABS(amount::numeric)) as avg, STDDEV(ABS(amount::numeric)) as std FROM "normalized_transactions" WHERE "createdAt" >= ${new Date(
-          Date.now() - 30 * 24 * 60 * 60 * 1000
-        )}`) as Array<{ avg: number; std: number }>;
-      if (stats[0]?.avg && stats[0]?.std) {
-        const threshold = stats[0].avg + 3 * Number(stats[0].std);
+      const population = await prisma.normalizedTransaction.findMany({
+        where: {
+          tenantId,
+          createdAt: { gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) },
+        },
+        select: { amount: true },
+        take: 10_000,
+      });
+      const amounts = population.map((row) => Math.abs(Number(row.amount)));
+      if (amounts.length >= 2) {
+        const mean = amounts.reduce((sum, amount) => sum + amount, 0) / amounts.length;
+        const variance =
+          amounts.reduce((sum, amount) => sum + (amount - mean) ** 2, 0) / amounts.length;
+        const threshold = mean + 3 * Math.sqrt(variance);
         const outliers = await prisma.normalizedTransaction.findMany({
           where: {
+            tenantId,
             amount: { gt: threshold },
             createdAt: { gte: new Date(Date.now() - 24 * 60 * 60 * 1000) },
           },
@@ -448,21 +469,30 @@ export class AnomalyDetectorAgent extends BaseAgent {
                 amount: o.amount,
               })),
               threshold,
-              mean: stats[0].avg,
+              mean,
             },
             confidence: 85,
             recommendedAction: "Review large/unusual transactions",
           });
         }
       }
-      const rapid =
-        (await prisma.$queryRaw`SELECT "tenantId", COUNT(*) as count FROM "normalized_transactions" WHERE "createdAt" >= ${new Date(
-          Date.now() - 1 * 60 * 60 * 1000
-        )} GROUP BY "tenantId", amount HAVING COUNT(*) > 5 LIMIT 5`) as Array<{
-          tenantId: string;
-          count: bigint;
-        }>;
-      if (rapid.length > 0) {
+      const recentHourlyAmounts = await prisma.normalizedTransaction.findMany({
+        where: {
+          tenantId,
+          createdAt: { gte: new Date(Date.now() - 60 * 60 * 1000) },
+        },
+        select: { amount: true },
+        take: 10_000,
+      });
+      const hourlyCounts = new Map<string, number>();
+      for (const row of recentHourlyAmounts) {
+        const amount = row.amount.toString();
+        hourlyCounts.set(amount, (hourlyCounts.get(amount) ?? 0) + 1);
+      }
+      const rapidPatternCount = Array.from(hourlyCounts.values()).filter(
+        (count) => count > 5
+      ).length;
+      if (rapidPatternCount > 0) {
         anomalies.push({
           id: `biz-fraud-${Date.now()}`,
           type: "business_logic",
@@ -470,12 +500,11 @@ export class AnomalyDetectorAgent extends BaseAgent {
           title: "Potential Fraud Pattern",
           description: "Multiple identical transactions within 1 hour",
           detectedAt: new Date(),
-          metadata: { patterns: rapid.length },
+          metadata: { patterns: rapidPatternCount },
           confidence: 80,
           recommendedAction: "Review for potential fraud",
         });
       }
-      await prisma.$disconnect();
     } catch (error) {
       logError("Failed to detect business logic anomalies", error);
     }
@@ -485,9 +514,9 @@ export class AnomalyDetectorAgent extends BaseAgent {
   /**
    * Load detection rules from database
    */
-  private async loadDetectionRules(): Promise<DetectionRule[]> {
+  private async loadDetectionRules(tenantId: string): Promise<DetectionRule[]> {
     try {
-      const dbRules = await prisma.detectionRule.findMany({ where: { enabled: true } });
+      const dbRules = await prisma.detectionRule.findMany({ where: { tenantId, enabled: true } });
       if (dbRules.length > 0) {
         return dbRules.map((r: any) => ({
           id: r.id,

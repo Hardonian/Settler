@@ -99,25 +99,33 @@ export class WebhookIngestionService {
       }
     }
 
-    if (lockKey) {
-      const acquired = await cache.acquireLock(lockKey, 30);
-      if (!acquired) {
-        // Race window: Another thread is currently processing this webhook. Wait briefly and recheck idempotency.
-        await new Promise((resolve) => setTimeout(resolve, 500));
-        if (idempotencyKey) {
-          const existing = await this.checkIdempotency(idempotencyKey, tenantId);
-          if (existing) {
-            return {
-              success: true,
-              events: existing.events || [],
-            };
-          }
+    const lockToken = lockKey ? await cache.acquireLock(lockKey, 30) : null;
+    if (lockKey && !lockToken) {
+      // Race window: Another thread is currently processing this webhook. Wait briefly and recheck idempotency.
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      if (idempotencyKey) {
+        const existing = await this.checkIdempotency(idempotencyKey, tenantId);
+        if (existing) {
+          return {
+            success: true,
+            events: existing.events || [],
+          };
         }
-        return {
-          success: false,
-          events: [],
-          errors: ["Webhook processing locked by concurrent worker"],
-        };
+      }
+      return {
+        success: false,
+        events: [],
+        errors: ["Webhook processing locked by concurrent worker"],
+      };
+    }
+
+    if (idempotencyKey) {
+      const existing = await this.checkIdempotency(idempotencyKey, tenantId);
+      if (existing) {
+        if (lockKey && lockToken) {
+          await cache.releaseLock(lockKey, lockToken);
+        }
+        return { success: true, events: existing.events || [] };
       }
     }
 
@@ -163,8 +171,8 @@ export class WebhookIngestionService {
       }
       return result;
     } finally {
-      if (lockKey) {
-        await cache.releaseLock(lockKey);
+      if (lockKey && lockToken) {
+        await cache.releaseLock(lockKey, lockToken);
       }
     }
   }

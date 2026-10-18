@@ -13,6 +13,9 @@ export const GET = withSecurity(
   async function GET(request: NextRequest) {
     const adminCheck = await requireAdmin(request);
     if (!adminCheck.isAdmin) return adminCheck.error!;
+    if (adminCheck.role !== "super_admin") {
+      return NextResponse.json({ error: "Super-admin access required" }, { status: 403 });
+    }
 
     const { searchParams } = new URL(request.url);
     const page = Math.max(1, Number(searchParams.get("page") ?? "1") || 1);

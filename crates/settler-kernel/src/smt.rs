@@ -23,13 +23,20 @@ pub fn hash_leaf(key: &[u8; 32], value: &[u8; 32]) -> [u8; 32] {
     hasher.finalize().into()
 }
 
+/// Canonical domain-separated hash for an unoccupied leaf.
+pub fn hash_empty_leaf() -> [u8; 32] {
+    let mut hasher = Sha256::new();
+    hasher.update([0x00]);
+    hasher.finalize().into()
+}
+
 /// Precomputes the deterministic default empty hashes for all 257 depths (0..=256).
-/// `empty_hashes[256]` is the empty leaf hash (`[0u8; 32]`).
+/// `empty_hashes[256]` is the domain-separated canonical empty leaf hash.
 /// `empty_hashes[d]` is `hash_nodes(&empty_hashes[d+1], &empty_hashes[d+1])`.
 pub fn get_empty_hashes() -> Vec<[u8; 32]> {
     let mut empty = vec![[0u8; 32]; SMT_DEPTH + 1];
     // Depth 256 is the empty leaf
-    empty[SMT_DEPTH] = [0u8; 32];
+    empty[SMT_DEPTH] = hash_empty_leaf();
     for d in (0..SMT_DEPTH).rev() {
         empty[d] = hash_nodes(&empty[d + 1], &empty[d + 1]);
     }
@@ -204,6 +211,28 @@ pub fn get_bit(key: &[u8; 32], index: usize) -> u8 {
 
 /// Verifies an SMT inclusion or non-inclusion proof against a declared root hash
 pub fn verify_smt_proof(proof: &SmtProof) -> SmtVerificationResult {
+    if proof.is_inclusion != proof.value_hex.is_some() {
+        return SmtVerificationResult {
+            valid: false,
+            computed_root: String::new(),
+            expected_root: proof.root_hex.clone(),
+            is_non_inclusion: !proof.is_inclusion,
+            error: Some(
+                "Proof kind is inconsistent with value_hex presence".to_string(),
+            ),
+        };
+    }
+
+    if !matches!(hex::decode(&proof.root_hex), Ok(bytes) if bytes.len() == 32) {
+        return SmtVerificationResult {
+            valid: false,
+            computed_root: String::new(),
+            expected_root: proof.root_hex.clone(),
+            is_non_inclusion: !proof.is_inclusion,
+            error: Some("Invalid root_hex format (expected 32 bytes)".to_string()),
+        };
+    }
+
     let key_bytes = match hex::decode(&proof.key_hex) {
         Ok(b) if b.len() == 32 => {
             let mut arr = [0u8; 32];
@@ -276,7 +305,7 @@ pub fn verify_smt_proof(proof: &SmtProof) -> SmtVerificationResult {
         };
         hash_leaf(&key_bytes, &val_bytes)
     } else {
-        // Non-inclusion proof: leaf at depth 256 is the empty leaf ([0u8; 32])
+        // Non-inclusion proof terminates at the canonical domain-separated empty leaf.
         let empty_hashes = get_empty_hashes();
         empty_hashes[SMT_DEPTH]
     };
@@ -317,6 +346,7 @@ mod tests {
     fn test_empty_tree_root() {
         let tree = SparseMerkleTree::new();
         assert_eq!(tree.root_hex().len(), 64);
+        assert_ne!(hash_empty_leaf(), [0u8; 32]);
     }
 
     #[test]
@@ -377,6 +407,23 @@ mod tests {
         assert!(
             !verification.valid,
             "Tampered value must fail SMT verification"
+        );
+    }
+
+    #[test]
+    fn test_smt_rejects_contradictory_proof_kind() {
+        let tree = SparseMerkleTree::new();
+        let key = Sha256::digest(b"absent").into();
+        let mut proof = tree
+            .prove_non_inclusion(&key)
+            .expect("non-inclusion proof should exist");
+        proof.is_inclusion = true;
+
+        let verification = verify_smt_proof(&proof);
+        assert!(!verification.valid);
+        assert_eq!(
+            verification.error.as_deref(),
+            Some("Proof kind is inconsistent with value_hex presence")
         );
     }
 }

@@ -5,8 +5,8 @@
 
 import { Router } from "express";
 import reconciliationGraphRouter from "./reconciliation-graph";
-// NOTE: ai-agents disabled until backing Prisma models exist
-// import aiAgentsRouter from "./ai-agents";
+import aiAgentsRouter from "./ai-agents";
+import ledgerRouter from "./ledger";
 import networkEffectsRouter from "./network-effects";
 import knowledgeRouter from "./knowledge";
 import complianceRouter from "./compliance";
@@ -16,8 +16,11 @@ export const v2Router: Router = Router();
 // Continuous Reconciliation Graph
 v2Router.use("/reconciliation-graph", reconciliationGraphRouter);
 
-// AI Agents (disabled — pending schema)
-// v2Router.use("/ai-agents", aiAgentsRouter);
+// AI Agents Control & Governance
+v2Router.use("/ai-agents", aiAgentsRouter);
+
+// Dual-Ledger & TigerBeetle CDC Sync
+v2Router.use("/ledger", ledgerRouter);
 
 // Network Effects
 v2Router.use("/network-effects", networkEffectsRouter);

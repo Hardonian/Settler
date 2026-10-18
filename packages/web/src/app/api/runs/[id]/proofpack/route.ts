@@ -42,11 +42,11 @@ export const GET = withSecurity(
       }
 
       // Try to load immutable proofpack
-      const storedProofpackLookup = prisma.reconResult?.findUnique;
+      const storedProofpackLookup = prisma.reconResult?.findFirst;
       if (typeof storedProofpackLookup === "function") {
         try {
           const stored = await storedProofpackLookup({
-            where: { id: params.id },
+            where: { id: params.id, tenantId: { in: tenantIds } },
             select: { proofpackPayload: true },
           });
           if (stored?.proofpackPayload) {

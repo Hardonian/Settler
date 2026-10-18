@@ -8,7 +8,13 @@
  * - Capacity planning
  */
 
-import { BaseAgent, AgentJobDraft, assertSignedPolicyToken } from "./orchestrator";
+import {
+  BaseAgent,
+  AgentJobDraft,
+  AgentExecutionContext,
+  assertSignedPolicyToken,
+  policyPayloadHash,
+} from "./orchestrator";
 import { logError, logInfo } from "../../utils/logger";
 import { prisma } from "../../infrastructure/db/prisma";
 
@@ -36,34 +42,36 @@ export class InfrastructureOptimizerAgent extends BaseAgent {
   type = "infrastructure" as const;
 
   private lastOptimization?: Date;
-  private optimizationHistory: OptimizationOpportunity[] = [];
+  private optimizationHistory = new Map<string, OptimizationOpportunity[]>();
 
   async initialize(): Promise<void> {
-    // Start periodic optimization checks
-    setInterval(() => {
-      if (this.enabled) {
-        this.analyzeInfrastructure().catch((error) => {
-          logError("Infrastructure analysis failed", error);
-        });
-      }
-    }, 3600000); // Every hour
-
     this.enabled = true;
   }
 
-  async execute(action: string, params: Record<string, unknown>): Promise<unknown> {
+  async execute(
+    action: string,
+    params: Record<string, unknown>,
+    context?: AgentExecutionContext
+  ): Promise<unknown> {
+    const tenantId = context?.tenantId;
+    if (!tenantId) {
+      throw new Error("Tenant context is required for infrastructure agent execution");
+    }
+
     switch (action) {
       case "analyze":
-        return await this.analyzeInfrastructure();
+        return await this.analyzeInfrastructure(tenantId);
 
       case "optimize":
-        return await this.optimizeInfrastructure(params);
+        return await this.optimizeInfrastructure(params, context);
 
       case "get_opportunities":
-        return this.optimizationHistory;
+        return this.optimizationHistory.get(tenantId) ?? [];
 
       case "get_stats":
-        return await this.getStatus();
+        return {
+          opportunitiesFound: this.optimizationHistory.get(tenantId)?.length ?? 0,
+        };
 
       default:
         throw new Error(`Unknown action: ${action}`);
@@ -86,9 +94,7 @@ export class InfrastructureOptimizerAgent extends BaseAgent {
       status.lastExecution = this.lastOptimization;
     }
     status.metrics = {
-      opportunitiesFound: this.optimizationHistory.length,
-      autoApplied: this.optimizationHistory.filter((o) => o.recommendedAction === "auto-apply")
-        .length,
+      tenantScopesAnalyzed: this.optimizationHistory.size,
     };
     return status;
   }
@@ -96,31 +102,31 @@ export class InfrastructureOptimizerAgent extends BaseAgent {
   /**
    * Analyze infrastructure for optimization opportunities
    */
-  private async analyzeInfrastructure(): Promise<OptimizationOpportunity[]> {
+  private async analyzeInfrastructure(tenantId: string): Promise<OptimizationOpportunity[]> {
     const opportunities: OptimizationOpportunity[] = [];
 
     // Analyze query performance
-    const slowQueries = await this.findSlowQueries();
+    const slowQueries = await this.findSlowQueries(tenantId);
     opportunities.push(...slowQueries);
 
     // Analyze costs
-    const costOpportunities = await this.findCostOptimizations();
+    const costOpportunities = await this.findCostOptimizations(tenantId);
     opportunities.push(...costOpportunities);
 
     // Analyze performance
-    const performanceOpportunities = await this.findPerformanceIssues();
+    const performanceOpportunities = await this.findPerformanceIssues(tenantId);
     opportunities.push(...performanceOpportunities);
 
     // Analyze capacity
-    const capacityOpportunities = await this.findCapacityIssues();
+    const capacityOpportunities = await this.findCapacityIssues(tenantId);
     opportunities.push(...capacityOpportunities);
 
-    this.optimizationHistory = opportunities;
+    this.optimizationHistory.set(tenantId, opportunities);
     this.lastOptimization = new Date();
 
     // SECURITY INVARIANT: Autonomous agents output strictly draft-only job requests
     for (const opportunity of opportunities) {
-      const draft = this.createDraftJob(opportunity);
+      const draft = this.createDraftJob(opportunity, tenantId);
       this.emit("draft_job_created", draft);
     }
 
@@ -130,12 +136,13 @@ export class InfrastructureOptimizerAgent extends BaseAgent {
   /**
    * Generates draft-only job requests for review via JobForgeClient
    */
-  createDraftJob(opportunity: OptimizationOpportunity): AgentJobDraft {
+  createDraftJob(opportunity: OptimizationOpportunity, tenantId: string): AgentJobDraft {
     return {
       agentId: this.id,
       jobType: `infrastructure.optimize.${opportunity.type}`,
       payload: {
         opportunityId: opportunity.id,
+        tenantId,
         currentState: opportunity.currentState,
         proposedChange: opportunity.proposedChange,
       },
@@ -153,80 +160,40 @@ export class InfrastructureOptimizerAgent extends BaseAgent {
   /**
    * Find slow queries by querying pg_stat_statements (if available)
    */
-  private async findSlowQueries(): Promise<OptimizationOpportunity[]> {
+  private async findSlowQueries(tenantId: string): Promise<OptimizationOpportunity[]> {
     const opportunities: OptimizationOpportunity[] = [];
 
-    try {
-      const slowQueries = (await prisma.$queryRaw`
-        SELECT query, mean_exec_time, calls, rows
-        FROM pg_stat_statements
-        WHERE mean_exec_time > 100
-        ORDER BY mean_exec_time DESC
-        LIMIT 10
-      `) as any[];
+    const recentResults = await prisma.reconResult.findMany({
+      where: {
+        tenantId,
+        createdAt: { gte: new Date(Date.now() - 24 * 60 * 60 * 1000) },
+        durationMs: { gt: 60_000n },
+      },
+      select: { id: true, durationMs: true },
+      orderBy: { durationMs: "desc" },
+      take: 20,
+    });
 
-      for (let i = 0; i < slowQueries.length; i++) {
-        const sq = slowQueries[i];
-        if (!sq) continue;
-        if (
-          sq.query.includes("CREATE INDEX") ||
-          sq.query.startsWith("COMMIT") ||
-          sq.query.startsWith("BEGIN")
-        ) {
-          continue;
-        }
-
+    for (let i = 0; i < recentResults.length; i++) {
+      const result = recentResults[i];
+      if (result?.durationMs) {
         opportunities.push({
-          id: `opt_query_${i + 1}`,
+          id: `opt_slow_job_${i + 1}`,
           type: "query",
-          description: `Slow query detected: ${sq.query.substring(0, 100)}...`,
+          description: `Slow reconciliation result: ${result.id}`,
           currentState: {
-            query: sq.query,
-            avgDuration: sq.mean_exec_time,
-            callCount: sq.calls,
+            resultId: result.id,
+            executionTimeMs: result.durationMs.toString(),
           },
           proposedChange: {
-            recommendation: "Consider adding indexes or optimizing query structure",
+            recommendation: "Review job configuration and data volume",
           },
           expectedImpact: {
-            performanceImprovement: 50,
+            performanceImprovement: 30,
             riskLevel: "low" as const,
           },
           recommendedAction: "human-review" as const,
         });
-      }
-    } catch {
-      // pg_stat_statements not available, fall back to query log analysis
-      logInfo("pg_stat_statements not available, using query log analysis");
-
-      const recentJobs = await prisma.reconJob.findMany({
-        where: { createdAt: { gte: new Date(Date.now() - 24 * 60 * 60 * 1000) } },
-        select: { id: true, executionTime: true },
-        orderBy: { executionTime: "desc" },
-        take: 20,
-      });
-
-      for (let i = 0; i < recentJobs.length; i++) {
-        const job = recentJobs[i];
-        if (job.executionTime && job.executionTime > 60000) {
-          opportunities.push({
-            id: `opt_slow_job_${i + 1}`,
-            type: "query",
-            description: `Slow reconciliation job: ${job.id}`,
-            currentState: {
-              jobId: job.id,
-              executionTimeMs: job.executionTime,
-            },
-            proposedChange: {
-              recommendation: "Review job configuration and data volume",
-            },
-            expectedImpact: {
-              performanceImprovement: 30,
-              riskLevel: "low" as const,
-            },
-            recommendedAction: "human-review" as const,
-          });
-        }
       }
     }
 
@@ -236,13 +203,14 @@ export class InfrastructureOptimizerAgent extends BaseAgent {
   /**
    * Find cost optimization opportunities
    */
-  private async findCostOptimizations(): Promise<OptimizationOpportunity[]> {
+  private async findCostOptimizations(tenantId: string): Promise<OptimizationOpportunity[]> {
     const opportunities: OptimizationOpportunity[] = [];
 
     // 1. Analyze AI usage patterns
     const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
     const aiCalls = await prisma.usageEvent.findMany({
       where: {
+        tenantId,
         eventType: "ai_request",
         timestamp: { gte: thirtyDaysAgo },
       },
@@ -292,6 +260,7 @@ export class InfrastructureOptimizerAgent extends BaseAgent {
     // 2. Check for unused reconciliation jobs
     const staleJobs = await prisma.reconJob.count({
       where: {
+        tenantId,
         status: "active",
         lastRunAt: { lt: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000) },
       },
@@ -321,6 +290,7 @@ export class InfrastructureOptimizerAgent extends BaseAgent {
     // 3. Check for high-volume raw data
     const unmappedCount = await prisma.rawRecord.count({
       where: {
+        tenantId,
         status: "failed",
         createdAt: { gte: thirtyDaysAgo },
       },
@@ -353,13 +323,14 @@ export class InfrastructureOptimizerAgent extends BaseAgent {
   /**
    * Find performance issues by analyzing job execution times and error rates
    */
-  private async findPerformanceIssues(): Promise<OptimizationOpportunity[]> {
+  private async findPerformanceIssues(tenantId: string): Promise<OptimizationOpportunity[]> {
     const opportunities: OptimizationOpportunity[] = [];
 
     // 1. Check for error-prone connectors
     const errorRates = await prisma.reconResult.groupBy({
-      by: ["connectorId"],
+      by: ["reconJobId"],
       where: {
+        tenantId,
         createdAt: { gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) },
         status: { in: ["error", "failed"] },
       },
@@ -367,27 +338,30 @@ export class InfrastructureOptimizerAgent extends BaseAgent {
     });
 
     const totalRuns = await prisma.reconResult.groupBy({
-      by: ["connectorId"],
+      by: ["reconJobId"],
       where: {
+        tenantId,
         createdAt: { gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) },
       },
       _count: { id: true },
     });
 
     for (const errorStat of errorRates) {
-      const totalStat = totalRuns.find((t: any) => t.connectorId === errorStat.connectorId);
+      const totalStat = totalRuns.find((t) => t.reconJobId === errorStat.reconJobId);
       if (totalStat) {
-        const errorRate = errorStat._count.id / totalStat._count.id;
+        const errorCount = errorStat._count.id;
+        const totalCount = totalStat._count.id;
+        const errorRate = errorCount / totalCount;
         if (errorRate > 0.2) {
           opportunities.push({
-            id: `opt_perf_errors_${errorStat.connectorId}`,
+            id: `opt_perf_errors_${errorStat.reconJobId}`,
             type: "performance",
-            description: `High error rate for connector ${errorStat.connectorId}: ${(errorRate * 100).toFixed(1)}%`,
+            description: `High error rate for reconciliation job ${errorStat.reconJobId}: ${(errorRate * 100).toFixed(1)}%`,
             currentState: {
-              connectorId: errorStat.connectorId,
+              reconJobId: errorStat.reconJobId,
               errorRate,
-              errorCount7Days: errorStat._count.id,
-              totalCount7Days: totalStat._count.id,
+              errorCount7Days: errorCount,
+              totalCount7Days: totalCount,
             },
             proposedChange: {
               action: "review_connector_config",
@@ -406,6 +380,7 @@ export class InfrastructureOptimizerAgent extends BaseAgent {
     // 2. Check for memory-intensive jobs
     const largeJobs = await prisma.reconJob.findMany({
       where: {
+        tenantId,
         status: "completed",
         executionTime: { gt: 300000 }, // > 5 minutes
         createdAt: { gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) },
@@ -442,16 +417,16 @@ export class InfrastructureOptimizerAgent extends BaseAgent {
   /**
    * Find capacity issues by analyzing queue depth and processing rates
    */
-  private async findCapacityIssues(): Promise<OptimizationOpportunity[]> {
+  private async findCapacityIssues(tenantId: string): Promise<OptimizationOpportunity[]> {
     const opportunities: OptimizationOpportunity[] = [];
 
     // 1. Check queue depth
     const pendingJobs = await prisma.reconJob.count({
-      where: { status: "pending" },
+      where: { tenantId, status: "pending" },
     });
 
     const processingJobs = await prisma.reconJob.count({
-      where: { status: "processing" },
+      where: { tenantId, status: "processing" },
     });
 
     const queueRatio = pendingJobs / (processingJobs || 1);
@@ -479,8 +454,11 @@ export class InfrastructureOptimizerAgent extends BaseAgent {
     }
 
     // 2. Check onboarding progress as a proxy for active users
-    const activeUsers24h = await prisma.onboardingProgress.count({
-      where: { updatedAt: { gte: new Date(Date.now() - 24 * 60 * 60 * 1000) } },
+    const activeUsers24h = await prisma.tenantOnboardingProgress.count({
+      where: {
+        tenantId,
+        updatedAt: { gte: new Date(Date.now() - 24 * 60 * 60 * 1000) },
+      },
     });
 
     if (activeUsers24h > 100) {
@@ -510,19 +488,20 @@ export class InfrastructureOptimizerAgent extends BaseAgent {
   /**
    * Apply an optimization
    */
-  private async applyOptimization(opportunity: OptimizationOpportunity): Promise<void> {
+  private async applyOptimization(
+    opportunity: OptimizationOpportunity,
+    tenantId: string
+  ): Promise<void> {
     logInfo(`Applying optimization: ${opportunity.id}`, { opportunityId: opportunity.id });
 
     // POLICY GOVERNANCE INVARIANT: Direct infrastructure changes require signed policy token
-    assertSignedPolicyToken(opportunity.proposedChange?.policyToken as string | undefined);
-
     try {
       switch (opportunity.type) {
         case "query":
           // Log the slow query for manual review
           await prisma.anomaly.create({
             data: {
-              tenantId: "00000000-0000-0000-0000-000000000000", // System tenant
+              tenantId,
               type: "optimization",
               severity: "low",
               message: `Query optimization recommended: ${opportunity.description}`,
@@ -564,7 +543,7 @@ export class InfrastructureOptimizerAgent extends BaseAgent {
       // Log the optimization in Anomaly table
       await prisma.anomaly.create({
         data: {
-          tenantId: "00000000-0000-0000-0000-000000000000",
+          tenantId,
           type: "optimization",
           severity: "low",
           message: `Applied optimization: ${opportunity.description}`,
@@ -590,16 +569,30 @@ export class InfrastructureOptimizerAgent extends BaseAgent {
   /**
    * Optimize infrastructure based on params
    */
-  private async optimizeInfrastructure(params: Record<string, unknown>): Promise<unknown> {
-    const opportunities = await this.analyzeInfrastructure();
+  private async optimizeInfrastructure(
+    params: Record<string, unknown>,
+    context?: AgentExecutionContext
+  ): Promise<unknown> {
+    const tenantId = context?.tenantId;
+    if (!tenantId) {
+      throw new Error("Tenant context is required for infrastructure optimization");
+    }
+    const opportunities = await this.analyzeInfrastructure(tenantId);
 
     if (params.autoApply === true) {
+      assertSignedPolicyToken(params.policyToken as string | undefined, {
+        tenantId,
+        agentId: this.id,
+        action: "optimize",
+        payloadHash: policyPayloadHash(params),
+        nonce: params.policyNonce as string | undefined,
+      });
       const lowRiskOpportunities = opportunities.filter(
         (o) => o.expectedImpact.riskLevel === "low"
       );
 
       for (const opportunity of lowRiskOpportunities) {
-        await this.applyOptimization(opportunity);
+        await this.applyOptimization(opportunity, tenantId);
       }
 
       return {

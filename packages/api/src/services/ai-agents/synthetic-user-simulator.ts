@@ -8,7 +8,13 @@
  * No synthetic transaction generation or load execution occurs without an explicit signed policy token.
  */
 
-import { BaseAgent, AgentJobDraft, assertSignedPolicyToken } from "./orchestrator";
+import {
+  BaseAgent,
+  AgentJobDraft,
+  AgentExecutionContext,
+  assertSignedPolicyToken,
+  policyPayloadHash,
+} from "./orchestrator";
 import { logInfo } from "../../utils/logger";
 
 export interface SimulationScenario {
@@ -37,26 +43,43 @@ export class SyntheticUserSimulatorAgent extends BaseAgent {
 
   private activeSimulations: Map<string, SimulationScenario> = new Map();
   private lastSimulation?: Date;
-  private completedSimulationsCount = 0;
+  private completedSimulationsCount = new Map<string, number>();
 
   async initialize(): Promise<void> {
     this.enabled = true;
     logInfo("Synthetic User Simulator Agent initialized in draft-governed mode");
   }
 
-  async execute(action: string, params: Record<string, unknown>): Promise<unknown> {
+  async execute(
+    action: string,
+    params: Record<string, unknown>,
+    context?: AgentExecutionContext
+  ): Promise<unknown> {
+    const tenantId = context?.tenantId;
+    if (!tenantId) {
+      throw new Error("Tenant context is required for synthetic simulation agent execution");
+    }
+
     switch (action) {
       case "plan_simulation":
-        return this.planSimulation(params);
+        return this.planSimulation({ ...params, tenantId });
 
       case "run_simulation":
-        return await this.runSimulation(params);
+        return await this.runSimulation(params, context);
 
       case "get_active_simulations":
-        return Array.from(this.activeSimulations.values());
+        return Array.from(this.activeSimulations.values()).filter(
+          (scenario) => scenario.tenantId === tenantId
+        );
 
       case "get_stats":
-        return await this.getStatus();
+        return {
+          activeSimulations: Array.from(this.activeSimulations.values()).filter(
+            (scenario) => scenario.tenantId === tenantId
+          ).length,
+          completedSimulations: this.completedSimulationsCount.get(tenantId) ?? 0,
+          governanceMode: "draft_only_approval_required",
+        };
 
       default:
         throw new Error(`Unknown action: ${action}`);
@@ -73,7 +96,10 @@ export class SyntheticUserSimulatorAgent extends BaseAgent {
       ...(this.lastSimulation ? { lastExecution: this.lastSimulation } : {}),
       metrics: {
         activeSimulations: this.activeSimulations.size,
-        completedSimulations: this.completedSimulationsCount,
+        completedSimulations: Array.from(this.completedSimulationsCount.values()).reduce(
+          (sum, count) => sum + count,
+          0
+        ),
         governanceMode: "draft_only_approval_required",
       },
     };
@@ -86,7 +112,8 @@ export class SyntheticUserSimulatorAgent extends BaseAgent {
     scenario: SimulationScenario;
     draftJob: AgentJobDraft;
   } {
-    const tenantId = (params.tenantId as string) || "system-test-tenant";
+    const tenantId = params.tenantId as string;
+    if (!tenantId) throw new Error("Tenant context is required to plan a simulation");
     const targetTps = Number(params.targetTps) || 50;
     const durationSeconds = Number(params.durationSeconds) || 60;
     const pattern = (params.pattern as SimulationScenario["pattern"]) || "sustained";
@@ -114,6 +141,7 @@ export class SyntheticUserSimulatorAgent extends BaseAgent {
     };
 
     const draftJob = this.createDraftJob(scenario);
+    this.activeSimulations.set(scenario.id, scenario);
     this.emit("draft_job_created", draftJob);
 
     return { scenario, draftJob };
@@ -148,16 +176,30 @@ export class SyntheticUserSimulatorAgent extends BaseAgent {
   /**
    * Run simulation - enforces signed policy token before execution.
    */
-  private async runSimulation(params: Record<string, unknown>): Promise<{
+  private async runSimulation(
+    params: Record<string, unknown>,
+    context?: AgentExecutionContext
+  ): Promise<{
     scenarioId: string;
     status: string;
     simulatedRecords: number;
   }> {
     // SECURITY INVARIANT: Autonomous simulation execution forbidden without verified signed policy token
-    assertSignedPolicyToken(params.policyToken as string | undefined);
+    assertSignedPolicyToken(params.policyToken as string | undefined, {
+      tenantId: context?.tenantId ?? "",
+      agentId: this.id,
+      action: "run_simulation",
+      payloadHash: policyPayloadHash(params),
+      nonce: params.policyNonce as string | undefined,
+    });
 
-    const scenarioId = (params.scenarioId as string) || `sim_exec_${Date.now()}`;
-    const transactionCount = Number(params.transactionCount) || 100;
+    const tenantId = context?.tenantId;
+    const scenarioId = params.scenarioId as string;
+    const scenario = scenarioId ? this.activeSimulations.get(scenarioId) : undefined;
+    if (!tenantId || !scenario || scenario.tenantId !== tenantId) {
+      throw new Error("Approved simulation scenario not found for tenant");
+    }
+    const transactionCount = scenario.parameters.transactionCount;
 
     logInfo(`Running signed synthetic simulation: ${scenarioId}`, {
       scenarioId,
@@ -165,7 +207,11 @@ export class SyntheticUserSimulatorAgent extends BaseAgent {
     });
 
     this.lastSimulation = new Date();
-    this.completedSimulationsCount++;
+    this.activeSimulations.delete(scenarioId);
+    this.completedSimulationsCount.set(
+      tenantId,
+      (this.completedSimulationsCount.get(tenantId) ?? 0) + 1
+    );
 
     return {
       scenarioId,
