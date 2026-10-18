@@ -1,6 +1,12 @@
-const sourceFiles = (files) => files.filter((file) => !/(^|[\\/])dist([\\/]|$)/.test(file));
+const path = require("path");
 
-const quote = (file) => JSON.stringify(file.replaceAll("\\", "/"));
+const sourceFiles = (files) =>
+  files.filter(
+    (file) =>
+      !/(^|[\\/])dist([\\/]|$)/.test(file) && !/(^|[\\/])deploy[\\/]helm([\\/]|$)/.test(file)
+  );
+
+const quote = (file) => JSON.stringify(path.relative(process.cwd(), file).replaceAll("\\", "/"));
 
 const lintAndFormat = (files) => {
   const sources = sourceFiles(files);

@@ -270,6 +270,20 @@ const commandRegistry: Record<
       return { command: recoveryCommand };
     },
   },
+  daemon: {
+    description: "Autonomous continuous settlement daemon operations and telemetry",
+    load: async () => {
+      const { daemonCommand } = await import("./commands/daemon");
+      return { command: daemonCommand };
+    },
+  },
+  audit: {
+    description: "Cryptographic regulatory audit attestation dossier generator and exporter",
+    load: async () => {
+      const { auditCommand } = await import("./commands/audit");
+      return { command: auditCommand };
+    },
+  },
 
   demo: {
     description: "Run deterministic one-command demo",

@@ -14,8 +14,16 @@ import { triangularRouter } from "./triangular";
 import { ruleSynthesisRouter } from "./rule-synthesis";
 import { streamRouter } from "./stream";
 import { recoveryRouter } from "./recovery";
+import { daemonRouter } from "./daemon";
+import { dossierRouter } from "./dossier";
 
 export const v2Router: Router = Router();
+
+// Autonomous Continuous Settlement Daemon
+v2Router.use("/daemon", daemonRouter);
+
+// Cryptographic Audit Dossiers
+v2Router.use("/audit/dossier", dossierRouter);
 
 // Autonomous Revenue OS Recovery Pipeline
 v2Router.use("/recovery", recoveryRouter);

@@ -57,7 +57,15 @@ export const toRunCompactProofSummary = jest.fn((value: unknown) => value);
 export const geminiCognitiveEngine = {
   extractMultimodalStatement: jest.fn(),
   adjudicateExceptions: jest.fn(),
-  synthesizeAuditProofDossier: jest.fn(),
+  synthesizeAuditProofDossier: jest.fn((req: any) => ({
+    dossierId: `AUDIT-DOSSIER-MOCK`,
+    tenantId: req?.tenantId,
+    query: req?.query,
+    executiveMemorandum: "INDEPENDENT AUDITOR ATTESTATION DOSSIER",
+    wasmVerificationScript: "// Client-side Zero-Trust Verification",
+    dossierSignature: "mock_signature_hash",
+    stateRoot: "mock_merkle_root",
+  })),
   generateAdversarialVectors: jest.fn(),
 };
 export class GeminiCognitiveEngine {}
