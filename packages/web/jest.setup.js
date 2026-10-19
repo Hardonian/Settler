@@ -1,6 +1,14 @@
 // Learn more: https://github.com/testing-library/jest-dom
 import "@testing-library/jest-dom";
+import { webcrypto } from "node:crypto";
 import { TextDecoder, TextEncoder } from "util";
+
+if (typeof global.crypto?.subtle?.digest !== "function") {
+  Object.defineProperty(global, "crypto", {
+    configurable: true,
+    value: webcrypto,
+  });
+}
 
 if (typeof global.TextEncoder === "undefined") {
   global.TextEncoder = TextEncoder;
