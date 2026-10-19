@@ -85,6 +85,7 @@ Post-change measurements on the same host:
 - Cache-miss builds while concurrent commits were landing: 252.0-274.8s wall time, with all 12 reusable dependency tasks hitting cache after the first run.
 - Stable warm replay at web hash `0734a0c60e3e0556`: 6.0s wall time, 13 of 14 tasks cached; only the intentionally uncached Prisma generation task ran.
 - Final verification after the E2E/test-runtime changes: 431.4s for a genuine web miss on this host (Next reported a 4.0-minute compile), followed immediately by an 8.8s warm replay with 13 of 14 tasks cached. Miss-path variance is therefore material; compare optimizations with repeated profiler runs, not a single wall-clock sample.
+- Final post-release stable warm replay: 4.8s wall time (4.25s Turbo execution time), 13 of 14 tasks cached; only the intentionally uncached Prisma generation task ran, with `@settler/web#build` cache status HIT.
 - The Next.js trace attributes the dominant miss-path cost to webpack (92-180s) and build-trace collection (66-80s), not static generation (about 5s).
 
 Remote caching cannot be activated in an unauthenticated shell by repository code alone. External CI requires the `TURBO_TOKEN` and `TURBO_TEAM` secrets; `pnpm turbo:cache:check -- --require` fails closed when they are absent. No token material is committed or logged.
