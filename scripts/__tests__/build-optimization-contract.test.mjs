@@ -73,7 +73,11 @@ test("Windows production E2E harness uses bounded hidden processes and cleanup",
   assert.match(harness, /for \(\$attempt = 1; \$attempt -le 60; \$attempt\+\+\)/);
   assert.match(harness, /\$api\.HasExited -or \$web\.HasExited/);
   assert.match(harness, /test-secret-min-32-chars-long-for-testing/);
+  assert.match(harness, /12345678901234567890123456789012/);
+  assert.doesNotMatch(harness, /prisma db push|--accept-data-loss/);
+  assert.match(harness, /settler-e2e/);
   assert.match(harness, /finally \{/);
-  assert.match(harness, /Stop-ProcessTree \$web\.Id/);
-  assert.match(harness, /Stop-ProcessTree \$api\.Id/);
+  assert.match(harness, /if \(\$web\) \{ Stop-ProcessTree \$web\.Id \}/);
+  assert.match(harness, /if \(\$api\) \{ Stop-ProcessTree \$api\.Id \}/);
+  assert.match(harness, /docker @composeArguments down/);
 });

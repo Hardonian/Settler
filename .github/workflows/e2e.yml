@@ -39,7 +39,7 @@ jobs:
       DATABASE_URL: postgresql://postgres:postgres@localhost:5432/settler_test
       E2E_API_KEY: test-api-key
       E2E_BASE_URL: http://localhost:3000
-      ENCRYPTION_KEY: test-encryption-key-32-chars-long!!
+      ENCRYPTION_KEY: 12345678901234567890123456789012
       INTERNAL_API_URL: http://localhost:4000
       JWT_SECRET: test-secret-min-32-chars-long-for-testing
       NEXT_PUBLIC_SUPABASE_ANON_KEY: test-anon-key-for-e2e
@@ -103,7 +103,7 @@ jobs:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/settler_test
           NODE_ENV: test
           JWT_SECRET: test-secret-min-32-chars-long-for-testing
-          ENCRYPTION_KEY: test-encryption-key-32-chars-long!!
+          ENCRYPTION_KEY: 12345678901234567890123456789012
 
       - name: Start API server
         run: |
@@ -134,7 +134,7 @@ jobs:
           DB_PASSWORD: postgres
           REDIS_URL: redis://localhost:6379
           JWT_SECRET: test-secret-min-32-chars-long-for-testing
-          ENCRYPTION_KEY: test-encryption-key-32-chars-long!!
+          ENCRYPTION_KEY: 12345678901234567890123456789012
           SUPABASE_URL: http://localhost:54321
           SUPABASE_ANON_KEY: test-anon-key-for-e2e
           SUPABASE_SERVICE_ROLE_KEY: test-service-role-key-for-e2e
@@ -216,7 +216,7 @@ jobs:
       DATABASE_URL: postgresql://postgres:postgres@localhost:5432/settler_test
       E2E_API_KEY: test-api-key
       E2E_BASE_URL: http://localhost:3000
-      ENCRYPTION_KEY: test-encryption-key-32-chars-long!!
+      ENCRYPTION_KEY: 12345678901234567890123456789012
       INTERNAL_API_URL: http://localhost:4000
       JWT_SECRET: test-secret-min-32-chars-long-for-testing
       NEXT_PUBLIC_SUPABASE_ANON_KEY: test-anon-key-for-e2e
@@ -272,7 +272,7 @@ jobs:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/settler_test
           NODE_ENV: test
           JWT_SECRET: test-secret-min-32-chars-long-for-testing
-          ENCRYPTION_KEY: test-encryption-key-32-chars-long!!
+          ENCRYPTION_KEY: 12345678901234567890123456789012
 
       - name: Seed test data
         run: |
@@ -307,7 +307,7 @@ jobs:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/settler_test
           REDIS_URL: redis://localhost:6379
           JWT_SECRET: test-secret-min-32-chars-long-for-testing
-          ENCRYPTION_KEY: test-encryption-key-32-chars-long!!
+          ENCRYPTION_KEY: 12345678901234567890123456789012
           SUPABASE_URL: http://localhost:54321
           SUPABASE_ANON_KEY: test-anon-key-for-e2e
           SUPABASE_SERVICE_ROLE_KEY: test-service-role-key-for-e2e

@@ -88,6 +88,14 @@ Post-change measurements on the same host:
 
 Remote caching cannot be activated in an unauthenticated shell by repository code alone. External CI requires the `TURBO_TOKEN` and `TURBO_TEAM` secrets; `pnpm turbo:cache:check -- --require` fails closed when they are absent. No token material is committed or logged.
 
+## Production-boundary E2E verification
+
+On Windows, `pnpm test:e2e:production:windows` starts the built API and Next.js application on ports 4100 and 3100, respectively. It uses an isolated Docker Compose project for PostgreSQL and Redis, runs the `ci-critical` Playwright project, and always stops its process trees and containers. It does not mutate the developer database or run `prisma db push`.
+
+The 2026-10-18 run passed all nine critical journeys on the first attempt, including browser-only proofpack verification with no proof-verification API request or browser console error. The isolated empty database intentionally exercises only health and unauthenticated boundaries. Full schema-backed E2E remains in CI, where PostgreSQL is disposable.
+
+The repository's non-destructive empty-database migration path currently stops at `20260131000002_restore_operator_mode_tables` because `alert_rules` has not yet been created. Treat repair of that migration dependency as separate schema work; do not bypass it with `prisma db push --accept-data-loss` on a developer or production database.
+
 Optimization guardrails:
 
 - Do not remove lint, strict TypeScript, tests, tenant/security checks, determinism checks, replay checks, or build-environment validation to improve elapsed time.

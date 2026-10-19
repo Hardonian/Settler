@@ -22,9 +22,18 @@ $webErr = Join-Path $artifactDir "e2e-web.err.log"
 
 $testEnvironment = @{
   NODE_ENV = "test"
-  DB_PASSWORD = "postgres"
+  DATABASE_URL = "postgresql://postgres:password@localhost:5433/settler_test"
+  DB_HOST = "localhost"
+  DB_PORT = "5433"
+  DB_NAME = "settler_test"
+  DB_USER = "postgres"
+  DB_PASSWORD = "password"
+  REDIS_URL = "redis://localhost:6380"
   JWT_SECRET = "test-secret-min-32-chars-long-for-testing"
-  ENCRYPTION_KEY = "test-encryption-key-32-chars-long!!"
+  ENCRYPTION_KEY = "12345678901234567890123456789012"
+  SUPABASE_URL = "http://localhost:54321"
+  SUPABASE_ANON_KEY = "test-anon-key-for-e2e"
+  SUPABASE_SERVICE_ROLE_KEY = "test-service-role-key-for-e2e"
 }
 
 function Stop-ProcessTree([int]$ProcessId) {
@@ -33,34 +42,66 @@ function Stop-ProcessTree([int]$ProcessId) {
   Stop-Process -Id $ProcessId -Force -ErrorAction SilentlyContinue
 }
 
+$composeFile = Join-Path $repoRoot "packages/api/docker-compose.test.yml"
+$composeArguments = @("compose", "-p", "settler-e2e", "-f", $composeFile)
+$api = $null
+$web = $null
+$infrastructureStarted = $false
 $previousEnvironment = @{}
 foreach ($name in $testEnvironment.Keys) {
   $previousEnvironment[$name] = [Environment]::GetEnvironmentVariable($name, "Process")
-  [Environment]::SetEnvironmentVariable($name, $testEnvironment[$name], "Process")
 }
-$previousPort = $env:PORT
-$env:PORT = "$ApiPort"
-$api = Start-Process -FilePath $pnpm `
-  -ArgumentList @("--filter", "@settler/api", "start") `
-  -WorkingDirectory $repoRoot `
-  -RedirectStandardOutput $apiOut `
-  -RedirectStandardError $apiErr `
-  -PassThru `
-  -WindowStyle Hidden
-$env:PORT = $previousPort
-foreach ($name in $testEnvironment.Keys) {
-  [Environment]::SetEnvironmentVariable($name, $previousEnvironment[$name], "Process")
-}
-
-$web = Start-Process -FilePath $pnpm `
-  -ArgumentList @("--filter", "@settler/web", "exec", "next", "start", "-p", "$WebPort") `
-  -WorkingDirectory $repoRoot `
-  -RedirectStandardOutput $webOut `
-  -RedirectStandardError $webErr `
-  -PassThru `
-  -WindowStyle Hidden
 
 try {
+  docker info --format "{{.ServerVersion}}" | Out-Null
+  if ($LASTEXITCODE -ne 0) {
+    throw "Docker is required for the isolated E2E PostgreSQL and Redis services"
+  }
+
+  & docker @composeArguments up -d postgres-test redis-test
+  if ($LASTEXITCODE -ne 0) { throw "Failed to start isolated E2E infrastructure" }
+  $infrastructureStarted = $true
+
+  $databaseReady = $false
+  for ($attempt = 1; $attempt -le 30; $attempt++) {
+    try {
+      $client = [System.Net.Sockets.TcpClient]::new()
+      $client.Connect("localhost", 5433)
+      $client.Dispose()
+      $databaseReady = $true
+      break
+    } catch {
+      if ($client) { $client.Dispose() }
+    }
+    Start-Sleep -Seconds 1
+  }
+  if (-not $databaseReady) { throw "E2E PostgreSQL failed readiness" }
+
+  foreach ($name in $testEnvironment.Keys) {
+    [Environment]::SetEnvironmentVariable($name, $testEnvironment[$name], "Process")
+  }
+  $previousPort = $env:PORT
+  $env:PORT = "$ApiPort"
+  $api = Start-Process -FilePath $pnpm `
+    -ArgumentList @("--filter", "@settler/api", "start") `
+    -WorkingDirectory $repoRoot `
+    -RedirectStandardOutput $apiOut `
+    -RedirectStandardError $apiErr `
+    -PassThru `
+    -WindowStyle Hidden
+  $env:PORT = $previousPort
+
+  $web = Start-Process -FilePath $pnpm `
+    -ArgumentList @("--filter", "@settler/web", "exec", "next", "start", "-p", "$WebPort") `
+    -WorkingDirectory $repoRoot `
+    -RedirectStandardOutput $webOut `
+    -RedirectStandardError $webErr `
+    -PassThru `
+    -WindowStyle Hidden
+  foreach ($name in $testEnvironment.Keys) {
+    [Environment]::SetEnvironmentVariable($name, $previousEnvironment[$name], "Process")
+  }
+
   $webReady = $false
   $apiReady = $false
   for ($attempt = 1; $attempt -le 60; $attempt++) {
@@ -102,6 +143,10 @@ try {
   Write-Output "--- WEB ERROR TAIL ---"
   Get-Content $webErr -Tail 30 -ErrorAction SilentlyContinue
 } finally {
-  Stop-ProcessTree $web.Id
-  Stop-ProcessTree $api.Id
+  foreach ($name in $testEnvironment.Keys) {
+    [Environment]::SetEnvironmentVariable($name, $previousEnvironment[$name], "Process")
+  }
+  if ($web) { Stop-ProcessTree $web.Id }
+  if ($api) { Stop-ProcessTree $api.Id }
+  if ($infrastructureStarted) { & docker @composeArguments down }
 }

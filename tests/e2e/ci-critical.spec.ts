@@ -76,6 +76,7 @@ test.describe("CI critical production journeys", () => {
     await expect(
       page.getByRole("heading", { level: 1, name: "Zero-Trust Proofpack Verifier" })
     ).toBeVisible();
+    await page.waitForLoadState("networkidle");
 
     const hash = (value: string) => createHash("sha256").update(value).digest("hex");
     const leafHashes = [hash("left-record"), hash("right-record")];
