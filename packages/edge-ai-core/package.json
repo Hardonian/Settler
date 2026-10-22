@@ -43,8 +43,8 @@
     "prettier": "^3.9.10",
     "ts-jest": "^29.4.15",
     "tsx": "^4.23.15",
-    "vite": "^8.3.2",
-    "vitest": "^5.0.5"
+    "vite": "^8.3.4",
+    "vitest": "^5.0.2"
   },
   "keywords": [
     "edge-ai",
