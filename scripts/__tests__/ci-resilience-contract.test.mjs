@@ -167,3 +167,21 @@ test("database migrations have one serialized fail-closed production owner", () 
     );
   }
 });
+
+test("release train publishes only verified, version-matched artifacts", () => {
+  const release = read(".github/workflows/release.yml");
+  const ci = read(".github/workflows/ci.yml");
+  const tagReleaseJob = release.split("\n  version-bump:")[0].split("\n  release:")[1];
+
+  assert.match(release, /permissions:\s*[\s\S]*?contents: write/);
+  assert.ok(tagReleaseJob, "release job must be present");
+  assert.doesNotMatch(tagReleaseJob, /needs:/);
+  assert.match(tagReleaseJob, /Validate tag matches the workspace version/);
+  assert.match(tagReleaseJob, /pnpm run release:dry-run/);
+  assert.match(tagReleaseJob, /artifacts\/release\/npm\/\*\.tgz/);
+  assert.match(tagReleaseJob, /artifacts\/release\/checksums\.sha256/);
+  assert.match(release, /pnpm run version:bump --/);
+
+  assert.doesNotMatch(ci, /qa:visual:landing -- --update-snapshots/);
+  assert.doesNotMatch(ci, /qa:visual:landing[^\n]*\|\| true/);
+});

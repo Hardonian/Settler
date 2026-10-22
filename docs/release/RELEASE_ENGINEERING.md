@@ -20,7 +20,7 @@ This release pipeline is optimized for deterministic, solo-operator shipping:
 
 ## Workflow
 
-GitHub Actions workflow: `.github/workflows/release-engineering.yml`
+GitHub Actions workflow: `.github/workflows/release.yml`
 
 Pipeline gates:
 
@@ -34,6 +34,14 @@ Pipeline gates:
 8. artifact validation (`verify:release:artifacts`)
 
 Any failure blocks release publication.
+
+## Release cadence
+
+- Ship a stable release from a reviewed `main` commit only after `pnpm run release:dry-run` passes.
+- Use conventional commits and keep customer-visible changes under `Unreleased` until the release cut.
+- Run the manual version workflow with the target SemVer; it synchronizes root and workspace package versions, commits the change, and creates the `v<version>` tag.
+- A tag release validates that the tag version equals `package.json`, runs the full release dry-run, publishes only checksum-verified OSS artifacts, and attaches the manifest and SBOM metadata to the GitHub Release.
+- Use `-alpha`, `-beta`, or `-rc` SemVer suffixes for prereleases. Do not reuse or move a published tag.
 
 ## Artifact outputs
 

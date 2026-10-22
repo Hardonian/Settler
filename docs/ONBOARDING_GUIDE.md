@@ -6,9 +6,9 @@
 
 ## Overview
 
-This guide helps you get started with Settler in under 30 minutes. Follow these steps to run your first reconciliation and see value immediately.
+This guide helps you connect two sources, run a first reconciliation, and review the resulting evidence. Plan approximately 30 minutes for a prepared integration; provider authorization, source-data readiness, and internal approval can extend that timeline.
 
-**Philosophy:** First value in <7 days, ideally <30 minutes.
+**Success criterion:** a reproducible first run with results and evidence your team can review.
 
 ---
 
@@ -87,13 +87,13 @@ This guide helps you get started with Settler in under 30 minutes. Follow these 
 3. Review unmatched items (with reasons)
 4. Export reconciliation report (PDF/CSV)
 
-### Understand Value
+### Understand the Result
 
-- **Time Saved:** This would have taken [X] hours manually
-- **Accuracy:** [Y]% match rate
-- **Cost Savings:** $[Z]/month in labor costs
+- Review the matched, unmatched, and exception counts for the selected period.
+- Inspect the evidence bundle before using the run for an operational or audit decision.
+- Record the baseline manual process and the observed match rate if you want to measure time or cost impact; do not infer savings from a single run.
 
-**Done!** You've seen value from Settler.
+**Done!** You have a first evidence-backed result to review.
 
 ---
 
@@ -155,9 +155,9 @@ You've successfully onboarded when:
 - ✅ APIs connected (at least 2)
 - ✅ First reconciliation run successfully
 - ✅ Results viewed and understood
-- ✅ Value realized (time saved, accuracy improved)
+- ✅ Evidence reviewed and operational follow-up identified
 
-**Target:** Complete onboarding in <30 minutes, see value in <7 days.
+**Target:** Complete a first validated run. Measure time-to-value against your own integration readiness and review requirements.
 
 ---
 

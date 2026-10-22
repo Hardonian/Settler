@@ -376,9 +376,8 @@ jobs:
 
           cd "$GITHUB_WORKSPACE"
           BASE_URL=http://localhost:3000 pnpm run qa:marketing-ctas
-          # First run creates missing baselines (--update-snapshots writes actuals)
-          BASE_URL=http://localhost:3000 E2E_BASE_URL=http://localhost:3000 pnpm run qa:visual:landing -- --update-snapshots || true
-          # Second run verifies against the baselines just created
+          # Visual baselines are reviewed and committed with the change; CI must never create or
+          # ignore a baseline because that would hide a visual regression.
           BASE_URL=http://localhost:3000 E2E_BASE_URL=http://localhost:3000 pnpm run qa:visual:landing
 
           kill $SERVER_PID
