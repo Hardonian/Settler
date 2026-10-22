@@ -44,7 +44,7 @@
     "ts-jest": "^29.4.15",
     "tsx": "^4.23.15",
     "vite": "^8.3.4",
-    "vitest": "^5.0.2"
+    "vitest": "^5.0.5"
   },
   "keywords": [
     "edge-ai",

@@ -44,13 +44,13 @@ function exception(overrides: Partial<JevExceptionContext> = {}): JevExceptionCo
   };
 }
 
-function successfulTransport(): JevTransport {
+function successfulTransport(inputTokens: number | null = 120): JevTransport {
   return {
     systemOne: jest.fn().mockResolvedValue({
       requestId: "req-test",
       result: {
         model: "jev-1.13",
-        usage: { input_tokens: 120, output_tokens: 18 },
+        usage: { input_tokens: inputTokens, output_tokens: 18 },
         answers: {
           action_0: {
             type: "choice",
@@ -133,6 +133,18 @@ describe("TypeSafeJevDecisionProvider", () => {
         }),
       })
     );
+  });
+
+  it("normalizes missing provider token usage in durable evidence", async () => {
+    const provider = new TypeSafeJevDecisionProvider({
+      config: config(),
+      transport: successfulTransport(null),
+      auditSink: jest.fn().mockResolvedValue(undefined),
+    });
+
+    const result = await provider.assessExceptions(tenantId, [exception()]);
+
+    expect(result.assessments[0]?.evidence.inputTokens).toBe(0);
   });
 
   it("does not call the provider when rollout is off", async () => {

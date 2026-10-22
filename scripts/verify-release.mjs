@@ -7,6 +7,16 @@ import nodeContract from "./node-version-contract.cjs";
 const repoRoot = process.cwd();
 const defaultRunId = new Date().toISOString().replace(/[:.]/g, "-");
 
+function isBrokenPipe(error) {
+  return typeof error === "object" && error !== null && "code" in error && error.code === "EPIPE";
+}
+
+for (const stream of [process.stdout, process.stderr]) {
+  stream.on("error", (error) => {
+    if (!isBrokenPipe(error)) throw error;
+  });
+}
+
 const stageCatalog = {
   root: { label: "Root cleanliness", command: ["pnpm", ["run", "verify:root"]], timeoutMs: 60_000 },
   reconciliationCoreDist: {

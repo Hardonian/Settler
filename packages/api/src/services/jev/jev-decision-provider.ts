@@ -122,6 +122,10 @@ function clampProbability(value: unknown): number {
   return Math.min(1, Math.max(0, numeric));
 }
 
+function normalizeTokenCount(value: number | null | undefined): number {
+  return typeof value === "number" && Number.isFinite(value) && value >= 0 ? value : 0;
+}
+
 function classifyProviderError(error: unknown): JevBatchAssessment["reason"] {
   if (
     error instanceof APITimeoutError ||
@@ -307,8 +311,8 @@ function parseAssessments(
         requestDigest,
         responseDigest: jevEvidenceDigest(response.result),
         latencyMs,
-        inputTokens: response.result.usage.input_tokens,
-        outputTokens: response.result.usage.output_tokens,
+        inputTokens: normalizeTokenCount(response.result.usage.input_tokens),
+        outputTokens: normalizeTokenCount(response.result.usage.output_tokens),
       },
     };
   });
@@ -447,8 +451,8 @@ export class TypeSafeJevDecisionProvider implements JevDecisionProvider {
             latencyMs,
             requestDigest,
             responseDigest: parsed[0]?.evidence.responseDigest,
-            inputTokens: response.result.usage.input_tokens,
-            outputTokens: response.result.usage.output_tokens,
+            inputTokens: normalizeTokenCount(response.result.usage.input_tokens),
+            outputTokens: normalizeTokenCount(response.result.usage.output_tokens),
             requestId: response.requestId,
             decisions: parsed.map((assessment) => ({
               exceptionId: assessment.reference,

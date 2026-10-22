@@ -11,6 +11,7 @@ import {
   SectionHeader,
 } from "@/components/site/primitives";
 import { MarketingIntentCard } from "@/components/site/marketing-motion-wrappers";
+import { FrontierFeatureShowcase } from "@/components/site/FrontierFeatureShowcase";
 import { Button } from "@/components/ui/button";
 import { UiLink } from "@/components/ui/link";
 import {
@@ -26,7 +27,7 @@ import {
 export const metadata: Metadata = {
   title: "Settler — Reconciliation intelligence + audit OS",
   description:
-    "Settler turns fragmented transaction data into deterministic reconciliation runs, explainable exceptions, and replayable evidence artifacts.",
+    "Reconcile fragmented transaction data, explain every exception, and produce replayable evidence with Settler's deterministic reconciliation platform.",
 };
 
 const capabilityClusters = [
@@ -91,34 +92,40 @@ export default function HomePage() {
       <Navigation />
       <main id="main-content" className="pt-16">
         <PageHero
-          eyebrow="Reconciliation Intelligence Platform"
-          title="Deterministic reconciliation. Verifiable audit evidence."
-          description="Settler turns fragmented transaction flows into reproducible runs, explainable exceptions, and replayable evidence. It is built for teams that need to inspect how a reconciliation result was produced."
+          eyebrow="Reconciliation intelligence + audit OS"
+          title="Reconcile every rail. Prove every result."
+          description="Settler gives finance and engineering teams one deterministic path from fragmented payment data to explained exceptions, replayable runs, and portable evidence."
           actions={
             <>
               <Button asChild size="lg">
-                <UiLink href="/docs/pilot" data-cta="hero_pilot" data-analytics="hero_pilot_click">
-                  Plan a pilot <ArrowRight className="ml-2 h-4 w-4" />
-                </UiLink>
-              </Button>
-              <Button variant="outline" size="lg" asChild>
                 <UiLink href="/demo/console" data-cta="hero_demo" data-analytics="hero_demo_click">
-                  Explore the console
+                  Explore the live demo <ArrowRight className="ml-2 h-4 w-4" />
                 </UiLink>
               </Button>
               <Button variant="outline" size="lg" asChild>
-                <UiLink
-                  href="/security-and-audit"
-                  data-cta="hero_security"
-                  data-analytics="hero_security_click"
-                >
-                  Review security
+                <UiLink href="/docs/pilot" data-cta="hero_pilot" data-analytics="hero_pilot_click">
+                  Plan a pilot
                 </UiLink>
               </Button>
+              <UiLink
+                href="/security-and-audit"
+                className="inline-flex min-h-11 items-center gap-2 px-1 text-sm font-semibold text-muted-foreground transition-colors hover:text-foreground"
+                data-cta="hero_security"
+                data-analytics="hero_security_click"
+              >
+                <ShieldCheck className="h-4 w-4 text-primary" /> Review security &amp; audit
+              </UiLink>
+              <p className="basis-full text-xs text-muted-foreground">
+                No account required · Deterministic sample data · Inspect the evidence path
+              </p>
             </>
           }
           visual={<InteractiveHeroEngine />}
         />
+
+        <Section className="border-b border-border/40 bg-background py-20 sm:py-24">
+          <FrontierFeatureShowcase />
+        </Section>
 
         <Section className="py-24 bg-muted/15 border-y border-border/40">
           <SectionHeader

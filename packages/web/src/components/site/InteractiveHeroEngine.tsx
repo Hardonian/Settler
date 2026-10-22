@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   CheckCircle2,
   ShieldCheck,
@@ -10,7 +10,6 @@ import {
   FileCheck2,
   Database,
   Fingerprint,
-  RotateCcw,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
@@ -58,54 +57,18 @@ const INITIAL_TRANSACTIONS: StreamTx[] = [
 ];
 
 export function InteractiveHeroEngine() {
-  const shouldReduceMotion = useReducedMotion();
   const [mode, setMode] = useState<EngineMode>("stream");
   const [tolerance, setTolerance] = useState<number>(0.05);
-  const [streamList, setStreamList] = useState<StreamTx[]>(INITIAL_TRANSACTIONS);
-  const [verifiedCount, setVerifiedCount] = useState(14892);
-  const [isVerifying, setIsVerifying] = useState(false);
   const [verificationSuccess, setVerificationSuccess] = useState(false);
 
-  // Simulated live ticker for the stream mode
   useEffect(() => {
-    if (mode !== "stream" || shouldReduceMotion) return;
-
-    const interval = setInterval(() => {
-      setVerifiedCount((prev) => prev + 1);
-      const sourceAPrefixes = ["Stripe ch_", "Shopify ord_", "Square pay_"];
-      const sourceBPrefixes = ["Chase #", "NetSuite #", "QuickBooks #"];
-      const prefixA =
-        sourceAPrefixes[Math.floor(Math.random() * sourceAPrefixes.length)] ?? "Stripe ch_";
-      const prefixB =
-        sourceBPrefixes[Math.floor(Math.random() * sourceBPrefixes.length)] ?? "Chase #";
-
-      const newTx: StreamTx = {
-        id: `tx_${Math.floor(1000 + Math.random() * 9000)}`,
-        sourceA: prefixA + Math.floor(100 + Math.random() * 900),
-        sourceB: prefixB + Math.floor(1000 + Math.random() * 9000),
-        amount: Math.round((20 + Math.random() * 4500) * 100) / 100,
-        delta: 0.0,
-        status: "matched",
-        hash: `sha256:${Math.random().toString(36).substring(2, 6)}...${Math.random().toString(36).substring(2, 6)}`,
-      };
-
-      setStreamList((prev) => {
-        const first = prev[0] ?? INITIAL_TRANSACTIONS[0]!;
-        const second = prev[1] ?? INITIAL_TRANSACTIONS[1]!;
-        return [newTx, first, second];
-      });
-    }, 2800);
-
-    return () => clearInterval(interval);
-  }, [mode, shouldReduceMotion]);
+    if (!verificationSuccess) return;
+    const timeout = window.setTimeout(() => setVerificationSuccess(false), 3000);
+    return () => window.clearTimeout(timeout);
+  }, [verificationSuccess]);
 
   const handleVerifyClick = () => {
-    setIsVerifying(true);
-    setTimeout(() => {
-      setIsVerifying(false);
-      setVerificationSuccess(true);
-      setTimeout(() => setVerificationSuccess(false), 3000);
-    }, 600);
+    setVerificationSuccess(true);
   };
 
   return (
@@ -117,24 +80,30 @@ export function InteractiveHeroEngine() {
       <div className="p-4 sm:p-5 border-b border-slate-200/80 dark:border-white/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div className="flex items-center gap-2.5">
           <span className="relative flex h-2.5 w-2.5">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+            <span className="absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-30" />
             <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500" />
           </span>
           <span className="text-xs font-bold tracking-wider uppercase text-slate-800 dark:text-slate-200 font-mono">
-            ENGINE CORE v2.4
+            DETERMINISTIC SAMPLE RUN
           </span>
           <Badge
             variant="outline"
             className="text-[10px] px-2 py-0 border-emerald-500/30 text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/40 font-semibold"
           >
-            0.38ms LATENCY
+            ILLUSTRATIVE
           </Badge>
         </div>
 
         {/* Interactive Mode Pills */}
-        <div className="flex items-center bg-slate-100/90 dark:bg-slate-800/90 p-1 rounded-xl border border-slate-200/60 dark:border-white/5 text-xs">
+        <div
+          className="flex items-center bg-slate-100/90 dark:bg-slate-800/90 p-1 rounded-xl border border-slate-200/60 dark:border-white/5 text-xs"
+          role="tablist"
+          aria-label="Sample reconciliation views"
+        >
           <button
             type="button"
+            role="tab"
+            aria-selected={mode === "stream"}
             onClick={() => setMode("stream")}
             className={cn(
               "px-2.5 py-1 rounded-lg font-medium transition-all duration-200 flex items-center gap-1.5",
@@ -149,6 +118,8 @@ export function InteractiveHeroEngine() {
 
           <button
             type="button"
+            role="tab"
+            aria-selected={mode === "tolerance"}
             onClick={() => setMode("tolerance")}
             className={cn(
               "px-2.5 py-1 rounded-lg font-medium transition-all duration-200 flex items-center gap-1.5",
@@ -163,6 +134,8 @@ export function InteractiveHeroEngine() {
 
           <button
             type="button"
+            role="tab"
+            aria-selected={mode === "proof"}
             onClick={() => setMode("proof")}
             className={cn(
               "px-2.5 py-1 rounded-lg font-medium transition-all duration-200 flex items-center gap-1.5",
@@ -241,12 +214,12 @@ export function InteractiveHeroEngine() {
                 <div className="flex items-center justify-between text-xs text-slate-600 dark:text-slate-400 px-1 font-medium">
                   <span>Recent Executions</span>
                   <span className="font-mono text-[11px] text-slate-500">
-                    Total: {verifiedCount.toLocaleString()}
+                    {INITIAL_TRANSACTIONS.length} sample records
                   </span>
                 </div>
 
                 <div className="space-y-2">
-                  {streamList.map((tx) => (
+                  {INITIAL_TRANSACTIONS.map((tx) => (
                     <motion.div
                       key={tx.id}
                       layout
@@ -410,7 +383,7 @@ export function InteractiveHeroEngine() {
                   </div>
                   <div className="flex items-center gap-1.5">
                     <FileCheck2 className="h-3.5 w-3.5 text-emerald-500" />
-                    <span>Export: SOX / SOC-2</span>
+                    <span>JSON + WASM verifier</span>
                   </div>
                 </div>
               </div>
@@ -419,18 +392,12 @@ export function InteractiveHeroEngine() {
               <button
                 type="button"
                 onClick={handleVerifyClick}
-                disabled={isVerifying}
                 className="w-full py-2.5 px-4 rounded-xl font-semibold text-xs flex items-center justify-center gap-2 bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 text-white shadow-md shadow-teal-600/20 transition-all transform active:scale-[0.98]"
               >
-                {isVerifying ? (
-                  <>
-                    <RotateCcw className="h-3.5 w-3.5 animate-spin" />
-                    <span>Verifying Evidence Hashes...</span>
-                  </>
-                ) : verificationSuccess ? (
+                {verificationSuccess ? (
                   <>
                     <CheckCircle2 className="h-3.5 w-3.5 text-white" />
-                    <span>Cryptographically Verified (100% Match)</span>
+                    <span>Sample evidence hash verified</span>
                   </>
                 ) : (
                   <>
@@ -447,7 +414,7 @@ export function InteractiveHeroEngine() {
         <div className="pt-4 mt-4 border-t border-slate-200/80 dark:border-white/10 flex items-center justify-between text-xs text-slate-500 font-mono">
           <span className="flex items-center gap-1.5">
             <span className="h-1.5 w-1.5 rounded-full bg-teal-500" />
-            ZERO_DRIFT_ENFORCED
+            REPLAYABLE INPUTS
           </span>
           <span className="text-slate-400">HASH-LINKED EVIDENCE</span>
         </div>

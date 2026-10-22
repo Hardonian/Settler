@@ -29,7 +29,7 @@ test.describe("Landing page visual baselines", () => {
     await expect(
       page.getByRole("heading", {
         level: 1,
-        name: "Deterministic reconciliation. Verifiable audit evidence.",
+        name: "Reconcile every rail. Prove every result.",
       })
     ).toBeVisible({ timeout: 10_000 });
     await expect(page.locator("main#main-content")).toBeVisible();

@@ -11,7 +11,7 @@ test.describe("CI critical production journeys", () => {
     await expect(
       page.getByRole("heading", {
         level: 1,
-        name: "Deterministic reconciliation. Verifiable audit evidence.",
+        name: "Reconcile every rail. Prove every result.",
       })
     ).toBeVisible();
     await expect(page.locator("main#main-content")).toBeVisible();
