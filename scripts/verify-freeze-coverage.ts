@@ -3,7 +3,7 @@ import path from "node:path";
 
 interface RouteExpectation {
   file: string;
-  method: "post" | "patch" | "delete";
+  method: "post" | "put" | "patch" | "delete";
   route: string;
 }
 
