@@ -59,13 +59,18 @@ function parseTotals(raw) {
   try {
     const parsed = JSON.parse(raw);
     const vulnerabilities = parsed?.metadata?.vulnerabilities || {};
+    const info = vulnerabilities.info || 0;
+    const low = vulnerabilities.low || 0;
+    const moderate = vulnerabilities.moderate || 0;
+    const high = vulnerabilities.high || 0;
+    const critical = vulnerabilities.critical || 0;
     return {
-      info: vulnerabilities.info || 0,
-      low: vulnerabilities.low || 0,
-      moderate: vulnerabilities.moderate || 0,
-      high: vulnerabilities.high || 0,
-      critical: vulnerabilities.critical || 0,
-      total: vulnerabilities.total || 0,
+      info,
+      low,
+      moderate,
+      high,
+      critical,
+      total: Math.max(vulnerabilities.total || 0, info + low + moderate + high + critical),
     };
   } catch {
     return null;
@@ -260,7 +265,9 @@ writeFileSync(
 console.log(`Dependency audit artifact: ${path.relative(repoRoot, artifactPath)}`);
 console.log(`Dependency audit outcome: ${finalOutcome}`);
 if (artifact.degraded) {
-  console.log(`Dependency audit degraded reasons: ${degradedReasons.join(", ") || "none"}`);
+  console.log(
+    `Dependency audit degraded reasons: ${[...new Set(degradedReasons)].join(", ") || "none"}`
+  );
 }
 
 if (finalOutcome.startsWith("failed")) {
