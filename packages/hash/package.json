@@ -4,12 +4,12 @@
   "private": true,
   "type": "module",
   "devDependencies": {
-    "@vitest/coverage-v8": "^5.0.2",
+    "@vitest/coverage-v8": "^5.0.5",
     "vite": "^8.3.2",
-    "vitest": "^5.0.2"
+    "vitest": "^5.0.5"
   },
   "dependencies": {
-    "@ai-sdk/openai": "^4.0.91",
-    "ai": "^7.0.137"
+    "@ai-sdk/openai": "^4.0.96",
+    "ai": "^7.0.143"
   }
 }

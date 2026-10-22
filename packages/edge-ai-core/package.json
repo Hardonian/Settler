@@ -25,26 +25,26 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@ai-sdk/openai": "^4.0.91",
+    "@ai-sdk/openai": "^4.0.96",
     "@types/node": "^26.6.5",
-    "ai": "^7.0.137",
+    "ai": "^7.0.143",
     "typescript": "^6.0.3",
     "uuid": "^14.0.3"
   },
   "devDependencies": {
     "@types/jest": "^30.0.0",
-    "@types/uuid": "^11.0.0",
-    "@typescript-eslint/eslint-plugin": "^8.71.1",
-    "@typescript-eslint/parser": "^8.71.1",
-    "@vitest/coverage-v8": "^5.0.2",
+    "@types/uuid": "^9.0.8",
+    "@typescript-eslint/eslint-plugin": "^8.71.2",
+    "@typescript-eslint/parser": "^8.71.2",
+    "@vitest/coverage-v8": "^5.0.5",
     "eslint": "^9.39.4",
     "eslint-config-prettier": "^10.1.8",
     "jest": "^30.5.2",
     "prettier": "^3.9.10",
-    "ts-jest": "^29.4.14",
+    "ts-jest": "^29.4.15",
     "tsx": "^4.23.15",
     "vite": "^8.3.2",
-    "vitest": "^5.0.2"
+    "vitest": "^5.0.5"
   },
   "keywords": [
     "edge-ai",
