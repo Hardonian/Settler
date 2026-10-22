@@ -101,7 +101,7 @@
   },
   "dependencies": {
     "@ai-sdk/openai": "^4.0.96",
-    "@asteasolutions/zod-to-openapi": "^7.3.4",
+    "@asteasolutions/zod-to-openapi": "^9.1.0",
     "@opentelemetry/api": "^1.9.1",
     "@opentelemetry/auto-instrumentations-node": "^0.81.2",
     "@opentelemetry/exporter-metrics-otlp-http": "^0.223.0",
@@ -140,7 +140,7 @@
     "express-rate-limit": "^8.7.1",
     "express-session": "^1.19.0",
     "helmet": "^8.3.0",
-    "ioredis": "^6.0.0",
+    "ioredis": "^5.11.1",
     "ip-cidr": "^4.0.2",
     "isomorphic-dompurify": "^4.6.0",
     "jsonwebtoken": "^9.0.3",

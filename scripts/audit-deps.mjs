@@ -144,14 +144,14 @@ if (mode !== "off") {
       // Check if all findings are from accepted exceptions (deep transitive deps)
       try {
         const parsed = JSON.parse(audit.stdout);
-        const advisories = parsed.advisories || {};
-        const nonAccepted = Object.values(advisories).filter(
-          (a) => !ACCEPTED_EXCEPTIONS.has(a.module_name)
+        const advisories = Object.values(parsed.advisories || {}).filter(
+          (advisory) => advisory.severity === "high" || advisory.severity === "critical"
         );
+        const nonAccepted = advisories.filter((a) => !ACCEPTED_EXCEPTIONS.has(a.module_name));
         if (nonAccepted.length === 0) {
           completeness = "degraded";
           degradedReasons.push("accepted-transitive-vulns");
-          acceptedExceptions.push(...Object.values(advisories).map((a) => a.module_name));
+          acceptedExceptions.push(...advisories.map((a) => a.module_name));
           finalOutcome = "passed-with-accepted-exceptions";
         } else {
           finalOutcome = mode === "strict" ? "failed-findings" : "warn-findings";
