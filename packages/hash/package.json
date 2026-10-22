@@ -9,7 +9,7 @@
     "vitest": "^5.0.2"
   },
   "dependencies": {
-    "@ai-sdk/openai": "^4.0.91",
-    "ai": "^7.0.137"
+    "@ai-sdk/openai": "^4.0.96",
+    "ai": "^7.0.143"
   }
 }
