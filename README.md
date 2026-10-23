@@ -5,6 +5,8 @@
 **Reconciliation intelligence & audit operating system**  
 Deterministic transaction matching · Hash-linked evidence · Enterprise-grade tenant isolation
 
+> **Portfolio signal:** Settler is the enterprise-data flagship: a deterministic reconciliation engine with tenant isolation, replayable proofpacks, and a runnable five-minute demo.
+
 [![CI](https://github.com/Hardonian/Settler/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/Hardonian/Settler/actions/workflows/ci.yml)
 [![Version](https://img.shields.io/badge/version-1.7.0-blue.svg)](CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
