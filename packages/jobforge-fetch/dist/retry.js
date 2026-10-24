@@ -30,17 +30,17 @@ export function isRetryableStatus(status, retryableStatusCodes) {
  */
 export function isRetryableError(error) {
     // Network errors
-    if (error.name === 'TypeError' && error.message.includes('fetch')) {
+    if (error.name === "TypeError" && error.message.includes("fetch")) {
         return true;
     }
     // Timeout errors
-    if (error.name === 'AbortError' || error.name === 'TimeoutError') {
+    if (error.name === "AbortError" || error.name === "TimeoutError") {
         return true;
     }
     // Connection errors
-    if (error.message.includes('ECONNRESET') ||
-        error.message.includes('ETIMEDOUT') ||
-        error.message.includes('ENOTFOUND')) {
+    if (error.message.includes("ECONNRESET") ||
+        error.message.includes("ETIMEDOUT") ||
+        error.message.includes("ENOTFOUND")) {
         return true;
     }
     return false;

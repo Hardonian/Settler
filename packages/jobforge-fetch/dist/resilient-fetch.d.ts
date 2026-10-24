@@ -1,4 +1,4 @@
-import type { ResilientFetchOptions, FetchMetadata } from './types';
+import type { ResilientFetchOptions, FetchMetadata } from "./types";
 /**
  * Resilient fetch with timeout and retry support.
  * Automatically handles transient failures with exponential backoff.

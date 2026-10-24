@@ -1,5 +1,5 @@
-import { createTimeoutError, createExternalServiceError, getCurrentCorrelationId, } from '@jobforge/errors';
-import { DEFAULT_RETRY_CONFIG, calculateRetryDelay, isRetryableStatus, isRetryableError, sleep, } from './retry';
+import { createTimeoutError, createExternalServiceError, getCurrentCorrelationId, } from "@jobforge/errors";
+import { DEFAULT_RETRY_CONFIG, calculateRetryDelay, isRetryableStatus, isRetryableError, sleep, } from "./retry";
 const DEFAULT_TIMEOUT = 30000; // 30 seconds
 /**
  * Resilient fetch with timeout and retry support.
@@ -12,7 +12,7 @@ export async function resilientFetch(url, options = {}) {
     // Add correlation ID to headers
     const headers = new Headers(fetchOptions.headers);
     if (requestCorrelationId) {
-        headers.set('x-correlation-id', requestCorrelationId);
+        headers.set("x-correlation-id", requestCorrelationId);
     }
     const retryConfig = { ...DEFAULT_RETRY_CONFIG, ...retry };
     const startTime = Date.now();
@@ -35,7 +35,7 @@ export async function resilientFetch(url, options = {}) {
                 }
             }
             // Attach metadata to response
-            Object.defineProperty(response, 'metadata', {
+            Object.defineProperty(response, "metadata", {
                 value: {
                     attempts: attempt,
                     duration: Date.now() - startTime,
@@ -49,7 +49,9 @@ export async function resilientFetch(url, options = {}) {
             lastError = error instanceof Error ? error : new Error(String(error));
             // Check if we should retry
             const isLastAttempt = attempt > retryConfig.maxRetries;
-            const shouldRetry = !isLastAttempt && isRetryableError(lastError) && retryConfig.shouldRetry(lastError, attempt);
+            const shouldRetry = !isLastAttempt &&
+                isRetryableError(lastError) &&
+                retryConfig.shouldRetry(lastError, attempt);
             if (!shouldRetry) {
                 break;
             }
@@ -73,7 +75,7 @@ async function fetchWithTimeout(url, options) {
     const timeoutId = setTimeout(() => controller.abort(), timeout);
     // Combine external signal with timeout signal
     if (externalSignal) {
-        externalSignal.addEventListener('abort', () => controller.abort());
+        externalSignal.addEventListener("abort", () => controller.abort());
     }
     try {
         const response = await fetch(url, {
@@ -83,7 +85,7 @@ async function fetchWithTimeout(url, options) {
         return response;
     }
     catch (error) {
-        if (error instanceof Error && error.name === 'AbortError') {
+        if (error instanceof Error && error.name === "AbortError") {
             throw createTimeoutError(`Request to ${String(url)}`);
         }
         throw error;
@@ -96,5 +98,5 @@ async function fetchWithTimeout(url, options) {
  * Type guard to check if response has metadata
  */
 export function hasMetadata(response) {
-    return 'metadata' in response;
+    return "metadata" in response;
 }

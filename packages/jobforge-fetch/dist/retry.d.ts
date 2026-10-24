@@ -1,4 +1,4 @@
-import type { RetryConfig } from './types';
+import type { RetryConfig } from "./types";
 /**
  * Default retry configuration
  */
