@@ -1,5 +1,10 @@
 import { describe, it, expect } from "vitest";
-import { computePackageHash, verifyProofIntegrity, ProofPackageExport } from "./index";
+import {
+  computePackageHash,
+  exportProofPackage,
+  verifyProofIntegrity,
+  ProofPackageExport,
+} from "./index";
 
 describe("computePackageHash", () => {
   it("produces identical hashes regardless of when called (no timestamp dependency)", () => {
@@ -201,5 +206,48 @@ describe("verifyProofIntegrity", () => {
 
     expect(result.valid).toBe(true);
     expect(result.errors).toHaveLength(0);
+  });
+
+  it("preserves scopeIds through exportProofPackage so verifyProofIntegrity succeeds on round-trip", () => {
+    const crypto = require("crypto");
+    const payload = baseExport.evidence[0].payload;
+    const sortedKeys = Object.keys(payload).sort();
+    const evidenceHash = crypto
+      .createHash("sha256")
+      .update(JSON.stringify(payload, sortedKeys))
+      .digest("hex");
+
+    const scopeIds = ["run-alpha", "run-beta"];
+    const packageHash = computePackageHash(["ev-1"], "run_summary", scopeIds);
+
+    const exported = exportProofPackage(
+      {
+        id: "pkg-roundtrip",
+        tenantId: "tenant-1",
+        packageType: "run_summary",
+        packageKey: "run_summary::run::run-alpha::2026-10-26",
+        evidenceIds: ["ev-1"],
+        scopeIds,
+        summary: baseExport.package.summary,
+        completeness: baseExport.completeness,
+        packageHash,
+        attested: true,
+        attestations: [],
+        status: "finalized",
+        createdAt: "2026-10-26T00:00:00Z",
+      },
+      [
+        {
+          ...baseExport.evidence[0],
+          payloadHash: evidenceHash,
+        },
+      ],
+      baseExport.completeness
+    );
+
+    const result = verifyProofIntegrity(exported);
+    expect(result.valid).toBe(true);
+    expect(result.errors).toHaveLength(0);
+    expect(exported.package.scopeIds).toEqual(scopeIds);
   });
 });
