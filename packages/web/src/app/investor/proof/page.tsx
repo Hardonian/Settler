@@ -13,6 +13,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { CrossRailArbitrageWorkbench } from "@/components/console/CrossRailArbitrageWorkbench";
+import { InterchangeOptimizationWorkbench } from "@/components/console/InterchangeOptimizationWorkbench";
 import { Shield, TrendingUp, Zap, Lock, ArrowRight } from "lucide-react";
 
 export const revalidate = 3600;
@@ -275,6 +276,9 @@ async function InvestorProofContent() {
 
       {/* Cross-Rail Settlement Graph & Plaid Sweep Referee */}
       <CrossRailArbitrageWorkbench />
+
+      {/* Forensic Interchange++ & B2B Level 3 Downgrade Recovery */}
+      <InterchangeOptimizationWorkbench />
 
       {/* Security & Compliance */}
       <Card>
