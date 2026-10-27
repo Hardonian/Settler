@@ -357,12 +357,23 @@ export function verifyProofIntegrity(exported: ProofPackageExport): ProofIntegri
     errors.push("Package hash mismatch - evidence may have been tampered with");
   }
 
+  if (
+    exported.integrity?.packageHash &&
+    exported.integrity.packageHash !== exported.package.packageHash
+  ) {
+    errors.push("Integrity envelope packageHash mismatch");
+  }
+
   // Verify evidence hashes
   for (const artifact of exported.evidence) {
     const computedArtifactHash = canonicalSha256(artifact.payload);
 
     if (computedArtifactHash !== artifact.payloadHash) {
       errors.push(`Evidence artifact ${artifact.id} hash mismatch`);
+    }
+    const recordedEnvelopeHash = exported.integrity?.evidenceHashes?.[artifact.id];
+    if (recordedEnvelopeHash && recordedEnvelopeHash !== computedArtifactHash) {
+      errors.push(`Evidence artifact ${artifact.id} envelope digest mismatch`);
     }
   }
 

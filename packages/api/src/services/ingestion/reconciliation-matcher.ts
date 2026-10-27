@@ -249,6 +249,20 @@ export async function executeOneToOneMatching(
   };
 }
 
+export interface MatchTransactionPreloadedRow {
+  id: string;
+  amount: number;
+  currency: string;
+  date: Date;
+  description: string | null;
+  external_id: string | null;
+}
+
+export interface MatchTransactionBatchCache {
+  transactionsById: Map<string, MatchTransactionPreloadedRow>;
+  adaptersByTxId: Map<string, string | null>;
+}
+
 /**
  * Match source transaction to target transactions
  *
@@ -258,32 +272,30 @@ export async function matchTransaction(
   sourceTransactionId: string,
   targetTransactionIds: string[],
   tenantId: string,
-  config: ReconciliationConfig = {}
+  config: ReconciliationConfig = {},
+  batchCache?: MatchTransactionBatchCache
 ): Promise<MatchResult | null> {
   if (!tenantId) throw new Error("tenantId is required for matchTransaction");
   const opts = { ...DEFAULT_CONFIG, ...config };
 
-  // Get source transaction — scoped by tenant_id
-  const sourceResults = await query(
-    tenantId,
-    `SELECT id, amount, currency, date, description, external_id
-    FROM normalized_transactions
-    WHERE id = $1 AND tenant_id = $2`,
-    [sourceTransactionId, tenantId]
-  );
+  let source = batchCache?.transactionsById.get(sourceTransactionId);
+  if (!source) {
+    // Get source transaction — scoped by tenant_id
+    const sourceResults = await query(
+      tenantId,
+      `SELECT id, amount, currency, date, description, external_id
+      FROM normalized_transactions
+      WHERE id = $1 AND tenant_id = $2`,
+      [sourceTransactionId, tenantId]
+    );
 
-  if (sourceResults.length === 0) {
-    throw new Error(`Source transaction ${sourceTransactionId} not found`);
+    if (sourceResults.length === 0) {
+      throw new Error(`Source transaction ${sourceTransactionId} not found`);
+    }
+
+    source = sourceResults[0] as MatchTransactionPreloadedRow;
+    batchCache?.transactionsById.set(source.id, source);
   }
-
-  const source = sourceResults[0] as {
-    id: string;
-    amount: number;
-    currency: string;
-    date: Date;
-    description: string | null;
-    external_id: string | null;
-  };
 
   // Get target transactions
   if (targetTransactionIds.length === 0) {
@@ -295,23 +307,29 @@ export async function matchTransaction(
     };
   }
 
-  const placeholders = targetTransactionIds.map((_, i) => `$${i + 3}`).join(", ");
-  const targetResults = await query(
-    tenantId,
-    `SELECT id, amount, currency, date, description, external_id
-    FROM normalized_transactions
-    WHERE id IN (${placeholders}) AND tenant_id = $2`,
-    [sourceTransactionId, tenantId, ...targetTransactionIds]
-  );
+  let targets: MatchTransactionPreloadedRow[];
+  if (
+    batchCache &&
+    targetTransactionIds.every((id) => batchCache.transactionsById.has(id))
+  ) {
+    targets = targetTransactionIds.map((id) => batchCache.transactionsById.get(id)!);
+  } else {
+    const placeholders = targetTransactionIds.map((_, i) => `$${i + 3}`).join(", ");
+    const targetResults = await query(
+      tenantId,
+      `SELECT id, amount, currency, date, description, external_id
+      FROM normalized_transactions
+      WHERE id IN (${placeholders}) AND tenant_id = $2`,
+      [sourceTransactionId, tenantId, ...targetTransactionIds]
+    );
 
-  const targets = targetResults as Array<{
-    id: string;
-    amount: number;
-    currency: string;
-    date: Date;
-    description: string | null;
-    external_id: string | null;
-  }>;
+    targets = targetResults as MatchTransactionPreloadedRow[];
+    if (batchCache) {
+      for (const t of targets) {
+        batchCache.transactionsById.set(t.id, t);
+      }
+    }
+  }
 
   // Try exact match first (same external ID)
   if (source.external_id) {

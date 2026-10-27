@@ -147,22 +147,62 @@ function verify() {
 
   // 2. Verify Internal Node Accumulation (0x01 || left || right)
   console.log('\\n[Step 2] Verifying Internal Node Accumulation (0x01 prefix)...');
+  const inclusionList = proofs.inclusion_proofs || [];
+  if (inclusionList.length > 0 && proofs.merkle_tree_root) {
+    let level = inclusionList.map((p) => p.domain_separated_leaf);
+    while (level.length > 1) {
+      const next = [];
+      for (let i = 0; i < level.length; i += 2) {
+        const left = Buffer.from(level[i], 'hex');
+        const right = Buffer.from(i + 1 < level.length ? level[i + 1] : level[i], 'hex');
+        next.push(
+          crypto.createHash('sha256').update(Buffer.concat([Buffer.from([0x01]), left, right])).digest('hex')
+        );
+      }
+      level = next;
+    }
+    if (level[0] !== proofs.merkle_tree_root) {
+      console.error('\\x1b[31m[FAIL] Recomputed 0x01 Merkle root mismatch: ' + level[0] + ' !== ' + proofs.merkle_tree_root + '\\x1b[0m');
+      process.exit(1);
+    }
+  }
   let currentRoot = proofs.computed_root || manifest.merkle_root;
-  if (!currentRoot || currentRoot.length !== 64) {
-    console.error('\\x1b[31m[FAIL] Invalid root hash structure\\x1b[0m');
+  if (!currentRoot || currentRoot.length !== 64 || currentRoot !== manifest.merkle_root) {
+    console.error('\\x1b[31m[FAIL] Invalid root hash structure or manifest mismatch\\x1b[0m');
     process.exit(1);
   }
   console.log('  \\x1b[32m✓ 256-bit Sparse Merkle Tree path matches canonical accumulator\\x1b[0m');
 
-  // 3. Verify Non-Inclusion Proofs
+  // 3. Verify Non-Inclusion Proofs (Canonical 0x00 Empty Leaf from settler-kernel)
   console.log('\\n[Step 3] Verifying Non-Inclusion Boundary Termination...');
+  const canonicalEmptyLeaf = crypto.createHash('sha256').update(Buffer.from([0x00])).digest('hex');
   for (const nonProof of proofs.non_inclusion_proofs || []) {
-    if (!nonProof.terminal_empty_hash || nonProof.terminal_empty_hash.length !== 64) {
+    if (
+      !nonProof.terminal_empty_hash ||
+      nonProof.terminal_empty_hash.length !== 64 ||
+      (nonProof.scheme === 'rfc6962-smt' && nonProof.terminal_empty_hash !== canonicalEmptyLeaf)
+    ) {
       console.error('\\x1b[31m[FAIL] Non-inclusion failed to terminate at canonical empty hash\\x1b[0m');
       process.exit(1);
     }
   }
   console.log('  \\x1b[32m✓ Non-inclusion paths terminate at depth-canonical empty nodes\\x1b[0m');
+
+  // 4. Optional Ed25519 Signature Verification
+  if (manifest.public_key_pem && manifest.ed25519_signature_hex) {
+    console.log('\\n[Step 4] Verifying Ed25519 Hardware/Enclave Signature...');
+    const sigOk = crypto.verify(
+      null,
+      Buffer.from(manifest.merkle_root, 'utf8'),
+      manifest.public_key_pem,
+      Buffer.from(manifest.ed25519_signature_hex, 'hex')
+    );
+    if (!sigOk) {
+      console.error('\\x1b[31m[FAIL] Ed25519 signature verification failed\\x1b[0m');
+      process.exit(1);
+    }
+    console.log('  \\x1b[32m✓ Ed25519 signature verified against embedded public key\\x1b[0m');
+  }
 
   console.log('\\n\\x1b[32m===============================================================\\x1b[0m');
   console.log('\\x1b[32m[AUDIT PASS] ZERO-DEFECT CRYPTOGRAPHIC ATTESTATION VERIFIED\\x1b[0m');
@@ -311,18 +351,45 @@ export function buildAirGappedProofpackTarball(input: AirGappedBundleInput): {
             },
           ];
 
+  // Align empty terminal leaf hash with crates/settler-kernel/src/smt.rs: sha256([0x00])
   const emptyTerminalHash = crypto
     .createHash("sha256")
-    .update(Buffer.from("settler:smt:empty:node:v1"))
+    .update(Buffer.from([0x00]))
     .digest("hex");
+
+  // Compute canonical RFC 6962 0x01 internal node Merkle root over inclusion leaves
+  let merkleLevel = inclusionLeaves.map((l) => l.domain_separated_leaf);
+  while (merkleLevel.length > 1) {
+    const nextLevel: string[] = [];
+    for (let i = 0; i < merkleLevel.length; i += 2) {
+      const leftHex = merkleLevel[i]!;
+      const rightHex = i + 1 < merkleLevel.length ? merkleLevel[i + 1]! : leftHex;
+      nextLevel.push(
+        crypto
+          .createHash("sha256")
+          .update(
+            Buffer.concat([
+              Buffer.from([0x01]),
+              Buffer.from(leftHex, "hex"),
+              Buffer.from(rightHex, "hex"),
+            ])
+          )
+          .digest("hex")
+      );
+    }
+    merkleLevel = nextLevel;
+  }
+  const merkleTreeRoot = merkleLevel[0] ?? emptyTerminalHash;
 
   const proofs = {
     execution_id: input.executionId,
     computed_root: rootHash,
+    merkle_tree_root: merkleTreeRoot,
     inclusion_proofs: inclusionLeaves,
     non_inclusion_proofs: [
       {
         key: "uncommitted:discrepancy:sentinel",
+        scheme: "rfc6962-smt",
         terminal_empty_hash: emptyTerminalHash,
         verified_non_inclusion: true,
       },

@@ -49,5 +49,12 @@ describe("AirGapped Proofpack Tarball Generator", () => {
     expect(tarString).toContain("standalone-verifier.js");
     expect(tarString).toContain("README_AUDITOR.md");
     expect(tarString).toContain("ZERO-DEFECT CRYPTOGRAPHIC ATTESTATION VERIFIED");
+
+    // Verify RFC 6962 empty leaf alignment with crates/settler-kernel (sha256([0x00]))
+    const nonInclusion = (result.proofs.non_inclusion_proofs as Array<Record<string, unknown>>)[0]!;
+    expect(nonInclusion.terminal_empty_hash).toBe(
+      "6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d"
+    );
+    expect(result.proofs.merkle_tree_root).toMatch(/^[a-f0-9]{64}$/);
   });
 });
