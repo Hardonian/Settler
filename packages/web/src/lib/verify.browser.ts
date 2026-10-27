@@ -81,3 +81,4 @@ export async function verifySmt(proof: SmtProof): Promise<SmtVerificationResult>
 }
 
 export { sha256Hex, verifyManifestNative } from "./verify.shared";
+export { verifyProofpackJson, type ProofpackVerificationOutcome } from "./proofpack-verifier";

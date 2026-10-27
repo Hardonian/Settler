@@ -21,7 +21,7 @@ import {
 import { motion } from "framer-motion";
 import { ZeroTrustVerifier } from "@/components/cognitive/zero-trust-verifier";
 import { cn } from "@/lib/utils";
-import { verifyProofpackJson, type ProofpackVerificationOutcome } from "@/lib/proofpack-verifier";
+import { verifyProofpackJson, type ProofpackVerificationOutcome } from "@/lib/verify.browser";
 
 export default function VerifyPage() {
   const [customFile, setCustomFile] = useState<File | null>(null);
