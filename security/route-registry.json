@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-10-27T13:22:32.973Z",
-  "totalRoutes": 468,
+  "generatedAt": "2026-10-27T14:03:37.264Z",
+  "totalRoutes": 472,
   "routes": [
     {
       "route": "/api/csrf-token",
@@ -714,6 +714,30 @@
       "route": "/api/v1/intelligence/rule-discovery",
       "kind": "express-router",
       "file": "packages/api/src/routes/rule-discovery.ts",
+      "methods": ["GET"]
+    },
+    {
+      "route": "/api/v1/interchange/analyze",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/interchange.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v1/interchange/enrich-l3",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/interchange.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v1/interchange/portfolio",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/interchange.ts",
+      "methods": ["POST"]
+    },
+    {
+      "route": "/api/v1/interchange/rates",
+      "kind": "express-router",
+      "file": "packages/api/src/routes/v1/interchange.ts",
       "methods": ["GET"]
     },
     {
