@@ -204,27 +204,6 @@ function sameRank(a: Candidate, b: Candidate): boolean {
   return a.amountDelta === b.amountDelta && a.dateDeltaDays === b.dateDeltaDays;
 }
 
-function candidateFor(
-  source: NormalizedSettlementRecord,
-  target: NormalizedSettlementRecord,
-  rules: SettlementRuleSet
-): Candidate | null {
-  if (
-    source.tenantId !== target.tenantId ||
-    source.accountId !== target.accountId ||
-    source.currency !== target.currency ||
-    source.normalizedReference !== target.normalizedReference
-  ) {
-    return null;
-  }
-  const dateDeltaDays =
-    Math.abs(parseIsoDate(source.date) - parseIsoDate(target.date)) / (24 * 60 * 60 * 1000);
-  if (dateDeltaDays > rules.dateWindowDays) return null;
-  const amountDelta = absolute(BigInt(source.amountMinor) - BigInt(target.amountMinor));
-  if (amountDelta > BigInt(rules.amountToleranceMinor)) return null;
-  return { target, amountDelta, dateDeltaDays };
-}
-
 export function reconcileSettlementRecords(input: {
   sourceRecords: SettlementRecordInput[];
   targetRecords: SettlementRecordInput[];
@@ -251,12 +230,50 @@ export function reconcileSettlementRecords(input: {
     invariant(record.accountId === scope.accountId, "Account mismatch");
   }
 
+  const toleranceBigInt = BigInt(input.rules.amountToleranceMinor);
+  const msPerDay = 24 * 60 * 60 * 1000;
+
+  type IndexedTarget = {
+    target: NormalizedSettlementRecord;
+    dateMs: number;
+    amountBigInt: bigint;
+  };
+
+  const targetsByCurrencyAndRef = new Map<string, IndexedTarget[]>();
+  for (const target of targetRecords) {
+    const key = `${target.currency}\0${target.normalizedReference}`;
+    const entry: IndexedTarget = {
+      target,
+      dateMs: parseIsoDate(target.date),
+      amountBigInt: BigInt(target.amountMinor),
+    };
+    const bucket = targetsByCurrencyAndRef.get(key);
+    if (bucket) {
+      bucket.push(entry);
+    } else {
+      targetsByCurrencyAndRef.set(key, [entry]);
+    }
+  }
+
   const eligibleBySource = new Map<string, Candidate[]>();
   for (const source of sourceRecords) {
-    const candidates = targetRecords
-      .map((target) => candidateFor(source, target, input.rules))
-      .filter((candidate): candidate is Candidate => candidate !== null)
-      .sort(compareCandidate);
+    const key = `${source.currency}\0${source.normalizedReference}`;
+    const bucket = targetsByCurrencyAndRef.get(key);
+    if (!bucket || bucket.length === 0) {
+      eligibleBySource.set(source.id, []);
+      continue;
+    }
+    const sourceDateMs = parseIsoDate(source.date);
+    const sourceAmountBigInt = BigInt(source.amountMinor);
+    const candidates: Candidate[] = [];
+    for (const item of bucket) {
+      const dateDeltaDays = Math.abs(sourceDateMs - item.dateMs) / msPerDay;
+      if (dateDeltaDays > input.rules.dateWindowDays) continue;
+      const amountDelta = absolute(sourceAmountBigInt - item.amountBigInt);
+      if (amountDelta > toleranceBigInt) continue;
+      candidates.push({ target: item.target, amountDelta, dateDeltaDays });
+    }
+    candidates.sort(compareCandidate);
     eligibleBySource.set(source.id, candidates);
   }
 
@@ -271,6 +288,7 @@ export function reconcileSettlementRecords(input: {
   }
 
   const usedTargets = new Set<string>();
+  const allCandidateTargetIds = new Set<string>();
   const results: SettlementMatchResult[] = [];
   for (const source of sourceRecords) {
     const candidates = eligibleBySource.get(source.id) ?? [];
@@ -278,12 +296,14 @@ export function reconcileSettlementRecords(input: {
     const tied = best ? candidates.filter((candidate) => sameRank(candidate, best)) : [];
     const sourceClaimants = best ? (contestedTargets.get(best.target.id) ?? []) : [];
     if (best && (tied.length > 1 || sourceClaimants.length > 1)) {
+      const candidateTargetIds =
+        tied.length > 1 ? tied.map((candidate) => candidate.target.id) : [best.target.id];
+      for (const id of candidateTargetIds) allCandidateTargetIds.add(id);
       results.push({
         decision: "ambiguous",
         sourceRecordId: source.id,
         targetRecordId: null,
-        candidateTargetIds:
-          tied.length > 1 ? tied.map((candidate) => candidate.target.id) : [best.target.id],
+        candidateTargetIds,
         amountDeltaMinor: best.amountDelta.toString(),
         dateDeltaDays: best.dateDeltaDays,
         reason:
@@ -295,6 +315,7 @@ export function reconcileSettlementRecords(input: {
     }
     if (best && !usedTargets.has(best.target.id)) {
       usedTargets.add(best.target.id);
+      allCandidateTargetIds.add(best.target.id);
       results.push({
         decision: best.amountDelta === 0n ? "exact" : "tolerance",
         sourceRecordId: source.id,
@@ -310,11 +331,8 @@ export function reconcileSettlementRecords(input: {
       continue;
     }
 
-    const sameReference = targetRecords.filter(
-      (target) =>
-        target.currency === source.currency &&
-        target.normalizedReference === source.normalizedReference
-    );
+    const key = `${source.currency}\0${source.normalizedReference}`;
+    const hasSameReference = (targetsByCurrencyAndRef.get(key)?.length ?? 0) > 0;
     results.push({
       decision: "unmatched_source",
       sourceRecordId: source.id,
@@ -322,16 +340,14 @@ export function reconcileSettlementRecords(input: {
       candidateTargetIds: [],
       amountDeltaMinor: null,
       dateDeltaDays: null,
-      reason:
-        sameReference.length > 0
-          ? "Reference and currency exist on the bank side, but amount or date is outside the configured rule boundary."
-          : "No bank record shares the required reference and currency.",
+      reason: hasSameReference
+        ? "Reference and currency exist on the bank side, but amount or date is outside the configured rule boundary."
+        : "No bank record shares the required reference and currency.",
     });
   }
 
   for (const target of targetRecords) {
-    const isCandidate = results.some((result) => result.candidateTargetIds.includes(target.id));
-    if (!usedTargets.has(target.id) && !isCandidate) {
+    if (!usedTargets.has(target.id) && !allCandidateTargetIds.has(target.id)) {
       results.push({
         decision: "unmatched_target",
         sourceRecordId: null,
@@ -379,6 +395,7 @@ export function canonicalJson(value: unknown): string {
   if (Array.isArray(value)) return `[${value.map(canonicalJson).join(",")}]`;
   const record = value as Record<string, unknown>;
   return `{${Object.keys(record)
+    .filter((key) => record[key] !== undefined)
     .sort()
     .map((key) => `${JSON.stringify(key)}:${canonicalJson(record[key])}`)
     .join(",")}}`;

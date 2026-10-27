@@ -243,22 +243,23 @@ fn hash_json<T: Serialize>(value: &T) -> Result<String, serde_json::Error> {
     Ok(hash_bytes(&bytes))
 }
 
-fn stable_record_sort_key(
-    record: &NormalizedRecord,
-) -> (String, String, String, i64, String, Vec<(String, String)>) {
-    let attrs = record
-        .attributes
-        .iter()
-        .map(|(k, v)| (k.clone(), v.clone()))
-        .collect::<Vec<_>>();
+fn cmp_records(a: &NormalizedRecord, b: &NormalizedRecord) -> std::cmp::Ordering {
     (
-        record.record_id.clone(),
-        record.source.clone(),
-        record.timestamp.clone(),
-        record.amount_minor_units,
-        record.currency.clone(),
-        attrs,
+        a.record_id.as_str(),
+        a.source.as_str(),
+        a.timestamp.as_str(),
+        a.amount_minor_units,
+        a.currency.as_str(),
+        &a.attributes,
     )
+        .cmp(&(
+            b.record_id.as_str(),
+            b.source.as_str(),
+            b.timestamp.as_str(),
+            b.amount_minor_units,
+            b.currency.as_str(),
+            &b.attributes,
+        ))
 }
 
 fn canonicalize_records(mut records: Vec<NormalizedRecord>) -> Vec<NormalizedRecord> {
@@ -267,7 +268,7 @@ fn canonicalize_records(mut records: Vec<NormalizedRecord>) -> Vec<NormalizedRec
             record.schema_version = SCHEMA_VERSION.to_string();
         }
     }
-    records.sort_by_key(stable_record_sort_key);
+    records.sort_by(cmp_records);
     records
 }
 
@@ -340,22 +341,21 @@ pub fn compute_variances(
     let mut variances = Vec::new();
 
     for key in all_keys {
-        let mut left_records = left_map.remove(&key).unwrap_or_default();
-        let mut right_records = right_map.remove(&key).unwrap_or_default();
-
-        left_records.sort_by_key(stable_record_sort_key);
-        right_records.sort_by_key(stable_record_sort_key);
+        let left_records = left_map.remove(&key).unwrap_or_default();
+        let right_records = right_map.remove(&key).unwrap_or_default();
 
         let max_len = left_records.len().max(right_records.len());
         for idx in 0..max_len {
-            let left_record = left_records.get(idx).cloned();
-            let right_record = right_records.get(idx).cloned();
+            let left_record = left_records.get(idx);
+            let right_record = right_records.get(idx);
 
             match (left_record, right_record) {
                 (Some(left_record), Some(right_record)) => {
-                    let delta = left_record.amount_minor_units - right_record.amount_minor_units;
+                    let delta = left_record
+                        .amount_minor_units
+                        .saturating_sub(right_record.amount_minor_units);
                     let rounded_delta = apply_rounding(delta, &ruleset.rounding_mode);
-                    let abs_delta = rounded_delta.abs();
+                    let abs_delta = rounded_delta.saturating_abs();
 
                     if abs_delta > ruleset.tolerance_minor_units {
                         let variance = build_variance(

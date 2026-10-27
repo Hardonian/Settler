@@ -8,9 +8,11 @@
  */
 
 import { Suspense } from "react";
+import Link from "next/link";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Shield, TrendingUp, Zap, Lock } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Shield, TrendingUp, Zap, Lock, ArrowRight } from "lucide-react";
 
 export const revalidate = 3600;
 
@@ -289,6 +291,23 @@ async function InvestorProofContent() {
             Security controls are described by their verification evidence. No certification or
             regulatory attestation is represented as complete on this page.
           </p>
+          <div className="pt-4 border-t flex flex-wrap gap-3">
+            <Button asChild size="sm" variant="default">
+              <Link href="/verify" className="gap-1.5">
+                Verify Proofpacks (/verify)
+                <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+            </Button>
+            <Button asChild size="sm" variant="outline">
+              <Link href="/demo/console">Live Operator Sandbox</Link>
+            </Button>
+            <Button asChild size="sm" variant="outline">
+              <Link href="/console/audit-dossier">Audit Dossier Workbench</Link>
+            </Button>
+            <Button asChild size="sm" variant="outline">
+              <Link href="/pricing">CFO Leakage &amp; ROI Model</Link>
+            </Button>
+          </div>
         </CardContent>
       </Card>
     </div>

@@ -21,132 +21,20 @@ import {
 import { motion } from "framer-motion";
 import { ZeroTrustVerifier } from "@/components/cognitive/zero-trust-verifier";
 import { cn } from "@/lib/utils";
-import { verifySmt } from "@/lib/verify.browser";
-
-async function sha256Hex(buffer: string): Promise<string> {
-  const encoder = new TextEncoder();
-  const data = encoder.encode(buffer);
-  const hashBuffer = await crypto.subtle.digest("SHA-256", data);
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
-  return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
-}
+import { verifyProofpackJson, type ProofpackVerificationOutcome } from "@/lib/proofpack-verifier";
 
 export default function VerifyPage() {
   const [customFile, setCustomFile] = useState<File | null>(null);
   const [customVerifying, setCustomVerifying] = useState(false);
-  const [customResult, setCustomResult] = useState<{
-    valid: boolean;
-    computedRoot: string;
-    declaredRoot: string;
-    leavesCount: number;
-    error?: string;
-  } | null>(null);
+  const [customResult, setCustomResult] = useState<ProofpackVerificationOutcome | null>(null);
 
   const processUploadedJson = useCallback(async (fileContent: string) => {
     setCustomVerifying(true);
     setCustomResult(null);
 
     try {
-      const parsed = JSON.parse(fileContent);
-
-      // Format 1: Settler Canonical Proofpack (e.g. proofpacks/latest/proofpack.json)
-      if (parsed.state_hash && Array.isArray(parsed.trace)) {
-        const declaredRoot = parsed.state_hash;
-        const steps = parsed.trace;
-        const leavesCount = steps.length;
-
-        // Verify the final state hash matches the last step's stateHash
-        const lastStep = steps[steps.length - 1];
-        const computedRoot = lastStep?.stateHash || (await sha256Hex(JSON.stringify(steps)));
-        const isValid =
-          computedRoot.toLowerCase() === declaredRoot.toLowerCase().replace("sha256:", "");
-
-        setCustomResult({
-          valid: isValid,
-          computedRoot,
-          declaredRoot,
-          leavesCount,
-        });
-        return;
-      }
-
-      // Format 2: Settler Evidence Manifest (e.g. evidence.json)
-      if (parsed.run_fingerprint && parsed.provenance?.hash_chain) {
-        const declaredRoot = parsed.run_fingerprint;
-        const chain: string[] = parsed.provenance.hash_chain;
-        const leavesCount = chain.length;
-
-        // Verify hash chain integrity
-        const combined = chain.join(":");
-        const computedRoot = await sha256Hex(combined);
-        const isValid =
-          parsed.run_fingerprint && parsed.input_hash && parsed.output_hash && parsed.policy_hash;
-
-        setCustomResult({
-          valid: Boolean(isValid),
-          computedRoot: computedRoot.substring(0, 64),
-          declaredRoot,
-          leavesCount,
-        });
-        return;
-      }
-
-      // Format 3: Sparse Merkle Tree (SMT) cryptographic proof (verified via WASM kernel)
-      if (parsed.siblings_hex && parsed.root_hex && parsed.key_hex) {
-        const smtResult = await verifySmt(parsed);
-        setCustomResult({
-          valid: smtResult.valid,
-          computedRoot: smtResult.computed_root || "COMPUTATION_FAILED",
-          declaredRoot: smtResult.expected_root || parsed.root_hex,
-          leavesCount: parsed.siblings_hex.length,
-          error: smtResult.error || undefined,
-        });
-        return;
-      }
-
-      // Format 4: Merkle Tree Proofpack with leaves array
-      const declaredRoot = parsed.declaredMerkleRoot || parsed.manifestHash || parsed.merkleRoot;
-      const leaves = parsed.leaves || parsed.records || [];
-
-      if (!declaredRoot || !Array.isArray(leaves) || leaves.length === 0) {
-        setCustomResult({
-          valid: false,
-          computedRoot: "N/A",
-          declaredRoot: declaredRoot || "MISSING",
-          leavesCount: leaves.length,
-          error:
-            "Invalid proofpack schema. Expected Settler proofpack (trace/state_hash), evidence manifest (hash_chain), SMT proof (siblings_hex/root_hex), or Merkle bundle (leaves).",
-        });
-        return;
-      }
-
-      const leafHashes = await Promise.all(
-        leaves.map(async (leaf: any) => {
-          if (typeof leaf === "string") return sha256Hex(leaf);
-          if (leaf.leafHash) return leaf.leafHash;
-          return sha256Hex(JSON.stringify(leaf));
-        })
-      );
-
-      const combined = leafHashes.join(":");
-      const computedRoot = await sha256Hex(combined);
-      const isValid =
-        computedRoot.toLowerCase() === declaredRoot.toLowerCase().replace("sha256:", "");
-
-      setCustomResult({
-        valid: isValid,
-        computedRoot,
-        declaredRoot,
-        leavesCount: leaves.length,
-      });
-    } catch (err: any) {
-      setCustomResult({
-        valid: false,
-        computedRoot: "PARSE_ERROR",
-        declaredRoot: "UNKNOWN",
-        leavesCount: 0,
-        error: err.message || "Failed to parse JSON file.",
-      });
+      const outcome = await verifyProofpackJson(fileContent);
+      setCustomResult(outcome);
     } finally {
       setCustomVerifying(false);
     }

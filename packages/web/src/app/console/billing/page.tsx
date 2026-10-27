@@ -143,7 +143,7 @@ export default function BillingPage() {
 
   const planCode = data.subscription?.planCode || "starter";
   const isStarter = planCode === "starter";
-  const isGrowth = planCode === "growth";
+  const isGrowth = planCode === "pro" || planCode === "growth";
   const isScale = planCode === "scale";
   const isEnterprise = planCode === "enterprise";
 
@@ -379,7 +379,7 @@ export default function BillingPage() {
                 className={`p-4 border rounded-lg ${isGrowth ? "border-primary bg-primary/5" : ""}`}
               >
                 <div className="flex items-center justify-between mb-2">
-                  <h3 className="font-semibold">Growth</h3>
+                  <h3 className="font-semibold">Pro</h3>
                   {isGrowth && (
                     <Badge variant="default">
                       <CheckCircle2 className="h-3 w-3 mr-1" />
@@ -387,7 +387,7 @@ export default function BillingPage() {
                     </Badge>
                   )}
                 </div>
-                <p className="mb-4 text-sm text-muted-foreground">$900/month</p>
+                <p className="mb-4 text-sm text-muted-foreground">$99/month</p>
                 <ul className="text-sm space-y-1 mb-4">
                   <li>• 100,000 reconciliations/month</li>
                   <li>• 1% exception rate included</li>
@@ -404,16 +404,16 @@ export default function BillingPage() {
                     <Button
                       size="sm"
                       className="w-full"
-                      onClick={() => handleUpgrade("growth")}
-                      disabled={isCreatingCheckout === "growth"}
+                      onClick={() => handleUpgrade("pro")}
+                      disabled={isCreatingCheckout === "pro"}
                     >
-                      {isCreatingCheckout === "growth" ? (
+                      {isCreatingCheckout === "pro" ? (
                         <>
                           <Loader2 className="mr-2 h-3 w-3 animate-spin" />
                           Processing...
                         </>
                       ) : (
-                        "Upgrade to Growth"
+                        "Upgrade to Pro"
                       )}
                     </Button>
                   ))}
@@ -432,7 +432,7 @@ export default function BillingPage() {
                     </Badge>
                   )}
                 </div>
-                <p className="mb-4 text-sm text-muted-foreground">$9,900/month</p>
+                <p className="mb-4 text-sm text-muted-foreground">$399/month</p>
                 <ul className="text-sm space-y-1 mb-4">
                   <li>• 1,000,000 reconciliations/month</li>
                   <li>• 1% exception rate included</li>

@@ -7,6 +7,9 @@ import {
   type SettlementRecordInput,
   type SettlementRuleSet,
 } from "./settlement-reconciliation";
+import { matchBipartiteTransactions } from "./bipartite-matching";
+import { reconcileTriangular } from "./triangular-reconciliation";
+import { simulatePolicyDraft } from "./counterfactual-policy-sandbox";
 
 const rules: SettlementRuleSet = {
   version: "stripe-bank/1.0.0",
@@ -147,5 +150,149 @@ describe("settlement reconciliation", () => {
     const proof = createDemoProofpack(run, { processor: "a", bank: "b" });
     proof.payload.run.sourceRecords[0]!.amountMinor = "999";
     expect(verifyDemoProofpack(proof)).toMatchObject({ valid: false, replayed: false });
+  });
+
+  test("preserves DemoProofpack commitment across JSON.stringify/JSON.parse round-trip when optional fields are omitted", () => {
+    const run = reconcileSettlementRecords({
+      sourceRecords: [record("s-1", "10.00", "processor_csv")],
+      targetRecords: [record("t-1", "10.00", "bank_csv")],
+      rules,
+    });
+    const proof = createDemoProofpack(
+      run,
+      { processor: "a", bank: "b" },
+      "2026-10-26T00:00:00.000Z"
+    );
+    const roundTripped = JSON.parse(JSON.stringify(proof));
+    expect(verifyDemoProofpack(roundTripped)).toEqual({
+      valid: true,
+      replayed: true,
+      errors: [],
+    });
+  });
+
+  test("scales deterministically to 5,000 source and 5,000 target settlement records in sub-second hot path", () => {
+    const count = 5000;
+    const sources: SettlementRecordInput[] = [];
+    const targets: SettlementRecordInput[] = [];
+
+    for (let i = 0; i < count; i++) {
+      const ref = `REF-${String(i).padStart(5, "0")}`;
+      const amount = `${100 + (i % 900)}.${String(i % 100).padStart(2, "0")}`;
+      sources.push(record(`s-${i}`, amount, "processor_csv", { reference: ref }));
+      targets.push(record(`t-${i}`, amount, "bank_csv", { reference: ref }));
+    }
+
+    const startMs = performance.now();
+    const run = reconcileSettlementRecords({
+      sourceRecords: sources,
+      targetRecords: targets,
+      rules,
+    });
+    const elapsedMs = performance.now() - startMs;
+
+    expect(run.summary.exact).toBe(count);
+    expect(run.summary.unmatched_source).toBe(0);
+    expect(run.summary.unmatched_target).toBe(0);
+    expect(elapsedMs).toBeLessThan(1500);
+  });
+
+  test("executes high-scale bipartite, triangular, and counterfactual sandbox hot paths deterministically", () => {
+    // 1. Bipartite matching with pre-parsed timestamps & flat TypedArray Hungarian solver
+    const left = Array.from({ length: 80 }, (_, i) => ({
+      id: `L-${i}`,
+      amountCents: BigInt(10000 + i * 100),
+      currency: "USD",
+      timestamp: "2026-10-20T12:00:00.000Z",
+    }));
+    const right = Array.from({ length: 80 }, (_, i) => ({
+      id: `R-${i}`,
+      amountCents: BigInt(10000 + i * 100 + (i % 3)),
+      currency: "USD",
+      timestamp: "2026-10-20T14:00:00.000Z",
+    }));
+    const bipartite = matchBipartiteTransactions(left, right);
+    expect(bipartite.matchedPairs).toHaveLength(80);
+    expect(bipartite.unmatchedLeft).toHaveLength(0);
+
+    // 2. Triangular 3-way reconciliation with indexed lookups & deterministic asOfTimestamp
+    const orders = Array.from({ length: 1000 }, (_, i) => ({
+      id: `ord-${i}`,
+      orderNumber: `ORD-${i}`,
+      amountCents: 10000n,
+      currency: "USD",
+      timestamp: "2026-10-20T10:00:00.000Z",
+    }));
+    const captures = Array.from({ length: 1000 }, (_, i) => ({
+      id: `cap-${i}`,
+      orderNumber: i % 2 === 0 ? `ORD-${i}` : undefined,
+      gatewayTransactionId: `gw-${i}`,
+      grossAmountCents: 10000n,
+      feeCents: 290n,
+      netAmountCents: 9710n,
+      currency: "USD",
+      timestamp: "2026-10-20T10:05:00.000Z",
+    }));
+    const deposits = Array.from({ length: 1000 }, (_, i) => ({
+      id: `dep-${i}`,
+      reference: `STRIPE-SWEEP-${i}`,
+      depositAmountCents: 9710n,
+      currency: "USD",
+      timestamp: "2026-10-21T08:00:00.000Z",
+    }));
+    const triA = reconcileTriangular(orders, captures, deposits, {
+      tenantId: "tenant-a",
+      asOfTimestamp: "2026-10-22T00:00:00.000Z",
+    });
+    const triB = reconcileTriangular(orders, captures, deposits, {
+      tenantId: "tenant-a",
+      asOfTimestamp: "2026-10-22T00:00:00.000Z",
+    });
+    expect(triA.perfectMatches).toHaveLength(1000);
+    expect(triA.metrics.merkleRoot).toBe(triB.metrics.merkleRoot);
+
+    // 3. Counterfactual Policy Sandbox with pre-indexed ARNs and pre-tokenized words
+    const sandboxSources = Array.from({ length: 500 }, (_, i) => ({
+      id: `src-${i}`,
+      amountCents: BigInt(5000 + i),
+      date: "2026-10-20T00:00:00.000Z",
+      description: `STRIPE PAYOUT BATCH ${i} SETTLEMENT`,
+      currency: "USD",
+    }));
+    const sandboxTargets = Array.from({ length: 500 }, (_, i) => ({
+      id: `tgt-${i}`,
+      amountCents: BigInt(5000 + i + (i % 2 === 0 ? 0 : 15)),
+      date: "2026-10-21T00:00:00.000Z",
+      description: `STRIPE PAYOUT BATCH ${i} SETTLEMENT`,
+      currency: "USD",
+    }));
+    const simReport = simulatePolicyDraft({
+      tenantId: "tenant-a",
+      baselineRuleset: {
+        dateWindowDays: 2,
+        amountToleranceCents: 0,
+        fuzzyDescriptionThreshold: 0.8,
+        enableArnCorrelation: true,
+      },
+      candidatePolicy: {
+        policyId: "pol-tol-20",
+        tenantId: "tenant-a",
+        proposedBy: "agent-01",
+        actionType: "WIDEN_TOLERANCE",
+        proposedRuleset: {
+          dateWindowDays: 2,
+          amountToleranceCents: 20,
+          fuzzyDescriptionThreshold: 0.8,
+          enableArnCorrelation: true,
+        },
+        rationale: "Capture 15-cent FX rounding variance",
+      },
+      sourceTransactions: sandboxSources,
+      targetTransactions: sandboxTargets,
+    });
+    expect(simReport.baseline.matchedCount).toBe(250);
+    expect(simReport.simulated.matchedCount).toBe(500);
+    expect(simReport.delta.newlyMatchedCount).toBe(250);
+    expect(simReport.soxCompliance.isCompliant).toBe(true);
   });
 });

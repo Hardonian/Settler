@@ -104,25 +104,49 @@ function rfc6962LeafHash(data: string): string {
     .digest("hex");
 }
 
-function daysDiff(d1: string, d2: string): number {
-  const ms1 = new Date(d1).getTime();
-  const ms2 = new Date(d2).getTime();
+interface PreparedSandboxTx {
+  raw: SandboxTransaction;
+  dateMs: number;
+  normDesc: string;
+  words: Set<string>;
+  validArn: string | null;
+}
+
+function prepareSandboxTx(tx: SandboxTransaction, parseArns: boolean): PreparedSandboxTx {
+  const normDesc = tx.description.toLowerCase().trim();
+  const words = normDesc ? new Set(normDesc.split(/\s+/)) : new Set<string>();
+  let validArn: string | null = null;
+  if (parseArns) {
+    const parsed = parseArn(tx.externalId || tx.description);
+    if (parsed.isValidLength && parsed.isValidChecksum) {
+      validArn = parsed.arn;
+    }
+  }
+  return {
+    raw: tx,
+    dateMs: Date.parse(tx.date),
+    normDesc,
+    words,
+    validArn,
+  };
+}
+
+function preparedDaysDiff(ms1: number, ms2: number): number {
   return Math.abs(Math.round((ms1 - ms2) / (1000 * 60 * 60 * 24)));
 }
 
-function stringSimilarity(s1: string, s2: string): number {
-  const str1 = s1.toLowerCase().trim();
-  const str2 = s2.toLowerCase().trim();
-  if (str1 === str2) return 1.0;
-  if (!str1 || !str2) return 0.0;
+function preparedStringSimilarity(s1: PreparedSandboxTx, s2: PreparedSandboxTx): number {
+  if (s1.normDesc === s2.normDesc) return 1.0;
+  if (!s1.normDesc || !s2.normDesc) return 0.0;
 
-  const words1 = new Set(str1.split(/\s+/));
-  const words2 = new Set(str2.split(/\s+/));
+  const words1 = s1.words;
+  const words2 = s2.words;
   let intersection = 0;
-  for (const w of words1) {
-    if (words2.has(w)) intersection++;
+  const [smaller, larger] = words1.size <= words2.size ? [words1, words2] : [words2, words1];
+  for (const w of smaller) {
+    if (larger.has(w)) intersection++;
   }
-  const union = new Set([...words1, ...words2]).size;
+  const union = words1.size + words2.size - intersection;
   return union === 0 ? 0 : intersection / union;
 }
 
@@ -130,42 +154,40 @@ function stringSimilarity(s1: string, s2: string): number {
  * Executes a deterministic matching pass for given ruleset
  */
 function executeMatchingPass(
-  sources: SandboxTransaction[],
-  targets: SandboxTransaction[],
+  preparedSources: PreparedSandboxTx[],
+  preparedTargets: PreparedSandboxTx[],
+  targetsByArn: Map<string, PreparedSandboxTx[]>,
+  targetsByCurrency: Map<string, PreparedSandboxTx[]>,
   rules: MatchingRulesetConfig
 ): CounterfactualMatch[] {
   const matches: CounterfactualMatch[] = [];
   const claimedTargets = new Set<string>();
+  const toleranceBigInt = BigInt(rules.amountToleranceCents);
 
-  for (const source of sources) {
+  for (const source of preparedSources) {
+    const rawSource = source.raw;
     // 1. Try ARN correlation if enabled
-    if (rules.enableArnCorrelation) {
-      const sourceArn = parseArn(source.externalId || source.description);
-      if (sourceArn.isValidLength && sourceArn.isValidChecksum) {
-        const targetMatch = targets.find((t) => {
-          if (claimedTargets.has(t.id)) return false;
-          const targetArn = parseArn(t.externalId || t.description);
-          return targetArn.arn === sourceArn.arn && targetArn.isValidChecksum;
-        });
+    if (rules.enableArnCorrelation && source.validArn) {
+      const arnCandidates = targetsByArn.get(source.validArn);
+      const targetMatch = arnCandidates?.find((t) => !claimedTargets.has(t.raw.id));
 
-        if (targetMatch) {
-          const diffCents =
-            source.amountCents >= targetMatch.amountCents
-              ? source.amountCents - targetMatch.amountCents
-              : targetMatch.amountCents - source.amountCents;
+      if (targetMatch) {
+        const diffCents =
+          rawSource.amountCents >= targetMatch.raw.amountCents
+            ? rawSource.amountCents - targetMatch.raw.amountCents
+            : targetMatch.raw.amountCents - rawSource.amountCents;
 
-          if (diffCents <= BigInt(rules.amountToleranceCents)) {
-            claimedTargets.add(targetMatch.id);
-            matches.push({
-              sourceId: source.id,
-              targetId: targetMatch.id,
-              amountDiffCents: diffCents,
-              dateDiffDays: daysDiff(source.date, targetMatch.date),
-              confidence: 1.0,
-              matchType: "arn",
-            });
-            continue;
-          }
+        if (diffCents <= toleranceBigInt) {
+          claimedTargets.add(targetMatch.raw.id);
+          matches.push({
+            sourceId: rawSource.id,
+            targetId: targetMatch.raw.id,
+            amountDiffCents: diffCents,
+            dateDiffDays: preparedDaysDiff(source.dateMs, targetMatch.dateMs),
+            confidence: 1.0,
+            matchType: "arn",
+          });
+          continue;
         }
       }
     }
@@ -178,21 +200,24 @@ function executeMatchingPass(
       sim: number;
     } | null = null;
 
-    for (const target of targets) {
-      if (claimedTargets.has(target.id)) continue;
-      if (source.currency !== target.currency) continue;
+    const currencyTargets = targetsByCurrency.get(rawSource.currency);
+    if (!currencyTargets) continue;
+
+    for (const target of currencyTargets) {
+      const rawTarget = target.raw;
+      if (claimedTargets.has(rawTarget.id)) continue;
 
       const diffCents =
-        source.amountCents >= target.amountCents
-          ? source.amountCents - target.amountCents
-          : target.amountCents - source.amountCents;
+        rawSource.amountCents >= rawTarget.amountCents
+          ? rawSource.amountCents - rawTarget.amountCents
+          : rawTarget.amountCents - rawSource.amountCents;
 
-      if (diffCents > BigInt(rules.amountToleranceCents)) continue;
+      if (diffCents > toleranceBigInt) continue;
 
-      const dDiff = daysDiff(source.date, target.date);
+      const dDiff = preparedDaysDiff(source.dateMs, target.dateMs);
       if (dDiff > rules.dateWindowDays) continue;
 
-      const sim = stringSimilarity(source.description, target.description);
+      const sim = preparedStringSimilarity(source, target);
       if (sim < rules.fuzzyDescriptionThreshold) continue;
 
       if (
@@ -200,7 +225,7 @@ function executeMatchingPass(
         diffCents < bestCandidate.diffCents ||
         (diffCents === bestCandidate.diffCents && sim > bestCandidate.sim)
       ) {
-        bestCandidate = { target, diffCents, dateDiff: dDiff, sim };
+        bestCandidate = { target: rawTarget, diffCents, dateDiff: dDiff, sim };
       }
     }
 
@@ -208,7 +233,7 @@ function executeMatchingPass(
       claimedTargets.add(bestCandidate.target.id);
       const isExact = bestCandidate.diffCents === 0n && bestCandidate.dateDiff === 0;
       matches.push({
-        sourceId: source.id,
+        sourceId: rawSource.id,
         targetId: bestCandidate.target.id,
         amountDiffCents: bestCandidate.diffCents,
         dateDiffDays: bestCandidate.dateDiff,
@@ -232,17 +257,41 @@ export function simulatePolicyDraft(
     .digest("hex")
     .slice(0, 16)}`;
 
+  const needsArn = Boolean(
+    input.baselineRuleset.enableArnCorrelation ||
+    input.candidatePolicy.proposedRuleset.enableArnCorrelation
+  );
+  const preparedSources = input.sourceTransactions.map((tx) => prepareSandboxTx(tx, needsArn));
+  const preparedTargets = input.targetTransactions.map((tx) => prepareSandboxTx(tx, needsArn));
+
+  const targetsByArn = new Map<string, PreparedSandboxTx[]>();
+  const targetsByCurrency = new Map<string, PreparedSandboxTx[]>();
+  for (const pt of preparedTargets) {
+    if (pt.validArn) {
+      const bucket = targetsByArn.get(pt.validArn);
+      if (bucket) bucket.push(pt);
+      else targetsByArn.set(pt.validArn, [pt]);
+    }
+    const currBucket = targetsByCurrency.get(pt.raw.currency);
+    if (currBucket) currBucket.push(pt);
+    else targetsByCurrency.set(pt.raw.currency, [pt]);
+  }
+
   // 1. Run baseline matching
   const baselineMatches = executeMatchingPass(
-    input.sourceTransactions,
-    input.targetTransactions,
+    preparedSources,
+    preparedTargets,
+    targetsByArn,
+    targetsByCurrency,
     input.baselineRuleset
   );
 
   // 2. Run simulated matching with candidate ruleset
   const simulatedMatches = executeMatchingPass(
-    input.sourceTransactions,
-    input.targetTransactions,
+    preparedSources,
+    preparedTargets,
+    targetsByArn,
+    targetsByCurrency,
     input.candidatePolicy.proposedRuleset
   );
 

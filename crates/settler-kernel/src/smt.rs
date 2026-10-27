@@ -1,9 +1,12 @@
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
 use std::collections::HashMap;
+use std::sync::OnceLock;
 
 /// Tree depth for 256-bit keys (SHA-256 digests)
 pub const SMT_DEPTH: usize = 256;
+
+static EMPTY_HASHES_CACHE: OnceLock<Vec<[u8; 32]>> = OnceLock::new();
 
 /// Deterministically computes the SHA-256 hash of two 32-byte chunks with domain separator (0x01)
 pub fn hash_nodes(left: &[u8; 32], right: &[u8; 32]) -> [u8; 32] {
@@ -34,13 +37,17 @@ pub fn hash_empty_leaf() -> [u8; 32] {
 /// `empty_hashes[256]` is the domain-separated canonical empty leaf hash.
 /// `empty_hashes[d]` is `hash_nodes(&empty_hashes[d+1], &empty_hashes[d+1])`.
 pub fn get_empty_hashes() -> Vec<[u8; 32]> {
-    let mut empty = vec![[0u8; 32]; SMT_DEPTH + 1];
-    // Depth 256 is the empty leaf
-    empty[SMT_DEPTH] = hash_empty_leaf();
-    for d in (0..SMT_DEPTH).rev() {
-        empty[d] = hash_nodes(&empty[d + 1], &empty[d + 1]);
-    }
-    empty
+    EMPTY_HASHES_CACHE
+        .get_or_init(|| {
+            let mut empty = vec![[0u8; 32]; SMT_DEPTH + 1];
+            // Depth 256 is the empty leaf
+            empty[SMT_DEPTH] = hash_empty_leaf();
+            for d in (0..SMT_DEPTH).rev() {
+                empty[d] = hash_nodes(&empty[d + 1], &empty[d + 1]);
+            }
+            empty
+        })
+        .clone()
 }
 
 /// A Sparse Merkle Tree Proof for inclusion or non-inclusion
@@ -327,8 +334,7 @@ pub fn verify_smt_proof(proof: &SmtProof) -> SmtVerificationResult {
         hash_leaf(&key_bytes, &val_bytes)
     } else {
         // Non-inclusion proof terminates at the canonical domain-separated empty leaf.
-        let empty_hashes = get_empty_hashes();
-        empty_hashes[SMT_DEPTH]
+        hash_empty_leaf()
     };
 
     // Ascend tree from leaf to root

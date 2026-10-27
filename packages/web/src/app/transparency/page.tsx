@@ -127,7 +127,7 @@ export default function TransparencyDashboard() {
           <CTASection
             title="Review our Trust Packet"
             description="Download the full technical specification of our security controls and deterministic matching protocols."
-            primaryHref="/docs/trust-packet"
+            primaryHref="/security-and-audit"
             primaryLabel="Download Trust Packet"
             secondaryHref="/contact"
             secondaryLabel="Speak with a Trust Engineer"

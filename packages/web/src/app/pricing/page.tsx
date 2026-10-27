@@ -12,6 +12,7 @@ import { VisualGrid } from "@/components/site/infographics";
 import { COMMERCIAL_OFFERS, OfferCode } from "@/domain/billing/commercialModel";
 import { PREMIUM_PACKS } from "@/domain/billing/premiumPacks";
 import { calculateMonthlyCost, planConfigs } from "@/domain/billing/planConfig";
+import { EnterpriseRoiCalculator } from "@/components/site/EnterpriseRoiCalculator";
 
 export const metadata: Metadata = {
   title: "Pricing | Settler",
@@ -204,6 +205,10 @@ export default function PricingPage() {
                 </div>
               </div>
             </div>
+          </div>
+
+          <div className="mt-16">
+            <EnterpriseRoiCalculator />
           </div>
         </div>
       </Section>

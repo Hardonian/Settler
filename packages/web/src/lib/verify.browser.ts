@@ -20,8 +20,8 @@ export async function loadVerifier(): Promise<WasmVerifier | null> {
 
   try {
     // The generated wasm-bindgen loader is copied to public/wasm and intentionally loaded at runtime.
-    // @ts-expect-error -- The public URL is not a TypeScript-resolvable module.
-    const importedModule = await import(/* webpackIgnore: true */ "/wasm/settler_verify_wasm.js");
+    const wasmLoaderUrl = "/wasm/settler_verify_wasm.js";
+    const importedModule = await import(/* webpackIgnore: true */ /* @vite-ignore */ wasmLoaderUrl);
     if (typeof importedModule.default === "function") {
       await importedModule.default("/wasm/settler_verify_wasm_bg.wasm");
     }

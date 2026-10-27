@@ -40,35 +40,42 @@ export function solveHungarian(costMatrix: number[][]): number[] {
   const m = costMatrix[0]?.length ?? 0;
   if (m === 0) return [];
 
-  // Pad to square if rectangular
+  // Pad to square if rectangular using a flat Float64Array buffer
   const dim = Math.max(n, m);
-  const matrix: number[][] = Array.from({ length: dim }, (_, r) =>
-    Array.from({ length: dim }, (_, c) => {
-      if (r < n && c < m) return costMatrix[r]![c]!;
-      return 1e9; // Large penalty for dummy nodes
-    })
-  );
+  const matrix = new Float64Array(dim * dim);
+  matrix.fill(1e9); // Large penalty for dummy nodes
+  for (let r = 0; r < n; r++) {
+    const srcRow = costMatrix[r]!;
+    const rowOffset = r * dim;
+    for (let c = 0; c < m; c++) {
+      matrix[rowOffset + c] = srcRow[c]!;
+    }
+  }
 
-  const u = new Array(dim + 1).fill(0);
-  const v = new Array(dim + 1).fill(0);
-  const p = new Array(dim + 1).fill(0);
-  const way = new Array(dim + 1).fill(0);
+  const u = new Float64Array(dim + 1);
+  const v = new Float64Array(dim + 1);
+  const p = new Int32Array(dim + 1);
+  const way = new Int32Array(dim + 1);
+  const minv = new Float64Array(dim + 1);
+  const used = new Uint8Array(dim + 1);
 
   for (let i = 1; i <= dim; ++i) {
     p[0] = i;
     let j0 = 0;
-    const minv = new Array(dim + 1).fill(Infinity);
-    const used = new Array(dim + 1).fill(false);
+    minv.fill(Infinity);
+    used.fill(0);
 
     do {
-      used[j0] = true;
+      used[j0] = 1;
       const i0 = p[j0]!;
       let delta = Infinity;
       let j1 = 0;
+      const rowOffset = (i0 - 1) * dim;
+      const uVal = u[i0]!;
 
       for (let j = 1; j <= dim; ++j) {
-        if (!used[j]) {
-          const cur = matrix[i0 - 1]![j - 1]! - u[i0]! - v[j]!;
+        if (used[j] === 0) {
+          const cur = matrix[rowOffset + (j - 1)]! - uVal - v[j]!;
           if (cur < minv[j]!) {
             minv[j] = cur;
             way[j] = j0;
@@ -81,11 +88,12 @@ export function solveHungarian(costMatrix: number[][]): number[] {
       }
 
       for (let j = 0; j <= dim; ++j) {
-        if (used[j]) {
-          u[p[j]!] += delta;
-          v[j] -= delta;
+        if (used[j] !== 0) {
+          const pj = p[j]!;
+          u[pj] = u[pj]! + delta;
+          v[j] = v[j]! - delta;
         } else {
-          minv[j] -= delta;
+          minv[j] = minv[j]! - delta;
         }
       }
       j0 = j1;
@@ -98,7 +106,7 @@ export function solveHungarian(costMatrix: number[][]): number[] {
     } while (j0 !== 0);
   }
 
-  const assignment = new Array(n).fill(-1);
+  const assignment = new Array<number>(n).fill(-1);
   for (let j = 1; j <= m; ++j) {
     if (p[j]! <= n) {
       assignment[p[j]! - 1] = j - 1;
@@ -141,19 +149,33 @@ export function matchBipartiteTransactions<
     };
   }
 
+  // Pre-parse timestamps once in O(L + R) instead of O(L * R)
+  const leftTimeMs = new Float64Array(leftList.length);
+  for (let i = 0; i < leftList.length; i++) {
+    const ts = leftList[i]!.timestamp;
+    leftTimeMs[i] = ts instanceof Date ? ts.getTime() : Date.parse(ts);
+  }
+
+  const rightTimeMs = new Float64Array(rightList.length);
+  for (let j = 0; j < rightList.length; j++) {
+    const ts = rightList[j]!.timestamp;
+    rightTimeMs[j] = ts instanceof Date ? ts.getTime() : Date.parse(ts);
+  }
+
   // Construct cost matrix
-  const costMatrix: number[][] = [];
+  const costMatrix: number[][] = new Array(leftList.length);
 
   for (let i = 0; i < leftList.length; i++) {
-    const row: number[] = [];
+    const row = new Array<number>(rightList.length);
     const l = leftList[i]!;
+    const timeL = leftTimeMs[i]!;
 
     for (let j = 0; j < rightList.length; j++) {
       const r = rightList[j]!;
 
       // Currency mismatch cannot match
       if (l.currency !== r.currency) {
-        row.push(1e8);
+        row[j] = 1e8;
         continue;
       }
 
@@ -164,24 +186,21 @@ export function matchBipartiteTransactions<
 
       // Exceeds max variance threshold
       if (diffCents > maxAllowedVarianceCents) {
-        row.push(1e8);
+        row[j] = 1e8;
         continue;
       }
 
-      const timeL = new Date(l.timestamp).getTime();
-      const timeR = new Date(r.timestamp).getTime();
-      const timeDeltaSec = Math.abs(timeL - timeR) / 1000;
+      const timeDeltaSec = Math.abs(timeL - rightTimeMs[j]!) / 1000;
 
       if (timeDeltaSec > maxAllowedTimeDeltaSeconds) {
-        row.push(1e8);
+        row[j] = 1e8;
         continue;
       }
 
       // Cost = (variance_cents * amountWeight) + (timeDelta_sec * timeWeight)
-      const cost = Number(diffCents) * amountWeight + timeDeltaSec * timeWeight;
-      row.push(cost);
+      row[j] = Number(diffCents) * amountWeight + timeDeltaSec * timeWeight;
     }
-    costMatrix.push(row);
+    costMatrix[i] = row;
   }
 
   const assignment = solveHungarian(costMatrix);
@@ -201,8 +220,7 @@ export function matchBipartiteTransactions<
           l.amountCents > r.amountCents
             ? l.amountCents - r.amountCents
             : r.amountCents - l.amountCents;
-        const timeDeltaSeconds =
-          Math.abs(new Date(l.timestamp).getTime() - new Date(r.timestamp).getTime()) / 1000;
+        const timeDeltaSeconds = Math.abs(leftTimeMs[i]! - rightTimeMs[j]!) / 1000;
 
         matchedPairs.push({
           left: l,

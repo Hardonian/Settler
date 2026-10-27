@@ -202,9 +202,14 @@ export class SettlerClient {
       return response.data;
     };
 
-    // Apply deduplication if enabled
+    // Apply deduplication if enabled (include query parameters in key to prevent cross-query collisions)
     if (this.deduplicateRequests && method === "GET") {
-      return withDeduplication(method, path, options.body, () =>
+      const querySuffix = options.query
+        ? `?${new URLSearchParams(
+            Object.entries(options.query).sort(([a], [b]) => a.localeCompare(b))
+          ).toString()}`
+        : "";
+      return withDeduplication(method, `${path}${querySuffix}`, options.body, () =>
         withRetry(requestFn, this.retryConfig)
       );
     }
