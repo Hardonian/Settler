@@ -40,6 +40,7 @@ export interface ProofPackage {
   packageType: ProofPackageType;
   packageKey: string;
   evidenceIds: string[];
+  scopeIds?: string[];
   summary: ProofPackageSummary;
   narrative?: string;
   completeness: ProofCompletenessModel;
@@ -314,7 +315,7 @@ export function exportProofPackage(
       key: pkg.packageKey,
       status: pkg.status,
       scope: "run", // Would be derived from config
-      scopeIds: pkg.evidenceIds, // Would be derived from config
+      scopeIds: pkg.scopeIds ?? pkg.evidenceIds,
       summary: pkg.summary,
       narrative: pkg.narrative,
       packageHash: pkg.packageHash,
