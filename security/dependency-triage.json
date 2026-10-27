@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-09-20T18:27:10.186Z",
+  "generatedAt": "2026-10-27T13:22:42.853Z",
   "verifierVersion": "2026-03-08.1",
-  "runId": "2026-09-20T18-27-10-181Z",
+  "runId": "2026-10-27T13-22-42-848Z",
   "policy": {
     "requireAuthenticatedDependabotExport": false,
     "dependabotExportPath": "security/dependabot-alerts.json"
@@ -15,13 +15,31 @@
   },
   "findingsSummary": {
     "info": 0,
-    "low": 0,
-    "moderate": 0,
-    "high": 0,
-    "critical": 0,
-    "total": 0
+    "low": 3,
+    "moderate": 6,
+    "high": 6,
+    "critical": 3,
+    "total": 18
   },
-  "entries": [],
+  "entries": [
+    {
+      "source": "pnpm-audit",
+      "authenticatedEnrichment": false,
+      "package": "aggregate",
+      "advisoryId": "pnpm-audit-summary",
+      "directness": "mixed",
+      "fixAvailable": null,
+      "status": "reviewed-no-high-critical",
+      "rationale": "Aggregate row from pnpm audit metadata; advisory-level enrichment unavailable in this artifact.",
+      "launchImpact": "non-blocking",
+      "confidence": "low",
+      "provenance": {
+        "policyMode": "warn",
+        "degraded": true,
+        "degradedReasons": ["osv-scanner-missing"]
+      }
+    }
+  ],
   "blockers": [
     {
       "id": "dependabot-export-missing",
@@ -33,7 +51,7 @@
   ],
   "triageCompleteness": {
     "fullyTriagedFindings": 0,
-    "partiallyTriagedFindings": 0,
+    "partiallyTriagedFindings": 1,
     "blockedByMissingAuthenticatedInput": true,
     "toolingDegraded": true
   },
