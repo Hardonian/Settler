@@ -308,10 +308,7 @@ export async function matchTransaction(
   }
 
   let targets: MatchTransactionPreloadedRow[];
-  if (
-    batchCache &&
-    targetTransactionIds.every((id) => batchCache.transactionsById.has(id))
-  ) {
+  if (batchCache && targetTransactionIds.every((id) => batchCache.transactionsById.has(id))) {
     targets = targetTransactionIds.map((id) => batchCache.transactionsById.get(id)!);
   } else {
     const placeholders = targetTransactionIds.map((_, i) => `$${i + 3}`).join(", ");
@@ -419,8 +416,11 @@ export async function matchTransaction(
         );
 
         if (mlPrediction && mlPrediction.confidence > 0.7) {
-          // ML prediction is confident, use it
-          const bestTarget = targets.find((t) => targetTransactionIds.includes(t.id));
+          // ML prediction is confident, use the predicted target transaction ID
+          const bestTarget =
+            (mlPrediction.targetTransactionId
+              ? targets.find((t) => t.id === mlPrediction.targetTransactionId)
+              : undefined) ?? targets.find((t) => targetTransactionIds.includes(t.id));
           if (bestTarget) {
             const amountDiff = Math.abs(source.amount - bestTarget.amount);
             const dateDiff = daysDifference(source.date, bestTarget.date);
@@ -742,24 +742,43 @@ export async function runReconciliation(
       metadata: { ingestionId, traceId },
     });
 
-    // Get source transactions (from this ingestion)
+    // Get source transactions (from this ingestion) with full fields for O(1) batch matching
     const sourceTransactions = await query(
       tenantId,
-      `SELECT id FROM normalized_transactions
+      `SELECT id, amount, currency, date, description, external_id FROM normalized_transactions
       WHERE ingestion_id = $1 AND tenant_id = $2
       ORDER BY date, amount`,
       [ingestionId, tenantId]
     );
 
     // Get target transactions (from other ingestions or manual entries)
-    // For MVP, we'll match against all other transactions in the tenant
     const targetTransactions = await query(
       tenantId,
-      `SELECT id FROM normalized_transactions
+      `SELECT id, amount, currency, date, description, external_id FROM normalized_transactions
       WHERE tenant_id = $1 AND ingestion_id != $2
       ORDER BY date, amount`,
       [tenantId, ingestionId]
     );
+
+    const batchCache: MatchTransactionBatchCache = {
+      transactionsById: new Map(),
+      adaptersByTxId: new Map(),
+    };
+    for (const row of [
+      ...(sourceTransactions as Array<Partial<MatchTransactionPreloadedRow> & { id: string }>),
+      ...(targetTransactions as Array<Partial<MatchTransactionPreloadedRow> & { id: string }>),
+    ]) {
+      if (row.amount !== undefined && row.currency !== undefined && row.date !== undefined) {
+        batchCache.transactionsById.set(row.id, {
+          id: row.id,
+          amount: Number(row.amount),
+          currency: String(row.currency),
+          date: row.date instanceof Date ? row.date : new Date(String(row.date)),
+          description: row.description ?? null,
+          external_id: row.external_id ?? null,
+        });
+      }
+    }
 
     const sourceIds = (sourceTransactions as Array<{ id: string }>).map((t) => t.id);
     const targetIds = (targetTransactions as Array<{ id: string }>).map((t) => t.id);
@@ -774,7 +793,8 @@ export async function runReconciliation(
     const oneToOneResult = await executeOneToOneMatching(
       sourceIds,
       targetIds,
-      (sourceId, candidates) => matchTransaction(sourceId, candidates, tenantId, effectiveConfig)
+      (sourceId, candidates) =>
+        matchTransaction(sourceId, candidates, tenantId, effectiveConfig, batchCache)
     );
     const matches = oneToOneResult.matches;
     const matchedCount = oneToOneResult.matchedCount;
@@ -839,7 +859,7 @@ export async function runReconciliation(
         confidence_avg = $6,
         metadata = $7,
         updated_at = NOW()
-      WHERE id = $8`,
+      WHERE id = $8 AND tenant_id = $9`,
       [
         sourceIds.length,
         targetIds.length,
@@ -849,6 +869,7 @@ export async function runReconciliation(
         avgConfidence,
         JSON.stringify(completedMetadata),
         runId,
+        tenantId,
       ]
     );
 
@@ -1046,8 +1067,8 @@ export async function runReconciliation(
           `UPDATE recon_results SET
             proofpack_payload = $1,
             proofpack_hash = $2
-          WHERE id = $3`,
-          [JSON.stringify(artifact), artifact.contentHash, runId]
+          WHERE id = $3 AND tenant_id = $4`,
+          [JSON.stringify(artifact), artifact.contentHash, runId, tenantId]
         );
         logInfo("Immutable proofpack saved successfully", {
           runId,
@@ -1069,8 +1090,8 @@ export async function runReconciliation(
         completed_at = NOW(),
         error_message = $1,
         updated_at = NOW()
-      WHERE id = $2`,
-      [error instanceof Error ? error.message : String(error), runId]
+      WHERE id = $2 AND tenant_id = $3`,
+      [error instanceof Error ? error.message : String(error), runId, tenantId]
     );
     await emitOperatorRuntimeEvent({
       eventType: "reconciliation_run_failed",
