@@ -141,37 +141,42 @@ router.post(
   requirePermission(Permission.JOBS_READ),
   async (req: AuthRequest, res: Response) => {
     try {
-      const { proofHash, merkleRoot, tenantId, targetTenantId, runId } = req.body;
+      const { proofHash, merkleRoot, tenantId: bodyTenantId, targetTenantId, runId } = req.body;
+      const effectiveTenantId = bodyTenantId || req.tenantId;
 
-      if (!proofHash || typeof proofHash !== "string" || proofHash.length !== 64) {
+      if (!proofHash || typeof proofHash !== "string" || !/^[a-f0-9]{64}$/i.test(proofHash)) {
         return res
           .status(400)
           .json({ error: "Invalid proofHash: expected 64-character hex string" });
       }
 
-      // If full parameters provided, recompute and verify the HMAC commitment
-      let isValid = true;
-      if (merkleRoot && tenantId && targetTenantId && runId) {
-        const secret =
-          process.env.PROOF_COMMITMENT_SECRET ??
-          process.env.COOKIE_SECRET ??
-          "settler-zkp-sovereign-master";
-        const expectedHash = crypto
-          .createHmac("sha256", secret)
-          .update(`${tenantId}:${targetTenantId}:${runId}:${merkleRoot}`)
-          .digest("hex");
-        isValid = crypto.timingSafeEqual(
-          Buffer.from(proofHash, "hex"),
-          Buffer.from(expectedHash, "hex")
-        );
+      if (!merkleRoot || !effectiveTenantId || !targetTenantId || !runId) {
+        return res.status(400).json({
+          error:
+            "Missing required commitment parameters: merkleRoot, tenantId, targetTenantId, and runId are required for fail-closed verification",
+        });
       }
+
+      const secret = process.env.PROOF_COMMITMENT_SECRET ?? process.env.COOKIE_SECRET;
+      if (!secret || Buffer.byteLength(secret, "utf8") < 32) {
+        return res.status(503).json({ error: "Proof commitment verification is not configured" });
+      }
+
+      const expectedHash = crypto
+        .createHmac("sha256", secret)
+        .update(`${effectiveTenantId}:${targetTenantId}:${runId}:${merkleRoot}`)
+        .digest("hex");
+      const isValid = crypto.timingSafeEqual(
+        Buffer.from(proofHash, "hex"),
+        Buffer.from(expectedHash, "hex")
+      );
 
       return res.json({
         data: {
           isValid,
           proofHash,
           verifiedAt: new Date().toISOString(),
-          verificationMethod: merkleRoot ? "HMAC-Merkle-Exact" : "Format-Integrity-Check",
+          verificationMethod: "HMAC-Merkle-Exact",
           message: isValid
             ? "Cryptographic parity proof successfully verified."
             : "Verification failed: proof signature mismatch.",

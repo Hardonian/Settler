@@ -293,7 +293,7 @@ export async function matchTransaction(
       throw new Error(`Source transaction ${sourceTransactionId} not found`);
     }
 
-    source = sourceResults[0] as MatchTransactionPreloadedRow;
+    source = sourceResults[0] as unknown as MatchTransactionPreloadedRow;
     batchCache?.transactionsById.set(source.id, source);
   }
 
@@ -320,7 +320,7 @@ export async function matchTransaction(
       [sourceTransactionId, tenantId, ...targetTransactionIds]
     );
 
-    targets = targetResults as MatchTransactionPreloadedRow[];
+    targets = targetResults as unknown as MatchTransactionPreloadedRow[];
     if (batchCache) {
       for (const t of targets) {
         batchCache.transactionsById.set(t.id, t);

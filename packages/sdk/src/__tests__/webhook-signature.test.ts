@@ -1,5 +1,6 @@
 import { describe, it, expect } from "@jest/globals";
 import {
+  signWebhookPayload,
   verifyWebhookSignature,
   verifyWebhookSignatureWithTimestamp,
   extractWebhookTimestamp,
@@ -64,6 +65,21 @@ describe("Webhook Signature Verification", () => {
 
     expect(
       verifyWebhookSignatureWithTimestamp(payload, header, secret, 300000) // 5 minutes max age
+    ).toBe(false);
+  });
+
+  it("should sign and verify canonical timestamp-bound signatures (t.payload) and reject timestamp tampering under strict mode", () => {
+    const ts = Math.floor(Date.now() / 1000);
+    const signedHeader = signWebhookPayload(payload, secret, ts);
+
+    expect(
+      verifyWebhookSignature(payload, signedHeader, secret, { requireTimestampBinding: true })
+    ).toBe(true);
+
+    // Tampering with t= header invalidates timestamp-bound HMAC
+    const tamperedHeader = signedHeader.replace(`t=${ts}`, `t=${ts + 60}`);
+    expect(
+      verifyWebhookSignature(payload, tamperedHeader, secret, { requireTimestampBinding: true })
     ).toBe(false);
   });
 });

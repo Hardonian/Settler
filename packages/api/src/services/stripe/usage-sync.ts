@@ -70,12 +70,42 @@ export class StripeUsageSync {
       // Stripe retired subscriptionItems.createUsageRecord. A billing-meter event
       // name is provider configuration, not an application guess: fail closed and
       // preserve unaggregated events until an operator supplies that mapping.
-      if (usageByType.size > 0) {
+      const rawMeterMap = process.env.STRIPE_METER_EVENT_MAP;
+      let meterMap: Record<string, string> | null = null;
+      if (rawMeterMap) {
+        try {
+          meterMap = JSON.parse(rawMeterMap) as Record<string, string>;
+        } catch {
+          meterMap = null;
+        }
+      }
+
+      if (usageByType.size > 0 && !meterMap) {
         logError("Metered usage sync blocked: Stripe Billing Meter mapping is not configured", {
           billingAccountId,
           eventTypes: [...usageByType.keys()],
         });
         return;
+      }
+
+      if (meterMap && usageByType.size > 0) {
+        for (const [eventType, { quantity }] of usageByType.entries()) {
+          const meterEventName = meterMap[eventType];
+          if (!meterEventName) {
+            logError("Metered usage sync blocked: unmapped eventType in STRIPE_METER_EVENT_MAP", {
+              billingAccountId,
+              eventType,
+            });
+            return;
+          }
+          await this.stripe.billing.meterEvents.create({
+            event_name: meterEventName,
+            payload: {
+              stripe_customer_id: billingAccount.stripeCustomerId,
+              value: String(quantity),
+            },
+          });
+        }
       }
 
       // Mark events as aggregated

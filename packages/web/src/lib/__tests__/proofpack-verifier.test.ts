@@ -102,4 +102,33 @@ describe("proofpack-verifier & changelog surfaces", () => {
     );
     expect(rendered.length).toBeGreaterThan(3);
   });
+
+  it("verifies Cross-Rail Settlement Graph RFC 6962 proofpack (0x01 internal node tree)", async () => {
+    const leaf1 = "11".repeat(32);
+    const leaf2 = "22".repeat(32);
+    const nodeBytes = new Uint8Array(1 + 64);
+    nodeBytes[0] = 0x01;
+    for (let b = 0; b < 32; b++) {
+      nodeBytes[1 + b] = 0x11;
+      nodeBytes[33 + b] = 0x22;
+    }
+    const buf = new ArrayBuffer(nodeBytes.byteLength);
+    new Uint8Array(buf).set(nodeBytes);
+    const digest = await crypto.subtle.digest("SHA-256", buf);
+    const expectedRoot = Array.from(new Uint8Array(digest))
+      .map((x) => x.toString(16).padStart(2, "0"))
+      .join("");
+
+    const crossRailPack = {
+      schema: "settler.cross-rail-settlement-graph/1.0.0",
+      declaredMerkleRoot: expectedRoot,
+      leaves: [leaf2, leaf1],
+    };
+
+    const outcome = await verifyProofpackJson(JSON.stringify(crossRailPack));
+    expect(outcome.valid).toBe(true);
+    expect(outcome.format).toBe("merkle_bundle");
+    expect(outcome.computedRoot).toBe(expectedRoot);
+    expect(outcome.leavesCount).toBe(2);
+  });
 });

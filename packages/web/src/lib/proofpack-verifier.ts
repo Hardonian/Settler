@@ -266,7 +266,7 @@ export async function verifyProofpackJson(
       };
     }
 
-    // Format 8: Merkle Tree Proofpack with leaves array
+    // Format 8: Merkle Tree Proofpack with leaves array (supports both RFC 6962 0x01 node tree and colon-joined chain)
     const declaredRoot = parsed.declaredMerkleRoot || parsed.manifestHash || parsed.merkleRoot;
     const leaves = parsed.leaves || parsed.records || [];
 
@@ -279,6 +279,41 @@ export async function verifyProofpackJson(
         leavesCount: Array.isArray(leaves) ? leaves.length : 0,
         error:
           "Invalid proofpack schema. Expected Settler proofpack (trace/state_hash), DemoProofpack (payload/integrity), Audit Dossier (dossierId/cryptographicProofs), SMT proof (siblings_hex/root_hex), or Merkle bundle (leaves).",
+      };
+    }
+
+    if (parsed.schema === "settler.cross-rail-settlement-graph/1.0.0") {
+      let level = [...leaves.map((l: unknown) => String(l))].sort();
+      while (level.length > 1) {
+        const next: string[] = [];
+        for (let i = 0; i < level.length; i += 2) {
+          const leftHex = level[i]!;
+          const rightHex = i + 1 < level.length ? level[i + 1]! : leftHex;
+          const nodeBytes = new Uint8Array(1 + 64);
+          nodeBytes[0] = 0x01;
+          for (let b = 0; b < 32; b++) {
+            nodeBytes[1 + b] = parseInt(leftHex.slice(b * 2, b * 2 + 2), 16);
+            nodeBytes[33 + b] = parseInt(rightHex.slice(b * 2, b * 2 + 2), 16);
+          }
+          const buf = new ArrayBuffer(nodeBytes.byteLength);
+          new Uint8Array(buf).set(nodeBytes);
+          const digest = await crypto.subtle.digest("SHA-256", buf);
+          next.push(
+            Array.from(new Uint8Array(digest))
+              .map((x) => x.toString(16).padStart(2, "0"))
+              .join("")
+          );
+        }
+        level = next;
+      }
+      const rfcRoot = level[0]!;
+      const normalizedDeclared = normalizeHex(declaredRoot).toLowerCase();
+      return {
+        valid: rfcRoot.toLowerCase() === normalizedDeclared,
+        format: "merkle_bundle",
+        computedRoot: rfcRoot,
+        declaredRoot: String(declaredRoot),
+        leavesCount: leaves.length,
       };
     }
 

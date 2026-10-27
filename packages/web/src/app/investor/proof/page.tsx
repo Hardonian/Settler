@@ -12,6 +12,7 @@ import Link from "next/link";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { CrossRailArbitrageWorkbench } from "@/components/console/CrossRailArbitrageWorkbench";
 import { Shield, TrendingUp, Zap, Lock, ArrowRight } from "lucide-react";
 
 export const revalidate = 3600;
@@ -271,6 +272,9 @@ async function InvestorProofContent() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Cross-Rail Settlement Graph & Plaid Sweep Referee */}
+      <CrossRailArbitrageWorkbench />
 
       {/* Security & Compliance */}
       <Card>

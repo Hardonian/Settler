@@ -126,11 +126,13 @@ billingRouter.post(
       ],
       metadata: {
         tenant_id: tenantId,
+        price_id: priceId,
       },
       client_reference_id: tenantId,
       subscription_data: {
         metadata: {
           tenant_id: tenantId,
+          price_id: priceId,
         },
       },
     });
@@ -205,11 +207,14 @@ billingWebhookRouter.post(
       const stripe = new (await import("stripe")).default(getEnv("STRIPE_SECRET_KEY") || "", {
         apiVersion: "2026-06-24.dahlia" as Stripe.LatestApiVersion,
       });
-      event = stripe.webhooks.constructEvent(
-        JSON.stringify(req.body),
-        sig as string,
-        webhookSecret
-      );
+      const rawPayload = Buffer.isBuffer(req.body)
+        ? req.body
+        : typeof (req as unknown as { rawBody?: Buffer | string }).rawBody !== "undefined"
+          ? (req as unknown as { rawBody: Buffer | string }).rawBody
+          : typeof req.body === "string"
+            ? req.body
+            : JSON.stringify(req.body);
+      event = stripe.webhooks.constructEvent(rawPayload, sig as string, webhookSecret);
     } catch (err: any) {
       logError("Stripe webhook signature verification failed", err);
       res.status(400).json({ error: `Webhook Error: ${err.message}` });
