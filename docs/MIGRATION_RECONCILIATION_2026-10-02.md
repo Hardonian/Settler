@@ -224,3 +224,27 @@ isolation policies (revoking turns anon reads into errors — see known limits);
 2083 `unused_index` findings remain as the review backlog above; the
 Open-Source Public Mirror Sync job remains red on its expired
 `PUBLIC_MIRROR_GIT_TOKEN`.
+
+## 2026-10-27 update — supabase ledger row for `20261018000000`
+
+The scheduled Parity & Drift Monitor failed on `verify-migration-catalog.mjs`:
+`supabase/migrations` had 72 files vs 71 `supabase_migrations.schema_migrations`
+rows, with `20261018000000_drop_legacy_gamification_and_add_composite_indexes`
+"recorded nowhere in ledger" (prisma's `_prisma_migrations` already had the
+paired migration, so the counts looked balanced at 35 = 35).
+
+This was stale ledger data, not a monitor false-failure. Verified against the
+live database before touching it: all eight indexes the migration creates
+(`idx_reconciliation_matches|runs_tenant_created|status`,
+`idx_exception_adjudication_memory_tenant_*`, `idx_proof_packages_tenant_*`)
+exist in `public`, and none of the legacy gamification tables remain — the DDL
+had been applied, only the ledger row was never written. Reconciled by
+recording the applied migration exactly as `supabase db push` would
+(`version`, `name`, `statements` = file bytes, `created_by`); the ledger now
+matches the file catalog (72 = 72). `node scripts/verify-migration-catalog.mjs`
+exits 0 locally and the Parity & Drift Monitor job is green.
+
+The two warnings in the same job log ("No contract schemas found", "No
+contracts.lock file found") come from `check-contract-compatibility.ts`, which
+is a different step and already exits 0 on warnings-only — they are
+informational and were left alone.
