@@ -187,6 +187,8 @@ const EXCLUDED_FROM_SECRET_CHECK = [
   "**/marketing/**",
   "**/core", // Likely a binary or special file
   "packages/api/src/__tests__/**",
+  "**/test-results/**",
+  "**/playwright-report/**",
 ];
 
 const PROPRIETARY_LICENSE_PATTERNS = [
@@ -223,6 +225,8 @@ async function getAllFiles(rootDir: string = "."): Promise<string[]> {
     "**/.turbo/**",
     "**/.vercel/**",
     "**/artifacts/**",
+    "**/test-results/**",
+    "**/playwright-report/**",
     "**/.mirror-out/**",
     "**/*.tsbuildinfo",
     // Ignore binary files from classification (they'll be skipped anyway)
