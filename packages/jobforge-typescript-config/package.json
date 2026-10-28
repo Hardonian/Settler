@@ -9,11 +9,11 @@
   ],
   "devDependencies": {
     "@vitest/coverage-v8": "^5.0.5",
-    "vite": "^8.3.4",
+    "vite": "^8.3.5",
     "vitest": "^5.0.5"
   },
   "dependencies": {
-    "@ai-sdk/openai": "^4.0.96",
-    "ai": "^7.0.143"
+    "@ai-sdk/openai": "^4.0.102",
+    "ai": "^7.0.153"
   }
 }
