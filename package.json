@@ -363,11 +363,11 @@
     "@types/jest": "^30.0.0",
     "@types/node": "^26.6.5",
     "@types/pg": "8.23.1",
-    "@typescript-eslint/eslint-plugin": "^8.71.2",
-    "@typescript-eslint/parser": "^8.71.2",
+    "@typescript-eslint/eslint-plugin": "^8.72.0",
+    "@typescript-eslint/parser": "^8.72.0",
     "cross-env": "^10.1.0",
     "csv-parse": "^7.0.3",
-    "dotenv": "^18.0.8",
+    "dotenv": "^18.0.9",
     "eslint": "^9.39.4",
     "eslint-config-prettier": "^10.1.8",
     "glob": "^13.0.6",
@@ -378,7 +378,7 @@
     "prettier": "^3.9.10",
     "prisma": "7.10.1",
     "sharp": "^0.35.5",
-    "supabase": "2.121.0",
+    "supabase": "2.122.0",
     "ts-jest": "^29.4.15",
     "tsx": "^4.23.15",
     "typescript": "^6.0.3",
@@ -386,7 +386,7 @@
   },
   "dependencies": {
     "@upstash/redis": "^1.39.0",
-    "turbo": "^2.11.9"
+    "turbo": "^2.11.10"
   },
   "resolutions": {
     "prisma": "7.10.1",
