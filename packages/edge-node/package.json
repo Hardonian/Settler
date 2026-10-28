@@ -29,14 +29,14 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@ai-sdk/openai": "^4.0.96",
+    "@ai-sdk/openai": "^4.0.102",
     "@settler/types": "workspace:*",
-    "ai": "^7.0.143",
+    "ai": "^7.0.153",
     "axios": "^1.20.0",
     "better-sqlite3": "^12.10.0",
     "chalk": "^6.0.1",
     "commander": "^11.1.0",
-    "dotenv": "^18.0.8",
+    "dotenv": "^18.0.9",
     "node-cron": "^4.6.0",
     "uuid": "^14.0.3",
     "winston": "^3.19.0"
@@ -46,15 +46,15 @@
     "@types/node": "^26.6.5",
     "@types/node-cron": "^3.0.11",
     "@types/uuid": "^9.0.8",
-    "@typescript-eslint/eslint-plugin": "^8.71.2",
-    "@typescript-eslint/parser": "^8.71.2",
+    "@typescript-eslint/eslint-plugin": "^8.72.0",
+    "@typescript-eslint/parser": "^8.72.0",
     "@vitest/coverage-v8": "^5.0.5",
     "eslint": "^9.39.4",
     "jest": "^30.5.2",
     "ts-jest": "^29.4.15",
     "tsx": "^4.23.15",
     "typescript": "^6.0.3",
-    "vite": "^8.3.4",
+    "vite": "^8.3.5",
     "vitest": "^5.0.5"
   },
   "keywords": [
