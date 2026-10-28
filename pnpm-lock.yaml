@@ -268,7 +268,7 @@ importers:
         version: 1.10.0
       '@opentelemetry/auto-instrumentations-node':
         specifier: ^0.80.0
-        version: 0.80.0(@opentelemetry/api@1.10.0)(@opentelemetry/core@3.0.0(@opentelemetry/api@1.10.0))
+        version: 0.80.0(@opentelemetry/api@1.9.1)(@opentelemetry/core@3.0.0(@opentelemetry/api@1.9.1))
       '@opentelemetry/exporter-metrics-otlp-http':
         specifier: ^0.300.0
         version: 0.300.0(@opentelemetry/api@1.10.0)
@@ -276,8 +276,8 @@ importers:
         specifier: ^0.300.0
         version: 0.300.0(@opentelemetry/api@1.10.0)
       '@opentelemetry/resources':
-        specifier: ^2.12.0
-        version: 2.12.0(@opentelemetry/api@1.10.0)
+        specifier: ^3.0.0
+        version: 3.0.0(@opentelemetry/api@1.9.1)
       '@opentelemetry/sdk-node':
         specifier: ^0.222.0
         version: 0.222.0(@opentelemetry/api@1.10.0)
@@ -7757,6 +7757,10 @@ packages:
     resolution: {integrity: sha512-pWTgz5CN3tjqyZNSK2tePlSmu9IwM41q8yn8Usdqqwe9TIHh+9dEpLLjF4uApsfPEAZY71qtSiA2B2APEr+1Yw==}
     engines: {node: 18 || 20 || >=22}
 
+  minimatch@11.0.2:
+    resolution: {integrity: sha512-pWTgz5CN3tjqyZNSK2tePlSmu9IwM41q8yn8Usdqqwe9TIHh+9dEpLLjF4uApsfPEAZY71qtSiA2B2APEr+1Yw==}
+    engines: {node: 18 || 20 || >=22}
+
   minimist@1.2.8:
     resolution: {integrity: sha512-2yyAR8qBkN3YuheJanUpWC5U3bb5osDywNB8RzDVlDwDHbocAJveqqj1u8+SVD7jkWT4yvsHCpWqqWqAxb0zCA==}
 
@@ -10943,59 +10947,61 @@ snapshots:
 
   '@opentelemetry/api@1.10.0': {}
 
-  '@opentelemetry/auto-instrumentations-node@0.80.0(@opentelemetry/api@1.10.0)(@opentelemetry/core@3.0.0(@opentelemetry/api@1.10.0))':
+  '@opentelemetry/api@1.9.1': {}
+
+  '@opentelemetry/auto-instrumentations-node@0.80.0(@opentelemetry/api@1.9.1)(@opentelemetry/core@3.0.0(@opentelemetry/api@1.9.1))':
     dependencies:
-      '@opentelemetry/api': 1.10.0
-      '@opentelemetry/core': 3.0.0(@opentelemetry/api@1.10.0)
-      '@opentelemetry/instrumentation': 0.222.0(@opentelemetry/api@1.10.0)
-      '@opentelemetry/instrumentation-amqplib': 0.69.0(@opentelemetry/api@1.10.0)
-      '@opentelemetry/instrumentation-aws-lambda': 0.74.0(@opentelemetry/api@1.10.0)
-      '@opentelemetry/instrumentation-aws-sdk': 0.77.0(@opentelemetry/api@1.10.0)
-      '@opentelemetry/instrumentation-bunyan': 0.67.0(@opentelemetry/api@1.10.0)
-      '@opentelemetry/instrumentation-cassandra-driver': 0.67.0(@opentelemetry/api@1.10.0)
-      '@opentelemetry/instrumentation-connect': 0.65.0(@opentelemetry/api@1.10.0)
-      '@opentelemetry/instrumentation-cucumber': 0.38.0(@opentelemetry/api@1.10.0)
-      '@opentelemetry/instrumentation-dataloader': 0.39.0(@opentelemetry/api@1.10.0)
-      '@opentelemetry/instrumentation-dns': 0.65.0(@opentelemetry/api@1.10.0)
-      '@opentelemetry/instrumentation-express': 0.70.0(@opentelemetry/api@1.10.0)
-      '@opentelemetry/instrumentation-fs': 0.41.0(@opentelemetry/api@1.10.0)
-      '@opentelemetry/instrumentation-generic-pool': 0.65.0(@opentelemetry/api@1.10.0)
-      '@opentelemetry/instrumentation-graphql': 0.70.0(@opentelemetry/api@1.10.0)
-      '@opentelemetry/instrumentation-grpc': 0.222.0(@opentelemetry/api@1.10.0)
-      '@opentelemetry/instrumentation-hapi': 0.68.0(@opentelemetry/api@1.10.0)
-      '@opentelemetry/instrumentation-host-metrics': 0.5.0(@opentelemetry/api@1.10.0)
-      '@opentelemetry/instrumentation-http': 0.222.0(@opentelemetry/api@1.10.0)
-      '@opentelemetry/instrumentation-ioredis': 0.70.0(@opentelemetry/api@1.10.0)
-      '@opentelemetry/instrumentation-kafkajs': 0.31.0(@opentelemetry/api@1.10.0)
-      '@opentelemetry/instrumentation-knex': 0.66.0(@opentelemetry/api@1.10.0)
-      '@opentelemetry/instrumentation-koa': 0.70.0(@opentelemetry/api@1.10.0)
-      '@opentelemetry/instrumentation-lru-memoizer': 0.66.0(@opentelemetry/api@1.10.0)
-      '@opentelemetry/instrumentation-memcached': 0.65.0(@opentelemetry/api@1.10.0)
-      '@opentelemetry/instrumentation-mongodb': 0.75.0(@opentelemetry/api@1.10.0)
-      '@opentelemetry/instrumentation-mongoose': 0.68.0(@opentelemetry/api@1.10.0)
-      '@opentelemetry/instrumentation-mysql': 0.68.0(@opentelemetry/api@1.10.0)
-      '@opentelemetry/instrumentation-mysql2': 0.68.0(@opentelemetry/api@1.10.0)
-      '@opentelemetry/instrumentation-nestjs-core': 0.68.0(@opentelemetry/api@1.10.0)
-      '@opentelemetry/instrumentation-net': 0.66.0(@opentelemetry/api@1.10.0)
-      '@opentelemetry/instrumentation-openai': 0.20.0(@opentelemetry/api@1.10.0)
-      '@opentelemetry/instrumentation-oracledb': 0.47.0(@opentelemetry/api@1.10.0)
-      '@opentelemetry/instrumentation-pg': 0.74.0(@opentelemetry/api@1.10.0)
-      '@opentelemetry/instrumentation-pino': 0.68.0(@opentelemetry/api@1.10.0)
-      '@opentelemetry/instrumentation-redis': 0.70.0(@opentelemetry/api@1.10.0)
-      '@opentelemetry/instrumentation-restify': 0.67.0(@opentelemetry/api@1.10.0)
-      '@opentelemetry/instrumentation-router': 0.66.0(@opentelemetry/api@1.10.0)
-      '@opentelemetry/instrumentation-runtime-node': 0.35.0(@opentelemetry/api@1.10.0)
-      '@opentelemetry/instrumentation-socket.io': 0.69.0(@opentelemetry/api@1.10.0)
-      '@opentelemetry/instrumentation-tedious': 0.41.0(@opentelemetry/api@1.10.0)
-      '@opentelemetry/instrumentation-undici': 0.32.0(@opentelemetry/api@1.10.0)
-      '@opentelemetry/instrumentation-winston': 0.66.0(@opentelemetry/api@1.10.0)
-      '@opentelemetry/resource-detector-alibaba-cloud': 0.37.0(@opentelemetry/api@1.10.0)
-      '@opentelemetry/resource-detector-aws': 2.23.0(@opentelemetry/api@1.10.0)
-      '@opentelemetry/resource-detector-azure': 0.30.0(@opentelemetry/api@1.10.0)
-      '@opentelemetry/resource-detector-container': 0.8.14(@opentelemetry/api@1.10.0)
-      '@opentelemetry/resource-detector-gcp': 0.57.0(@opentelemetry/api@1.10.0)
-      '@opentelemetry/resources': 2.12.0(@opentelemetry/api@1.10.0)
-      '@opentelemetry/sdk-node': 0.222.0(@opentelemetry/api@1.10.0)
+      '@opentelemetry/api': 1.9.1
+      '@opentelemetry/core': 3.0.0(@opentelemetry/api@1.9.1)
+      '@opentelemetry/instrumentation': 0.222.0(@opentelemetry/api@1.9.1)
+      '@opentelemetry/instrumentation-amqplib': 0.69.0(@opentelemetry/api@1.9.1)
+      '@opentelemetry/instrumentation-aws-lambda': 0.74.0(@opentelemetry/api@1.9.1)
+      '@opentelemetry/instrumentation-aws-sdk': 0.77.0(@opentelemetry/api@1.9.1)
+      '@opentelemetry/instrumentation-bunyan': 0.67.0(@opentelemetry/api@1.9.1)
+      '@opentelemetry/instrumentation-cassandra-driver': 0.67.0(@opentelemetry/api@1.9.1)
+      '@opentelemetry/instrumentation-connect': 0.65.0(@opentelemetry/api@1.9.1)
+      '@opentelemetry/instrumentation-cucumber': 0.38.0(@opentelemetry/api@1.9.1)
+      '@opentelemetry/instrumentation-dataloader': 0.39.0(@opentelemetry/api@1.9.1)
+      '@opentelemetry/instrumentation-dns': 0.65.0(@opentelemetry/api@1.9.1)
+      '@opentelemetry/instrumentation-express': 0.70.0(@opentelemetry/api@1.9.1)
+      '@opentelemetry/instrumentation-fs': 0.41.0(@opentelemetry/api@1.9.1)
+      '@opentelemetry/instrumentation-generic-pool': 0.65.0(@opentelemetry/api@1.9.1)
+      '@opentelemetry/instrumentation-graphql': 0.70.0(@opentelemetry/api@1.9.1)
+      '@opentelemetry/instrumentation-grpc': 0.222.0(@opentelemetry/api@1.9.1)
+      '@opentelemetry/instrumentation-hapi': 0.68.0(@opentelemetry/api@1.9.1)
+      '@opentelemetry/instrumentation-host-metrics': 0.5.0(@opentelemetry/api@1.9.1)
+      '@opentelemetry/instrumentation-http': 0.222.0(@opentelemetry/api@1.9.1)
+      '@opentelemetry/instrumentation-ioredis': 0.70.0(@opentelemetry/api@1.9.1)
+      '@opentelemetry/instrumentation-kafkajs': 0.31.0(@opentelemetry/api@1.9.1)
+      '@opentelemetry/instrumentation-knex': 0.66.0(@opentelemetry/api@1.9.1)
+      '@opentelemetry/instrumentation-koa': 0.70.0(@opentelemetry/api@1.9.1)
+      '@opentelemetry/instrumentation-lru-memoizer': 0.66.0(@opentelemetry/api@1.9.1)
+      '@opentelemetry/instrumentation-memcached': 0.65.0(@opentelemetry/api@1.9.1)
+      '@opentelemetry/instrumentation-mongodb': 0.75.0(@opentelemetry/api@1.9.1)
+      '@opentelemetry/instrumentation-mongoose': 0.68.0(@opentelemetry/api@1.9.1)
+      '@opentelemetry/instrumentation-mysql': 0.68.0(@opentelemetry/api@1.9.1)
+      '@opentelemetry/instrumentation-mysql2': 0.68.0(@opentelemetry/api@1.9.1)
+      '@opentelemetry/instrumentation-nestjs-core': 0.68.0(@opentelemetry/api@1.9.1)
+      '@opentelemetry/instrumentation-net': 0.66.0(@opentelemetry/api@1.9.1)
+      '@opentelemetry/instrumentation-openai': 0.20.0(@opentelemetry/api@1.9.1)
+      '@opentelemetry/instrumentation-oracledb': 0.47.0(@opentelemetry/api@1.9.1)
+      '@opentelemetry/instrumentation-pg': 0.74.0(@opentelemetry/api@1.9.1)
+      '@opentelemetry/instrumentation-pino': 0.68.0(@opentelemetry/api@1.9.1)
+      '@opentelemetry/instrumentation-redis': 0.70.0(@opentelemetry/api@1.9.1)
+      '@opentelemetry/instrumentation-restify': 0.67.0(@opentelemetry/api@1.9.1)
+      '@opentelemetry/instrumentation-router': 0.66.0(@opentelemetry/api@1.9.1)
+      '@opentelemetry/instrumentation-runtime-node': 0.35.0(@opentelemetry/api@1.9.1)
+      '@opentelemetry/instrumentation-socket.io': 0.69.0(@opentelemetry/api@1.9.1)
+      '@opentelemetry/instrumentation-tedious': 0.41.0(@opentelemetry/api@1.9.1)
+      '@opentelemetry/instrumentation-undici': 0.32.0(@opentelemetry/api@1.9.1)
+      '@opentelemetry/instrumentation-winston': 0.66.0(@opentelemetry/api@1.9.1)
+      '@opentelemetry/resource-detector-alibaba-cloud': 0.37.0(@opentelemetry/api@1.9.1)
+      '@opentelemetry/resource-detector-aws': 2.23.0(@opentelemetry/api@1.9.1)
+      '@opentelemetry/resource-detector-azure': 0.30.0(@opentelemetry/api@1.9.1)
+      '@opentelemetry/resource-detector-container': 0.8.14(@opentelemetry/api@1.9.1)
+      '@opentelemetry/resource-detector-gcp': 0.57.0(@opentelemetry/api@1.9.1)
+      '@opentelemetry/resources': 2.12.0(@opentelemetry/api@1.9.1)
+      '@opentelemetry/sdk-node': 0.222.0(@opentelemetry/api@1.9.1)
     transitivePeerDependencies:
       - supports-color
 
@@ -11019,7 +11025,12 @@ snapshots:
       '@opentelemetry/api': 1.10.0
       '@opentelemetry/semantic-conventions': 1.43.0
 
-  '@opentelemetry/core@3.0.0(@opentelemetry/api@1.10.0)':
+  '@opentelemetry/core@3.0.0(@opentelemetry/api@1.9.1)':
+    dependencies:
+      '@opentelemetry/api': 1.9.1
+      '@opentelemetry/semantic-conventions': 1.43.0
+
+  '@opentelemetry/exporter-logs-otlp-grpc@0.222.0(@opentelemetry/api@1.9.1)':
     dependencies:
       '@opentelemetry/api': 1.10.0
       '@opentelemetry/semantic-conventions': 1.43.0
@@ -11589,7 +11600,13 @@ snapshots:
       '@opentelemetry/core': 3.0.0(@opentelemetry/api@1.10.0)
       '@opentelemetry/semantic-conventions': 1.43.0
 
-  '@opentelemetry/sdk-logs@0.222.0(@opentelemetry/api@1.10.0)':
+  '@opentelemetry/resources@3.0.0(@opentelemetry/api@1.9.1)':
+    dependencies:
+      '@opentelemetry/api': 1.9.1
+      '@opentelemetry/core': 3.0.0(@opentelemetry/api@1.9.1)
+      '@opentelemetry/semantic-conventions': 1.43.0
+
+  '@opentelemetry/sdk-logs@0.222.0(@opentelemetry/api@1.9.1)':
     dependencies:
       '@opentelemetry/api': 1.10.0
       '@opentelemetry/api-logs': 0.222.0
@@ -16600,6 +16617,12 @@ snapshots:
     dependencies:
       '@isaacs/nonrecursive-glob-match': 1.0.2
       brace-expansion: 5.0.12
+
+  minimatch@11.0.2:
+    dependencies:
+      '@isaacs/nonrecursive-glob-match': 1.0.2
+      brace-expansion: 5.0.12
+    optional: true
 
   minimatch@11.0.2:
     dependencies:
