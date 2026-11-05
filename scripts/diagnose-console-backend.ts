@@ -1,4 +1,5 @@
 #!/usr/bin/env tsx
+import "./env-loader";
 /**
  * Console Backend Diagnostic Script
  *

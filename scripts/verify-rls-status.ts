@@ -4,6 +4,7 @@ import path from "node:path";
 import { Pool } from "pg";
 import * as dotenv from "dotenv";
 
+dotenv.config({ path: path.resolve(process.cwd(), ".env.local") });
 dotenv.config();
 
 const repoRoot = process.cwd();

@@ -30,7 +30,7 @@ function getChangedFiles(): string[] {
 }
 
 function hasDefaultExport(content: string): boolean {
-  return /export\s+default\s+/u.test(content);
+  return /export\s+default\s+|export\s*\{\s*default(?:\s+as\s+default)?\s*\}\s*from/u.test(content);
 }
 
 function hasRouteMethodExport(content: string): boolean {

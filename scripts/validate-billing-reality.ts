@@ -18,9 +18,12 @@ import Stripe from "stripe";
 import { supabase } from "@settler/api/infrastructure/supabase/client";
 import { logInfo } from "@settler/api/utils/logger";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", {
-  apiVersion: "2023-10-16",
-});
+const stripeApiKey = process.env.STRIPE_SECRET_KEY;
+const stripe = stripeApiKey
+  ? new Stripe(stripeApiKey, {
+      apiVersion: "2023-10-16",
+    })
+  : null;
 
 interface ValidationResult {
   test: string;
@@ -48,6 +51,16 @@ function recordResult(test: string, passed: boolean, evidence: string, error?: s
 async function testCreateProductAndPrice(): Promise<void> {
   try {
     logInfo("[Billing Validation] Creating test product...");
+
+    if (!stripe) {
+      recordResult(
+        "Create Test Product and Price",
+        false,
+        "STRIPE_SECRET_KEY is not configured - skipping live Stripe product creation",
+        "Missing STRIPE_SECRET_KEY"
+      );
+      return;
+    }
 
     const product = await stripe.products.create({
       name: "Settler Test Product - Reality Validation",
@@ -96,6 +109,16 @@ async function testCreateProductAndPrice(): Promise<void> {
 async function testSuccessfulPayment(): Promise<void> {
   try {
     logInfo("[Billing Validation] Testing successful payment...");
+
+    if (!stripe) {
+      recordResult(
+        "Simulate Successful Payment",
+        false,
+        "STRIPE_SECRET_KEY is not configured - skipping live Stripe payment",
+        "Missing STRIPE_SECRET_KEY"
+      );
+      return;
+    }
 
     // Create test customer
     const customer = await stripe.customers.create({
@@ -148,6 +171,16 @@ async function testSuccessfulPayment(): Promise<void> {
 async function testFailedPayment(): Promise<void> {
   try {
     logInfo("[Billing Validation] Testing failed payment...");
+
+    if (!stripe) {
+      recordResult(
+        "Simulate Failed Payment",
+        false,
+        "STRIPE_SECRET_KEY is not configured - skipping live Stripe payment failure",
+        "Missing STRIPE_SECRET_KEY"
+      );
+      return;
+    }
 
     const customerId = (global as any).TEST_CUSTOMER_ID;
     if (!customerId) {
@@ -202,6 +235,16 @@ async function testCancellationAndDowngrade(): Promise<void> {
   try {
     logInfo("[Billing Validation] Testing cancellation and downgrade...");
 
+    if (!stripe) {
+      recordResult(
+        "Simulate Cancellation and Downgrade",
+        false,
+        "STRIPE_SECRET_KEY is not configured - skipping live Stripe cancellation",
+        "Missing STRIPE_SECRET_KEY"
+      );
+      return;
+    }
+
     const customerId = (global as any).TEST_CUSTOMER_ID;
     const priceId = (global as any).TEST_PRICE_ID;
 
@@ -253,6 +296,16 @@ async function testCancellationAndDowngrade(): Promise<void> {
 async function testInvoiceGeneration(): Promise<void> {
   try {
     logInfo("[Billing Validation] Testing invoice generation...");
+
+    if (!stripe) {
+      recordResult(
+        "Generate Invoice and Receipt",
+        false,
+        "STRIPE_SECRET_KEY is not configured - skipping live Stripe invoice generation",
+        "Missing STRIPE_SECRET_KEY"
+      );
+      return;
+    }
 
     const customerId = (global as any).TEST_CUSTOMER_ID;
     const priceId = (global as any).TEST_PRICE_ID;
@@ -446,7 +499,11 @@ async function main() {
     // Write results to file
     const fs = await import("fs");
     const path = await import("path");
-    const outputPath = path.join(process.cwd(), "billing_evidence.md");
+    const outputDir = path.join(process.cwd(), "artifacts");
+    if (!fs.existsSync(outputDir)) {
+      fs.mkdirSync(outputDir, { recursive: true });
+    }
+    const outputPath = path.join(outputDir, "billing_evidence.md");
 
     let markdown = "# Billing Evidence - Phase 1: Money Reality\n\n";
     markdown += `Generated: ${new Date().toISOString()}\n\n`;
