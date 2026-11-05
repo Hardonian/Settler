@@ -28,15 +28,6 @@
       "requiresTenant": false
     },
     {
-      "route": "/[slug]",
-      "file": "packages/web/src/app/[slug]/page.tsx",
-      "tables": [],
-      "functions": [],
-      "rpcCalls": [],
-      "requiresAuth": false,
-      "requiresTenant": true
-    },
-    {
       "route": "/about",
       "file": "packages/web/src/app/about/page.tsx",
       "tables": [],
@@ -118,15 +109,6 @@
       "requiresTenant": true
     },
     {
-      "route": "/admin/database/[table]",
-      "file": "packages/web/src/app/admin/database/[table]/page.tsx",
-      "tables": [],
-      "functions": [],
-      "rpcCalls": [],
-      "requiresAuth": false,
-      "requiresTenant": false
-    },
-    {
       "route": "/admin/database",
       "file": "packages/web/src/app/admin/database/page.tsx",
       "tables": [],
@@ -136,13 +118,13 @@
       "requiresTenant": false
     },
     {
-      "route": "/admin/exceptions/[id]",
-      "file": "packages/web/src/app/admin/exceptions/[id]/page.tsx",
+      "route": "/admin/database/[table]",
+      "file": "packages/web/src/app/admin/database/[table]/page.tsx",
       "tables": [],
       "functions": [],
       "rpcCalls": [],
       "requiresAuth": false,
-      "requiresTenant": true
+      "requiresTenant": false
     },
     {
       "route": "/admin/exceptions",
@@ -154,22 +136,13 @@
       "requiresTenant": false
     },
     {
-      "route": "/admin/experiments/[id]/ExperimentDashboardClient",
-      "file": "packages/web/src/app/admin/experiments/[id]/ExperimentDashboardClient.tsx",
+      "route": "/admin/exceptions/[id]",
+      "file": "packages/web/src/app/admin/exceptions/[id]/page.tsx",
       "tables": [],
       "functions": [],
       "rpcCalls": [],
       "requiresAuth": false,
-      "requiresTenant": false
-    },
-    {
-      "route": "/admin/experiments/[id]",
-      "file": "packages/web/src/app/admin/experiments/[id]/page.tsx",
-      "tables": [],
-      "functions": [],
-      "rpcCalls": [],
-      "requiresAuth": false,
-      "requiresTenant": false
+      "requiresTenant": true
     },
     {
       "route": "/admin/experiments/new/NewExperimentForm",
@@ -192,6 +165,24 @@
     {
       "route": "/admin/experiments",
       "file": "packages/web/src/app/admin/experiments/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/admin/experiments/[id]/ExperimentDashboardClient",
+      "file": "packages/web/src/app/admin/experiments/[id]/ExperimentDashboardClient.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/admin/experiments/[id]",
+      "file": "packages/web/src/app/admin/experiments/[id]/page.tsx",
       "tables": [],
       "functions": [],
       "rpcCalls": [],
@@ -271,24 +262,6 @@
       "requiresTenant": false
     },
     {
-      "route": "/admin/pages/[id]/editor/EditorClient",
-      "file": "packages/web/src/app/admin/pages/[id]/editor/EditorClient.tsx",
-      "tables": [],
-      "functions": [],
-      "rpcCalls": [],
-      "requiresAuth": false,
-      "requiresTenant": false
-    },
-    {
-      "route": "/admin/pages/[id]/editor",
-      "file": "packages/web/src/app/admin/pages/[id]/editor/page.tsx",
-      "tables": [],
-      "functions": [],
-      "rpcCalls": [],
-      "requiresAuth": false,
-      "requiresTenant": false
-    },
-    {
       "route": "/admin/pages/new",
       "file": "packages/web/src/app/admin/pages/new/page.tsx",
       "tables": [],
@@ -307,13 +280,22 @@
       "requiresTenant": false
     },
     {
-      "route": "/admin/runs/[runId]",
-      "file": "packages/web/src/app/admin/runs/[runId]/page.tsx",
+      "route": "/admin/pages/[id]/editor/EditorClient",
+      "file": "packages/web/src/app/admin/pages/[id]/editor/EditorClient.tsx",
       "tables": [],
       "functions": [],
       "rpcCalls": [],
       "requiresAuth": false,
-      "requiresTenant": true
+      "requiresTenant": false
+    },
+    {
+      "route": "/admin/pages/[id]/editor",
+      "file": "packages/web/src/app/admin/pages/[id]/editor/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
     },
     {
       "route": "/admin/runs/compare",
@@ -332,6 +314,15 @@
       "rpcCalls": [],
       "requiresAuth": false,
       "requiresTenant": false
+    },
+    {
+      "route": "/admin/runs/[runId]",
+      "file": "packages/web/src/app/admin/runs/[runId]/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
     },
     {
       "route": "/admin/settings",
@@ -406,8 +397,8 @@
       "requiresTenant": true
     },
     {
-      "route": "/app/executions/[id]",
-      "file": "packages/web/src/app/app/executions/[id]/page.tsx",
+      "route": "/app/executions",
+      "file": "packages/web/src/app/app/executions/page.tsx",
       "tables": [],
       "functions": [],
       "rpcCalls": [],
@@ -415,8 +406,8 @@
       "requiresTenant": false
     },
     {
-      "route": "/app/executions",
-      "file": "packages/web/src/app/app/executions/page.tsx",
+      "route": "/app/executions/[id]",
+      "file": "packages/web/src/app/app/executions/[id]/page.tsx",
       "tables": [],
       "functions": [],
       "rpcCalls": [],
@@ -505,15 +496,6 @@
       "requiresTenant": false
     },
     {
-      "route": "/app/proofs/[id]",
-      "file": "packages/web/src/app/app/proofs/[id]/page.tsx",
-      "tables": [],
-      "functions": [],
-      "rpcCalls": [],
-      "requiresAuth": false,
-      "requiresTenant": false
-    },
-    {
       "route": "/app/proofs",
       "file": "packages/web/src/app/app/proofs/page.tsx",
       "tables": [],
@@ -523,8 +505,8 @@
       "requiresTenant": false
     },
     {
-      "route": "/app/reconciliation/[id]",
-      "file": "packages/web/src/app/app/reconciliation/[id]/page.tsx",
+      "route": "/app/proofs/[id]",
+      "file": "packages/web/src/app/app/proofs/[id]/page.tsx",
       "tables": [],
       "functions": [],
       "rpcCalls": [],
@@ -534,6 +516,15 @@
     {
       "route": "/app/reconciliation",
       "file": "packages/web/src/app/app/reconciliation/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/app/reconciliation/[id]",
+      "file": "packages/web/src/app/app/reconciliation/[id]/page.tsx",
       "tables": [],
       "functions": [],
       "rpcCalls": [],
@@ -577,15 +568,6 @@
       "requiresTenant": false
     },
     {
-      "route": "/app/runs/[id]",
-      "file": "packages/web/src/app/app/runs/[id]/page.tsx",
-      "tables": [],
-      "functions": [],
-      "rpcCalls": [],
-      "requiresAuth": false,
-      "requiresTenant": false
-    },
-    {
       "route": "/app/runs",
       "file": "packages/web/src/app/app/runs/page.tsx",
       "tables": [],
@@ -593,6 +575,15 @@
       "rpcCalls": [],
       "requiresAuth": false,
       "requiresTenant": true
+    },
+    {
+      "route": "/app/runs/[id]",
+      "file": "packages/web/src/app/app/runs/[id]/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
     },
     {
       "route": "/app/settings",
@@ -712,8 +703,8 @@
       "requiresTenant": false
     },
     {
-      "route": "/changelog/[slug]",
-      "file": "packages/web/src/app/changelog/[slug]/page.tsx",
+      "route": "/changelog",
+      "file": "packages/web/src/app/changelog/page.tsx",
       "tables": [],
       "functions": [],
       "rpcCalls": [],
@@ -721,8 +712,8 @@
       "requiresTenant": false
     },
     {
-      "route": "/changelog",
-      "file": "packages/web/src/app/changelog/page.tsx",
+      "route": "/changelog/[slug]",
+      "file": "packages/web/src/app/changelog/[slug]/page.tsx",
       "tables": [],
       "functions": [],
       "rpcCalls": [],
@@ -820,6 +811,15 @@
       "requiresTenant": true
     },
     {
+      "route": "/console/agent-governance",
+      "file": "packages/web/src/app/console/agent-governance/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
       "route": "/console/ai-analysis",
       "file": "packages/web/src/app/console/ai-analysis/page.tsx",
       "tables": [],
@@ -894,6 +894,15 @@
     {
       "route": "/console/approvals",
       "file": "packages/web/src/app/console/approvals/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/audit-dossier",
+      "file": "packages/web/src/app/console/audit-dossier/page.tsx",
       "tables": [],
       "functions": [],
       "rpcCalls": [],
@@ -1000,6 +1009,15 @@
       "requiresTenant": false
     },
     {
+      "route": "/console/daemon",
+      "file": "packages/web/src/app/console/daemon/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
       "route": "/console/dashboards/liquidity",
       "file": "packages/web/src/app/console/dashboards/liquidity/page.tsx",
       "tables": [],
@@ -1081,8 +1099,8 @@
       "requiresTenant": false
     },
     {
-      "route": "/console/exceptions/[exceptionId]/ExceptionProofpackDownload",
-      "file": "packages/web/src/app/console/exceptions/[exceptionId]/ExceptionProofpackDownload.tsx",
+      "route": "/console/exceptions",
+      "file": "packages/web/src/app/console/exceptions/page.tsx",
       "tables": [],
       "functions": [],
       "rpcCalls": [],
@@ -1099,8 +1117,8 @@
       "requiresTenant": true
     },
     {
-      "route": "/console/exceptions/[exceptionId]",
-      "file": "packages/web/src/app/console/exceptions/[exceptionId]/page.tsx",
+      "route": "/console/exceptions/[exceptionId]/ExceptionProofpackDownload",
+      "file": "packages/web/src/app/console/exceptions/[exceptionId]/ExceptionProofpackDownload.tsx",
       "tables": [],
       "functions": [],
       "rpcCalls": [],
@@ -1108,8 +1126,8 @@
       "requiresTenant": false
     },
     {
-      "route": "/console/exceptions",
-      "file": "packages/web/src/app/console/exceptions/page.tsx",
+      "route": "/console/exceptions/[exceptionId]",
+      "file": "packages/web/src/app/console/exceptions/[exceptionId]/page.tsx",
       "tables": [],
       "functions": [],
       "rpcCalls": [],
@@ -1144,8 +1162,8 @@
       "requiresTenant": false
     },
     {
-      "route": "/console/ingestion/[ingestionId]",
-      "file": "packages/web/src/app/console/ingestion/[ingestionId]/page.tsx",
+      "route": "/console/ingestion/ai-mapper",
+      "file": "packages/web/src/app/console/ingestion/ai-mapper/page.tsx",
       "tables": [],
       "functions": [],
       "rpcCalls": [],
@@ -1153,8 +1171,8 @@
       "requiresTenant": false
     },
     {
-      "route": "/console/ingestion/ai-mapper",
-      "file": "packages/web/src/app/console/ingestion/ai-mapper/page.tsx",
+      "route": "/console/ingestion/[ingestionId]",
+      "file": "packages/web/src/app/console/ingestion/[ingestionId]/page.tsx",
       "tables": [],
       "functions": [],
       "rpcCalls": [],
@@ -1227,6 +1245,15 @@
     {
       "route": "/console/intelligence/rule-discovery",
       "file": "packages/web/src/app/console/intelligence/rule-discovery/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/ledger-parity",
+      "file": "packages/web/src/app/console/ledger-parity/page.tsx",
       "tables": [],
       "functions": [],
       "rpcCalls": [],
@@ -1432,8 +1459,8 @@
       "requiresTenant": false
     },
     {
-      "route": "/console/reconciliation/[runId]",
-      "file": "packages/web/src/app/console/reconciliation/[runId]/page.tsx",
+      "route": "/console/reconciliation",
+      "file": "packages/web/src/app/console/reconciliation/page.tsx",
       "tables": [],
       "functions": [],
       "rpcCalls": [],
@@ -1441,8 +1468,8 @@
       "requiresTenant": false
     },
     {
-      "route": "/console/reconciliation",
-      "file": "packages/web/src/app/console/reconciliation/page.tsx",
+      "route": "/console/reconciliation/[runId]",
+      "file": "packages/web/src/app/console/reconciliation/[runId]/page.tsx",
       "tables": [],
       "functions": [],
       "rpcCalls": [],
@@ -1468,15 +1495,6 @@
       "requiresTenant": true
     },
     {
-      "route": "/console/replay/[executionId]",
-      "file": "packages/web/src/app/console/replay/[executionId]/page.tsx",
-      "tables": [],
-      "functions": [],
-      "rpcCalls": [],
-      "requiresAuth": false,
-      "requiresTenant": false
-    },
-    {
       "route": "/console/replay",
       "file": "packages/web/src/app/console/replay/page.tsx",
       "tables": [],
@@ -1484,6 +1502,15 @@
       "rpcCalls": [],
       "requiresAuth": false,
       "requiresTenant": true
+    },
+    {
+      "route": "/console/replay/[executionId]",
+      "file": "packages/web/src/app/console/replay/[executionId]/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
     },
     {
       "route": "/console/replay-lab",
@@ -1511,6 +1538,15 @@
       "rpcCalls": [],
       "requiresAuth": false,
       "requiresTenant": false
+    },
+    {
+      "route": "/console/runs",
+      "file": "packages/web/src/app/console/runs/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
     },
     {
       "route": "/console/runs/[runId]/components/RunConfiguration",
@@ -1560,15 +1596,6 @@
     {
       "route": "/console/runs/[runId]",
       "file": "packages/web/src/app/console/runs/[runId]/page.tsx",
-      "tables": [],
-      "functions": [],
-      "rpcCalls": [],
-      "requiresAuth": false,
-      "requiresTenant": true
-    },
-    {
-      "route": "/console/runs",
-      "file": "packages/web/src/app/console/runs/page.tsx",
       "tables": [],
       "functions": [],
       "rpcCalls": [],
@@ -1639,8 +1666,8 @@
       "requiresTenant": true
     },
     {
-      "route": "/console/site/experiments/[id]",
-      "file": "packages/web/src/app/console/site/experiments/[id]/page.tsx",
+      "route": "/console/site/experiments",
+      "file": "packages/web/src/app/console/site/experiments/page.tsx",
       "tables": [],
       "functions": [],
       "rpcCalls": [],
@@ -1648,8 +1675,8 @@
       "requiresTenant": false
     },
     {
-      "route": "/console/site/experiments",
-      "file": "packages/web/src/app/console/site/experiments/page.tsx",
+      "route": "/console/site/experiments/[id]",
+      "file": "packages/web/src/app/console/site/experiments/[id]/page.tsx",
       "tables": [],
       "functions": [],
       "rpcCalls": [],
@@ -1729,6 +1756,15 @@
       "requiresTenant": true
     },
     {
+      "route": "/console/tables",
+      "file": "packages/web/src/app/console/tables/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": ["get_tables"],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
       "route": "/console/tables/[table]",
       "file": "packages/web/src/app/console/tables/[table]/page.tsx",
       "tables": [],
@@ -1738,11 +1774,11 @@
       "requiresTenant": false
     },
     {
-      "route": "/console/tables",
-      "file": "packages/web/src/app/console/tables/page.tsx",
+      "route": "/console/time-travel",
+      "file": "packages/web/src/app/console/time-travel/page.tsx",
       "tables": [],
       "functions": [],
-      "rpcCalls": ["get_tables"],
+      "rpcCalls": [],
       "requiresAuth": false,
       "requiresTenant": false
     },
@@ -1774,15 +1810,6 @@
       "requiresTenant": false
     },
     {
-      "route": "/console/workflows/[id]",
-      "file": "packages/web/src/app/console/workflows/[id]/page.tsx",
-      "tables": [],
-      "functions": [],
-      "rpcCalls": [],
-      "requiresAuth": false,
-      "requiresTenant": false
-    },
-    {
       "route": "/console/workflows/new",
       "file": "packages/web/src/app/console/workflows/new/page.tsx",
       "tables": [],
@@ -1794,6 +1821,15 @@
     {
       "route": "/console/workflows",
       "file": "packages/web/src/app/console/workflows/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/workflows/[id]",
+      "file": "packages/web/src/app/console/workflows/[id]/page.tsx",
       "tables": [],
       "functions": [],
       "rpcCalls": [],
@@ -1855,6 +1891,15 @@
       "requiresTenant": false
     },
     {
+      "route": "/dashboard/integrations",
+      "file": "packages/web/src/app/dashboard/integrations/page.tsx",
+      "tables": ["app_private.memberships", "connectors"],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": true,
+      "requiresTenant": true
+    },
+    {
       "route": "/dashboard/integrations/[integrationId]/logs",
       "file": "packages/web/src/app/dashboard/integrations/[integrationId]/logs/page.tsx",
       "tables": ["app_private.memberships", "connectors", "sync_runs"],
@@ -1873,13 +1918,13 @@
       "requiresTenant": false
     },
     {
-      "route": "/dashboard/integrations",
-      "file": "packages/web/src/app/dashboard/integrations/page.tsx",
-      "tables": ["app_private.memberships", "connectors"],
+      "route": "/dashboard/jobs",
+      "file": "packages/web/src/app/dashboard/jobs/page.tsx",
+      "tables": [],
       "functions": [],
       "rpcCalls": [],
-      "requiresAuth": true,
-      "requiresTenant": true
+      "requiresAuth": false,
+      "requiresTenant": false
     },
     {
       "route": "/dashboard/jobs/[jobId]/exceptions",
@@ -1893,15 +1938,6 @@
     {
       "route": "/dashboard/jobs/[jobId]",
       "file": "packages/web/src/app/dashboard/jobs/[jobId]/page.tsx",
-      "tables": [],
-      "functions": [],
-      "rpcCalls": [],
-      "requiresAuth": false,
-      "requiresTenant": false
-    },
-    {
-      "route": "/dashboard/jobs",
-      "file": "packages/web/src/app/dashboard/jobs/page.tsx",
       "tables": [],
       "functions": [],
       "rpcCalls": [],
@@ -2071,8 +2107,8 @@
       "requiresTenant": true
     },
     {
-      "route": "/docs/integrations/[integrationId]",
-      "file": "packages/web/src/app/docs/integrations/[integrationId]/page.tsx",
+      "route": "/docs/integrations",
+      "file": "packages/web/src/app/docs/integrations/page.tsx",
       "tables": [],
       "functions": [],
       "rpcCalls": [],
@@ -2080,8 +2116,8 @@
       "requiresTenant": false
     },
     {
-      "route": "/docs/integrations",
-      "file": "packages/web/src/app/docs/integrations/page.tsx",
+      "route": "/docs/integrations/[integrationId]",
+      "file": "packages/web/src/app/docs/integrations/[integrationId]/page.tsx",
       "tables": [],
       "functions": [],
       "rpcCalls": [],
@@ -2215,15 +2251,6 @@
       "requiresTenant": false
     },
     {
-      "route": "/edge-ai/nodes/[nodeId]",
-      "file": "packages/web/src/app/edge-ai/nodes/[nodeId]/page.tsx",
-      "tables": [],
-      "functions": [],
-      "rpcCalls": [],
-      "requiresAuth": false,
-      "requiresTenant": false
-    },
-    {
       "route": "/edge-ai/nodes/new",
       "file": "packages/web/src/app/edge-ai/nodes/new/page.tsx",
       "tables": [],
@@ -2235,6 +2262,15 @@
     {
       "route": "/edge-ai/nodes",
       "file": "packages/web/src/app/edge-ai/nodes/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/edge-ai/nodes/[nodeId]",
+      "file": "packages/web/src/app/edge-ai/nodes/[nodeId]/page.tsx",
       "tables": [],
       "functions": [],
       "rpcCalls": [],
@@ -2386,6 +2422,24 @@
       "requiresTenant": false
     },
     {
+      "route": "/health/detailed/route",
+      "file": "packages/web/src/app/health/detailed/route.ts",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/health/route",
+      "file": "packages/web/src/app/health/route.ts",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
       "route": "/integrations",
       "file": "packages/web/src/app/integrations/page.tsx",
       "tables": [],
@@ -2404,15 +2458,6 @@
       "requiresTenant": false
     },
     {
-      "route": "/intelligence/foundry/[datasetId]",
-      "file": "packages/web/src/app/intelligence/foundry/[datasetId]/page.tsx",
-      "tables": [],
-      "functions": [],
-      "rpcCalls": [],
-      "requiresAuth": false,
-      "requiresTenant": false
-    },
-    {
       "route": "/intelligence/foundry",
       "file": "packages/web/src/app/intelligence/foundry/page.tsx",
       "tables": [],
@@ -2424,6 +2469,15 @@
     {
       "route": "/intelligence/foundry/runs/[runId]",
       "file": "packages/web/src/app/intelligence/foundry/runs/[runId]/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/intelligence/foundry/[datasetId]",
+      "file": "packages/web/src/app/intelligence/foundry/[datasetId]/page.tsx",
       "tables": [],
       "functions": [],
       "rpcCalls": [],
@@ -2728,24 +2782,6 @@
       "requiresTenant": false
     },
     {
-      "route": "/reconcile/[id]/MatchDetailView",
-      "file": "packages/web/src/app/reconcile/[id]/MatchDetailView.tsx",
-      "tables": [],
-      "functions": [],
-      "rpcCalls": [],
-      "requiresAuth": false,
-      "requiresTenant": false
-    },
-    {
-      "route": "/reconcile/[id]",
-      "file": "packages/web/src/app/reconcile/[id]/page.tsx",
-      "tables": [],
-      "functions": [],
-      "rpcCalls": [],
-      "requiresAuth": false,
-      "requiresTenant": false
-    },
-    {
       "route": "/reconcile/actions",
       "file": "packages/web/src/app/reconcile/actions.ts",
       "tables": [],
@@ -2757,6 +2793,24 @@
     {
       "route": "/reconcile",
       "file": "packages/web/src/app/reconcile/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/reconcile/[id]/MatchDetailView",
+      "file": "packages/web/src/app/reconcile/[id]/MatchDetailView.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/reconcile/[id]",
+      "file": "packages/web/src/app/reconcile/[id]/page.tsx",
       "tables": [],
       "functions": [],
       "rpcCalls": [],
@@ -2953,8 +3007,8 @@
       "requiresTenant": true
     },
     {
-      "route": "/use-cases/[slug]",
-      "file": "packages/web/src/app/use-cases/[slug]/page.tsx",
+      "route": "/use-cases",
+      "file": "packages/web/src/app/use-cases/page.tsx",
       "tables": [],
       "functions": [],
       "rpcCalls": [],
@@ -2962,8 +3016,8 @@
       "requiresTenant": false
     },
     {
-      "route": "/use-cases",
-      "file": "packages/web/src/app/use-cases/page.tsx",
+      "route": "/use-cases/[slug]",
+      "file": "packages/web/src/app/use-cases/[slug]/page.tsx",
       "tables": [],
       "functions": [],
       "rpcCalls": [],
@@ -3043,8 +3097,8 @@
       "requiresTenant": false
     },
     {
-      "route": "/workspace/investigate/[ingestionId]",
-      "file": "packages/web/src/app/workspace/investigate/[ingestionId]/page.tsx",
+      "route": "/workspace/investigate",
+      "file": "packages/web/src/app/workspace/investigate/page.tsx",
       "tables": [],
       "functions": [],
       "rpcCalls": [],
@@ -3052,8 +3106,8 @@
       "requiresTenant": false
     },
     {
-      "route": "/workspace/investigate",
-      "file": "packages/web/src/app/workspace/investigate/page.tsx",
+      "route": "/workspace/investigate/[ingestionId]",
+      "file": "packages/web/src/app/workspace/investigate/[ingestionId]/page.tsx",
       "tables": [],
       "functions": [],
       "rpcCalls": [],
@@ -3068,6 +3122,15 @@
       "rpcCalls": [],
       "requiresAuth": false,
       "requiresTenant": false
+    },
+    {
+      "route": "/[slug]",
+      "file": "packages/web/src/app/[slug]/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
     }
   ],
   "orphanedTables": [
@@ -3104,15 +3167,6 @@
       "rpcCalls": [],
       "requiresAuth": false,
       "requiresTenant": false
-    },
-    {
-      "route": "/[slug]",
-      "file": "packages/web/src/app/[slug]/page.tsx",
-      "tables": [],
-      "functions": [],
-      "rpcCalls": [],
-      "requiresAuth": false,
-      "requiresTenant": true
     },
     {
       "route": "/about",
@@ -3187,15 +3241,6 @@
       "requiresTenant": false
     },
     {
-      "route": "/admin/exceptions/[id]",
-      "file": "packages/web/src/app/admin/exceptions/[id]/page.tsx",
-      "tables": [],
-      "functions": [],
-      "rpcCalls": [],
-      "requiresAuth": false,
-      "requiresTenant": true
-    },
-    {
       "route": "/admin/exceptions",
       "file": "packages/web/src/app/admin/exceptions/page.tsx",
       "tables": [],
@@ -3205,22 +3250,13 @@
       "requiresTenant": false
     },
     {
-      "route": "/admin/experiments/[id]/ExperimentDashboardClient",
-      "file": "packages/web/src/app/admin/experiments/[id]/ExperimentDashboardClient.tsx",
+      "route": "/admin/exceptions/[id]",
+      "file": "packages/web/src/app/admin/exceptions/[id]/page.tsx",
       "tables": [],
       "functions": [],
       "rpcCalls": [],
       "requiresAuth": false,
-      "requiresTenant": false
-    },
-    {
-      "route": "/admin/experiments/[id]",
-      "file": "packages/web/src/app/admin/experiments/[id]/page.tsx",
-      "tables": [],
-      "functions": [],
-      "rpcCalls": [],
-      "requiresAuth": false,
-      "requiresTenant": false
+      "requiresTenant": true
     },
     {
       "route": "/admin/experiments/new/NewExperimentForm",
@@ -3243,6 +3279,24 @@
     {
       "route": "/admin/experiments",
       "file": "packages/web/src/app/admin/experiments/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/admin/experiments/[id]/ExperimentDashboardClient",
+      "file": "packages/web/src/app/admin/experiments/[id]/ExperimentDashboardClient.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/admin/experiments/[id]",
+      "file": "packages/web/src/app/admin/experiments/[id]/page.tsx",
       "tables": [],
       "functions": [],
       "rpcCalls": [],
@@ -3322,24 +3376,6 @@
       "requiresTenant": false
     },
     {
-      "route": "/admin/pages/[id]/editor/EditorClient",
-      "file": "packages/web/src/app/admin/pages/[id]/editor/EditorClient.tsx",
-      "tables": [],
-      "functions": [],
-      "rpcCalls": [],
-      "requiresAuth": false,
-      "requiresTenant": false
-    },
-    {
-      "route": "/admin/pages/[id]/editor",
-      "file": "packages/web/src/app/admin/pages/[id]/editor/page.tsx",
-      "tables": [],
-      "functions": [],
-      "rpcCalls": [],
-      "requiresAuth": false,
-      "requiresTenant": false
-    },
-    {
       "route": "/admin/pages/new",
       "file": "packages/web/src/app/admin/pages/new/page.tsx",
       "tables": [],
@@ -3358,13 +3394,22 @@
       "requiresTenant": false
     },
     {
-      "route": "/admin/runs/[runId]",
-      "file": "packages/web/src/app/admin/runs/[runId]/page.tsx",
+      "route": "/admin/pages/[id]/editor/EditorClient",
+      "file": "packages/web/src/app/admin/pages/[id]/editor/EditorClient.tsx",
       "tables": [],
       "functions": [],
       "rpcCalls": [],
       "requiresAuth": false,
-      "requiresTenant": true
+      "requiresTenant": false
+    },
+    {
+      "route": "/admin/pages/[id]/editor",
+      "file": "packages/web/src/app/admin/pages/[id]/editor/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
     },
     {
       "route": "/admin/runs/compare",
@@ -3383,6 +3428,15 @@
       "rpcCalls": [],
       "requiresAuth": false,
       "requiresTenant": false
+    },
+    {
+      "route": "/admin/runs/[runId]",
+      "file": "packages/web/src/app/admin/runs/[runId]/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
     },
     {
       "route": "/admin/settings",
@@ -3457,8 +3511,8 @@
       "requiresTenant": true
     },
     {
-      "route": "/app/executions/[id]",
-      "file": "packages/web/src/app/app/executions/[id]/page.tsx",
+      "route": "/app/executions",
+      "file": "packages/web/src/app/app/executions/page.tsx",
       "tables": [],
       "functions": [],
       "rpcCalls": [],
@@ -3466,8 +3520,8 @@
       "requiresTenant": false
     },
     {
-      "route": "/app/executions",
-      "file": "packages/web/src/app/app/executions/page.tsx",
+      "route": "/app/executions/[id]",
+      "file": "packages/web/src/app/app/executions/[id]/page.tsx",
       "tables": [],
       "functions": [],
       "rpcCalls": [],
@@ -3556,15 +3610,6 @@
       "requiresTenant": false
     },
     {
-      "route": "/app/proofs/[id]",
-      "file": "packages/web/src/app/app/proofs/[id]/page.tsx",
-      "tables": [],
-      "functions": [],
-      "rpcCalls": [],
-      "requiresAuth": false,
-      "requiresTenant": false
-    },
-    {
       "route": "/app/proofs",
       "file": "packages/web/src/app/app/proofs/page.tsx",
       "tables": [],
@@ -3574,8 +3619,8 @@
       "requiresTenant": false
     },
     {
-      "route": "/app/reconciliation/[id]",
-      "file": "packages/web/src/app/app/reconciliation/[id]/page.tsx",
+      "route": "/app/proofs/[id]",
+      "file": "packages/web/src/app/app/proofs/[id]/page.tsx",
       "tables": [],
       "functions": [],
       "rpcCalls": [],
@@ -3585,6 +3630,15 @@
     {
       "route": "/app/reconciliation",
       "file": "packages/web/src/app/app/reconciliation/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/app/reconciliation/[id]",
+      "file": "packages/web/src/app/app/reconciliation/[id]/page.tsx",
       "tables": [],
       "functions": [],
       "rpcCalls": [],
@@ -3628,15 +3682,6 @@
       "requiresTenant": false
     },
     {
-      "route": "/app/runs/[id]",
-      "file": "packages/web/src/app/app/runs/[id]/page.tsx",
-      "tables": [],
-      "functions": [],
-      "rpcCalls": [],
-      "requiresAuth": false,
-      "requiresTenant": false
-    },
-    {
       "route": "/app/runs",
       "file": "packages/web/src/app/app/runs/page.tsx",
       "tables": [],
@@ -3644,6 +3689,15 @@
       "rpcCalls": [],
       "requiresAuth": false,
       "requiresTenant": true
+    },
+    {
+      "route": "/app/runs/[id]",
+      "file": "packages/web/src/app/app/runs/[id]/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
     },
     {
       "route": "/app/settings",
@@ -3763,8 +3817,8 @@
       "requiresTenant": false
     },
     {
-      "route": "/changelog/[slug]",
-      "file": "packages/web/src/app/changelog/[slug]/page.tsx",
+      "route": "/changelog",
+      "file": "packages/web/src/app/changelog/page.tsx",
       "tables": [],
       "functions": [],
       "rpcCalls": [],
@@ -3772,8 +3826,8 @@
       "requiresTenant": false
     },
     {
-      "route": "/changelog",
-      "file": "packages/web/src/app/changelog/page.tsx",
+      "route": "/changelog/[slug]",
+      "file": "packages/web/src/app/changelog/[slug]/page.tsx",
       "tables": [],
       "functions": [],
       "rpcCalls": [],
@@ -3862,6 +3916,15 @@
       "requiresTenant": true
     },
     {
+      "route": "/console/agent-governance",
+      "file": "packages/web/src/app/console/agent-governance/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
       "route": "/console/ai-analysis",
       "file": "packages/web/src/app/console/ai-analysis/page.tsx",
       "tables": [],
@@ -3936,6 +3999,15 @@
     {
       "route": "/console/approvals",
       "file": "packages/web/src/app/console/approvals/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/audit-dossier",
+      "file": "packages/web/src/app/console/audit-dossier/page.tsx",
       "tables": [],
       "functions": [],
       "rpcCalls": [],
@@ -4033,6 +4105,15 @@
       "requiresTenant": false
     },
     {
+      "route": "/console/daemon",
+      "file": "packages/web/src/app/console/daemon/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
       "route": "/console/dashboards/liquidity",
       "file": "packages/web/src/app/console/dashboards/liquidity/page.tsx",
       "tables": [],
@@ -4114,8 +4195,8 @@
       "requiresTenant": false
     },
     {
-      "route": "/console/exceptions/[exceptionId]/ExceptionProofpackDownload",
-      "file": "packages/web/src/app/console/exceptions/[exceptionId]/ExceptionProofpackDownload.tsx",
+      "route": "/console/exceptions",
+      "file": "packages/web/src/app/console/exceptions/page.tsx",
       "tables": [],
       "functions": [],
       "rpcCalls": [],
@@ -4132,8 +4213,8 @@
       "requiresTenant": true
     },
     {
-      "route": "/console/exceptions/[exceptionId]",
-      "file": "packages/web/src/app/console/exceptions/[exceptionId]/page.tsx",
+      "route": "/console/exceptions/[exceptionId]/ExceptionProofpackDownload",
+      "file": "packages/web/src/app/console/exceptions/[exceptionId]/ExceptionProofpackDownload.tsx",
       "tables": [],
       "functions": [],
       "rpcCalls": [],
@@ -4141,8 +4222,8 @@
       "requiresTenant": false
     },
     {
-      "route": "/console/exceptions",
-      "file": "packages/web/src/app/console/exceptions/page.tsx",
+      "route": "/console/exceptions/[exceptionId]",
+      "file": "packages/web/src/app/console/exceptions/[exceptionId]/page.tsx",
       "tables": [],
       "functions": [],
       "rpcCalls": [],
@@ -4177,8 +4258,8 @@
       "requiresTenant": false
     },
     {
-      "route": "/console/ingestion/[ingestionId]",
-      "file": "packages/web/src/app/console/ingestion/[ingestionId]/page.tsx",
+      "route": "/console/ingestion/ai-mapper",
+      "file": "packages/web/src/app/console/ingestion/ai-mapper/page.tsx",
       "tables": [],
       "functions": [],
       "rpcCalls": [],
@@ -4186,8 +4267,8 @@
       "requiresTenant": false
     },
     {
-      "route": "/console/ingestion/ai-mapper",
-      "file": "packages/web/src/app/console/ingestion/ai-mapper/page.tsx",
+      "route": "/console/ingestion/[ingestionId]",
+      "file": "packages/web/src/app/console/ingestion/[ingestionId]/page.tsx",
       "tables": [],
       "functions": [],
       "rpcCalls": [],
@@ -4260,6 +4341,15 @@
     {
       "route": "/console/intelligence/rule-discovery",
       "file": "packages/web/src/app/console/intelligence/rule-discovery/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/ledger-parity",
+      "file": "packages/web/src/app/console/ledger-parity/page.tsx",
       "tables": [],
       "functions": [],
       "rpcCalls": [],
@@ -4456,8 +4546,8 @@
       "requiresTenant": false
     },
     {
-      "route": "/console/reconciliation/[runId]",
-      "file": "packages/web/src/app/console/reconciliation/[runId]/page.tsx",
+      "route": "/console/reconciliation",
+      "file": "packages/web/src/app/console/reconciliation/page.tsx",
       "tables": [],
       "functions": [],
       "rpcCalls": [],
@@ -4465,8 +4555,8 @@
       "requiresTenant": false
     },
     {
-      "route": "/console/reconciliation",
-      "file": "packages/web/src/app/console/reconciliation/page.tsx",
+      "route": "/console/reconciliation/[runId]",
+      "file": "packages/web/src/app/console/reconciliation/[runId]/page.tsx",
       "tables": [],
       "functions": [],
       "rpcCalls": [],
@@ -4492,15 +4582,6 @@
       "requiresTenant": true
     },
     {
-      "route": "/console/replay/[executionId]",
-      "file": "packages/web/src/app/console/replay/[executionId]/page.tsx",
-      "tables": [],
-      "functions": [],
-      "rpcCalls": [],
-      "requiresAuth": false,
-      "requiresTenant": false
-    },
-    {
       "route": "/console/replay",
       "file": "packages/web/src/app/console/replay/page.tsx",
       "tables": [],
@@ -4508,6 +4589,15 @@
       "rpcCalls": [],
       "requiresAuth": false,
       "requiresTenant": true
+    },
+    {
+      "route": "/console/replay/[executionId]",
+      "file": "packages/web/src/app/console/replay/[executionId]/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
     },
     {
       "route": "/console/replay-lab",
@@ -4535,6 +4625,15 @@
       "rpcCalls": [],
       "requiresAuth": false,
       "requiresTenant": false
+    },
+    {
+      "route": "/console/runs",
+      "file": "packages/web/src/app/console/runs/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
     },
     {
       "route": "/console/runs/[runId]/components/RunConfiguration",
@@ -4584,15 +4683,6 @@
     {
       "route": "/console/runs/[runId]",
       "file": "packages/web/src/app/console/runs/[runId]/page.tsx",
-      "tables": [],
-      "functions": [],
-      "rpcCalls": [],
-      "requiresAuth": false,
-      "requiresTenant": true
-    },
-    {
-      "route": "/console/runs",
-      "file": "packages/web/src/app/console/runs/page.tsx",
       "tables": [],
       "functions": [],
       "rpcCalls": [],
@@ -4663,8 +4753,8 @@
       "requiresTenant": true
     },
     {
-      "route": "/console/site/experiments/[id]",
-      "file": "packages/web/src/app/console/site/experiments/[id]/page.tsx",
+      "route": "/console/site/experiments",
+      "file": "packages/web/src/app/console/site/experiments/page.tsx",
       "tables": [],
       "functions": [],
       "rpcCalls": [],
@@ -4672,8 +4762,8 @@
       "requiresTenant": false
     },
     {
-      "route": "/console/site/experiments",
-      "file": "packages/web/src/app/console/site/experiments/page.tsx",
+      "route": "/console/site/experiments/[id]",
+      "file": "packages/web/src/app/console/site/experiments/[id]/page.tsx",
       "tables": [],
       "functions": [],
       "rpcCalls": [],
@@ -4762,6 +4852,15 @@
       "requiresTenant": false
     },
     {
+      "route": "/console/time-travel",
+      "file": "packages/web/src/app/console/time-travel/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
       "route": "/console/trust-score",
       "file": "packages/web/src/app/console/trust-score/page.tsx",
       "tables": [],
@@ -4789,15 +4888,6 @@
       "requiresTenant": false
     },
     {
-      "route": "/console/workflows/[id]",
-      "file": "packages/web/src/app/console/workflows/[id]/page.tsx",
-      "tables": [],
-      "functions": [],
-      "rpcCalls": [],
-      "requiresAuth": false,
-      "requiresTenant": false
-    },
-    {
       "route": "/console/workflows/new",
       "file": "packages/web/src/app/console/workflows/new/page.tsx",
       "tables": [],
@@ -4809,6 +4899,15 @@
     {
       "route": "/console/workflows",
       "file": "packages/web/src/app/console/workflows/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/console/workflows/[id]",
+      "file": "packages/web/src/app/console/workflows/[id]/page.tsx",
       "tables": [],
       "functions": [],
       "rpcCalls": [],
@@ -4879,6 +4978,15 @@
       "requiresTenant": false
     },
     {
+      "route": "/dashboard/jobs",
+      "file": "packages/web/src/app/dashboard/jobs/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
       "route": "/dashboard/jobs/[jobId]/exceptions",
       "file": "packages/web/src/app/dashboard/jobs/[jobId]/exceptions/page.tsx",
       "tables": [],
@@ -4890,15 +4998,6 @@
     {
       "route": "/dashboard/jobs/[jobId]",
       "file": "packages/web/src/app/dashboard/jobs/[jobId]/page.tsx",
-      "tables": [],
-      "functions": [],
-      "rpcCalls": [],
-      "requiresAuth": false,
-      "requiresTenant": false
-    },
-    {
-      "route": "/dashboard/jobs",
-      "file": "packages/web/src/app/dashboard/jobs/page.tsx",
       "tables": [],
       "functions": [],
       "rpcCalls": [],
@@ -5059,8 +5158,8 @@
       "requiresTenant": true
     },
     {
-      "route": "/docs/integrations/[integrationId]",
-      "file": "packages/web/src/app/docs/integrations/[integrationId]/page.tsx",
+      "route": "/docs/integrations",
+      "file": "packages/web/src/app/docs/integrations/page.tsx",
       "tables": [],
       "functions": [],
       "rpcCalls": [],
@@ -5068,8 +5167,8 @@
       "requiresTenant": false
     },
     {
-      "route": "/docs/integrations",
-      "file": "packages/web/src/app/docs/integrations/page.tsx",
+      "route": "/docs/integrations/[integrationId]",
+      "file": "packages/web/src/app/docs/integrations/[integrationId]/page.tsx",
       "tables": [],
       "functions": [],
       "rpcCalls": [],
@@ -5203,15 +5302,6 @@
       "requiresTenant": false
     },
     {
-      "route": "/edge-ai/nodes/[nodeId]",
-      "file": "packages/web/src/app/edge-ai/nodes/[nodeId]/page.tsx",
-      "tables": [],
-      "functions": [],
-      "rpcCalls": [],
-      "requiresAuth": false,
-      "requiresTenant": false
-    },
-    {
       "route": "/edge-ai/nodes/new",
       "file": "packages/web/src/app/edge-ai/nodes/new/page.tsx",
       "tables": [],
@@ -5223,6 +5313,15 @@
     {
       "route": "/edge-ai/nodes",
       "file": "packages/web/src/app/edge-ai/nodes/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/edge-ai/nodes/[nodeId]",
+      "file": "packages/web/src/app/edge-ai/nodes/[nodeId]/page.tsx",
       "tables": [],
       "functions": [],
       "rpcCalls": [],
@@ -5374,6 +5473,24 @@
       "requiresTenant": false
     },
     {
+      "route": "/health/detailed/route",
+      "file": "packages/web/src/app/health/detailed/route.ts",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/health/route",
+      "file": "packages/web/src/app/health/route.ts",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
       "route": "/integrations",
       "file": "packages/web/src/app/integrations/page.tsx",
       "tables": [],
@@ -5392,15 +5509,6 @@
       "requiresTenant": false
     },
     {
-      "route": "/intelligence/foundry/[datasetId]",
-      "file": "packages/web/src/app/intelligence/foundry/[datasetId]/page.tsx",
-      "tables": [],
-      "functions": [],
-      "rpcCalls": [],
-      "requiresAuth": false,
-      "requiresTenant": false
-    },
-    {
       "route": "/intelligence/foundry",
       "file": "packages/web/src/app/intelligence/foundry/page.tsx",
       "tables": [],
@@ -5412,6 +5520,15 @@
     {
       "route": "/intelligence/foundry/runs/[runId]",
       "file": "packages/web/src/app/intelligence/foundry/runs/[runId]/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/intelligence/foundry/[datasetId]",
+      "file": "packages/web/src/app/intelligence/foundry/[datasetId]/page.tsx",
       "tables": [],
       "functions": [],
       "rpcCalls": [],
@@ -5716,24 +5833,6 @@
       "requiresTenant": false
     },
     {
-      "route": "/reconcile/[id]/MatchDetailView",
-      "file": "packages/web/src/app/reconcile/[id]/MatchDetailView.tsx",
-      "tables": [],
-      "functions": [],
-      "rpcCalls": [],
-      "requiresAuth": false,
-      "requiresTenant": false
-    },
-    {
-      "route": "/reconcile/[id]",
-      "file": "packages/web/src/app/reconcile/[id]/page.tsx",
-      "tables": [],
-      "functions": [],
-      "rpcCalls": [],
-      "requiresAuth": false,
-      "requiresTenant": false
-    },
-    {
       "route": "/reconcile/actions",
       "file": "packages/web/src/app/reconcile/actions.ts",
       "tables": [],
@@ -5745,6 +5844,24 @@
     {
       "route": "/reconcile",
       "file": "packages/web/src/app/reconcile/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
+    },
+    {
+      "route": "/reconcile/[id]/MatchDetailView",
+      "file": "packages/web/src/app/reconcile/[id]/MatchDetailView.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": false
+    },
+    {
+      "route": "/reconcile/[id]",
+      "file": "packages/web/src/app/reconcile/[id]/page.tsx",
       "tables": [],
       "functions": [],
       "rpcCalls": [],
@@ -5941,8 +6058,8 @@
       "requiresTenant": true
     },
     {
-      "route": "/use-cases/[slug]",
-      "file": "packages/web/src/app/use-cases/[slug]/page.tsx",
+      "route": "/use-cases",
+      "file": "packages/web/src/app/use-cases/page.tsx",
       "tables": [],
       "functions": [],
       "rpcCalls": [],
@@ -5950,8 +6067,8 @@
       "requiresTenant": false
     },
     {
-      "route": "/use-cases",
-      "file": "packages/web/src/app/use-cases/page.tsx",
+      "route": "/use-cases/[slug]",
+      "file": "packages/web/src/app/use-cases/[slug]/page.tsx",
       "tables": [],
       "functions": [],
       "rpcCalls": [],
@@ -6031,8 +6148,8 @@
       "requiresTenant": false
     },
     {
-      "route": "/workspace/investigate/[ingestionId]",
-      "file": "packages/web/src/app/workspace/investigate/[ingestionId]/page.tsx",
+      "route": "/workspace/investigate",
+      "file": "packages/web/src/app/workspace/investigate/page.tsx",
       "tables": [],
       "functions": [],
       "rpcCalls": [],
@@ -6040,8 +6157,8 @@
       "requiresTenant": false
     },
     {
-      "route": "/workspace/investigate",
-      "file": "packages/web/src/app/workspace/investigate/page.tsx",
+      "route": "/workspace/investigate/[ingestionId]",
+      "file": "packages/web/src/app/workspace/investigate/[ingestionId]/page.tsx",
       "tables": [],
       "functions": [],
       "rpcCalls": [],
@@ -6056,6 +6173,15 @@
       "rpcCalls": [],
       "requiresAuth": false,
       "requiresTenant": false
+    },
+    {
+      "route": "/[slug]",
+      "file": "packages/web/src/app/[slug]/page.tsx",
+      "tables": [],
+      "functions": [],
+      "rpcCalls": [],
+      "requiresAuth": false,
+      "requiresTenant": true
     }
   ]
 }

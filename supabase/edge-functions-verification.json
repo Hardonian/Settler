@@ -5,7 +5,7 @@
   "functions": [
     {
       "name": "agent-monitor",
-      "path": "/home/scott/repos/Settler/supabase/functions/agent-monitor/index.ts",
+      "path": "C:\\Users\\scott\\GitHub\\Settler\\supabase\\functions\\agent-monitor\\index.ts",
       "tables": ["agent_runs"],
       "functions": [
         "serve",
@@ -33,7 +33,7 @@
     },
     {
       "name": "agent-orchestrator",
-      "path": "/home/scott/repos/Settler/supabase/functions/agent-orchestrator/index.ts",
+      "path": "C:\\Users\\scott\\GitHub\\Settler\\supabase\\functions\\agent-orchestrator\\index.ts",
       "tables": ["agent_runs"],
       "functions": [
         "serve",
@@ -60,7 +60,7 @@
     },
     {
       "name": "architecture-sentinel-agent",
-      "path": "/home/scott/repos/Settler/supabase/functions/architecture-sentinel-agent/index.ts",
+      "path": "C:\\Users\\scott\\GitHub\\Settler\\supabase\\functions\\architecture-sentinel-agent\\index.ts",
       "tables": [
         "agent_runs",
         "schema_migrations",
@@ -105,7 +105,7 @@
     },
     {
       "name": "auth_edge_guard",
-      "path": "/home/scott/repos/Settler/supabase/functions/auth_edge_guard/index.ts",
+      "path": "C:\\Users\\scott\\GitHub\\Settler\\supabase\\functions\\auth_edge_guard\\index.ts",
       "tables": [],
       "functions": [
         "get",
@@ -130,7 +130,7 @@
     },
     {
       "name": "automated-alerting",
-      "path": "/home/scott/repos/Settler/supabase/functions/automated-alerting/index.ts",
+      "path": "C:\\Users\\scott\\GitHub\\Settler\\supabase\\functions\\automated-alerting\\index.ts",
       "tables": ["alerts", "users", "subscriptions", "agent_runs"],
       "functions": [
         "serve",
@@ -169,7 +169,7 @@
     },
     {
       "name": "automated-diagnostics",
-      "path": "/home/scott/repos/Settler/supabase/functions/automated-diagnostics/index.ts",
+      "path": "C:\\Users\\scott\\GitHub\\Settler\\supabase\\functions\\automated-diagnostics\\index.ts",
       "tables": ["stripe_event_log", "subscriptions", "usage_events", "email_sends", "diagnostics"],
       "functions": [
         "serve",
@@ -201,7 +201,7 @@
     },
     {
       "name": "automated-health-checks",
-      "path": "/home/scott/repos/Settler/supabase/functions/automated-health-checks/index.ts",
+      "path": "C:\\Users\\scott\\GitHub\\Settler\\supabase\\functions\\automated-health-checks\\index.ts",
       "tables": [
         "profiles",
         "stripe_event_log",
@@ -236,7 +236,7 @@
     },
     {
       "name": "automated-onboarding-emails",
-      "path": "/home/scott/repos/Settler/supabase/functions/automated-onboarding-emails/index.ts",
+      "path": "C:\\Users\\scott\\GitHub\\Settler\\supabase\\functions\\automated-onboarding-emails\\index.ts",
       "tables": ["profiles", "onboarding_progress", "email_sends"],
       "functions": [
         "serve",
@@ -269,7 +269,7 @@
     },
     {
       "name": "automated-reconciliation-review",
-      "path": "/home/scott/repos/Settler/supabase/functions/automated-reconciliation-review/index.ts",
+      "path": "C:\\Users\\scott\\GitHub\\Settler\\supabase\\functions\\automated-reconciliation-review\\index.ts",
       "tables": ["reconciliation_matches", "recon_audits", "reconciliation_runs"],
       "functions": [
         "serve",
@@ -295,7 +295,7 @@
     },
     {
       "name": "autonomous-cfo-agent",
-      "path": "/home/scott/repos/Settler/supabase/functions/autonomous-cfo-agent/index.ts",
+      "path": "C:\\Users\\scott\\GitHub\\Settler\\supabase\\functions\\autonomous-cfo-agent\\index.ts",
       "tables": [
         "agent_runs",
         "subscriptions",
@@ -337,7 +337,7 @@
     },
     {
       "name": "collect-reality-metrics",
-      "path": "/home/scott/repos/Settler/supabase/functions/collect-reality-metrics/index.ts",
+      "path": "C:\\Users\\scott\\GitHub\\Settler\\supabase\\functions\\collect-reality-metrics\\index.ts",
       "tables": [
         "subscriptions",
         "stripe_events",
@@ -369,7 +369,7 @@
     },
     {
       "name": "compute-bill",
-      "path": "/home/scott/repos/Settler/supabase/functions/compute-bill/index.ts",
+      "path": "C:\\Users\\scott\\GitHub\\Settler\\supabase\\functions\\compute-bill\\index.ts",
       "tables": ["billing_accounts", "subscriptions"],
       "functions": [
         "serve",
@@ -391,7 +391,7 @@
     },
     {
       "name": "generate-founder-digest",
-      "path": "/home/scott/repos/Settler/supabase/functions/generate-founder-digest/index.ts",
+      "path": "C:\\Users\\scott\\GitHub\\Settler\\supabase\\functions\\generate-founder-digest\\index.ts",
       "tables": ["users", "subscriptions", "reconciliation_jobs", "user_lifecycle"],
       "functions": [
         "serve",
@@ -414,7 +414,7 @@
     },
     {
       "name": "generate-monthly-export",
-      "path": "/home/scott/repos/Settler/supabase/functions/generate-monthly-export/index.ts",
+      "path": "C:\\Users\\scott\\GitHub\\Settler\\supabase\\functions\\generate-monthly-export\\index.ts",
       "tables": ["users", "user_lifecycle", "subscriptions", "reconciliation_jobs"],
       "functions": [
         "serve",
@@ -434,7 +434,7 @@
     },
     {
       "name": "generate-ops-insights",
-      "path": "/home/scott/repos/Settler/supabase/functions/generate-ops-insights/index.ts",
+      "path": "C:\\Users\\scott\\GitHub\\Settler\\supabase\\functions\\generate-ops-insights\\index.ts",
       "tables": [
         "ops_insights",
         "ops_recommendations",
@@ -472,7 +472,7 @@
     },
     {
       "name": "generate-weekly-briefing",
-      "path": "/home/scott/repos/Settler/supabase/functions/generate-weekly-briefing/index.ts",
+      "path": "C:\\Users\\scott\\GitHub\\Settler\\supabase\\functions\\generate-weekly-briefing\\index.ts",
       "tables": [
         "ops_briefings",
         "ops_insights",
@@ -509,7 +509,7 @@
     },
     {
       "name": "integration-sync-paypal",
-      "path": "/home/scott/repos/Settler/supabase/functions/integration-sync-paypal/index.ts",
+      "path": "C:\\Users\\scott\\GitHub\\Settler\\supabase\\functions\\integration-sync-paypal\\index.ts",
       "tables": [],
       "functions": ["serve", "get", "stringify", "json", "rpc", "error"],
       "rpcCalls": ["log_usage_event"],
@@ -518,7 +518,7 @@
     },
     {
       "name": "integration-sync-scheduler",
-      "path": "/home/scott/repos/Settler/supabase/functions/integration-sync-scheduler/index.ts",
+      "path": "C:\\Users\\scott\\GitHub\\Settler\\supabase\\functions\\integration-sync-scheduler\\index.ts",
       "tables": ["connectors"],
       "functions": [
         "serve",
@@ -540,7 +540,7 @@
     },
     {
       "name": "integration-sync-shopify",
-      "path": "/home/scott/repos/Settler/supabase/functions/integration-sync-shopify/index.ts",
+      "path": "C:\\Users\\scott\\GitHub\\Settler\\supabase\\functions\\integration-sync-shopify\\index.ts",
       "tables": [],
       "functions": ["serve", "get", "stringify", "json", "rpc", "error"],
       "rpcCalls": ["log_usage_event"],
@@ -549,7 +549,7 @@
     },
     {
       "name": "integration-sync-shopify-secure",
-      "path": "/home/scott/repos/Settler/supabase/functions/integration-sync-shopify-secure/index.ts",
+      "path": "C:\\Users\\scott\\GitHub\\Settler\\supabase\\functions\\integration-sync-shopify-secure\\index.ts",
       "tables": ["ingestion_sources", "billing_accounts", "integration_health"],
       "functions": [
         "now",
@@ -587,7 +587,7 @@
     },
     {
       "name": "integration-sync-stripe",
-      "path": "/home/scott/repos/Settler/supabase/functions/integration-sync-stripe/index.ts",
+      "path": "C:\\Users\\scott\\GitHub\\Settler\\supabase\\functions\\integration-sync-stripe\\index.ts",
       "tables": [],
       "functions": ["serve", "get", "stringify", "json", "rpc", "error"],
       "rpcCalls": ["log_usage_event"],
@@ -596,7 +596,7 @@
     },
     {
       "name": "integration-sync-tiktok",
-      "path": "/home/scott/repos/Settler/supabase/functions/integration-sync-tiktok/index.ts",
+      "path": "C:\\Users\\scott\\GitHub\\Settler\\supabase\\functions\\integration-sync-tiktok\\index.ts",
       "tables": [],
       "functions": ["serve", "get", "stringify", "json", "rpc", "error"],
       "rpcCalls": ["log_usage_event"],
@@ -605,7 +605,7 @@
     },
     {
       "name": "log-usage",
-      "path": "/home/scott/repos/Settler/supabase/functions/log-usage/index.ts",
+      "path": "C:\\Users\\scott\\GitHub\\Settler\\supabase\\functions\\log-usage\\index.ts",
       "tables": ["billing_accounts"],
       "functions": [
         "serve",
@@ -625,7 +625,7 @@
     },
     {
       "name": "log-usage-secure",
-      "path": "/home/scott/repos/Settler/supabase/functions/log-usage-secure/index.ts",
+      "path": "C:\\Users\\scott\\GitHub\\Settler\\supabase\\functions\\log-usage-secure\\index.ts",
       "tables": ["billing_accounts"],
       "functions": [
         "now",
@@ -648,7 +648,7 @@
     },
     {
       "name": "organic-growth-agent",
-      "path": "/home/scott/repos/Settler/supabase/functions/organic-growth-agent/index.ts",
+      "path": "C:\\Users\\scott\\GitHub\\Settler\\supabase\\functions\\organic-growth-agent\\index.ts",
       "tables": ["agent_runs", "feature_flags", "usage_events", "error_logs", "growth_content"],
       "functions": [
         "get",
@@ -683,7 +683,7 @@
     },
     {
       "name": "preemptive-support-agent",
-      "path": "/home/scott/repos/Settler/supabase/functions/preemptive-support-agent/index.ts",
+      "path": "C:\\Users\\scott\\GitHub\\Settler\\supabase\\functions\\preemptive-support-agent\\index.ts",
       "tables": ["agent_runs", "error_logs", "analytics_events", "preemptive_support_actions"],
       "functions": [
         "get",
@@ -719,7 +719,7 @@
     },
     {
       "name": "release-gatekeeper-agent",
-      "path": "/home/scott/repos/Settler/supabase/functions/release-gatekeeper-agent/index.ts",
+      "path": "C:\\Users\\scott\\GitHub\\Settler\\supabase\\functions\\release-gatekeeper-agent\\index.ts",
       "tables": [
         "agent_runs",
         "error_logs",
@@ -763,7 +763,7 @@
     },
     {
       "name": "retry-queue-processor",
-      "path": "/home/scott/repos/Settler/supabase/functions/retry-queue-processor/index.ts",
+      "path": "C:\\Users\\scott\\GitHub\\Settler\\supabase\\functions\\retry-queue-processor\\index.ts",
       "tables": ["retry_queue", "connectors"],
       "functions": [
         "serve",
@@ -792,7 +792,7 @@
     },
     {
       "name": "strategic-governor-agent",
-      "path": "/home/scott/repos/Settler/supabase/functions/strategic-governor-agent/index.ts",
+      "path": "C:\\Users\\scott\\GitHub\\Settler\\supabase\\functions\\strategic-governor-agent\\index.ts",
       "tables": [
         "agent_runs",
         "users",
@@ -844,7 +844,7 @@
     },
     {
       "name": "sync-usage-to-stripe",
-      "path": "/home/scott/repos/Settler/supabase/functions/sync-usage-to-stripe/index.ts",
+      "path": "C:\\Users\\scott\\GitHub\\Settler\\supabase\\functions\\sync-usage-to-stripe\\index.ts",
       "tables": ["billing_accounts", "subscriptions", "usage_aggregate_daily"],
       "functions": [
         "serve",
@@ -870,7 +870,7 @@
     },
     {
       "name": "trigger-upgrade-alert",
-      "path": "/home/scott/repos/Settler/supabase/functions/trigger-upgrade-alert/index.ts",
+      "path": "C:\\Users\\scott\\GitHub\\Settler\\supabase\\functions\\trigger-upgrade-alert\\index.ts",
       "tables": ["billing_accounts"],
       "functions": [
         "serve",
@@ -890,7 +890,7 @@
     },
     {
       "name": "user-intent-synthesizer-agent",
-      "path": "/home/scott/repos/Settler/supabase/functions/user-intent-synthesizer-agent/index.ts",
+      "path": "C:\\Users\\scott\\GitHub\\Settler\\supabase\\functions\\user-intent-synthesizer-agent\\index.ts",
       "tables": [
         "agent_runs",
         "receipt_uploads",
@@ -937,7 +937,7 @@
     },
     {
       "name": "weekly-reality-loop",
-      "path": "/home/scott/repos/Settler/supabase/functions/weekly-reality-loop/index.ts",
+      "path": "C:\\Users\\scott\\GitHub\\Settler\\supabase\\functions\\weekly-reality-loop\\index.ts",
       "tables": ["weekly_snapshots", "reality_metrics", "reality_events"],
       "functions": [
         "serve",
