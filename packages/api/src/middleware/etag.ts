@@ -1,24 +1,58 @@
 /**
  * ETag Middleware
- * Implements HTTP ETags for cache validation on GET requests
+ * Implements RFC 7232 HTTP ETags with SHA-256 for deterministic cache validation on GET/HEAD requests
  */
 
 import { Request, Response, NextFunction } from "express";
-import { createHash } from "crypto";
+import { createHash } from "node:crypto";
 
 export interface ETagRequest extends Request {
   etag?: string;
 }
 
 /**
- * Generate ETag from response body
+ * Normalizes an ETag by stripping weak validator prefix 'W/' and outer quotes
  */
-function generateETag(body: string): string {
-  return `"${createHash("md5").update(body).digest("hex")}"`;
+export function normalizeETag(tag: string): string {
+  let cleaned = tag.trim();
+  if (cleaned.startsWith("W/") || cleaned.startsWith("w/")) {
+    cleaned = cleaned.substring(2).trim();
+  }
+  if (cleaned.startsWith('"') && cleaned.endsWith('"') && cleaned.length >= 2) {
+    cleaned = cleaned.substring(1, cleaned.length - 1);
+  }
+  return cleaned;
 }
 
 /**
- * ETag middleware for GET requests
+ * Evaluates whether an incoming HTTP header matches the resource's current ETag according to RFC 7232
+ */
+export function isETagMatch(
+  headerValue: string | string[] | undefined,
+  currentETag: string
+): boolean {
+  if (!headerValue) return false;
+  const headerStr = Array.isArray(headerValue) ? headerValue.join(",") : headerValue;
+  const normalizedCurrent = normalizeETag(currentETag);
+
+  const candidates = headerStr.split(",").map((c) => c.trim());
+  for (const candidate of candidates) {
+    if (candidate === "*") return true;
+    if (normalizeETag(candidate) === normalizedCurrent) return true;
+  }
+  return false;
+}
+
+/**
+ * Generate cryptographically sound, collision-resistant ETag using SHA-256
+ */
+export function generateETag(body: string | Buffer): string {
+  const digest = createHash("sha256").update("settler:etag:v1\0").update(body).digest("hex");
+  return `"${digest.substring(0, 32)}"`;
+}
+
+/**
+ * ETag middleware for GET and HEAD requests
  */
 export function etagMiddleware(req: Request, res: Response, next: NextFunction): void {
   // Only apply to GET/HEAD requests
@@ -31,16 +65,14 @@ export function etagMiddleware(req: Request, res: Response, next: NextFunction):
 
   // Override res.send
   res.send = function (body: unknown) {
-    const bodyString = typeof body === "string" ? body : JSON.stringify(body);
-    const etag = generateETag(bodyString);
+    const bodyContent =
+      typeof body === "string" || Buffer.isBuffer(body) ? body : JSON.stringify(body);
+    const etag = generateETag(bodyContent);
 
-    // Set ETag header
     res.setHeader("ETag", etag);
 
-    // Check if client sent If-None-Match header
-    const clientETag = req.headers["if-none-match"];
-    if (clientETag === etag || clientETag === `W/${etag}`) {
-      // Resource hasn't changed
+    const ifNoneMatch = req.headers["if-none-match"];
+    if (isETagMatch(ifNoneMatch, etag)) {
       res.status(304).end();
       return res;
     }
@@ -55,8 +87,8 @@ export function etagMiddleware(req: Request, res: Response, next: NextFunction):
 
     res.setHeader("ETag", etag);
 
-    const clientETag = req.headers["if-none-match"];
-    if (clientETag === etag || clientETag === `W/${etag}`) {
+    const ifNoneMatch = req.headers["if-none-match"];
+    if (isETagMatch(ifNoneMatch, etag)) {
       res.status(304).end();
       return res;
     }

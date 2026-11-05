@@ -241,6 +241,42 @@ class TransactionsClient:
             params["endDate"] = end_date
         return self._client._request("GET", "/transactions", params=params)
 
+    def stream(
+        self,
+        batch_size: int = 100,
+        provider: Optional[str] = None,
+        status: Optional[str] = None,
+        type: Optional[str] = None,
+        payment_id: Optional[str] = None,
+        start_date: Optional[str] = None,
+        end_date: Optional[str] = None,
+    ) -> Any:
+        """Stream transactions page-by-page as a generator without buffering the entire dataset in memory."""
+        page = 1
+        while True:
+            response = self.list(
+                page=page,
+                limit=batch_size,
+                provider=provider,
+                status=status,
+                type=type,
+                payment_id=payment_id,
+                start_date=start_date,
+                end_date=end_date,
+            )
+            items = response.get("data") or response.get("transactions") or []
+            if not isinstance(items, list) or len(items) == 0:
+                break
+            for item in items:
+                yield item
+            pagination = response.get("pagination") or {}
+            total_pages = pagination.get("totalPages") or pagination.get("total_pages")
+            if total_pages is not None and page >= total_pages:
+                break
+            if len(items) < batch_size:
+                break
+            page += 1
+
     def get(self, transaction_id: str) -> Dict[str, Any]:
         """Get a transaction by ID."""
         return self._client._request("GET", f"/transactions/{transaction_id}")
