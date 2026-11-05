@@ -248,11 +248,11 @@ async function checkRLSPolicies() {
     const supabase = createSupabaseClient(supabaseUrl, supabaseServiceRoleKey);
 
     // Check if function exists
-    const { data: functions, error } = await supabase
-      .rpc("exec_sql", {
+    const { data: functions, error } = await Promise.resolve(
+      supabase.rpc("exec_sql", {
         query: "SELECT proname FROM pg_proc WHERE proname = 'current_user_id'",
       })
-      .catch(() => ({ data: null, error: { message: "Cannot check functions" } }));
+    ).catch(() => ({ data: null, error: { message: "Cannot check functions" } }));
 
     if (error) {
       addResult(

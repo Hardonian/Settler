@@ -757,6 +757,12 @@ async function main(): Promise<void> {
       process.exit(1);
     }
     rawInput = fs.readFileSync(filePath, "utf-8");
+  } else if (process.stdin.isTTY) {
+    process.stderr.write(
+      "Usage: echo '<json>' | tsx scripts/architectural-compliance-evaluator.ts\n" +
+        "   or: tsx scripts/architectural-compliance-evaluator.ts --input <file.json>\n"
+    );
+    process.exit(1);
   } else {
     // Read from stdin
     await new Promise<void>((resolve) => {
