@@ -37,8 +37,10 @@ export function VirtualizedTable({
   }
 
   const visibleRange = useMemo(() => {
-    const startIndex = Math.floor(scrollTop / rowHeight);
-    const endIndex = Math.min(startIndex + Math.ceil(height / rowHeight) + 1, transactions.length);
+    const rawStart = Math.floor(scrollTop / rowHeight);
+    const startIndex = Math.max(0, rawStart - 3); // 3-row overscan above
+    const count = Math.ceil(height / rowHeight) + 6; // 3-row overscan below
+    const endIndex = Math.min(startIndex + count, transactions.length);
     return { startIndex, endIndex };
   }, [scrollTop, rowHeight, height, transactions.length]);
 
@@ -48,6 +50,10 @@ export function VirtualizedTable({
 
   const totalHeight = transactions.length * rowHeight;
   const offsetY = visibleRange.startIndex * rowHeight;
+  const bottomSpacerHeight = Math.max(
+    0,
+    totalHeight - offsetY - visibleTransactions.length * rowHeight
+  );
 
   const handleScroll = useCallback((e: React.UIEvent<HTMLDivElement>) => {
     setScrollTop(e.currentTarget.scrollTop);
@@ -79,7 +85,7 @@ export function VirtualizedTable({
       }}
       onScroll={handleScroll}
     >
-      <div style={{ height: totalHeight, position: "relative" }}>
+      <div style={{ minHeight: totalHeight, position: "relative" }}>
         <table style={{ width: "100%", borderCollapse: "collapse" }}>
           <thead style={{ position: "sticky", top: 0, backgroundColor: "#f9fafb", zIndex: 10 }}>
             <tr>
@@ -110,14 +116,21 @@ export function VirtualizedTable({
               </th>
             </tr>
           </thead>
-          <tbody style={{ transform: `translateY(${offsetY}px)` }}>
+          <tbody>
+            {offsetY > 0 && (
+              <tr style={{ height: offsetY }} aria-hidden="true">
+                <td colSpan={5} style={{ padding: 0, border: "none" }} />
+              </tr>
+            )}
             {visibleTransactions.map((tx, index) => (
               <tr
                 key={tx.id}
                 onClick={() => onSelect?.(tx)}
                 style={{
+                  height: rowHeight,
                   cursor: onSelect ? "pointer" : "default",
-                  backgroundColor: index % 2 === 0 ? "white" : "#f9fafb",
+                  backgroundColor:
+                    (visibleRange.startIndex + index) % 2 === 0 ? "white" : "#f9fafb",
                   borderBottom: "1px solid #e5e7eb",
                 }}
               >
@@ -130,6 +143,11 @@ export function VirtualizedTable({
                 <td style={{ padding: "0.75rem" }}>{tx.status}</td>
               </tr>
             ))}
+            {bottomSpacerHeight > 0 && (
+              <tr style={{ height: bottomSpacerHeight }} aria-hidden="true">
+                <td colSpan={5} style={{ padding: 0, border: "none" }} />
+              </tr>
+            )}
           </tbody>
         </table>
       </div>
