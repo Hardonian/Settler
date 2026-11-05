@@ -25,7 +25,7 @@ serve(async (req) => {
 
     // Get ready jobs
     const { data: jobs, error: jobsError } = await supabase
-      .from("retry_queue")
+      .from("job_failure_log")
       .select("*")
       .eq("status", "pending")
       .lte("next_retry_at", new Date().toISOString())
@@ -65,7 +65,7 @@ serve(async (req) => {
         if (!connector) {
           // Mark job as failed
           await supabase
-            .from("retry_queue")
+            .from("job_failure_log")
             .update({
               status: "failed",
               error_message: "Connector not found",
@@ -78,7 +78,7 @@ serve(async (req) => {
 
         // Mark as processing
         await supabase
-          .from("retry_queue")
+          .from("job_failure_log")
           .update({
             status: "processing",
             started_at: new Date().toISOString(),
@@ -105,7 +105,7 @@ serve(async (req) => {
         if (syncResponse.ok) {
           // Mark as completed
           await supabase
-            .from("retry_queue")
+            .from("job_failure_log")
             .update({
               status: "completed",
               completed_at: new Date().toISOString(),
@@ -120,7 +120,7 @@ serve(async (req) => {
           if (retryAgain) {
             const nextRetryAt = new Date(Date.now() + Math.pow(2, newAttemptCount) * 1000);
             await supabase
-              .from("retry_queue")
+              .from("job_failure_log")
               .update({
                 attempt_count: newAttemptCount,
                 next_retry_at: nextRetryAt.toISOString(),
@@ -129,7 +129,7 @@ serve(async (req) => {
               .eq("id", job.id);
           } else {
             await supabase
-              .from("retry_queue")
+              .from("job_failure_log")
               .update({
                 attempt_count: newAttemptCount,
                 status: "failed",
@@ -150,7 +150,7 @@ serve(async (req) => {
         if (newAttemptCount < job.max_attempts) {
           const nextRetryAt = new Date(Date.now() + Math.pow(2, newAttemptCount) * 1000);
           await supabase
-            .from("retry_queue")
+            .from("job_failure_log")
             .update({
               attempt_count: newAttemptCount,
               next_retry_at: nextRetryAt.toISOString(),
@@ -160,7 +160,7 @@ serve(async (req) => {
             .eq("id", job.id);
         } else {
           await supabase
-            .from("retry_queue")
+            .from("job_failure_log")
             .update({
               attempt_count: newAttemptCount,
               status: "failed",
