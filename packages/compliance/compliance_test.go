@@ -83,3 +83,4 @@ func TestEvaluateLeakedPANFailsPCI(t *testing.T) {
 	}
 	t.Fatalf("PCI-3.4 not found in results")
 }
+

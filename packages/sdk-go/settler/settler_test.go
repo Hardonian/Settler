@@ -71,6 +71,15 @@ func TestClientAccessors(t *testing.T) {
 	if client.Reports() == nil {
 		t.Fatal("expected non-nil ReportsClient")
 	}
+	if client.Interchange() == nil {
+		t.Fatal("expected non-nil InterchangeClient")
+	}
+	if client.CrossRail() == nil {
+		t.Fatal("expected non-nil CrossRailClient")
+	}
+	if client.Proofs() == nil {
+		t.Fatal("expected non-nil ProofsClient")
+	}
 }
 
 func TestListTransactionsParamsToQuery(t *testing.T) {

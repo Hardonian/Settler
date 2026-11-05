@@ -58,6 +58,9 @@ public final class SettlerClient implements Closeable {
     private final AdaptersClient adapters;
     private final ConsoleClient console;
     private final RunsClient runs;
+    private final InterchangeClient interchange;
+    private final CrossRailClient crossRail;
+    private final ProofsClient proofs;
 
     private SettlerClient(SettlerConfig config) {
         this.config = config;
@@ -77,6 +80,9 @@ public final class SettlerClient implements Closeable {
         this.adapters = new AdaptersClient(httpExecutor);
         this.console = new ConsoleClient(httpExecutor);
         this.runs = new RunsClient(httpExecutor);
+        this.interchange = new InterchangeClient(httpExecutor);
+        this.crossRail = new CrossRailClient(httpExecutor);
+        this.proofs = new ProofsClient(httpExecutor);
     }
 
     /**
@@ -226,6 +232,27 @@ public final class SettlerClient implements Closeable {
      */
     public RunsClient runs() {
         return runs;
+    }
+
+    /**
+     * @return client for interchange fee analysis and L2/L3 optimization
+     */
+    public InterchangeClient interchange() {
+        return interchange;
+    }
+
+    /**
+     * @return client for multi-rail settlement graph analysis
+     */
+    public CrossRailClient crossRail() {
+        return crossRail;
+    }
+
+    /**
+     * @return client for zero-knowledge and cryptographic audit proofs
+     */
+    public ProofsClient proofs() {
+        return proofs;
     }
 
     /**

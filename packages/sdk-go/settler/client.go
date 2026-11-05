@@ -18,7 +18,7 @@ import (
 const (
 	defaultBaseURL   = "https://api.settler.io/api/v1"
 	defaultTimeout   = 30 * time.Second
-	defaultUserAgent = "settler-go/1.0.0"
+	defaultUserAgent = "settler-go/1.7.0"
 )
 
 // Client is the main SDK client for the Settler API
@@ -250,6 +250,21 @@ func (c *Client) Receipts() *ReceiptsClient {
 // Adapters returns an AdaptersClient for adapter operations
 func (c *Client) Adapters() *AdaptersClient {
 	return &AdaptersClient{client: c}
+}
+
+// Interchange returns an InterchangeClient for interchange analysis and L2/L3 optimization
+func (c *Client) Interchange() *InterchangeClient {
+	return &InterchangeClient{client: c}
+}
+
+// CrossRail returns a CrossRailClient for multi-rail settlement graph analysis
+func (c *Client) CrossRail() *CrossRailClient {
+	return &CrossRailClient{client: c}
+}
+
+// Proofs returns a ProofsClient for zero-knowledge and cryptographic audit proofs
+func (c *Client) Proofs() *ProofsClient {
+	return &ProofsClient{client: c}
 }
 
 // PaginationParams represents common pagination parameters

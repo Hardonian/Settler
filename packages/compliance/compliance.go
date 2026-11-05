@@ -143,3 +143,4 @@ func ComputeHash(payload string) string {
 	h := sha256.Sum256([]byte(payload))
 	return hex.EncodeToString(h[:])
 }
+

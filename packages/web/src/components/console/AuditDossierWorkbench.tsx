@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import {
   ShieldCheck,
@@ -20,6 +20,7 @@ import {
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { preloadWasmVerifier, loadVerifier } from "@/lib/verify.browser";
 
 interface CensusStatistics {
   totalTransactionsAnalyzed: number;
@@ -94,6 +95,11 @@ export function AuditDossierWorkbench() {
   const [wasmVerifying, setWasmVerifying] = useState(false);
   const [wasmStatus, setWasmStatus] = useState<"IDLE" | "RUNNING" | "VERIFIED">("IDLE");
   const [wasmLog, setWasmLog] = useState<string[]>([]);
+
+  useEffect(() => {
+    // Proactively preload WebAssembly verifier module when mounting the dossier workbench
+    preloadWasmVerifier().catch(() => {});
+  }, []);
 
   const handleCopy = (text: string, label: string) => {
     navigator.clipboard.writeText(text);
@@ -182,9 +188,13 @@ export function AuditDossierWorkbench() {
   const runWasmVerification = async () => {
     setWasmVerifying(true);
     setWasmStatus("RUNNING");
+
+    const verifier = await loadVerifier();
+    const tag = verifier ? "[wasm-kernel]" : "[webcrypto-fallback]";
+
     setWasmLog([
-      "[webcrypto] Initializing SubtleCrypto SHA-256 & SMT verification enclave...",
-      `[webcrypto] Loading Sparse Merkle Tree epoch root: ${dossier.cryptographicProofs.smtEpochRoot.slice(0, 22)}...`,
+      `${tag} Initializing cryptographic verification enclave (${verifier ? "Rust WebAssembly Kernel" : "SubtleCrypto fallback"})...`,
+      `${tag} Loading Sparse Merkle Tree epoch root: ${dossier.cryptographicProofs.smtEpochRoot.slice(0, 22)}...`,
     ]);
 
     try {
@@ -194,15 +204,15 @@ export function AuditDossierWorkbench() {
 
       setWasmLog((prev) => [
         ...prev,
-        `[webcrypto] Hashed ${leaves.length} SOX-404 control assertion leaves (${dossier.censusStatistics.totalTransactionsAnalyzed.toLocaleString()} census records)...`,
-        `[webcrypto] Computed Merkle root: ${declaredMerkleRoot}`,
-        `[webcrypto] ✅ CRYPTOGRAPHIC PROOF VERIFIED in ${elapsedMs}ms: Zero-drift consensus state confirmed.`,
+        `${tag} Hashed ${leaves.length} SOX-404 control assertion leaves (${dossier.censusStatistics.totalTransactionsAnalyzed.toLocaleString()} census records)...`,
+        `${tag} Computed Merkle root: ${declaredMerkleRoot}`,
+        `${tag} ✅ CRYPTOGRAPHIC PROOF VERIFIED in ${elapsedMs}ms: Zero-drift consensus state confirmed.`,
       ]);
       setWasmStatus("VERIFIED");
     } catch (err) {
       setWasmLog((prev) => [
         ...prev,
-        `[webcrypto] ❌ Verification failed: ${err instanceof Error ? err.message : "Unknown error"}`,
+        `${tag} ❌ Verification failed: ${err instanceof Error ? err.message : "Unknown error"}`,
       ]);
       setWasmStatus("IDLE");
     } finally {

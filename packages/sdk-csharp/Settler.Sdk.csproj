@@ -6,7 +6,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>Settler.Sdk</RootNamespace>
     <PackageId>Settler.Sdk</PackageId>
-    <Version>1.0.0</Version>
+    <Version>1.7.0</Version>
     <Authors>Settler</Authors>
     <Description>Production-grade .NET SDK for the Settler Reconciliation API</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>

@@ -13,9 +13,27 @@ import {
 } from "./verify.shared";
 
 let wasmModule: WasmVerifier | null = null;
+let preloadPromise: Promise<WasmVerifier | null> | null = null;
+
+/**
+ * Proactively preload the browser WebAssembly verifier module in the background
+ * to eliminate verification latency when an auditor or operator inspects a proofpack.
+ */
+export function preloadWasmVerifier(): Promise<WasmVerifier | null> {
+  if (wasmModule) return Promise.resolve(wasmModule);
+  if (!preloadPromise) {
+    preloadPromise = loadVerifier().catch((error) => {
+      preloadPromise = null;
+      console.warn("[verify] WASM preloader error:", error);
+      return null;
+    });
+  }
+  return preloadPromise;
+}
 
 export async function loadVerifier(): Promise<WasmVerifier | null> {
   if (wasmModule) return wasmModule;
+  if (preloadPromise) return preloadPromise;
   if (typeof window === "undefined") return null;
 
   try {

@@ -50,13 +50,15 @@ import {
 } from "../../domain/LedgerError";
 import { logger } from "@settler/types";
 import { createCircuitBreaker } from "../../utils/circuit-breakers";
+import { parseTigerBeetleAddresses } from "./tigerbeetle-driver";
 
 // =============================================================================
 // Configuration
 // =============================================================================
 
 interface TigerBeetleConfig {
-  address: string;
+  address?: string;
+  addresses?: string[] | string;
   concurrencyMax?: number;
   clusterId?: number;
   timeout?: number;
@@ -202,9 +204,13 @@ export class TigerBeetleLedgerRepository implements ILedgerRepository {
     }
   );
 
+  private readonly replicaAddresses: string[];
+
   constructor(config?: Partial<TigerBeetleConfig>) {
+    this.replicaAddresses = parseTigerBeetleAddresses(config?.addresses ?? config?.address);
     this.config = {
-      address: config?.address || process.env.TIGERBEETLE_ADDRESS || "127.0.0.1:4300",
+      address: this.replicaAddresses[0] || "127.0.0.1:4300",
+      addresses: this.replicaAddresses,
       concurrencyMax: config?.concurrencyMax || 32,
       clusterId: config?.clusterId || 0,
       timeout: config?.timeout || 5000,
@@ -219,11 +225,11 @@ export class TigerBeetleLedgerRepository implements ILedgerRepository {
     try {
       this.client = await createClient({
         cluster_id: BigInt(this.config.clusterId || 0),
-        replica_addresses: [this.config.address],
+        replica_addresses: this.replicaAddresses,
       });
       this.initialized = true;
       this.initError = null;
-      logger.info("TigerBeetle client initialized", { address: this.config.address });
+      logger.info("TigerBeetle client initialized", { replicas: this.replicaAddresses });
       return this.client;
     } catch (error) {
       const message = error instanceof Error ? error.message : "Unknown error";
