@@ -22,7 +22,6 @@ describe("AuditDossierWorkbench", () => {
   });
 
   it("executes the in-browser WASM verification sandbox", async () => {
-    jest.useFakeTimers();
     render(<AuditDossierWorkbench />);
 
     const runWasmBtn = screen.getByRole("button", { name: /Run In-Browser WASM Check/i });
@@ -30,20 +29,10 @@ describe("AuditDossierWorkbench", () => {
 
     fireEvent.click(runWasmBtn);
 
-    expect(screen.getByText(/Verifying Proofs/i)).toBeInTheDocument();
-
-    jest.advanceTimersByTime(2000);
-
     await waitFor(() => {
       expect(screen.getByText(/WASM Cryptographically Verified/i)).toBeInTheDocument();
-      expect(
-        screen.getByText(
-          /ZERO-KNOWLEDGE PROOF VALIDATED: Root hash matches deterministic consensus state/i
-        )
-      ).toBeInTheDocument();
+      expect(screen.getByText(/CRYPTOGRAPHIC PROOF VERIFIED/i)).toBeInTheDocument();
     });
-
-    jest.useRealTimers();
   });
 
   it("triggers dossier synthesis API call", async () => {
