@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-27T13:22:27.222Z",
+  "generatedAt": "2026-11-05T02:25:01.744Z",
   "totalLinks": 779,
   "uniquePaths": 199,
   "links": [
@@ -2484,28 +2484,28 @@
     {
       "href": "/verify",
       "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\investor\\proof\\page.tsx",
-      "line": 300,
+      "line": 304,
       "type": "link",
       "normalizedHref": "/verify"
     },
     {
       "href": "/demo/console",
       "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\investor\\proof\\page.tsx",
-      "line": 306,
+      "line": 310,
       "type": "link",
       "normalizedHref": "/demo/console"
     },
     {
       "href": "/console/audit-dossier",
       "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\investor\\proof\\page.tsx",
-      "line": 309,
+      "line": 313,
       "type": "link",
       "normalizedHref": "/console/audit-dossier"
     },
     {
       "href": "/pricing",
       "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\investor\\proof\\page.tsx",
-      "line": 312,
+      "line": 316,
       "type": "link",
       "normalizedHref": "/pricing"
     },
@@ -7112,7 +7112,7 @@
       {
         "href": "/pricing",
         "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\investor\\proof\\page.tsx",
-        "line": 312,
+        "line": 316,
         "type": "link",
         "normalizedHref": "/pricing"
       },
@@ -8242,7 +8242,7 @@
       {
         "href": "/verify",
         "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\investor\\proof\\page.tsx",
-        "line": 300,
+        "line": 304,
         "type": "link",
         "normalizedHref": "/verify"
       },
@@ -8997,7 +8997,7 @@
       {
         "href": "/console/audit-dossier",
         "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\investor\\proof\\page.tsx",
-        "line": 309,
+        "line": 313,
         "type": "link",
         "normalizedHref": "/console/audit-dossier"
       },
@@ -9248,7 +9248,7 @@
       {
         "href": "/demo/console",
         "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\investor\\proof\\page.tsx",
-        "line": 306,
+        "line": 310,
         "type": "link",
         "normalizedHref": "/demo/console"
       },
