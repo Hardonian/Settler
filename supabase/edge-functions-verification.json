@@ -1,7 +1,7 @@
 {
   "total": 33,
-  "valid": 26,
-  "invalid": 7,
+  "valid": 33,
+  "invalid": 0,
   "functions": [
     {
       "name": "agent-monitor",
@@ -98,10 +98,7 @@
       ],
       "rpcCalls": ["check_rls_policies", "get_slow_queries"],
       "hasDeployConfig": false,
-      "errors": [
-        "Function/RPC 'check_rls_policies' does not exist",
-        "Function/RPC 'get_slow_queries' does not exist"
-      ]
+      "errors": []
     },
     {
       "name": "auth_edge_guard",
@@ -197,7 +194,7 @@
       ],
       "rpcCalls": ["get_slow_queries"],
       "hasDeployConfig": false,
-      "errors": ["Function/RPC 'get_slow_queries' does not exist"]
+      "errors": []
     },
     {
       "name": "automated-health-checks",
@@ -392,7 +389,7 @@
     {
       "name": "generate-founder-digest",
       "path": "C:\\Users\\scott\\GitHub\\Settler\\supabase\\functions\\generate-founder-digest\\index.ts",
-      "tables": ["users", "subscriptions", "reconciliation_jobs", "user_lifecycle"],
+      "tables": ["users", "subscriptions", "recon_jobs", "user_lifecycle"],
       "functions": [
         "serve",
         "get",
@@ -410,12 +407,12 @@
       ],
       "rpcCalls": [],
       "hasDeployConfig": false,
-      "errors": ["Table 'reconciliation_jobs' does not exist"]
+      "errors": []
     },
     {
       "name": "generate-monthly-export",
       "path": "C:\\Users\\scott\\GitHub\\Settler\\supabase\\functions\\generate-monthly-export\\index.ts",
-      "tables": ["users", "user_lifecycle", "subscriptions", "reconciliation_jobs"],
+      "tables": ["users", "user_lifecycle", "subscriptions", "recon_jobs"],
       "functions": [
         "serve",
         "get",
@@ -430,7 +427,7 @@
       ],
       "rpcCalls": [],
       "hasDeployConfig": false,
-      "errors": ["Table 'reconciliation_jobs' does not exist"]
+      "errors": []
     },
     {
       "name": "generate-ops-insights",
@@ -580,10 +577,7 @@
         "record_integration_quota_usage"
       ],
       "hasDeployConfig": false,
-      "errors": [
-        "Function/RPC 'update_integration_health' does not exist",
-        "Function/RPC 'record_integration_quota_usage' does not exist"
-      ]
+      "errors": []
     },
     {
       "name": "integration-sync-stripe",
@@ -756,15 +750,12 @@
       ],
       "rpcCalls": ["check_rls_policies", "get_slow_queries"],
       "hasDeployConfig": false,
-      "errors": [
-        "Function/RPC 'check_rls_policies' does not exist",
-        "Function/RPC 'get_slow_queries' does not exist"
-      ]
+      "errors": []
     },
     {
       "name": "retry-queue-processor",
       "path": "C:\\Users\\scott\\GitHub\\Settler\\supabase\\functions\\retry-queue-processor\\index.ts",
-      "tables": ["retry_queue", "connectors"],
+      "tables": ["job_failure_log", "connectors"],
       "functions": [
         "serve",
         "get",
@@ -788,7 +779,7 @@
       ],
       "rpcCalls": [],
       "hasDeployConfig": false,
-      "errors": ["Table 'retry_queue' does not exist"]
+      "errors": []
     },
     {
       "name": "strategic-governor-agent",
