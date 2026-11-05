@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-05T02:25:01.744Z",
+  "generatedAt": "2026-11-05T23:44:02.492Z",
   "totalLinks": 779,
   "uniquePaths": 199,
   "links": [
@@ -3324,14 +3324,14 @@
     {
       "href": "/console/time-travel",
       "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\components\\console\\AuditDossierWorkbench.tsx",
-      "line": 262,
+      "line": 272,
       "type": "link",
       "normalizedHref": "/console/time-travel"
     },
     {
       "href": "/console/ledger-parity",
       "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\components\\console\\AuditDossierWorkbench.tsx",
-      "line": 273,
+      "line": 283,
       "type": "link",
       "normalizedHref": "/console/ledger-parity"
     },
@@ -8184,7 +8184,7 @@
       {
         "href": "/console/time-travel",
         "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\components\\console\\AuditDossierWorkbench.tsx",
-        "line": 262,
+        "line": 272,
         "type": "link",
         "normalizedHref": "/console/time-travel"
       },
@@ -8392,7 +8392,7 @@
       {
         "href": "/console/ledger-parity",
         "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\components\\console\\AuditDossierWorkbench.tsx",
-        "line": 273,
+        "line": 283,
         "type": "link",
         "normalizedHref": "/console/ledger-parity"
       },

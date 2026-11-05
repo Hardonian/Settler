@@ -24,13 +24,7 @@ import {
 import { useRouter } from "next/navigation";
 
 export type TourStep =
-  | "welcome"
-  | "api_keys"
-  | "playground"
-  | "reconcile"
-  | "receipts"
-  | "feature_flags"
-  | "complete";
+  "welcome" | "api_keys" | "playground" | "reconcile" | "receipts" | "feature_flags" | "complete";
 
 interface TourStepConfig {
   id: TourStep;

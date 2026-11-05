@@ -22,32 +22,34 @@ export default function StatusPage() {
 
       <section>
         <h2>Rate Limits</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>Plan</th>
-              <th>Requests per minute</th>
-              <th>Requests per day</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>Free</td>
-              <td>60</td>
-              <td>10,000</td>
-            </tr>
-            <tr>
-              <td>Commercial</td>
-              <td>300</td>
-              <td>100,000</td>
-            </tr>
-            <tr>
-              <td>Enterprise</td>
-              <td>1,000</td>
-              <td>Unlimited</td>
-            </tr>
-          </tbody>
-        </table>
+        <div className="overflow-x-auto my-4">
+          <table>
+            <thead>
+              <tr>
+                <th>Plan</th>
+                <th>Requests per minute</th>
+                <th>Requests per day</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Free</td>
+                <td>60</td>
+                <td>10,000</td>
+              </tr>
+              <tr>
+                <td>Commercial</td>
+                <td>300</td>
+                <td>100,000</td>
+              </tr>
+              <tr>
+                <td>Enterprise</td>
+                <td>1,000</td>
+                <td>Unlimited</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </section>
 
       <section>

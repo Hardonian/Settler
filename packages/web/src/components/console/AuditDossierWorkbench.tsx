@@ -453,7 +453,7 @@ export function AuditDossierWorkbench() {
 
       {/* Client-Side WASM Proof Verification Sandbox */}
       <Card className="border-slate-800 bg-slate-900/60 backdrop-blur-sm shadow-lg">
-        <CardHeader className="flex flex-row items-center justify-between">
+        <CardHeader className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="space-y-1">
             <CardTitle className="text-base font-semibold text-white flex items-center gap-2">
               <Terminal className="w-4 h-4 text-cyan-400" />
@@ -493,8 +493,8 @@ export function AuditDossierWorkbench() {
         </CardHeader>
 
         <CardContent className="space-y-4">
-          <div className="p-3 rounded-lg bg-slate-950 font-mono text-xs text-slate-300 border border-slate-800 flex items-center justify-between">
-            <code className="text-cyan-300">
+          <div className="p-3 rounded-lg bg-slate-950 font-mono text-xs text-slate-300 border border-slate-800 flex items-center justify-between gap-2 overflow-hidden">
+            <code className="text-cyan-300 min-w-0 overflow-x-auto truncate">
               {dossier.cryptographicProofs.wasmVerificationSnippet}
             </code>
             <Button

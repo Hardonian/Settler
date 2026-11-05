@@ -39,21 +39,21 @@ export default function RuleDiscoveryPage() {
         <div className="grid gap-6">
           {suggestions.map((s) => (
             <Card key={s.id} className="overflow-hidden border-primary/20">
-              <CardHeader className="bg-primary/5 px-6 py-4 flex flex-row items-center justify-between border-b border-primary/10 space-y-0">
-                <div className="flex items-center gap-3">
-                  <Sparkles className="w-5 h-5 text-primary" />
+              <CardHeader className="bg-primary/5 px-6 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-primary/10 space-y-0">
+                <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+                  <Sparkles className="w-5 h-5 text-primary shrink-0" />
                   <CardTitle className="text-lg">{s.name}</CardTitle>
                   <Badge variant="outline" className="bg-background">
                     {(s.confidence * 100).toFixed(0)}% Confidence
                   </Badge>
                 </div>
-                <div className="text-sm text-muted-foreground font-mono">
+                <div className="text-sm text-muted-foreground font-mono shrink-0">
                   {s.occurrences} historical occurrences
                 </div>
               </CardHeader>
               <CardContent className="p-6">
                 <p className="text-sm text-foreground mb-4">{s.description}</p>
-                <div className="bg-muted/30 p-4 rounded-md border border-border/50 font-mono text-xs flex items-center gap-4">
+                <div className="bg-muted/30 p-4 rounded-md border border-border/50 font-mono text-xs flex flex-wrap items-center gap-2 sm:gap-4">
                   <BrainCircuit className="w-4 h-4 text-muted-foreground" />
                   <span className="text-muted-foreground">Proposed Rule:</span>
                   <span className="text-primary font-bold">

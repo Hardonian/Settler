@@ -42,12 +42,12 @@ export default function SupportCRMPage() {
       />
 
       <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
+        <CardHeader className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <CardTitle className="flex items-center gap-2">
             <Headset className="w-5 h-5 text-primary" />
             Active Support Tickets
           </CardTitle>
-          <div className="flex gap-3">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3">
             <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
               {data?.platform || "Zendesk"} Connected
             </Badge>

@@ -15,14 +15,7 @@ import { BrandMessages } from "@/lib/brand/messaging";
 import { Rocket, BookOpen, Sparkles } from "lucide-react";
 
 type EmptyStateType =
-  | "apiKeys"
-  | "receipts"
-  | "featureFlags"
-  | "webhooks"
-  | "insights"
-  | "alerts"
-  | "usage"
-  | "runs";
+  "apiKeys" | "receipts" | "featureFlags" | "webhooks" | "insights" | "alerts" | "usage" | "runs";
 
 type EmptyStateVariant = "default" | "firstRun" | "setupRequired" | "noDemoData";
 

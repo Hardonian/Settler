@@ -18,35 +18,37 @@ export default async function FoundryDatasetPage({ params }: { params: { dataset
       <p className="text-sm text-slate-500">
         {dataset.dataset_type} · {dataset.items_count} items
       </p>
-      <table className="w-full text-sm border-collapse">
-        <thead>
-          <tr className="border-b">
-            <th className="text-left p-2">Run</th>
-            <th className="text-left p-2">Started</th>
-            <th className="text-left p-2">Finished</th>
-            <th className="text-left p-2">Pass/Fail</th>
-          </tr>
-        </thead>
-        <tbody>
-          {runs.map((run) => (
-            <tr className="border-b" key={run.dataset_run_id}>
-              <td className="p-2">
-                <Link
-                  className="underline"
-                  href={`/intelligence/foundry/runs/${run.dataset_run_id}`}
-                >
-                  {run.dataset_run_id}
-                </Link>
-              </td>
-              <td className="p-2">{run.started_at}</td>
-              <td className="p-2">{run.finished_at}</td>
-              <td className="p-2">
-                {run.summary.pass_count}/{run.summary.fail_count}
-              </td>
+      <div className="overflow-x-auto rounded-lg border border-border">
+        <table className="w-full text-sm border-collapse">
+          <thead>
+            <tr className="border-b">
+              <th className="text-left p-2">Run</th>
+              <th className="text-left p-2">Started</th>
+              <th className="text-left p-2">Finished</th>
+              <th className="text-left p-2">Pass/Fail</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {runs.map((run) => (
+              <tr className="border-b" key={run.dataset_run_id}>
+                <td className="p-2">
+                  <Link
+                    className="underline"
+                    href={`/intelligence/foundry/runs/${run.dataset_run_id}`}
+                  >
+                    {run.dataset_run_id}
+                  </Link>
+                </td>
+                <td className="p-2">{run.started_at}</td>
+                <td className="p-2">{run.finished_at}</td>
+                <td className="p-2">
+                  {run.summary.pass_count}/{run.summary.fail_count}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </main>
   );
 }
