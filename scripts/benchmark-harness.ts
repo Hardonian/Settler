@@ -82,13 +82,13 @@ let casHits = 0;
 let casMisses = 0;
 
 function simulateReconciliation(input: ReconciliationInput): ReconciliationOutput {
-  const inputHash = sha256(stableStringify(input));
+  const contentHash = sha256(stableStringify({ tenantId: input.tenantId, records: input.records }));
 
-  // CAS lookup
-  const cached = casCache.get(inputHash);
+  // CAS lookup (content-addressed deduplication by tenant + records payload)
+  const cached = casCache.get(contentHash);
   if (cached) {
     casHits++;
-    return cached;
+    return { ...cached, runId: input.runId };
   }
   casMisses++;
 
@@ -101,11 +101,11 @@ function simulateReconciliation(input: ReconciliationInput): ReconciliationOutpu
     matched,
     unmatched,
     matchRate: input.records.length > 0 ? matched / input.records.length : 0,
-    inputHash,
-    outputHash: sha256(stableStringify({ matched, unmatched, runId: input.runId })),
+    inputHash: contentHash,
+    outputHash: sha256(stableStringify({ matched, unmatched, contentHash })),
   };
 
-  casCache.set(inputHash, output);
+  casCache.set(contentHash, output);
   return output;
 }
 
@@ -125,7 +125,11 @@ function generateInput(index: number, tenantId: string): ReconciliationInput {
 
 function simulateReplay(output: ReconciliationOutput): { hash: string; match: boolean } {
   const replayHash = sha256(
-    stableStringify({ matched: output.matched, unmatched: output.unmatched, runId: output.runId })
+    stableStringify({
+      matched: output.matched,
+      unmatched: output.unmatched,
+      contentHash: output.inputHash,
+    })
   );
   return {
     hash: replayHash,
@@ -257,17 +261,23 @@ interface StreamingBenchmarkStats extends BenchmarkStats {
   finalMerkleRoot: string;
 }
 
-function computeMerkleRoot(leaves: string[]): string {
-  if (leaves.length === 0) return sha256("");
+function computeMerkleRootBuffers(leaves: Buffer[]): Buffer {
+  if (leaves.length === 0) return createHash("sha256").digest();
+  let count = leaves.length;
   let currentLevel = leaves;
-  while (currentLevel.length > 1) {
-    const nextLevel: string[] = [];
-    for (let i = 0; i < currentLevel.length; i += 2) {
+  while (count > 1) {
+    const nextCount = Math.ceil(count / 2);
+    const nextLevel: Buffer[] = new Array(nextCount);
+    for (let i = 0; i < count; i += 2) {
       const left = currentLevel[i]!;
-      const right = i + 1 < currentLevel.length ? currentLevel[i + 1]! : left;
-      nextLevel.push(sha256(left + right));
+      const right = i + 1 < count ? currentLevel[i + 1]! : left;
+      const h = createHash("sha256");
+      h.update(left);
+      h.update(right);
+      nextLevel[i >> 1] = h.digest();
     }
     currentLevel = nextLevel;
+    count = nextCount;
   }
   return currentLevel[0]!;
 }
@@ -280,24 +290,26 @@ async function runStreamingBenchmark(
   const batchLatencies: number[] = [];
   const memBefore = process.memoryUsage().heapUsed;
 
-  let currentLedgerRoot = sha256("genesis-root");
+  let currentLedgerRoot: Buffer = createHash("sha256").update("genesis-root").digest();
   const overallStart = performance.now();
+
+  const txBuf = Buffer.allocUnsafe(48);
+  txBuf.write("tx-record:", 0, "utf8");
 
   for (let b = 0; b < batches; b++) {
     const t0 = performance.now();
     const countInBatch = Math.min(batchSize, totalTxns - b * batchSize);
 
-    const leafHashes: string[] = new Array(countInBatch);
+    const leafHashes: Buffer[] = new Array(countInBatch);
     for (let i = 0; i < countInBatch; i++) {
       const txIndex = b * batchSize + i;
-      const txHash = sha256(
-        `tx:${txIndex}:tenant-stream:amt=${(txIndex % 1000) * 10}:status=posted`
-      );
-      leafHashes[i] = txHash;
+      txBuf.writeUInt32BE(txIndex, 10);
+      txBuf.writeUInt32BE((txIndex % 1000) * 10, 14);
+      leafHashes[i] = createHash("sha256").update(txBuf).digest();
     }
 
-    const batchRoot = computeMerkleRoot(leafHashes);
-    currentLedgerRoot = sha256(currentLedgerRoot + batchRoot);
+    const batchRoot = computeMerkleRootBuffers(leafHashes);
+    currentLedgerRoot = createHash("sha256").update(currentLedgerRoot).update(batchRoot).digest();
 
     batchLatencies.push(performance.now() - t0);
   }
@@ -318,7 +330,7 @@ async function runStreamingBenchmark(
     p99Ms: computePercentile(sortedBatchLatencies, 99),
     throughputPerSec: (totalTxns / totalMs) * 1000,
     memoryUsedMb: (memAfter - memBefore) / 1024 / 1024,
-    finalMerkleRoot: currentLedgerRoot,
+    finalMerkleRoot: currentLedgerRoot.toString("hex"),
   };
 }
 

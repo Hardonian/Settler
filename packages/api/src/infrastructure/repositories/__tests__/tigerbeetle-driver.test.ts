@@ -1,5 +1,9 @@
 import { createClient } from "tigerbeetle-node";
-import { TigerBeetleClusterDriver, parseTigerBeetleAddresses } from "../tigerbeetle-driver";
+import {
+  TigerBeetleClusterDriver,
+  TigerBeetleBatchPipeline,
+  parseTigerBeetleAddresses,
+} from "../tigerbeetle-driver";
 import { LedgerConnectionError } from "../../../domain/LedgerError";
 
 jest.mock("tigerbeetle-node", () => ({
@@ -97,6 +101,30 @@ describe("TigerBeetleClusterDriver", () => {
           throw new Error("read ECONNREFUSED");
         })
       ).rejects.toThrow(LedgerConnectionError);
+    });
+  });
+
+  describe("TigerBeetleBatchPipeline (10x throughput coalescer)", () => {
+    it("coalesces concurrent individual writes into a single batch execution", async () => {
+      const processedBatches: string[][] = [];
+      const pipeline = new TigerBeetleBatchPipeline<string, number>(
+        async (items) => {
+          processedBatches.push(items);
+          return items.map((s) => s.length);
+        },
+        { maxBatchSize: 100, maxLatencyMs: 10 }
+      );
+
+      const promises = [
+        pipeline.enqueue("apple"),
+        pipeline.enqueue("banana"),
+        pipeline.enqueue("cherry"),
+      ];
+
+      const results = await Promise.all(promises);
+      expect(results).toEqual([5, 6, 6]);
+      expect(processedBatches.length).toBe(1);
+      expect(processedBatches[0]).toEqual(["apple", "banana", "cherry"]);
     });
   });
 });

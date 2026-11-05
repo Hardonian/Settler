@@ -101,4 +101,36 @@ describe("Bipartite Graph Maximum-Weight Matching (Kuhn-Munkres)", () => {
     expect(result.unmatchedLeft.length).toBe(1);
     expect(result.unmatchedRight.length).toBe(1);
   });
+
+  it("executes 10x high-throughput matching across 500 transactions in under 100ms", () => {
+    const left: MatchableTransaction[] = [];
+    const right: MatchableTransaction[] = [];
+
+    for (let i = 0; i < 250; i++) {
+      left.push({
+        id: `left_${i}`,
+        amountCents: BigInt((i + 1) * 100),
+        currency: "USD",
+        timestamp: new Date(1700000000000 + i * 1000),
+        reference: `REF_${i}`,
+      });
+      const isFeeVariance = i % 10 === 0;
+      right.push({
+        id: `right_${i}`,
+        amountCents: isFeeVariance ? BigInt((i + 1) * 100) - 25n : BigInt((i + 1) * 100),
+        currency: "USD",
+        timestamp: new Date(1700000000000 + i * 1000 + 500),
+        reference: isFeeVariance ? undefined : `REF_${i}`,
+      });
+    }
+
+    const t0 = performance.now();
+    const result = matchBipartiteTransactions(left, right);
+    const durationMs = performance.now() - t0;
+
+    expect(result.matchedPairs.length).toBe(250);
+    expect(result.unmatchedLeft.length).toBe(0);
+    expect(result.unmatchedRight.length).toBe(0);
+    expect(durationMs).toBeLessThan(100);
+  });
 });

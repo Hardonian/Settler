@@ -2,6 +2,7 @@ package compliance
 
 import (
 	"testing"
+	"time"
 )
 
 func TestEvaluateValidEvidence(t *testing.T) {
@@ -83,4 +84,37 @@ func TestEvaluateLeakedPANFailsPCI(t *testing.T) {
 	}
 	t.Fatalf("PCI-3.4 not found in results")
 }
+
+func TestEvaluateBatchParallelHighThroughput(t *testing.T) {
+	evaluator := NewEvaluator()
+	count := 50000
+	records := make([]EvidenceRecord, count)
+	for i := 0; i < count; i++ {
+		records[i] = EvidenceRecord{
+			TenantID:        "tenant-batch-speed",
+			RunID:           "run-7721",
+			PolicyID:        "deterministic.strict.v1",
+			EngineVersion:   "1.7.0",
+			InputHash:       "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+			OutputHash:      "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+			RunFingerprint:  "fbd5951d6e50c33f56d84768d084e5ded4288cf10e740f44370d261700bffb18",
+			ProvenanceChain: []string{"genesis", "leaf-1"},
+		}
+	}
+
+	start := time.Now()
+	results := evaluator.EvaluateBatchParallel(records)
+	elapsed := time.Since(start)
+
+	if len(results) != count {
+		t.Fatalf("expected %d results, got %d", count, len(results))
+	}
+
+	throughputPerSec := float64(count) / elapsed.Seconds()
+	t.Logf("Evaluated %d records in %v (%.2f records/sec)", count, elapsed, throughputPerSec)
+	if throughputPerSec < 100000 {
+		t.Errorf("expected throughput > 100k records/sec, got %.2f", throughputPerSec)
+	}
+}
+
 
