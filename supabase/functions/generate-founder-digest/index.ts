@@ -48,7 +48,7 @@ serve(async (req) => {
 
     // Usage metrics
     const { data: jobs } = await supabase
-      .from("reconciliation_jobs")
+      .from("recon_jobs")
       .select("id")
       .gte("created_at", yesterday.toISOString())
       .lt("created_at", today.toISOString());

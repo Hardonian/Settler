@@ -747,6 +747,14 @@ function evaluate(input: EvalInput): EvalResult {
 // ---------------------------------------------------------------------------
 
 async function main(): Promise<void> {
+  if (process.argv.includes("--help") || process.argv.includes("-h")) {
+    process.stdout.write(
+      "Usage: echo '<json>' | tsx scripts/architectural-compliance-evaluator.ts\n" +
+        "   or: tsx scripts/architectural-compliance-evaluator.ts --input <file.json>\n"
+    );
+    process.exit(0);
+  }
+
   let rawInput = "";
 
   const fileArgIdx = process.argv.indexOf("--input");
@@ -764,13 +772,26 @@ async function main(): Promise<void> {
     );
     process.exit(1);
   } else {
-    // Read from stdin
+    // Read from stdin with a timeout so un-piped non-interactive execution fails fast
     await new Promise<void>((resolve) => {
       process.stdin.setEncoding("utf-8");
+      const timer = setTimeout(() => {
+        if (!rawInput.trim()) {
+          process.stderr.write(
+            "Error: No input provided on stdin.\n" +
+              "Usage: echo '<json>' | tsx scripts/architectural-compliance-evaluator.ts\n" +
+              "   or: tsx scripts/architectural-compliance-evaluator.ts --input <file.json>\n"
+          );
+          process.exit(1);
+        }
+      }, 1000);
       process.stdin.on("data", (chunk) => {
         rawInput += chunk;
       });
-      process.stdin.on("end", resolve);
+      process.stdin.on("end", () => {
+        clearTimeout(timer);
+        resolve();
+      });
     });
   }
 
