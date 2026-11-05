@@ -47,7 +47,7 @@ serve(async (req) => {
     const mrr = subscriptions?.reduce((sum, s) => sum + (s.amount || 0), 0) || 0;
 
     const { data: jobs } = await supabase
-      .from("recon_jobs")
+      .from("reconciliation_jobs")
       .select("id")
       .gte("created_at", lastMonth.toISOString());
 

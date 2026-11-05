@@ -237,10 +237,10 @@ function checkInstallCommand(label, command) {
     pass(`${label} avoids npx pnpm`);
   }
 
-  if (!command.includes("corepack") && !command.includes("npm install --global pnpm")) {
-    fail(`${label} does not bootstrap pnpm through corepack or npm global install`);
+  if (!command.includes("corepack")) {
+    fail(`${label} does not bootstrap pnpm through corepack`);
   } else {
-    pass(`${label} bootstraps pnpm cleanly`);
+    pass(`${label} bootstraps pnpm through corepack`);
   }
 
   if (expectedPnpmVersion && !command.includes(`pnpm@${expectedPnpmVersion}`)) {
