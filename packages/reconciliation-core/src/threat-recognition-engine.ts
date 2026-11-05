@@ -101,27 +101,40 @@ export interface ThreatBatchReport {
   threats: ThreatEvaluationResult[];
 }
 
+const RFC6962_LEAF_PREFIX = Buffer.from([0x00]);
+const RFC6962_NODE_PREFIX = Buffer.from([0x01]);
+
+/**
+ * Calculates RFC 6962 leaf hash buffer: SHA-256(0x00 || data)
+ */
+export function calculateRfc6962LeafHashBuffer(data: string | Buffer): Buffer {
+  return createHash("sha256")
+    .update(RFC6962_LEAF_PREFIX)
+    .update(typeof data === "string" ? Buffer.from(data, "utf8") : data)
+    .digest();
+}
+
 /**
  * Calculates RFC 6962 leaf hash: SHA-256(0x00 || data)
  */
 export function calculateRfc6962LeafHash(data: string): string {
-  const prefix = Buffer.from([0x00]);
-  const content = Buffer.from(data, "utf8");
-  return createHash("sha256")
-    .update(Buffer.concat([prefix, content]))
-    .digest("hex");
+  return calculateRfc6962LeafHashBuffer(data).toString("hex");
+}
+
+/**
+ * Calculates RFC 6962 node hash buffer: SHA-256(0x01 || left || right)
+ */
+export function calculateRfc6962NodeHashBuffer(left: Buffer, right: Buffer): Buffer {
+  return createHash("sha256").update(RFC6962_NODE_PREFIX).update(left).update(right).digest();
 }
 
 /**
  * Calculates RFC 6962 node hash: SHA-256(0x01 || left || right)
  */
 export function calculateRfc6962NodeHash(leftHex: string, rightHex: string): string {
-  const prefix = Buffer.from([0x01]);
   const left = Buffer.from(leftHex, "hex");
   const right = Buffer.from(rightHex, "hex");
-  return createHash("sha256")
-    .update(Buffer.concat([prefix, left, right]))
-    .digest("hex");
+  return calculateRfc6962NodeHashBuffer(left, right).toString("hex");
 }
 
 /**
@@ -552,32 +565,32 @@ export function evaluateBatchThreats(
     systemic: 0,
   };
 
-  const leafHashes: string[] = [];
+  const leafBuffers: Buffer[] = [];
 
   for (const threat of threats) {
     totalCapitalGuardedCents += threat.capitalAtRiskCents;
     severityDistribution[threat.severity]++;
     threatTypeDistribution[threat.threatType]++;
     blastRadiusDistribution[threat.blastRadius]++;
-    leafHashes.push(threat.evidenceMerkleLeaf);
+    leafBuffers.push(Buffer.from(threat.evidenceMerkleLeaf, "hex"));
   }
 
   // 4. Compute RFC 6962 Merkle State Root
   let merkleStateRoot = "0000000000000000000000000000000000000000000000000000000000000000";
-  if (leafHashes.length > 0) {
-    let currentLevel = [...leafHashes].sort();
+  if (leafBuffers.length > 0) {
+    let currentLevel = [...leafBuffers].sort(Buffer.compare);
     while (currentLevel.length > 1) {
-      const nextLevel: string[] = [];
+      const nextLevel: Buffer[] = [];
       for (let i = 0; i < currentLevel.length; i += 2) {
         if (i + 1 < currentLevel.length) {
-          nextLevel.push(calculateRfc6962NodeHash(currentLevel[i]!, currentLevel[i + 1]!));
+          nextLevel.push(calculateRfc6962NodeHashBuffer(currentLevel[i]!, currentLevel[i + 1]!));
         } else {
           nextLevel.push(currentLevel[i]!); // Odd leaf promotion
         }
       }
       currentLevel = nextLevel;
     }
-    merkleStateRoot = currentLevel[0] ?? merkleStateRoot;
+    merkleStateRoot = currentLevel[0]?.toString("hex") ?? merkleStateRoot;
   }
 
   return {

@@ -9,7 +9,8 @@ pub mod smt;
 pub mod streaming;
 pub use chaos::{run_chaos_fuzz, ChaosFuzzReport, ChaosRng};
 pub use smt::{
-    get_empty_hashes, hash_empty_leaf, hash_leaf, hash_nodes, verify_smt_proof, SmtProof,
+    compress_smt_proof, expand_smt_proof, get_empty_hashes, hash_empty_leaf, hash_leaf,
+    hash_nodes, verify_compact_smt_proof, verify_smt_proof, CompactSmtProof, SmtProof,
     SmtVerificationResult, SparseMerkleTree, SMT_DEPTH,
 };
 
