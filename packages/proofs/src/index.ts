@@ -12,6 +12,7 @@
 
 export * from "./evidence/index.js";
 export * from "./proofpack/index.js";
+export * from "./proofpack/threshold-attestation.js";
 export * from "./audit-sampling.js";
 export * from "./compact-smt.js";
 export { canonicalJson, canonicalSha256 } from "./canonical-json.js";

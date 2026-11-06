@@ -549,19 +549,21 @@ export default function ExceptionsPage() {
       // In pilot/demo mode, update local exceptions directly and trigger async resolution
       const resolvedIds = new Set(cluster.exceptions.map((e) => e.id));
 
-      // Attempt backend resolve in background for each exception
-      for (const e of cluster.exceptions) {
-        try {
-          await fetch(`/api/exceptions/${e.id}?action=resolve`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              notes: `Auto-resolved via synthesized rule: ${cluster.proposedRule.ruleName}`,
-            }),
-          });
-        } catch {
-          // Gracefully continue even in demo mode
-        }
+      // Dispatch atomic batch resolution to backend
+      const exceptionIds = cluster.exceptions.map((e) => e.id);
+      try {
+        await fetch("/api/exceptions/bulk-resolve", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            exceptionIds,
+            resolution: "matched",
+            resolutionReason: cluster.proposedRule.ruleName,
+            notes: `Auto-resolved via synthesized rule: ${cluster.proposedRule.ruleName} (${cluster.category})`,
+          }),
+        });
+      } catch {
+        // Fallback gracefully in offline / demo mode
       }
 
       setExceptions((prev) =>
