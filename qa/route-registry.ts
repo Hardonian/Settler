@@ -1,6 +1,6 @@
 /**
  * Route Registry - Auto-generated
- * Generated at: 2026-11-05T23:44:01.630Z
+ * Generated at: 2026-11-06T00:57:48.648Z
  *
  * This file contains all routes discovered in the Next.js app directory.
  * Use this for type-safe route checking and link validation.

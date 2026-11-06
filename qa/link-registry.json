@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-05T23:44:02.492Z",
+  "generatedAt": "2026-11-06T00:57:49.857Z",
   "totalLinks": 779,
   "uniquePaths": 199,
   "links": [
@@ -860,35 +860,35 @@
     {
       "href": "/console",
       "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\console\\exceptions\\page.tsx",
-      "line": 625,
+      "line": 627,
       "type": "config",
       "normalizedHref": "/console"
     },
     {
       "href": "/console/runs",
       "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\console\\exceptions\\page.tsx",
-      "line": 643,
+      "line": 645,
       "type": "config",
       "normalizedHref": "/console/runs"
     },
     {
       "href": "/console/onboarding",
       "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\console\\exceptions\\page.tsx",
-      "line": 648,
+      "line": 650,
       "type": "config",
       "normalizedHref": "/console/onboarding"
     },
     {
       "href": "/console",
       "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\console\\exceptions\\page.tsx",
-      "line": 668,
+      "line": 670,
       "type": "config",
       "normalizedHref": "/console"
     },
     {
       "href": "/console/runs",
       "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\console\\exceptions\\page.tsx",
-      "line": 671,
+      "line": 673,
       "type": "config",
       "normalizedHref": "/console/runs"
     },
@@ -3401,14 +3401,14 @@
     {
       "href": "/console/onboarding",
       "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\components\\console\\EmptyState.tsx",
-      "line": 168,
+      "line": 161,
       "type": "link",
       "normalizedHref": "/console/onboarding"
     },
     {
       "href": "/docs/getting-started",
       "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\components\\console\\EmptyState.tsx",
-      "line": 177,
+      "line": 170,
       "type": "link",
       "normalizedHref": "/docs/getting-started"
     },
@@ -6654,14 +6654,14 @@
       {
         "href": "/console/runs",
         "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\console\\exceptions\\page.tsx",
-        "line": 643,
+        "line": 645,
         "type": "config",
         "normalizedHref": "/console/runs"
       },
       {
         "href": "/console/runs",
         "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\console\\exceptions\\page.tsx",
-        "line": 671,
+        "line": 673,
         "type": "config",
         "normalizedHref": "/console/runs"
       },
@@ -7438,14 +7438,14 @@
       {
         "href": "/console",
         "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\console\\exceptions\\page.tsx",
-        "line": 625,
+        "line": 627,
         "type": "config",
         "normalizedHref": "/console"
       },
       {
         "href": "/console",
         "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\console\\exceptions\\page.tsx",
-        "line": 668,
+        "line": 670,
         "type": "config",
         "normalizedHref": "/console"
       },
@@ -8816,7 +8816,7 @@
       {
         "href": "/console/onboarding",
         "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\app\\console\\exceptions\\page.tsx",
-        "line": 648,
+        "line": 650,
         "type": "config",
         "normalizedHref": "/console/onboarding"
       },
@@ -8851,7 +8851,7 @@
       {
         "href": "/console/onboarding",
         "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\components\\console\\EmptyState.tsx",
-        "line": 168,
+        "line": 161,
         "type": "link",
         "normalizedHref": "/console/onboarding"
       },
@@ -9990,7 +9990,7 @@
       {
         "href": "/docs/getting-started",
         "source": "C:\\Users\\scott\\GitHub\\Settler\\packages\\web\\src\\components\\console\\EmptyState.tsx",
-        "line": 177,
+        "line": 170,
         "type": "link",
         "normalizedHref": "/docs/getting-started"
       },
