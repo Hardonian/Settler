@@ -1,23 +1,33 @@
-import { headers } from "next/headers";
-import { BarChart2, Clock, AlertCircle } from "lucide-react";
+import {
+  BarChart2,
+  Clock,
+  AlertCircle,
+  Activity,
+  Cpu,
+  ShieldCheck,
+  AlertTriangle,
+} from "lucide-react";
 import { PageHeader } from "@/components/app/PageHeader";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { getActiveTenantId } from "@/lib/auth/tenant";
+import { getMetricsSummary, getTopMetrics } from "@/lib/metrics/repository";
 
-async function getTop() {
-  const h = await headers();
-  const host = h.get("host") || "localhost:3000";
-  const protocol = process.env.NODE_ENV === "production" ? "https" : "http";
-  const res = await fetch(
-    `${protocol}://${host}/api/v1/metrics/top?kind=slow_routes&window=7d&limit=10`,
-    {
-      headers: { authorization: h.get("authorization") || "" },
-      cache: "no-store",
-    }
-  );
-  if (!res.ok) return [];
-  const data = await res.json();
-  return data.rows || [];
+async function getTenantMetrics() {
+  const tenantId = await getActiveTenantId();
+  if (!tenantId || tenantId === "—") {
+    return { rows: [], summary: null };
+  }
+
+  try {
+    const [rows, summary] = await Promise.all([
+      getTopMetrics(tenantId, { kind: "slow_routes", window: "7d", limit: 10 }),
+      getMetricsSummary(tenantId, "7d"),
+    ]);
+    return { rows: rows || [], summary };
+  } catch {
+    return { rows: [], summary: null };
+  }
 }
 
 function LatencyBadge({ ms }: { ms: number }) {
@@ -43,17 +53,99 @@ function LatencyBadge({ ms }: { ms: number }) {
 }
 
 export default async function MetricsPage() {
-  const rows = await getTop();
+  const { rows, summary } = await getTenantMetrics();
+  const s = (summary ?? {}) as Record<string, unknown>;
+  const runsTotal = Number(s.runs_total ?? 0);
+  const successRate = Number(s.success_rate ?? 0);
+  const avgLatency = Number(s.avg_latency ?? 0);
+  const computeTotal = Number(s.compute_total ?? 0);
+  const errorCount = Number(s.errors ?? 0) + Number(s.replay_mismatches ?? 0);
 
   return (
     <div className="space-y-8 pb-8">
       <PageHeader
         eyebrow="Runtime Event Model"
         title="Runtime Event Signals"
-        description="Event-derived route telemetry for operator triage. This surface focuses on top slow routes and should be read as partial runtime event visibility — not a full observability stack."
+        description="Event-derived route telemetry and execution metrics for operator triage (7-day window). All metrics are strictly scoped to the active tenant."
         icon={BarChart2}
         variant="hero"
       />
+
+      {/* Tenant KPI Summary Strip */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <Card className="panel shadow-none">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between mb-1.5">
+              <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                7d Run Success Rate
+              </span>
+              <ShieldCheck className="h-3.5 w-3.5 text-emerald-500" aria-hidden="true" />
+            </div>
+            <p className="text-2xl font-bold font-mono tabular-nums text-foreground">
+              {runsTotal > 0 ? `${Math.round(successRate * 100)}%` : "—"}
+            </p>
+            <p className="text-[11px] text-muted-foreground mt-1">
+              {runsTotal.toLocaleString()} {runsTotal === 1 ? "run" : "runs"} recorded in 7d
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card className="panel shadow-none">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between mb-1.5">
+              <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                Avg Route Latency
+              </span>
+              <Activity className="h-3.5 w-3.5 text-primary" aria-hidden="true" />
+            </div>
+            <p className="text-2xl font-bold font-mono tabular-nums text-foreground">
+              {avgLatency > 0 ? `${Math.round(avgLatency)}ms` : "—"}
+            </p>
+            <p className="text-[11px] text-muted-foreground mt-1">
+              Tenant API instrumentation mean
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card className="panel shadow-none">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between mb-1.5">
+              <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                Compute Units (7d)
+              </span>
+              <Cpu className="h-3.5 w-3.5 text-sky-500" aria-hidden="true" />
+            </div>
+            <p className="text-2xl font-bold font-mono tabular-nums text-foreground">
+              {computeTotal > 0 ? computeTotal.toLocaleString() : "0"}
+            </p>
+            <p className="text-[11px] text-muted-foreground mt-1">
+              Deterministic engine execution units
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card className="panel shadow-none">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between mb-1.5">
+              <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                5xx & Drift Signals
+              </span>
+              <AlertTriangle
+                className={`h-3.5 w-3.5 ${errorCount > 0 ? "text-amber-500" : "text-muted-foreground/50"}`}
+                aria-hidden="true"
+              />
+            </div>
+            <p
+              className={`text-2xl font-bold font-mono tabular-nums ${errorCount > 0 ? "text-amber-600 dark:text-amber-400" : "text-foreground"}`}
+            >
+              {errorCount.toLocaleString()}
+            </p>
+            <p className="text-[11px] text-muted-foreground mt-1">
+              Server errors & replay mismatches
+            </p>
+          </CardContent>
+        </Card>
+      </div>
 
       <Card className="panel shadow-sm">
         <CardHeader className="pb-3 border-b border-border/40">

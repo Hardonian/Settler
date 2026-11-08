@@ -9,6 +9,7 @@ import {
   CheckCircle2,
   ArrowRight,
   ShieldCheck,
+  Search,
 } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
@@ -26,11 +27,41 @@ interface Alert {
 }
 
 export function AlertsList({ initialAlerts }: { initialAlerts: Alert[] }) {
+  const [alerts, setAlerts] = useState<Alert[]>(initialAlerts);
   const [filter, setFilter] = useState<"all" | "open" | "ack">("all");
+  const [severityFilter, setSeverityFilter] = useState<string | null>(null);
+  const [query, setQuery] = useState("");
+  const [acknowledgingId, setAcknowledgingId] = useState<string | null>(null);
 
-  const filteredAlerts = initialAlerts.filter((alert) => {
-    if (filter === "open") return !alert.acknowledged;
-    if (filter === "ack") return alert.acknowledged;
+  const handleAcknowledge = async (alertId: string) => {
+    setAcknowledgingId(alertId);
+    // Optimistic update
+    setAlerts((prev) => prev.map((a) => (a.id === alertId ? { ...a, acknowledged: true } : a)));
+    try {
+      await fetch(`/api/console/alerts/${encodeURIComponent(alertId)}/acknowledge`, {
+        method: "POST",
+        credentials: "same-origin",
+      });
+    } catch {
+      // Keep optimistic state on transient error
+    } finally {
+      setAcknowledgingId(null);
+    }
+  };
+
+  const filteredAlerts = alerts.filter((alert) => {
+    if (filter === "open" && alert.acknowledged) return false;
+    if (filter === "ack" && !alert.acknowledged) return false;
+    if (severityFilter && alert.severity !== severityFilter) return false;
+    if (query.trim()) {
+      const q = query.trim().toLowerCase();
+      return (
+        alert.id.toLowerCase().includes(q) ||
+        alert.type.toLowerCase().includes(q) ||
+        alert.message.toLowerCase().includes(q) ||
+        alert.component.toLowerCase().includes(q)
+      );
+    }
     return true;
   });
 
@@ -58,26 +89,59 @@ export function AlertsList({ initialAlerts }: { initialAlerts: Alert[] }) {
 
   return (
     <div className="space-y-6">
-      {/* Filter Bar */}
-      <div className="flex items-center gap-2 p-1 bg-muted/50 rounded-lg w-fit">
-        <button
-          onClick={() => setFilter("all")}
-          className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-all ${filter === "all" ? "bg-background shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground"}`}
-        >
-          All ({initialAlerts.length})
-        </button>
-        <button
-          onClick={() => setFilter("open")}
-          className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-all ${filter === "open" ? "bg-background shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground"}`}
-        >
-          Open ({initialAlerts.filter((a) => !a.acknowledged).length})
-        </button>
-        <button
-          onClick={() => setFilter("ack")}
-          className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-all ${filter === "ack" ? "bg-background shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground"}`}
-        >
-          Acknowledged ({initialAlerts.filter((a) => a.acknowledged).length})
-        </button>
+      {/* Filter & Search Bar */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="flex items-center gap-2 p-1 bg-muted/50 rounded-lg w-fit">
+          <button
+            onClick={() => setFilter("all")}
+            className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-all ${filter === "all" ? "bg-background shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground"}`}
+          >
+            All ({alerts.length})
+          </button>
+          <button
+            onClick={() => setFilter("open")}
+            className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-all ${filter === "open" ? "bg-background shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground"}`}
+          >
+            Open ({alerts.filter((a) => !a.acknowledged).length})
+          </button>
+          <button
+            onClick={() => setFilter("ack")}
+            className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-all ${filter === "ack" ? "bg-background shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground"}`}
+          >
+            Acknowledged ({alerts.filter((a) => a.acknowledged).length})
+          </button>
+        </div>
+
+        <div className="flex items-center gap-2 flex-wrap">
+          {(["critical", "warning", "info"] as const).map((sev) => (
+            <button
+              key={sev}
+              type="button"
+              onClick={() => setSeverityFilter((prev) => (prev === sev ? null : sev))}
+              className={`px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider border transition-colors ${
+                severityFilter === sev
+                  ? "bg-primary text-primary-foreground border-primary"
+                  : "bg-card text-muted-foreground border-border/60 hover:text-foreground"
+              }`}
+            >
+              {sev}
+            </button>
+          ))}
+          <div className="relative">
+            <Search
+              className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground pointer-events-none"
+              aria-hidden="true"
+            />
+            <input
+              type="text"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Filter alerts..."
+              className="h-8 rounded-md border border-border/60 bg-card pl-8 pr-3 text-xs font-mono text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+              aria-label="Search alerts"
+            />
+          </div>
+        </div>
       </div>
 
       {/* Alert Feed */}
@@ -131,8 +195,14 @@ export function AlertsList({ initialAlerts }: { initialAlerts: Alert[] }) {
                         Ack
                       </Badge>
                     ) : (
-                      <button className="text-xs font-bold text-primary hover:underline flex items-center gap-1 bg-primary/5 px-2 py-1 rounded">
-                        Ack <ArrowRight className="h-3 w-3" />
+                      <button
+                        type="button"
+                        disabled={acknowledgingId === alert.id}
+                        onClick={() => handleAcknowledge(alert.id)}
+                        className="text-xs font-bold text-primary hover:underline flex items-center gap-1 bg-primary/5 hover:bg-primary/10 px-2.5 py-1 rounded transition-colors disabled:opacity-50"
+                      >
+                        {acknowledgingId === alert.id ? "Saving..." : "Ack"}
+                        <ArrowRight className="h-3 w-3" />
                       </button>
                     )}
                   </div>

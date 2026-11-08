@@ -659,7 +659,7 @@ function DecisionMemoryPanel({
 
       {decisionMemory.totalDecisions > decisionMemory.recentDecisions.length && (
         <a
-          href="/app/console/exceptions"
+          href="/console/exceptions"
           className="flex items-center gap-1 text-xs text-primary hover:underline"
         >
           View all exceptions
