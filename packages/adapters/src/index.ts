@@ -20,6 +20,7 @@ export * from "./stripe-enhanced";
 export * from "./paypal";
 export * from "./paypal-enhanced";
 export * from "./square-enhanced";
+export * from "./gumroad-enhanced";
 export * from "./shopify";
 export * from "./quickbooks";
 export * from "./enhanced-quickbooks";

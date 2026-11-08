@@ -27,7 +27,9 @@ const ADAPTERS = listAdapters().map((adapter) => ({
           ? ["transaction.created", "transaction.updated"]
           : adapter.id === "paypal"
             ? ["payment.completed", "refund.completed"]
-            : [],
+            : adapter.id === "gumroad"
+              ? ["sale.created", "sale.refunded"]
+              : [],
 }));
 
 // List available adapters (cached)
