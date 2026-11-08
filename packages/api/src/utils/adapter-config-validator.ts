@@ -123,6 +123,22 @@ export const ADAPTER_CONFIG_SCHEMAS: Record<string, AdapterConfigSchema> = {
       },
     },
   },
+  gumroad: {
+    required: ["webhookSecret"],
+    optional: ["apiKey"],
+    fields: {
+      webhookSecret: {
+        type: "string",
+        description: "Gumroad webhook signing secret (from Gumroad dashboard)",
+        example: "your-webhook-secret",
+      },
+      apiKey: {
+        type: "string",
+        description: "Gumroad API key (optional; webhooks are the primary ingestion path)",
+        example: "your-api-key",
+      },
+    },
+  },
   xero: {
     required: ["clientId", "clientSecret", "tenantId"],
     optional: ["accessToken", "refreshToken"],

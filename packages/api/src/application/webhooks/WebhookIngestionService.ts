@@ -11,6 +11,7 @@ import {
   StripeEnhancedAdapter,
   PayPalEnhancedAdapter,
   SquareEnhancedAdapter,
+  GumroadEnhancedAdapter,
 } from "@settler/adapters";
 import { Transaction, Settlement, RefundDispute } from "@settler/types";
 import { query } from "../../db";
@@ -32,6 +33,7 @@ export class WebhookIngestionService {
     this.adapters.set("stripe", new StripeEnhancedAdapter());
     this.adapters.set("paypal", new PayPalEnhancedAdapter());
     this.adapters.set("square", new SquareEnhancedAdapter());
+    this.adapters.set("gumroad", new GumroadEnhancedAdapter());
   }
 
   /**
@@ -369,6 +371,12 @@ export class WebhookIngestionService {
           ? payload.event_id
           : typeof payload.id === "string"
             ? payload.id
+            : null;
+      case "gumroad":
+        return typeof payload.sale_id === "string"
+          ? payload.sale_id
+          : typeof payload.order_id === "string"
+            ? payload.order_id
             : null;
       default:
         return typeof payload.id === "string" ? payload.id : null;

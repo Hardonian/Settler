@@ -44,6 +44,13 @@ export async function verifyWebhookSignature(
       return crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(hmac));
     }
 
+    case "gumroad": {
+      // Gumroad signs the raw request body with HMAC-SHA256 (hex digest),
+      // no timestamp prefix. The adapter enforces sale_id replay protection.
+      const hmac = crypto.createHmac("sha256", config.secret).update(payloadBuffer).digest("hex");
+      return crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(hmac));
+    }
+
     default: {
       // Default to HMAC-SHA256
       const algorithm = config.signature_algorithm || "hmac-sha256";
