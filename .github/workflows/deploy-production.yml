@@ -157,7 +157,7 @@ jobs:
   gate-ci-and-e2e:
     name: Require CI and E2E Checks
     runs-on: ubuntu-24.04
-    timeout-minutes: 10
+    timeout-minutes: 35
     steps:
       - name: Verify CI and E2E Workflows Concluded Successfully
         uses: actions/github-script@v9
@@ -283,7 +283,20 @@ jobs:
       STAGING_URL: ${{ needs.deploy-staging.outputs.deployment-url }}
       PRODUCTION_URL: ${{ secrets.PRODUCTION_URL }}
       TARGET_SHA: ${{ github.sha }}
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+      VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
     steps:
+      - name: Setup Node & Vercel CLI
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: ".nvmrc"
+
+      - name: Install Vercel CLI for Authenticated Preview Probes
+        if: env.VERCEL_TOKEN != ''
+        run: npm install --global vercel@latest
+
       - name: Enforce Deployment Target URL
         run: |
           DEPLOY_URL="${STAGING_URL:-$PRODUCTION_URL}"
@@ -300,11 +313,30 @@ jobs:
           set -euo pipefail
           echo "🔍 Probing /health and /health/detailed..."
 
+          probe_url() {
+            local path="$1"
+            local out="$2"
+            local url="${DEPLOY_URL}${path}"
+            local curl_args=(-sfS --max-time 15)
+            if [ -n "${VERCEL_AUTOMATION_BYPASS_SECRET:-}" ]; then
+              curl_args+=(-H "x-vercel-protection-bypass: ${VERCEL_AUTOMATION_BYPASS_SECRET}")
+            fi
+            if curl "${curl_args[@]}" "${url}" > "${out}" 2>/dev/null && jq -e . "${out}" >/dev/null 2>&1; then
+              return 0
+            fi
+            if [ -n "${VERCEL_TOKEN:-}" ] && command -v vercel >/dev/null 2>&1; then
+              if vercel curl "${path}" --deployment "${DEPLOY_URL}" --token "${VERCEL_TOKEN}" --scope "${VERCEL_ORG_ID}" -- -sfS --max-time 15 > "${out}" 2>/dev/null && jq -e . "${out}" >/dev/null 2>&1; then
+                return 0
+              fi
+            fi
+            return 1
+          }
+
           HEALTH_OK=false
           for i in {1..12}; do
             echo "Attempt $i/12..."
-            if curl -sfS --max-time 10 "${DEPLOY_URL}/health" > /tmp/health.json 2>/dev/null && \
-               curl -sfS --max-time 10 "${DEPLOY_URL}/health/detailed" > /tmp/health_detailed.json 2>/dev/null; then
+            if probe_url "/health" "/tmp/health.json" && \
+               probe_url "/health/detailed" "/tmp/health_detailed.json"; then
               HEALTH_OK=true
               break
             fi
@@ -333,14 +365,33 @@ jobs:
           set -euo pipefail
           echo "🔍 Verifying API endpoints..."
 
-          curl -sfS --max-time 10 "${DEPLOY_URL}/api/v1/health" > /tmp/api_health.json
+          probe_url() {
+            local path="$1"
+            local out="$2"
+            local url="${DEPLOY_URL}${path}"
+            local curl_args=(-sfS --max-time 15)
+            if [ -n "${VERCEL_AUTOMATION_BYPASS_SECRET:-}" ]; then
+              curl_args+=(-H "x-vercel-protection-bypass: ${VERCEL_AUTOMATION_BYPASS_SECRET}")
+            fi
+            if curl "${curl_args[@]}" "${url}" > "${out}" 2>/dev/null && jq -e . "${out}" >/dev/null 2>&1; then
+              return 0
+            fi
+            if [ -n "${VERCEL_TOKEN:-}" ] && command -v vercel >/dev/null 2>&1; then
+              if vercel curl "${path}" --deployment "${DEPLOY_URL}" --token "${VERCEL_TOKEN}" --scope "${VERCEL_ORG_ID}" -- -sfS --max-time 15 > "${out}" 2>/dev/null && jq -e . "${out}" >/dev/null 2>&1; then
+                return 0
+              fi
+            fi
+            return 1
+          }
+
+          probe_url "/api/v1/health" "/tmp/api_health.json"
           echo "Response from /api/v1/health:"
           cat /tmp/api_health.json
           echo ""
           jq -e '.status == "ok" or .status == "healthy"' /tmp/api_health.json > /dev/null || (echo "❌ /api/v1/health status mismatch" && exit 1)
           echo "✅ /api/v1/health endpoint OK"
 
-          curl -sfS --max-time 10 "${DEPLOY_URL}/api/v1/openapi.json" > /tmp/openapi.json
+          probe_url "/api/v1/openapi.json" "/tmp/openapi.json"
           jq -e '.openapi != null' /tmp/openapi.json > /dev/null || (echo "❌ /api/v1/openapi.json invalid" && exit 1)
           echo "✅ /api/v1/openapi.json endpoint OK"
 
@@ -348,7 +399,28 @@ jobs:
         run: |
           set -euo pipefail
           echo "🔍 Verifying deployed commit SHA..."
-          META_RESP=$(curl -sfS --max-time 10 "${DEPLOY_URL}/api/v1/meta" 2>/dev/null || curl -sfS --max-time 10 "${DEPLOY_URL}/health/detailed" 2>/dev/null)
+
+          probe_url() {
+            local path="$1"
+            local out="$2"
+            local url="${DEPLOY_URL}${path}"
+            local curl_args=(-sfS --max-time 15)
+            if [ -n "${VERCEL_AUTOMATION_BYPASS_SECRET:-}" ]; then
+              curl_args+=(-H "x-vercel-protection-bypass: ${VERCEL_AUTOMATION_BYPASS_SECRET}")
+            fi
+            if curl "${curl_args[@]}" "${url}" > "${out}" 2>/dev/null && jq -e . "${out}" >/dev/null 2>&1; then
+              return 0
+            fi
+            if [ -n "${VERCEL_TOKEN:-}" ] && command -v vercel >/dev/null 2>&1; then
+              if vercel curl "${path}" --deployment "${DEPLOY_URL}" --token "${VERCEL_TOKEN}" --scope "${VERCEL_ORG_ID}" -- -sfS --max-time 15 > "${out}" 2>/dev/null && jq -e . "${out}" >/dev/null 2>&1; then
+                return 0
+              fi
+            fi
+            return 1
+          }
+
+          probe_url "/api/v1/meta" "/tmp/meta.json" || cp /tmp/health_detailed.json /tmp/meta.json
+          META_RESP=$(cat /tmp/meta.json)
           echo "Meta payload: $META_RESP"
           DEPLOYED_SHA=$(echo "$META_RESP" | jq -r '.build // .version // empty')
           echo "Deployed SHA: '$DEPLOYED_SHA', Expected SHA: '$TARGET_SHA'"
