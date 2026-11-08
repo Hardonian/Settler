@@ -204,11 +204,33 @@ jobs:
               const statusMap = {};
               for (const name of requiredWorkflows) {
                 const matching = targetRuns.filter(r => r.name === name);
-                if (matching.length === 0) {
-                  statusMap[name] = { status: 'pending', conclusion: null };
-                } else {
+                if (matching.length > 0) {
                   const latest = matching.sort((a, b) => b.run_number - a.run_number)[0];
                   statusMap[name] = { status: latest.status, conclusion: latest.conclusion, id: latest.id };
+                } else if (Date.now() - startTime > 60 * 1000) {
+                  // If the workflow did not trigger on this SHA due to path filters after 60s,
+                  // verify the latest completed run on main succeeded.
+                  const { data: branchRuns } = await github.rest.actions.listWorkflowRunsForRepo({
+                    owner,
+                    repo,
+                    branch: 'main',
+                    per_page: 30,
+                  });
+                  const latestOnMain = (branchRuns.workflow_runs || [])
+                    .filter(r => r.name === name && r.status === 'completed')
+                    .sort((a, b) => b.run_number - a.run_number)[0];
+                  if (latestOnMain) {
+                    statusMap[name] = {
+                      status: latestOnMain.status,
+                      conclusion: latestOnMain.conclusion,
+                      id: latestOnMain.id,
+                      fallback: 'latest-main',
+                    };
+                  } else {
+                    statusMap[name] = { status: 'pending', conclusion: null };
+                  }
+                } else {
+                  statusMap[name] = { status: 'pending', conclusion: null };
                 }
               }
 

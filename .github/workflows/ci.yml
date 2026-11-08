@@ -5,10 +5,12 @@ on:
     branches: [main, develop]
     paths:
       - "packages/**"
+      - "config/**"
       - "scripts/**"
       - "tests/**"
       - "deploy/**"
       - ".github/workflows/ci.yml"
+      - ".github/workflows/deploy-production.yml"
       - "package.json"
       - "pnpm-lock.yaml"
       - "pnpm-workspace.yaml"
