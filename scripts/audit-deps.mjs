@@ -121,6 +121,11 @@ const ACCEPTED_EXCEPTIONS = new Set([
   // (6.1.4 in tree) and 7.x is a breaking API change for it. Build-time DoS
   // surface only. Unblock with the tailwind v4 migration, then drop this.
   "postcss-selector-parser",
+  // GHSA-gcqx-w48m-w2h4 prototype-pollution DoS in deepmerge: no patched
+  // version published (patched <0.0.0). Deep transitive via
+  // resend>@react-email/render>html-to-text; email templates render internal
+  // data only, never attacker-controlled objects. Re-check when a fix lands.
+  "deepmerge",
 ]);
 
 const attempts = [];

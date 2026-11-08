@@ -10,7 +10,10 @@ dotenv.config();
 const port = Number(process.env.PORT || 3210 + Math.floor(Math.random() * 500));
 const base = `http://127.0.0.1:${port}`;
 
-const strict200Routes = ["/home", "/docs", "/pricing"];
+const strict200Routes = ["/docs", "/pricing"];
+// /home is a deliberate permanentRedirect("/") since 75c1230 — assert the
+// redirect contract itself (status AND destination), stricter than 200-only.
+const redirectRoutes = [{ route: "/home", destination: "/", status: 308 }];
 const non500Routes = [
   "/",
   "/api/v1/health",
@@ -96,6 +99,22 @@ async function main() {
 
     for (const route of strict200Routes) {
       await verifyRoute(route, [200]);
+    }
+
+    for (const r of redirectRoutes) {
+      const res = await fetch(`${base}${r.route}`, { redirect: "manual" });
+      let dest = "";
+      try {
+        dest = new URL(res.headers.get("location") ?? "", base).pathname;
+      } catch {
+        dest = "";
+      }
+      if (res.status !== r.status || dest !== r.destination) {
+        throw new Error(
+          `${r.route} => ${res.status} ${dest || "(no location)"}, expected ${r.status} -> ${r.destination}`
+        );
+      }
+      console.log(`✅ ${r.route} => ${res.status} -> ${r.destination}`);
     }
 
     for (const route of non500Routes) {
