@@ -507,7 +507,8 @@ async function loadAdjudicationHistory(
 async function buildRecurringFamilies(
   prisma: ReconciliationCorePrismaClient,
   tenantIds: string[],
-  load: AdjudicationLoad
+  load: AdjudicationLoad,
+  archetypeMap: Map<string, ArchetypeRow>
 ): Promise<CrossRunIntelligenceSummary["recurringFamilies"]> {
   if (tenantIds.length === 0) {
     return {
@@ -537,25 +538,6 @@ async function buildRecurringFamilies(
       reasonCodes: ["no_adjudication_history"],
     };
   }
-
-  // Fetch archetypes for known archetypeIds
-  const archetypeIds = Array.from(
-    new Set(adjudications.map((a) => a.archetypeId).filter((id): id is string => id !== null))
-  );
-
-  let archetypes: ArchetypeRow[] = [];
-  try {
-    if (archetypeIds.length > 0) {
-      archetypes = (await prisma.exceptionArchetype.findMany({
-        where: { id: { in: archetypeIds }, tenantId: { in: tenantIds } },
-        select: { id: true, code: true, label: true, category: true, typicalResolution: true },
-      })) as ArchetypeRow[];
-    }
-  } catch {
-    // Non-fatal
-  }
-
-  const archetypeMap = new Map(archetypes.map((a) => [a.id, a]));
 
   // Group by archetype or resolution reason as fallback
   type FamilyKey = string;
@@ -697,7 +679,8 @@ async function buildRecurringFamilies(
 async function buildDecisionMemory(
   prisma: ReconciliationCorePrismaClient,
   tenantIds: string[],
-  load: AdjudicationLoad
+  load: AdjudicationLoad,
+  archetypeMap: Map<string, ArchetypeRow>
 ): Promise<CrossRunIntelligenceSummary["decisionMemory"]> {
   if (tenantIds.length === 0) {
     return {
@@ -718,23 +701,6 @@ async function buildDecisionMemory(
   }
 
   const adjudications = load.rows;
-  let archetypeMap = new Map<string, ArchetypeRow>();
-
-  // Fetch archetypes for display (same scope as families panel)
-  const ids = Array.from(
-    new Set(adjudications.map((a) => a.archetypeId).filter((id): id is string => id !== null))
-  );
-  if (ids.length > 0) {
-    try {
-      const rows = (await prisma.exceptionArchetype.findMany({
-        where: { id: { in: ids }, tenantId: { in: tenantIds } },
-        select: { id: true, code: true, label: true, category: true, typicalResolution: true },
-      })) as ArchetypeRow[];
-      archetypeMap = new Map(rows.map((a) => [a.id, a]));
-    } catch {
-      // Non-fatal — render without archetype labels
-    }
-  }
 
   if (adjudications.length === 0) {
     return {
@@ -825,12 +791,34 @@ export async function buildCrossRunIntelligenceSummary(
     };
   }
 
-  const adjudicationLoad = await loadAdjudicationHistory(prisma, tenantIds);
-
-  const [runTimelineRaw, recurringFamilies, decisionMemory] = await Promise.all([
+  const [adjudicationLoad, runTimelineRaw] = await Promise.all([
+    loadAdjudicationHistory(prisma, tenantIds),
     buildRunTimeline(prisma, tenantIds),
-    buildRecurringFamilies(prisma, tenantIds, adjudicationLoad),
-    buildDecisionMemory(prisma, tenantIds, adjudicationLoad),
+  ]);
+
+  let archetypeMap = new Map<string, ArchetypeRow>();
+  if (adjudicationLoad.kind === "ok" && adjudicationLoad.rows.length > 0) {
+    const archetypeIds = Array.from(
+      new Set(
+        adjudicationLoad.rows.map((a) => a.archetypeId).filter((id): id is string => id !== null)
+      )
+    );
+    if (archetypeIds.length > 0) {
+      try {
+        const archetypes = (await prisma.exceptionArchetype.findMany({
+          where: { id: { in: archetypeIds }, tenantId: { in: tenantIds } },
+          select: { id: true, code: true, label: true, category: true, typicalResolution: true },
+        })) as ArchetypeRow[];
+        archetypeMap = new Map(archetypes.map((a) => [a.id, a]));
+      } catch {
+        // Non-fatal
+      }
+    }
+  }
+
+  const [recurringFamilies, decisionMemory] = await Promise.all([
+    buildRecurringFamilies(prisma, tenantIds, adjudicationLoad, archetypeMap),
+    buildDecisionMemory(prisma, tenantIds, adjudicationLoad, archetypeMap),
   ]);
 
   // When adjudication history cannot load, timeline alone is not enough for full intelligence — surface as thin history

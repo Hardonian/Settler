@@ -24,55 +24,54 @@ export async function getMetricsSummary(tenantId: string, windowParam: string | 
   const window = toWindow(windowParam);
   const interval = WINDOW_SQL[window];
 
-  const [runs] = await prisma.$queryRaw<Array<Record<string, unknown>>>(
-    `
-    SELECT
-      COUNT(*)::int AS runs_total,
-      COALESCE(AVG(CASE WHEN status = 'succeeded' THEN 1 ELSE 0 END), 0) AS success_rate,
-      COALESCE(AVG(CASE WHEN replay_ok = true THEN 1 ELSE 0 END), 0) AS replay_verified_rate
-    FROM run_metrics
-    WHERE tenant_id = $1
-      AND created_at >= NOW() - INTERVAL '${interval}'
-  `,
-    tenantId
-  );
-
-  const [requests] = await prisma.$queryRaw<Array<Record<string, unknown>>>(
-    `
-    SELECT
-      COALESCE(AVG(latency_ms),0) AS avg_latency,
-      COALESCE(AVG(CASE WHEN rate_limited THEN 1 ELSE 0 END),0) AS rate_limited_rate,
-      COALESCE(AVG(CASE WHEN cache_hit THEN 1 ELSE 0 END),0) AS cache_hit_rate
-    FROM request_metrics
-    WHERE tenant_id = $1
-      AND created_at >= NOW() - INTERVAL '${interval}'
-  `,
-    tenantId
-  );
-
-  const [economics] = await prisma.$queryRaw<Array<Record<string, unknown>>>(
-    `
-    SELECT
-      COALESCE(SUM(compute_units),0) AS compute_total,
-      COALESCE(SUM(cas_io_units),0) AS cas_io_total,
-      COALESCE(AVG(compute_units),0) AS compute_avg_per_run,
-      COALESCE(AVG(cas_io_units),0) AS cas_io_avg_per_run
-    FROM economic_metrics
-    WHERE tenant_id = $1
-      AND created_at >= NOW() - INTERVAL '${interval}'
-  `,
-    tenantId
-  );
-
-  const [alerts] = await prisma.$queryRaw<Array<Record<string, unknown>>>(
-    `
-    SELECT
-      (SELECT COUNT(*)::int FROM drift_metrics d WHERE d.tenant_id = $1 AND d.created_at >= NOW() - INTERVAL '${interval}' AND d.replay_verification = false) AS replay_mismatches,
-      (SELECT COUNT(*)::int FROM policy_metrics p WHERE p.tenant_id = $1 AND p.created_at >= NOW() - INTERVAL '${interval}' AND p.budget_overrun_count > 0) AS budget_overruns,
-      (SELECT COUNT(*)::int FROM request_metrics r WHERE r.tenant_id = $1 AND r.created_at >= NOW() - INTERVAL '${interval}' AND r.status_code >= 500) AS errors
-  `,
-    tenantId
-  );
+  const [[runs], [requests], [economics], [alerts]] = await Promise.all([
+    prisma.$queryRaw<Array<Record<string, unknown>>>(
+      `
+      SELECT
+        COUNT(*)::int AS runs_total,
+        COALESCE(AVG(CASE WHEN status = 'succeeded' THEN 1 ELSE 0 END), 0) AS success_rate,
+        COALESCE(AVG(CASE WHEN replay_ok = true THEN 1 ELSE 0 END), 0) AS replay_verified_rate
+      FROM run_metrics
+      WHERE tenant_id = $1
+        AND created_at >= NOW() - INTERVAL '${interval}'
+    `,
+      tenantId
+    ),
+    prisma.$queryRaw<Array<Record<string, unknown>>>(
+      `
+      SELECT
+        COALESCE(AVG(latency_ms),0) AS avg_latency,
+        COALESCE(AVG(CASE WHEN rate_limited THEN 1 ELSE 0 END),0) AS rate_limited_rate,
+        COALESCE(AVG(CASE WHEN cache_hit THEN 1 ELSE 0 END),0) AS cache_hit_rate
+      FROM request_metrics
+      WHERE tenant_id = $1
+        AND created_at >= NOW() - INTERVAL '${interval}'
+    `,
+      tenantId
+    ),
+    prisma.$queryRaw<Array<Record<string, unknown>>>(
+      `
+      SELECT
+        COALESCE(SUM(compute_units),0) AS compute_total,
+        COALESCE(SUM(cas_io_units),0) AS cas_io_total,
+        COALESCE(AVG(compute_units),0) AS compute_avg_per_run,
+        COALESCE(AVG(cas_io_units),0) AS cas_io_avg_per_run
+      FROM economic_metrics
+      WHERE tenant_id = $1
+        AND created_at >= NOW() - INTERVAL '${interval}'
+    `,
+      tenantId
+    ),
+    prisma.$queryRaw<Array<Record<string, unknown>>>(
+      `
+      SELECT
+        (SELECT COUNT(*)::int FROM drift_metrics d WHERE d.tenant_id = $1 AND d.created_at >= NOW() - INTERVAL '${interval}' AND d.replay_verification = false) AS replay_mismatches,
+        (SELECT COUNT(*)::int FROM policy_metrics p WHERE p.tenant_id = $1 AND p.created_at >= NOW() - INTERVAL '${interval}' AND p.budget_overrun_count > 0) AS budget_overruns,
+        (SELECT COUNT(*)::int FROM request_metrics r WHERE r.tenant_id = $1 AND r.created_at >= NOW() - INTERVAL '${interval}' AND r.status_code >= 500) AS errors
+    `,
+      tenantId
+    ),
+  ]);
 
   return { ...runs, ...requests, ...economics, ...alerts, window };
 }

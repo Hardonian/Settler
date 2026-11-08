@@ -68,9 +68,9 @@ export default async function AppRunsPage() {
         </div>
         <div className="flex gap-3">
           <Button variant="outline" size="lg" className="h-12 font-bold gap-2" asChild>
-            <Link href="/console/runs">
+            <Link href="/app/mismatches">
               <Filter className="h-4 w-4" />
-              Advanced Filters
+              Mismatches ({totalUnresolved})
             </Link>
           </Button>
           <Button
@@ -157,10 +157,10 @@ export default async function AppRunsPage() {
             </p>
             {totalUnresolved > 0 && (
               <Link
-                href="/console/exceptions"
+                href="/app/mismatches"
                 className="inline-flex items-center gap-1 mt-2 text-xs font-semibold text-amber-700 dark:text-amber-400 hover:underline"
               >
-                Open Exceptions
+                Open Mismatches
                 <ExternalLink className="w-3 h-3" />
               </Link>
             )}

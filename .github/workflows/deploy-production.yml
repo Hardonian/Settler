@@ -313,7 +313,7 @@ jobs:
       - name: Setup Node & Vercel CLI
         uses: actions/setup-node@v7
         with:
-          node-version-file: ".nvmrc"
+          node-version: "24"
 
       - name: Install Vercel CLI for Authenticated Preview Probes
         if: env.VERCEL_TOKEN != ''

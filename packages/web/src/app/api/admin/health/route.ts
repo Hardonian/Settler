@@ -39,58 +39,59 @@ export const GET = withSecurity(
       const last24h = new Date(now.getTime() - 24 * 60 * 60 * 1000);
       const last7d = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
 
-      // Get webhook failures (last 24h)
-      const webhookFailures = await prisma.stripeEvent.count({
-        where: {
-          status: "failed",
-          receivedAt: {
-            gte: last24h,
+      // Execute all health & backlog queries concurrently
+      const [
+        webhookFailures,
+        reconErrors,
+        retryBacklog,
+        pendingReconciliations,
+        errorSpikes,
+        dbHealth,
+      ] = await Promise.all([
+        prisma.stripeEvent.count({
+          where: {
+            status: "failed",
+            receivedAt: {
+              gte: last24h,
+            },
           },
-        },
-      });
-
-      // Get reconciliation error counts (last 24h)
-      const reconErrors = await prisma.reconResult.count({
-        where: {
-          status: "failed",
-          startedAt: {
-            gte: last24h,
+        }),
+        prisma.reconResult.count({
+          where: {
+            status: "failed",
+            startedAt: {
+              gte: last24h,
+            },
           },
-        },
-      });
-
-      // Get retry backlog (failed webhook deliveries)
-      const retryBacklog = await prisma.webhookDelivery.count({
-        where: {
-          status: "failed",
-          nextRetryAt: {
-            not: null,
+        }),
+        prisma.webhookDelivery.count({
+          where: {
+            status: "failed",
+            nextRetryAt: {
+              not: null,
+            },
           },
-        },
-      });
-
-      // Get queue lag (simplified - would need actual queue metrics)
-      const queueLag = {
-        webhooks: retryBacklog,
-        reconciliations: await prisma.reconciliationRun.count({
+        }),
+        prisma.reconciliationRun.count({
           where: {
             status: "pending",
           },
         }),
-      };
-
-      // Get recent error spikes
-      const errorSpikes = await prisma.reconResult.count({
-        where: {
-          status: "failed",
-          startedAt: {
-            gte: last7d,
+        prisma.reconResult.count({
+          where: {
+            status: "failed",
+            startedAt: {
+              gte: last7d,
+            },
           },
-        },
-      });
+        }),
+        checkDatabaseHealth(),
+      ]);
 
-      // Get system components status — derive from real checks
-      const dbHealth = await checkDatabaseHealth();
+      const queueLag = {
+        webhooks: retryBacklog,
+        reconciliations: pendingReconciliations,
+      };
       const components = {
         web: "operational" as const, // This request succeeded, so web is up
         api: "operational" as const, // This route is running, so API is up
