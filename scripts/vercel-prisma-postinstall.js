@@ -31,14 +31,8 @@ function checkNodeModules() {
 }
 
 function shouldRunPrismaGenerate() {
-  // In Vercel, Prisma generate should run during build, not postinstall
-  if (IS_VERCEL) {
-    console.log("⏭️  Skipping Prisma generate in Vercel build (will run during build step)");
-    return false;
-  }
-
-  // In CI, let the build process handle it
-  if (IS_CI && NODE_ENV === "production") {
+  // In CI (except Vercel where pnpm --filter build runs without Turbo), let the build process handle it
+  if (IS_CI && NODE_ENV === "production" && !IS_VERCEL) {
     console.log("⏭️  Skipping Prisma generate in CI (will run during build step)");
     return false;
   }
