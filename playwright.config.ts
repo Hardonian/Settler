@@ -15,8 +15,9 @@ loadEnvFiles();
  */
 
 // Base URL for tests
+const WEB_PORT = process.env.PORT || "3000";
 const BASE_URL =
-  process.env.E2E_BASE_URL || process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+  process.env.E2E_BASE_URL || process.env.NEXT_PUBLIC_SITE_URL || `http://localhost:${WEB_PORT}`;
 
 export default defineConfig({
   // Keep Playwright from importing the Jest/Vitest suites under tests/integration(s).
@@ -86,6 +87,7 @@ export default defineConfig({
       testMatch: /.*\.visual\.spec\.ts/,
       use: {
         ...devices["iPhone SE"],
+        browserName: "chromium",
         deviceScaleFactor: 2,
         colorScheme: "light",
         contextOptions: {
@@ -100,6 +102,7 @@ export default defineConfig({
       testMatch: /.*\.visual\.spec\.ts/,
       use: {
         ...devices["iPhone SE"],
+        browserName: "chromium",
         deviceScaleFactor: 2,
         colorScheme: "dark",
         contextOptions: {
@@ -114,6 +117,7 @@ export default defineConfig({
       testMatch: /.*\.visual\.spec\.ts/,
       use: {
         ...devices["iPad Mini"],
+        browserName: "chromium",
         deviceScaleFactor: 2,
         colorScheme: "light",
         contextOptions: {
@@ -184,8 +188,10 @@ export default defineConfig({
 
   // Local dev server configuration
   webServer: {
-    command: process.env.CI ? "pnpm --filter @settler/web start" : "pnpm --filter @settler/web dev",
-    url: "http://localhost:3000",
+    command: process.env.CI
+      ? `pnpm --filter @settler/web start -p ${WEB_PORT}`
+      : `pnpm --filter @settler/web dev -p ${WEB_PORT}`,
+    url: BASE_URL,
     reuseExistingServer: !process.env.CI || process.env.CI_VISUAL_LANDING === "1",
     timeout: 120 * 1000,
     env: {

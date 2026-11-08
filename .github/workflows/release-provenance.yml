@@ -91,6 +91,16 @@ jobs:
       - name: Verify admin route authorization
         run: node scripts/security/admin-route-authz.mjs
 
+      - name: Install osv-scanner
+        run: |
+          set -Eeuo pipefail
+          curl -fsSL --retry 3 --retry-connrefused -o "$RUNNER_TEMP/osv-scanner" \
+            "https://github.com/google/osv-scanner/releases/download/v2.6.0/osv-scanner_linux_amd64"
+          mkdir -p "$HOME/.local/bin"
+          install -m 0755 "$RUNNER_TEMP/osv-scanner" "$HOME/.local/bin/osv-scanner"
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+          "$HOME/.local/bin/osv-scanner" --version
+
       - name: Run dependency audit
         env:
           SECURITY_AUDIT_MODE: strict

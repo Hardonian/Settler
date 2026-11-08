@@ -194,39 +194,66 @@ export async function getDashboardStats() {
   if (!tenantId) return null;
 
   try {
-    const [totalJobs, totalUnmatchedRuns, driftEvents, pendingExceptions, recentActivity] =
-      await Promise.all([
-        prisma.reconJob.count({ where: { tenantId, deletedAt: null } }),
-        // Count runs with unmatched records (status completed with unmatched or error)
-        prisma.reconResult.count({
-          where: {
-            tenantId,
-            status: { in: ["completed", "completed_mismatch"] },
-            OR: [{ unmatchedSourceCount: { gt: 0 } }, { unmatchedTargetCount: { gt: 0 } }],
-          },
-        }),
-        prisma.driftEvent.count({ where: { tenantId } }),
-        prisma.driftEvent.count({ where: { tenantId, acknowledged: false } }),
-        prisma.reconJob.findMany({
-          where: { tenantId, deletedAt: null },
-          orderBy: { createdAt: "desc" },
-          take: 5,
-          select: {
-            id: true,
-            status: true,
-            createdAt: true,
-            name: true,
-            metadata: true,
-            results: {
-              orderBy: { startedAt: "desc" },
-              take: 1,
-              select: {
-                status: true,
-              },
+    const [
+      totalJobs,
+      totalUnmatchedRuns,
+      driftEvents,
+      pendingExceptions,
+      activePolicies,
+      recordTotals,
+      sparkline14d,
+      recentActivity,
+    ] = await Promise.all([
+      prisma.reconJob.count({ where: { tenantId, deletedAt: null } }),
+      // Count runs with unmatched records (status completed with unmatched or error)
+      prisma.reconResult.count({
+        where: {
+          tenantId,
+          status: { in: ["completed", "completed_mismatch"] },
+          OR: [{ unmatchedSourceCount: { gt: 0 } }, { unmatchedTargetCount: { gt: 0 } }],
+        },
+      }),
+      prisma.driftEvent.count({ where: { tenantId } }),
+      prisma.driftEvent.count({ where: { tenantId, acknowledged: false } }),
+      prisma.contractVersion.count({ where: { tenantId, isActive: true } }),
+      prisma.reconResult.aggregate({
+        where: { tenantId },
+        _sum: {
+          matchedCount: true,
+          sourceCount: true,
+          targetCount: true,
+          conflictCount: true,
+        },
+      }),
+      getRunsSparklineData(tenantId, 14),
+      prisma.reconJob.findMany({
+        where: { tenantId, deletedAt: null },
+        orderBy: { createdAt: "desc" },
+        take: 5,
+        select: {
+          id: true,
+          status: true,
+          createdAt: true,
+          name: true,
+          metadata: true,
+          results: {
+            orderBy: { startedAt: "desc" },
+            take: 1,
+            select: {
+              status: true,
             },
           },
-        }),
-      ]);
+        },
+      }),
+    ]);
+
+    const matchedRecords = recordTotals._sum.matchedCount ?? 0;
+    const totalSourceRecords = recordTotals._sum.sourceCount ?? 0;
+    const totalConflicts = recordTotals._sum.conflictCount ?? 0;
+    const matchRate =
+      totalSourceRecords > 0
+        ? Math.min(100, Math.round((matchedRecords / totalSourceRecords) * 1000) / 10)
+        : 100;
 
     return {
       metrics: {
@@ -235,6 +262,12 @@ export async function getDashboardStats() {
         unmatched_runs: totalUnmatchedRuns,
         drift_events_detected: driftEvents,
         pending_exceptions: pendingExceptions,
+        active_policies: activePolicies,
+        matched_records: matchedRecords,
+        total_source_records: totalSourceRecords,
+        total_conflicts: totalConflicts,
+        match_rate: matchRate,
+        sparkline_14d: sparkline14d,
         integrity_score:
           totalJobs > 0 ? Math.round(((totalJobs - totalUnmatchedRuns) / totalJobs) * 100) : 100,
       },

@@ -10,9 +10,9 @@ dotenv.config();
 const port = Number(process.env.PORT || 3210 + Math.floor(Math.random() * 500));
 const base = `http://127.0.0.1:${port}`;
 
-const strict200Routes = ["/home", "/docs", "/pricing"];
+const strict200Routes = ["/", "/docs", "/pricing"];
 const non500Routes = [
-  "/",
+  "/home",
   "/api/v1/health",
   "/api/v1/meta",
   "/app",
@@ -99,7 +99,7 @@ async function main() {
     }
 
     for (const route of non500Routes) {
-      await verifyRoute(route, [200, 302, 307, 401, 403, 404]);
+      await verifyRoute(route, [200, 302, 307, 308, 401, 403, 404]);
     }
 
     // A readiness endpoint is healthy as a route even when it truthfully

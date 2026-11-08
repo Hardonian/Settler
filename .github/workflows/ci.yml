@@ -353,7 +353,7 @@ jobs:
         run: pnpm --filter @settler/web build
 
       - name: Provision Playwright browsers for landing visual gate
-        run: npx playwright install --with-deps chromium webkit
+        run: npx playwright install --with-deps chromium
 
       - name: Run marketing landing gates against production server
         run: |

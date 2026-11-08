@@ -24,7 +24,6 @@
     ".npm-auditignore",
     ".npmrc",
     ".nvmrc",
-    ".pnpmfile.cjs",
     ".pre-commit-config.yaml",
     ".prettierignore",
     ".prettierrc",

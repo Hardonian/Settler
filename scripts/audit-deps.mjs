@@ -100,6 +100,10 @@ function parseOsvFindingPackages(raw) {
 const ACCEPTED_EXCEPTIONS = new Set([
   // Locked by @prisma/client -> prisma -> @prisma/config -> deepmerge-ts
   "deepmerge-ts",
+  // GHSA low-severity prototype pollution advisory on deepmerge <=4.3.1 has
+  // no upstream patched version published (patched <0.0.0); transitive via
+  // jest-config and html-to-text on trusted internal configs only.
+  "deepmerge",
   // Locked by @prisma/client -> prisma -> mysql2
   "mysql2",
   // Locked by @opentelemetry/* -> @opentelemetry/core
@@ -205,6 +209,7 @@ if (mode !== "off") {
       const osvNonAccepted = [...osvPackages].filter((name) => !ACCEPTED_EXCEPTIONS.has(name));
       if (osvNonAccepted.length > 0) {
         // Vulnerabilities outside the accepted set: hard failure in strict mode.
+        completeness = "degraded";
         degradedReasons.push(`osv-findings:${osvNonAccepted.sort().join(",")}`);
         if (mode === "strict") {
           finalOutcome = "failed-osv-findings";
@@ -214,6 +219,7 @@ if (mode !== "off") {
       } else if (osvPackages.size > 0) {
         // Only accepted transitive exceptions found — consistent with the
         // pnpm-audit path's "passed-with-accepted-exceptions" stance.
+        completeness = "degraded";
         degradedReasons.push("accepted-transitive-vulns");
         if (finalOutcome === "passed") {
           finalOutcome = "passed-with-accepted-exceptions";

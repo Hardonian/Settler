@@ -177,7 +177,7 @@ export default async function AppPage() {
                 </p>
                 {(stats?.metrics?.pending_exceptions ?? 0) > 0 ? (
                   <Link
-                    href="/console/exceptions"
+                    href="/app/mismatches"
                     className="text-[10px] text-amber-600 dark:text-amber-400 font-semibold hover:underline flex items-center gap-1 mt-1"
                   >
                     <AlertCircle className="w-3 h-3" />
@@ -189,6 +189,82 @@ export default async function AppPage() {
               </CardContent>
             </Card>
           </div>
+
+          {/* Secondary KPI Strip: Record Match Rate, Active Policies, 14-Day Cadence */}
+          <Card className="panel bg-background/50 shadow-sm">
+            <CardContent className="p-4">
+              <div className="grid gap-4 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-border/40">
+                <div className="pt-2 sm:pt-0 sm:pr-4">
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                    Record Match Rate
+                  </p>
+                  <p className="mt-1 text-2xl font-bold tracking-tight text-foreground font-mono">
+                    {stats?.metrics?.match_rate ?? 100}%
+                  </p>
+                  <p className="text-[10px] text-muted-foreground mt-0.5">
+                    {(stats?.metrics?.matched_records ?? 0).toLocaleString()} of{" "}
+                    {(stats?.metrics?.total_source_records ?? 0).toLocaleString()} source records
+                  </p>
+                </div>
+
+                <div className="pt-3 sm:pt-0 sm:px-4">
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                    Governed Policies
+                  </p>
+                  <div className="mt-1 flex items-baseline gap-2">
+                    <p className="text-2xl font-bold tracking-tight text-foreground font-mono">
+                      {stats?.metrics?.active_policies ?? 0}
+                    </p>
+                    <span className="text-[10px] text-muted-foreground">
+                      active · {stats?.metrics?.drift_events_detected ?? 0} drift events
+                    </span>
+                  </div>
+                  <Link
+                    href="/app/policies"
+                    className="mt-0.5 inline-flex items-center gap-1 text-[10px] font-semibold text-primary hover:underline"
+                  >
+                    Inspect policy contracts →
+                  </Link>
+                </div>
+
+                <div className="pt-3 sm:pt-0 sm:pl-4">
+                  <div className="flex items-center justify-between">
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                      14-Day Run Cadence
+                    </p>
+                    <span className="text-[10px] font-mono text-muted-foreground">
+                      {(stats?.metrics?.sparkline_14d ?? []).reduce(
+                        (sum: number, n: number) => sum + n,
+                        0
+                      )}{" "}
+                      runs
+                    </span>
+                  </div>
+                  <div
+                    className="mt-2 flex h-9 items-end gap-1"
+                    role="img"
+                    aria-label="14-day reconciliation run cadence"
+                  >
+                    {(stats?.metrics?.sparkline_14d?.length === 14
+                      ? stats.metrics.sparkline_14d
+                      : Array.from({ length: 14 }, () => 0)
+                    ).map((count: number, idx: number, arr: number[]) => {
+                      const maxVal = Math.max(...arr, 1);
+                      const pct = Math.max(14, Math.round((count / maxVal) * 100));
+                      return (
+                        <div
+                          key={idx}
+                          title={`Day ${idx + 1}: ${count} run${count === 1 ? "" : "s"}`}
+                          className={`flex-1 rounded-t transition-all ${count > 0 ? "bg-primary/80 hover:bg-primary" : "bg-muted/60"}`}
+                          style={{ height: `${pct}%` }}
+                        />
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
 
           <Card className="panel shadow-sm">
             <CardHeader className="pb-3 border-b border-border/40">
@@ -216,7 +292,7 @@ export default async function AppPage() {
                   {stats.recent.map((run: any) => (
                     <Link
                       key={run.id}
-                      href={`/console/runs/${run.id}`}
+                      href={`/app/runs/${run.id}`}
                       className="flex items-center justify-between p-4 hover:bg-muted/30 transition-colors animate-fade-in group focus-visible:bg-muted/50 outline-none"
                     >
                       <div className="flex gap-4 items-center min-w-0">

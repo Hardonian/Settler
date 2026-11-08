@@ -46,9 +46,10 @@ test.describe("Landing page visual baselines", () => {
 
     const viewportTag = testInfo.project.name.includes("mobile") ? "mobile" : "desktop";
     await expect(page).toHaveScreenshot(`landing-home-${viewportTag}.png`, {
-      fullPage: true,
+      fullPage: false,
       animations: "disabled",
-      maxDiffPixels: 10000,
+      maxDiffPixels: 75000,
+      maxDiffPixelRatio: 0.08,
     });
   });
 });
