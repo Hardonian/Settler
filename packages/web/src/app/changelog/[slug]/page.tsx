@@ -8,11 +8,12 @@ import { MdxPlainRenderer } from "@/components/content/MdxPlainRenderer";
 import { Metadata } from "next";
 
 interface Props {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const post = getChangelogPost(params.slug);
+  const { slug } = await params;
+  const post = getChangelogPost(slug);
   if (!post) {
     return { title: "Not Found" };
   }
@@ -29,8 +30,9 @@ export async function generateStaticParams() {
   }));
 }
 
-export default function ChangelogPostPage({ params }: Props) {
-  const post = getChangelogPost(params.slug);
+export default async function ChangelogPostPage({ params }: Props) {
+  const { slug } = await params;
+  const post = getChangelogPost(slug);
 
   if (!post) {
     notFound();

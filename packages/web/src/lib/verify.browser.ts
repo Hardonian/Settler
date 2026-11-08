@@ -13,15 +13,33 @@ import {
 } from "./verify.shared";
 
 let wasmModule: WasmVerifier | null = null;
+let preloadPromise: Promise<WasmVerifier | null> | null = null;
+
+/**
+ * Proactively preload the browser WebAssembly verifier module in the background
+ * to eliminate verification latency when an auditor or operator inspects a proofpack.
+ */
+export function preloadWasmVerifier(): Promise<WasmVerifier | null> {
+  if (wasmModule) return Promise.resolve(wasmModule);
+  if (!preloadPromise) {
+    preloadPromise = loadVerifier().catch((error) => {
+      preloadPromise = null;
+      console.warn("[verify] WASM preloader error:", error);
+      return null;
+    });
+  }
+  return preloadPromise;
+}
 
 export async function loadVerifier(): Promise<WasmVerifier | null> {
   if (wasmModule) return wasmModule;
+  if (preloadPromise) return preloadPromise;
   if (typeof window === "undefined") return null;
 
   try {
     // The generated wasm-bindgen loader is copied to public/wasm and intentionally loaded at runtime.
-    // @ts-expect-error -- The public URL is not a TypeScript-resolvable module.
-    const importedModule = await import(/* webpackIgnore: true */ "/wasm/settler_verify_wasm.js");
+    const wasmLoaderUrl = "/wasm/settler_verify_wasm.js";
+    const importedModule = await import(/* webpackIgnore: true */ /* @vite-ignore */ wasmLoaderUrl);
     if (typeof importedModule.default === "function") {
       await importedModule.default("/wasm/settler_verify_wasm_bg.wasm");
     }
@@ -81,3 +99,4 @@ export async function verifySmt(proof: SmtProof): Promise<SmtVerificationResult>
 }
 
 export { sha256Hex, verifyManifestNative } from "./verify.shared";
+export { verifyProofpackJson, type ProofpackVerificationOutcome } from "./proofpack-verifier";

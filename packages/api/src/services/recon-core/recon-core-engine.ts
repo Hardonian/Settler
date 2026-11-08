@@ -541,27 +541,42 @@ export class ReconCoreEngine {
       return { sourceData, targetData };
     }
 
-    // 2. REAL ADAPTERS (Placeholder for now)
-    // In a real implementation, we would use the AdapterFactory here
+    // 2. REAL ADAPTERS
     if (reconJob.sourceAdapter && reconJob.sourceAdapter !== "DEMO_STRIPE") {
-      // Check if we have credentials
       if (!reconJob.sourceConfigEncrypted) {
         logWarn(`Missing credentials for ${reconJob.sourceAdapter}, returning empty dataset`);
         return { sourceData: [], targetData: [] };
       }
 
-      // Call actual adapter
       try {
         const { AdapterFactory } = await import("../../adapters/adapter-factory");
-        const adapter = AdapterFactory.create(
+        const dateRange = {
+          startDate: (reconJob as any).config?.startDate as string,
+          endDate: (reconJob as any).config?.endDate as string,
+        };
+        const sourceAdapter = AdapterFactory.create(
           reconJob.sourceAdapter,
           reconJob.sourceConfigEncrypted
         );
-        const rawData = await adapter.fetchTransactions({
-          startDate: (reconJob as any).config?.startDate as string,
-          endDate: (reconJob as any).config?.endDate as string,
-        });
-        return { sourceData: rawData as ReconDataRecord[], targetData: [] };
+        const rawSourceData = await sourceAdapter.fetchTransactions(dateRange);
+
+        let rawTargetData: ReconDataRecord[] = [];
+        if (
+          reconJob.targetAdapter &&
+          reconJob.targetAdapter !== "DEMO_BANK" &&
+          reconJob.targetConfigEncrypted
+        ) {
+          const targetAdapter = AdapterFactory.create(
+            reconJob.targetAdapter,
+            reconJob.targetConfigEncrypted
+          );
+          rawTargetData = (await targetAdapter.fetchTransactions(dateRange)) as ReconDataRecord[];
+        }
+
+        return {
+          sourceData: rawSourceData as ReconDataRecord[],
+          targetData: rawTargetData,
+        };
       } catch (error) {
         logError(`Failed to fetch data from adapter ${reconJob.sourceAdapter}`, error);
         return { sourceData: [], targetData: [] };
@@ -853,12 +868,25 @@ export class ReconCoreEngine {
     const sources = sourceData as unknown as NormalizedRecord[];
     const targets = targetData as unknown as NormalizedRecord[];
 
-    // Index targets to avoid O(N^2)
+    // Index targets and pre-parse timestamps to avoid O(N^2) Date allocations
     const targetMapByExternalId = new Map<string, NormalizedRecord>();
     const targetsByRoundedAmount = new Map<number, NormalizedRecord[]>();
+    const sourceTimeMs = new Map<string, number>();
+    const targetTimeMs = new Map<string, number>();
+
+    sources.forEach((s) => {
+      sourceTimeMs.set(
+        s.id,
+        s.occurredAt instanceof Date ? s.occurredAt.getTime() : Date.parse(String(s.occurredAt))
+      );
+    });
 
     targets.forEach((t) => {
       if (t.externalId) targetMapByExternalId.set(t.externalId, t);
+      targetTimeMs.set(
+        t.id,
+        t.occurredAt instanceof Date ? t.occurredAt.getTime() : Date.parse(String(t.occurredAt))
+      );
       const roundedAmount = Math.round(t.amount);
       if (!targetsByRoundedAmount.has(roundedAmount)) {
         targetsByRoundedAmount.set(roundedAmount, []);
@@ -880,6 +908,7 @@ export class ReconCoreEngine {
         const potentialTargets = targetMapByExternalId.get(source.externalId)
           ? [targetMapByExternalId.get(source.externalId)!]
           : targets; // fallback to all if description match is needed
+        const sTime = sourceTimeMs.get(source.id)!;
 
         for (const target of potentialTargets) {
           if (matchedTargetIds.has(target.id)) continue;
@@ -890,9 +919,7 @@ export class ReconCoreEngine {
 
           const amountMatch = Math.abs(source.amount - target.amount) < amountTolerance;
 
-          const dateDiff = Math.abs(
-            new Date(source.occurredAt).getTime() - new Date(target.occurredAt).getTime()
-          );
+          const dateDiff = Math.abs(sTime - targetTimeMs.get(target.id)!);
           const dateMatch = dateDiff < dateToleranceMs;
 
           if (descriptionMatch && amountMatch && dateMatch) {
@@ -942,14 +969,13 @@ export class ReconCoreEngine {
       if (matchedSourceIds.has(source.id)) continue;
 
       const candidates = getCandidatesByAmount(source.amount, amountTolerance);
+      const sTime = sourceTimeMs.get(source.id)!;
 
       for (const target of candidates) {
         if (matchedTargetIds.has(target.id)) continue;
 
         const amountMatch = Math.abs(source.amount - target.amount) < amountTolerance;
-        const dateDiff = Math.abs(
-          new Date(source.occurredAt).getTime() - new Date(target.occurredAt).getTime()
-        );
+        const dateDiff = Math.abs(sTime - targetTimeMs.get(target.id)!);
         const dateMatch = dateDiff < dateToleranceMs;
 
         if (amountMatch && dateMatch) {
@@ -983,14 +1009,13 @@ export class ReconCoreEngine {
       if (matchedSourceIds.has(source.id)) continue;
 
       const candidates = getCandidatesByAmount(source.amount, amountTolerance);
+      const sTime = sourceTimeMs.get(source.id)!;
 
       for (const target of candidates) {
         if (matchedTargetIds.has(target.id)) continue;
 
         const amountMatch = Math.abs(source.amount - target.amount) < amountTolerance;
-        const dateDiff = Math.abs(
-          new Date(source.occurredAt).getTime() - new Date(target.occurredAt).getTime()
-        );
+        const dateDiff = Math.abs(sTime - targetTimeMs.get(target.id)!);
         const dateMatch = dateDiff < dateToleranceMs * 3; // 3x tolerance for fuzzy
 
         if (amountMatch && dateMatch) {

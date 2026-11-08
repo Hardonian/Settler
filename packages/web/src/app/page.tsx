@@ -322,7 +322,7 @@ export default function HomePage() {
           description="Explore the operator console with realistic reconciliation data, evidence artifacts, and exception workflows. No account required."
           primaryHref="/demo/console"
           primaryLabel="Explore operator console"
-          secondaryHref="/docs/trust-packet"
+          secondaryHref="/security-and-audit"
           secondaryLabel="Read the trust packet"
         />
       </main>

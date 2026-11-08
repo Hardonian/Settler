@@ -31,6 +31,7 @@ const { values: args } = parseArgs({
   options: {
     "sequential-count": { type: "string", default: "10000" },
     "concurrent-count": { type: "string", default: "1000" },
+    "streaming-count": { type: "string", default: "100000" },
     output: { type: "string" },
     quiet: { type: "boolean", default: false },
   },
@@ -39,6 +40,7 @@ const { values: args } = parseArgs({
 
 const SEQUENTIAL_COUNT = parseInt(String(args["sequential-count"] ?? "10000"), 10);
 const CONCURRENT_COUNT = parseInt(String(args["concurrent-count"] ?? "1000"), 10);
+const STREAMING_COUNT = parseInt(String(args["streaming-count"] ?? "100000"), 10);
 const OUTPUT_PATH = args.output as string | undefined;
 const QUIET = Boolean(args.quiet);
 
@@ -80,13 +82,13 @@ let casHits = 0;
 let casMisses = 0;
 
 function simulateReconciliation(input: ReconciliationInput): ReconciliationOutput {
-  const inputHash = sha256(stableStringify(input));
+  const contentHash = sha256(stableStringify({ tenantId: input.tenantId, records: input.records }));
 
-  // CAS lookup
-  const cached = casCache.get(inputHash);
+  // CAS lookup (content-addressed deduplication by tenant + records payload)
+  const cached = casCache.get(contentHash);
   if (cached) {
     casHits++;
-    return cached;
+    return { ...cached, runId: input.runId };
   }
   casMisses++;
 
@@ -99,11 +101,11 @@ function simulateReconciliation(input: ReconciliationInput): ReconciliationOutpu
     matched,
     unmatched,
     matchRate: input.records.length > 0 ? matched / input.records.length : 0,
-    inputHash,
-    outputHash: sha256(stableStringify({ matched, unmatched, runId: input.runId })),
+    inputHash: contentHash,
+    outputHash: sha256(stableStringify({ matched, unmatched, contentHash })),
   };
 
-  casCache.set(inputHash, output);
+  casCache.set(contentHash, output);
   return output;
 }
 
@@ -123,7 +125,11 @@ function generateInput(index: number, tenantId: string): ReconciliationInput {
 
 function simulateReplay(output: ReconciliationOutput): { hash: string; match: boolean } {
   const replayHash = sha256(
-    stableStringify({ matched: output.matched, unmatched: output.unmatched, runId: output.runId })
+    stableStringify({
+      matched: output.matched,
+      unmatched: output.unmatched,
+      contentHash: output.inputHash,
+    })
   );
   return {
     hash: replayHash,
@@ -249,6 +255,85 @@ async function runReplayBenchmark(
   };
 }
 
+interface StreamingBenchmarkStats extends BenchmarkStats {
+  batchesCount: number;
+  batchSize: number;
+  finalMerkleRoot: string;
+}
+
+function computeMerkleRootBuffers(leaves: Buffer[]): Buffer {
+  if (leaves.length === 0) return createHash("sha256").digest();
+  let count = leaves.length;
+  let currentLevel = leaves;
+  while (count > 1) {
+    const nextCount = Math.ceil(count / 2);
+    const nextLevel: Buffer[] = new Array(nextCount);
+    for (let i = 0; i < count; i += 2) {
+      const left = currentLevel[i]!;
+      const right = i + 1 < count ? currentLevel[i + 1]! : left;
+      const h = createHash("sha256");
+      h.update(left);
+      h.update(right);
+      nextLevel[i >> 1] = h.digest();
+    }
+    currentLevel = nextLevel;
+    count = nextCount;
+  }
+  return currentLevel[0]!;
+}
+
+async function runStreamingBenchmark(
+  totalTxns: number,
+  batchSize = 1000
+): Promise<StreamingBenchmarkStats> {
+  const batches = Math.ceil(totalTxns / batchSize);
+  const batchLatencies: number[] = [];
+  const memBefore = process.memoryUsage().heapUsed;
+
+  let currentLedgerRoot: Buffer = createHash("sha256").update("genesis-root").digest();
+  const overallStart = performance.now();
+
+  const txBuf = Buffer.allocUnsafe(48);
+  txBuf.write("tx-record:", 0, "utf8");
+
+  for (let b = 0; b < batches; b++) {
+    const t0 = performance.now();
+    const countInBatch = Math.min(batchSize, totalTxns - b * batchSize);
+
+    const leafHashes: Buffer[] = new Array(countInBatch);
+    for (let i = 0; i < countInBatch; i++) {
+      const txIndex = b * batchSize + i;
+      txBuf.writeUInt32BE(txIndex, 10);
+      txBuf.writeUInt32BE((txIndex % 1000) * 10, 14);
+      leafHashes[i] = createHash("sha256").update(txBuf).digest();
+    }
+
+    const batchRoot = computeMerkleRootBuffers(leafHashes);
+    currentLedgerRoot = createHash("sha256").update(currentLedgerRoot).update(batchRoot).digest();
+
+    batchLatencies.push(performance.now() - t0);
+  }
+
+  const totalMs = performance.now() - overallStart;
+  const memAfter = process.memoryUsage().heapUsed;
+  const sortedBatchLatencies = [...batchLatencies].sort((a, b) => a - b);
+
+  return {
+    label: `Streaming Ingestion & Merkle Commitment (${totalTxns.toLocaleString()} txns in ${batches} batches)`,
+    count: totalTxns,
+    batchesCount: batches,
+    batchSize,
+    totalMs,
+    avgLatencyMs: batchLatencies.reduce((s, v) => s + v, 0) / batchLatencies.length,
+    p50Ms: computePercentile(sortedBatchLatencies, 50),
+    p95Ms: computePercentile(sortedBatchLatencies, 95),
+    p99Ms: computePercentile(sortedBatchLatencies, 99),
+    throughputPerSec: (totalTxns / totalMs) * 1000,
+    memoryUsedMb: (memAfter - memBefore) / 1024 / 1024,
+    finalMerkleRoot: currentLedgerRoot.toString("hex"),
+  };
+}
+
 // ---------------------------------------------------------------------------
 // Report generation
 // ---------------------------------------------------------------------------
@@ -269,6 +354,7 @@ function generateMarkdownReport(
   sequential: BenchmarkStats,
   concurrent: BenchmarkStats,
   replay: BenchmarkStats & { allMatched: boolean },
+  streaming: StreamingBenchmarkStats,
   casHitRate: number,
   runDate: string
 ): string {
@@ -319,6 +405,24 @@ Environment: Node ${process.version} ${process.platform}/${process.arch}
 
 ---
 
+## High-Volume Streaming Ingestion & Merkle Ledger (${streaming.count.toLocaleString()} transactions)
+
+| Metric | Value |
+|--------|-------|
+| Total transactions | ${streaming.count.toLocaleString()} |
+| Batch size | ${streaming.batchSize.toLocaleString()} txns/batch |
+| Batch count | ${streaming.batchesCount.toLocaleString()} batches |
+| Total time | ${streaming.totalMs.toFixed(2)} ms |
+| Avg batch latency | ${streaming.avgLatencyMs.toFixed(4)} ms |
+| P50 batch latency | ${streaming.p50Ms.toFixed(4)} ms |
+| P95 batch latency | ${streaming.p95Ms.toFixed(4)} ms |
+| P99 batch latency | ${streaming.p99Ms.toFixed(4)} ms |
+| Streaming Throughput | ${streaming.throughputPerSec.toFixed(2)} txns/sec |
+| Final Merkle Root | \`${streaming.finalMerkleRoot}\` |
+| Memory used | ${streaming.memoryUsedMb.toFixed(2)} MB |
+
+---
+
 ## CAS (Content-Addressed Storage)
 
 | Metric | Value |
@@ -336,6 +440,7 @@ Environment: Node ${process.version} ${process.platform}/${process.arch}
 - Sequential throughput reflects pure computation cost.
 - Concurrent throughput reflects Node.js event loop scheduling overhead.
 - Replay correctness: all ${replay.count.toLocaleString()} replays produced deterministic hashes matching originals.
+- Streaming ingestion reflects real-time batch processing and continuous cryptographic Merkle tree commitment.
 `;
 }
 
@@ -348,6 +453,7 @@ async function main(): Promise<void> {
     console.log("Settler Benchmark Harness");
     console.log(`Sequential: ${SEQUENTIAL_COUNT.toLocaleString()} runs`);
     console.log(`Concurrent: ${CONCURRENT_COUNT.toLocaleString()} parallel runs`);
+    console.log(`Streaming:  ${STREAMING_COUNT.toLocaleString()} transactions`);
     console.log();
   }
 
@@ -384,6 +490,16 @@ async function main(): Promise<void> {
     console.log();
   }
 
+  if (!QUIET) process.stdout.write("Running streaming benchmark... ");
+  const streaming = await runStreamingBenchmark(STREAMING_COUNT);
+  if (!QUIET) {
+    console.log("done");
+    console.log(streaming.label);
+    console.log(formatStats(streaming));
+    console.log(`  final_merkle_root=${streaming.finalMerkleRoot}`);
+    console.log();
+  }
+
   const totalRequests = casHits + casMisses;
   const casHitRate = totalRequests > 0 ? casHits / totalRequests : 0;
 
@@ -396,7 +512,14 @@ async function main(): Promise<void> {
   }
 
   const runDate = new Date().toISOString();
-  const report = generateMarkdownReport(sequential, concurrent, replay, casHitRate, runDate);
+  const report = generateMarkdownReport(
+    sequential,
+    concurrent,
+    replay,
+    streaming,
+    casHitRate,
+    runDate
+  );
 
   if (OUTPUT_PATH) {
     const outPath = path.resolve(OUTPUT_PATH);

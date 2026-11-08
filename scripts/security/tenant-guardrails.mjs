@@ -476,7 +476,7 @@ function discoverApiRoutes(repoRoot) {
         if (stats.isDirectory()) {
           walk(full, includeFile);
         } else if (includeFile(entry, full)) {
-          const rel = path.relative(repoRoot, full);
+          const rel = path.relative(repoRoot, full).replace(/\\/g, "/");
           if (!discovered.has(rel)) {
             discovered.add(rel);
             routes.push(rel);

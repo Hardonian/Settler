@@ -18,6 +18,10 @@ for (let i = 0; i < control.length; i++) {
   if (control[i] === "--set") {
     const [k, ...rest] = (control[++i] || "").split("=");
     env[k] = rest.join("=");
+  } else if (control[i] === "--append") {
+    const [k, ...rest] = (control[++i] || "").split("=");
+    const val = rest.join("=");
+    env[k] = env[k] ? `${env[k]} ${val}` : val;
   } else if (control[i] === "--default") {
     const [k, ...rest] = (control[++i] || "").split("=");
     if (env[k] === undefined) {

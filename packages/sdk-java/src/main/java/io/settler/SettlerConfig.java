@@ -25,7 +25,7 @@ public final class SettlerConfig {
     private static final String DEFAULT_BASE_URL = "https://api.settler.dev/api/v1";
     private static final Duration DEFAULT_TIMEOUT = Duration.ofSeconds(30);
     private static final int DEFAULT_MAX_RETRIES = 3;
-    private static final String DEFAULT_USER_AGENT = "settler-java/1.0.0";
+    private static final String DEFAULT_USER_AGENT = "settler-java/1.7.0";
 
     private final String apiKey;
     private final String bearerToken;

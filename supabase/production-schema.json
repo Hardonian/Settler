@@ -65396,6 +65396,38 @@
   ],
   "functions": [
     {
+      "schema": "public",
+      "name": "check_rls_policies",
+      "returnType": "TABLE(table_name text)",
+      "arguments": "",
+      "language": "sql",
+      "definition": "CREATE OR REPLACE FUNCTION public.check_rls_policies()\n RETURNS TABLE (table_name text)\n LANGUAGE sql\n SECURITY DEFINER\n AS $$ SELECT tablename::text FROM pg_tables WHERE schemaname = 'public' AND rowsecurity = false; $$;\n"
+    },
+    {
+      "schema": "public",
+      "name": "get_slow_queries",
+      "returnType": "TABLE(query text, calls bigint, total_time double precision)",
+      "arguments": "p_min_duration_ms integer DEFAULT 1000",
+      "language": "sql",
+      "definition": "CREATE OR REPLACE FUNCTION public.get_slow_queries(p_min_duration_ms integer DEFAULT 1000)\n RETURNS TABLE (query text, calls bigint, total_time double precision)\n LANGUAGE sql\n SECURITY DEFINER\n AS $$ SELECT query::text, calls, total_exec_time AS total_time FROM pg_stat_statements WHERE total_exec_time > p_min_duration_ms LIMIT 10; $$;\n"
+    },
+    {
+      "schema": "public",
+      "name": "update_integration_health",
+      "returnType": "void",
+      "arguments": "p_tenant_id uuid, p_integration_id text, p_success boolean",
+      "language": "plpgsql",
+      "definition": "CREATE OR REPLACE FUNCTION public.update_integration_health(p_tenant_id uuid, p_integration_id text, p_success boolean)\n RETURNS void\n LANGUAGE plpgsql\n SECURITY DEFINER\n AS $$ BEGIN RETURN; END; $$;\n"
+    },
+    {
+      "schema": "public",
+      "name": "record_integration_quota_usage",
+      "returnType": "void",
+      "arguments": "p_tenant_id uuid, p_integration_id text, p_quota_type text",
+      "language": "plpgsql",
+      "definition": "CREATE OR REPLACE FUNCTION public.record_integration_quota_usage(p_tenant_id uuid, p_integration_id text, p_quota_type text)\n RETURNS void\n LANGUAGE plpgsql\n SECURITY DEFINER\n AS $$ BEGIN RETURN; END; $$;\n"
+    },
+    {
       "schema": "analytics",
       "name": "apply_approved_indexes",
       "returnType": "void",

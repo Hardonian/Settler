@@ -97,12 +97,15 @@ class SettlerClient:
         self.adapters = AdaptersClient(self)
         self.console = ConsoleClient(self)
         self.runs = RunsClient(self)
+        self.interchange = InterchangeClient(self)
+        self.cross_rail = CrossRailClient(self)
+        self.proofs = ProofsClient(self)
 
     def _get_headers(self) -> Dict[str, str]:
         req_id = str(uuid.uuid4())
         headers = {
             "Content-Type": "application/json",
-            "User-Agent": "settler-python/1.0.0",
+            "User-Agent": "settler-python/1.7.0",
             "Accept-Encoding": "gzip",
             "X-Request-ID": req_id,
         }
@@ -237,6 +240,42 @@ class TransactionsClient:
         if end_date:
             params["endDate"] = end_date
         return self._client._request("GET", "/transactions", params=params)
+
+    def stream(
+        self,
+        batch_size: int = 100,
+        provider: Optional[str] = None,
+        status: Optional[str] = None,
+        type: Optional[str] = None,
+        payment_id: Optional[str] = None,
+        start_date: Optional[str] = None,
+        end_date: Optional[str] = None,
+    ) -> Any:
+        """Stream transactions page-by-page as a generator without buffering the entire dataset in memory."""
+        page = 1
+        while True:
+            response = self.list(
+                page=page,
+                limit=batch_size,
+                provider=provider,
+                status=status,
+                type=type,
+                payment_id=payment_id,
+                start_date=start_date,
+                end_date=end_date,
+            )
+            items = response.get("data") or response.get("transactions") or []
+            if not isinstance(items, list) or len(items) == 0:
+                break
+            for item in items:
+                yield item
+            pagination = response.get("pagination") or {}
+            total_pages = pagination.get("totalPages") or pagination.get("total_pages")
+            if total_pages is not None and page >= total_pages:
+                break
+            if len(items) < batch_size:
+                break
+            page += 1
 
     def get(self, transaction_id: str) -> Dict[str, Any]:
         """Get a transaction by ID."""
@@ -709,3 +748,76 @@ class RunsClient:
         if resolution_reason:
             data["resolutionReason"] = resolution_reason
         return self._client._request("POST", f"/runs/{run_id}/adjudications", data=data)
+
+
+class InterchangeClient:
+    """Client for Interchange++ forensic margin recovery and Level 2/3 optimization."""
+
+    def __init__(self, client: SettlerClient) -> None:
+        self._client = client
+
+    def rates(self, rail: str, card_tier: Optional[str] = None) -> Dict[str, Any]:
+        """Fetch interchange benchmark rates."""
+        params: Dict[str, Any] = {"rail": rail}
+        if card_tier:
+            params["cardTier"] = card_tier
+        return self._client._request("GET", "/interchange/rates", params=params)
+
+    def analyze(self, transactions: List[Dict[str, Any]]) -> Dict[str, Any]:
+        """Analyze transaction fee breakdowns against interchange schedules."""
+        return self._client._request("POST", "/interchange/analyze", data={"transactions": transactions})
+
+    def portfolio(self, tenant_id: Optional[str] = None) -> Dict[str, Any]:
+        """Fetch tenant interchange portfolio optimization metrics."""
+        params: Dict[str, Any] = {}
+        if tenant_id:
+            params["tenantId"] = tenant_id
+        return self._client._request("GET", "/interchange/portfolio", params=params)
+
+    def enrich_l3(self, transactions: List[Dict[str, Any]]) -> Dict[str, Any]:
+        """Synthesize Level 2/3 line-item and tax data for B2B card qualification."""
+        return self._client._request("POST", "/interchange/enrich-l3", data={"transactions": transactions})
+
+
+class CrossRailClient:
+    """Client for multi-rail settlement graph analysis and arbitrage detection."""
+
+    def __init__(self, client: SettlerClient) -> None:
+        self._client = client
+
+    def analyze(
+        self,
+        transactions: List[Dict[str, Any]],
+        bank_sweeps: Optional[List[Dict[str, Any]]] = None,
+    ) -> Dict[str, Any]:
+        """Detect cross-rail double-refunds, fee slippage, and waterfall decompositions."""
+        payload: Dict[str, Any] = {"transactions": transactions}
+        if bank_sweeps is not None:
+            payload["bankSweeps"] = bank_sweeps
+        return self._client._request("POST", "/reconciliation/cross-rail", data=payload)
+
+
+class ProofsClient:
+    """Client for cryptographic audit proofs and zero-knowledge verification."""
+
+    def __init__(self, client: SettlerClient) -> None:
+        self._client = client
+
+    def verify(self, proofpack: Dict[str, Any]) -> Dict[str, Any]:
+        """Verify an RFC 6962 proofpack or SMT inclusion proof."""
+        return self._client._request("POST", "/zkp/verify", data=proofpack)
+
+    def audit_sampling(
+        self,
+        population: List[Dict[str, Any]],
+        sample_size: Optional[int] = None,
+        seed: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """Execute deterministic Monetary Unit Sampling (MUS) with Merkle manifest."""
+        data: Dict[str, Any] = {"population": population}
+        if sample_size is not None:
+            data["sampleSize"] = sample_size
+        if seed:
+            data["seed"] = seed
+        return self._client._request("POST", "/auditor/samples", data=data)
+

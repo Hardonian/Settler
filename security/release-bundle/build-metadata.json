@@ -1,17 +1,17 @@
 {
-  "generatedAt": "2026-03-07T22:05:17.319Z",
+  "generatedAt": "2026-10-27T13:07:13.301Z",
   "bundleSchemaVersion": "1.0",
   "environment": {
-    "nodeVersion": "v22.22.0",
-    "pnpmVersion": "10.13.1",
-    "platform": "linux",
+    "nodeVersion": "v24.15.0",
+    "pnpmVersion": "unknown",
+    "platform": "win32",
     "arch": "x64"
   },
   "git": {
-    "commitSha": "5c0313937628f0b74394775590e7ebf74cca8467",
-    "branch": "claude/release-provenance-security-rZxZd",
-    "tag": null,
-    "ref": "refs/heads/claude/release-provenance-security-rZxZd"
+    "commitSha": "0c26d57f0981d0f3ee8a37e4d26c54fe448e958d",
+    "branch": "unknown",
+    "tag": "''",
+    "ref": "0c26d57f0"
   },
   "ci": {
     "runId": null,

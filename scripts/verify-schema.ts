@@ -13,7 +13,10 @@
  * Usage: tsx scripts/verify-schema.ts
  */
 
+import "./env-loader";
 import { PrismaClient } from "@prisma/client";
+import { PrismaPg } from "@prisma/adapter-pg";
+import { Pool } from "pg";
 import { createClient } from "@supabase/supabase-js";
 
 interface SchemaIssue {
@@ -31,7 +34,9 @@ interface SchemaIssue {
   index?: string;
 }
 
-const prisma = new PrismaClient();
+const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+const adapter = new PrismaPg(pool);
+const prisma = new PrismaClient({ adapter });
 
 // Expected tables from Prisma schema
 const EXPECTED_TABLES = [
@@ -197,7 +202,12 @@ async function verifySchema(): Promise<SchemaIssue[]> {
       message: `Schema verification failed: ${error instanceof Error ? error.message : "Unknown error"}`,
     });
   } finally {
-    await prisma.$disconnect();
+    try {
+      await prisma.$disconnect();
+      await pool.end();
+    } catch {
+      // ignore
+    }
   }
 
   return issues;

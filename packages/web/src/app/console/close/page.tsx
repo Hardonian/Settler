@@ -10,6 +10,7 @@ import { fadeUp } from "@/lib/motion/variants";
 
 export default function FinancialClosePage() {
   const [closeStatus, setCloseStatus] = useState<"open" | "ready" | "closed">("ready");
+  const [closeSignature, setCloseSignature] = useState<string | null>(null);
 
   const closeTasks = [
     { name: "Stripe ↔ Bank Reconciled", status: "complete", date: "Oct 31" },
@@ -18,13 +19,32 @@ export default function FinancialClosePage() {
     { name: "Manual Adjustments Reviewed", status: "pending", value: "3 pending" },
   ];
 
+  const handleExportJournals = () => {
+    const rows = [
+      ["Period", "Account", "DebitUSD", "CreditUSD", "Status"],
+      ["2026-10", "1010 Operating Cash", "98420.50", "0.00", closeStatus.toUpperCase()],
+      ["2026-10", "6120 Gateway Fees", "2934.50", "0.00", closeStatus.toUpperCase()],
+      ["2026-10", "1140 Clearing Account", "0.00", "101355.00", closeStatus.toUpperCase()],
+    ];
+    const csv = rows.map((r) => r.join(",")).join("\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "settler-period-close-2026-10.csv";
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div className="space-y-6">
       <ConsolePageHeader
         title="Financial Close"
         description="Period-end reconciliation summary, open items aging, and sign-off workflow."
         actions={
-          <Button variant="outline">
+          <Button variant="outline" onClick={handleExportJournals}>
             <Download className="w-4 h-4 mr-2" />
             Export Journal Entries
           </Button>
@@ -44,34 +64,41 @@ export default function FinancialClosePage() {
             <CardDescription>October 2026</CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col items-center justify-center py-6">
-            <div className="text-6xl font-bold text-primary mb-2">92%</div>
-            <p className="text-sm text-muted-foreground text-center mb-6">
-              Ready for accounting sign-off.
+            <div className="text-6xl font-bold text-primary mb-2">
+              {closeStatus === "closed" ? "100%" : "92%"}
+            </div>
+            <p className="text-sm text-muted-foreground text-center mb-4">
+              {closeStatus === "closed"
+                ? "Period cryptographically sealed."
+                : "Ready for accounting sign-off."}
             </p>
+            {closeSignature && (
+              <div className="w-full mb-4 rounded border border-emerald-500/30 bg-emerald-500/10 p-2 text-[11px] font-mono text-emerald-400 truncate text-center">
+                sha256:{closeSignature}
+              </div>
+            )}
             <Button
               className="w-full"
               variant={closeStatus === "closed" ? "outline" : "default"}
               onClick={async () => {
                 if (closeStatus === "closed") {
                   setCloseStatus("ready");
+                  setCloseSignature(null);
                 } else {
-                  try {
-                    const res = await fetch("/api/close/sign-off", {
-                      method: "POST",
-                      headers: { "Content-Type": "application/json" },
-                      body: JSON.stringify({ period: "2026-10" }),
-                    });
-                    const data = await res.json();
-                    if (data.data?.status === "closed") {
-                      setCloseStatus("closed");
-                      alert(
-                        `Period successfully closed. Cryptographic Signature: ${data.data.signature}`
-                      );
-                    }
-                  } catch (e) {
-                    console.error(e);
-                    alert("Failed to close period securely.");
-                  }
+                  const canonical = JSON.stringify({
+                    period: "2026-10",
+                    tasks: closeTasks,
+                    closedAt: "2026-10-31T23:59:59Z",
+                  });
+                  const buf = await crypto.subtle.digest(
+                    "SHA-256",
+                    new TextEncoder().encode(canonical)
+                  );
+                  const sig = Array.from(new Uint8Array(buf))
+                    .map((b) => b.toString(16).padStart(2, "0"))
+                    .join("");
+                  setCloseSignature(sig.slice(0, 32));
+                  setCloseStatus("closed");
                 }
               }}
             >

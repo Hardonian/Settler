@@ -174,9 +174,7 @@ export function UsageAnalyticsDashboard() {
       });
 
       const payload = (await res.json().catch(() => null)) as
-        | UsageExportJob
-        | { error?: string }
-        | null;
+        UsageExportJob | { error?: string } | null;
 
       const freezeDetails = parseGovernanceFreezeError(payload, res.status);
       if (freezeDetails) {

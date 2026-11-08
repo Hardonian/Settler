@@ -53,10 +53,49 @@ function getCrypto(): CryptoModule {
  * );
  * ```
  */
+function constantTimeHexEquals(
+  crypto: CryptoModule,
+  expectedHex: string,
+  calculatedHex: string
+): boolean {
+  if (expectedHex.length !== calculatedHex.length) {
+    return false;
+  }
+  if (crypto.timingSafeEqual && /^[a-f0-9]+$/i.test(expectedHex)) {
+    const a = Buffer.from(expectedHex, "hex");
+    const b = Buffer.from(calculatedHex, "hex");
+    if (a.length === b.length) {
+      return crypto.timingSafeEqual(a, b);
+    }
+  }
+  let result = 0;
+  for (let i = 0; i < expectedHex.length; i++) {
+    result |= expectedHex.charCodeAt(i) ^ calculatedHex.charCodeAt(i);
+  }
+  return result === 0;
+}
+
+/**
+ * Generates a timestamp-bound HMAC-SHA256 webhook signature header (`t=<ts>,v1=<sig>`)
+ */
+export function signWebhookPayload(
+  payload: string | Buffer,
+  secret: string,
+  timestampSeconds: number = Math.floor(Date.now() / 1000)
+): string {
+  const crypto = getCrypto();
+  const payloadString = typeof payload === "string" ? payload : payload.toString("utf8");
+  const hmac = crypto.createHmac("sha256", secret);
+  hmac.update(`${timestampSeconds}.${payloadString}`);
+  const sig = hmac.digest("hex");
+  return `t=${timestampSeconds},v1=${sig}`;
+}
+
 export function verifyWebhookSignature(
   payload: string | Buffer | ArrayBuffer,
   signature: string,
-  secret: string
+  secret: string,
+  options?: { requireTimestampBinding?: boolean }
 ): boolean {
   if (!signature || !secret) {
     return false;
@@ -70,11 +109,12 @@ export function verifyWebhookSignature(
     return false;
   }
 
+  const timestampPart = parts.find((p) => p.startsWith("t="));
+  const rawTimestamp = timestampPart ? timestampPart.substring(2) : null;
   const expectedSignature = signaturePart.substring(3);
 
   try {
     const crypto = getCrypto();
-    const hmac = crypto.createHmac("sha256", secret);
 
     // Convert payload to string
     let payloadString: string;
@@ -88,26 +128,27 @@ export function verifyWebhookSignature(
       payloadString = String(payload);
     }
 
+    // 1. Canonical timestamp-bound signature: HMAC(secret, `${timestamp}.${payload}`)
+    if (rawTimestamp) {
+      const boundHmac = crypto.createHmac("sha256", secret);
+      boundHmac.update(`${rawTimestamp}.${payloadString}`);
+      const boundCalculated = boundHmac.digest("hex");
+      if (constantTimeHexEquals(crypto, expectedSignature, boundCalculated)) {
+        return true;
+      }
+      if (options?.requireTimestampBinding) {
+        return false;
+      }
+    } else if (options?.requireTimestampBinding) {
+      return false;
+    }
+
+    // 2. Legacy payload-only signature fallback
+    const hmac = crypto.createHmac("sha256", secret);
     hmac.update(payloadString);
     const calculatedSignature = hmac.digest("hex");
 
-    // Use constant-time comparison to prevent timing attacks (Node.js only)
-    if (crypto.timingSafeEqual) {
-      return crypto.timingSafeEqual(
-        Buffer.from(expectedSignature, "hex"),
-        Buffer.from(calculatedSignature, "hex")
-      );
-    }
-
-    // Fallback for environments without timingSafeEqual (use constant-time comparison)
-    if (expectedSignature.length !== calculatedSignature.length) {
-      return false;
-    }
-    let result = 0;
-    for (let i = 0; i < expectedSignature.length; i++) {
-      result |= expectedSignature.charCodeAt(i) ^ calculatedSignature.charCodeAt(i);
-    }
-    return result === 0;
+    return constantTimeHexEquals(crypto, expectedSignature, calculatedSignature);
   } catch {
     return false;
   }

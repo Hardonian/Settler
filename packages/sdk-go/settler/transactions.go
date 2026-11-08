@@ -98,6 +98,61 @@ func (c *TransactionsClient) List(ctx context.Context, params ListTransactionsPa
 	return &result, nil
 }
 
+// Stream streams transactions over a channel chunk by chunk until completed or ctx cancelled
+func (c *TransactionsClient) Stream(ctx context.Context, params ListTransactionsParams) (<-chan Transaction, <-chan error) {
+	out := make(chan Transaction, 100)
+	errc := make(chan error, 1)
+
+	go func() {
+		defer close(out)
+		defer close(errc)
+
+		currentPage := params.Page
+		if currentPage <= 0 {
+			currentPage = 1
+		}
+		limit := params.Limit
+		if limit <= 0 {
+			limit = 100
+		}
+
+		for {
+			select {
+			case <-ctx.Done():
+				errc <- ctx.Err()
+				return
+			default:
+			}
+
+			p := params
+			p.Page = currentPage
+			p.Limit = limit
+
+			resp, err := c.List(ctx, p)
+			if err != nil {
+				errc <- err
+				return
+			}
+
+			for _, tx := range resp.Data {
+				select {
+				case <-ctx.Done():
+					errc <- ctx.Err()
+					return
+				case out <- tx:
+				}
+			}
+
+			if len(resp.Data) < limit || (resp.Pagination.TotalPages > 0 && currentPage >= resp.Pagination.TotalPages) {
+				return
+			}
+			currentPage++
+		}
+	}()
+
+	return out, errc
+}
+
 // Get retrieves a transaction by its ID
 func (c *TransactionsClient) Get(ctx context.Context, id string) (*Transaction, error) {
 	path := fmt.Sprintf("/transactions/%s", id)

@@ -1,20 +1,20 @@
 {
-  "generatedAt": "2026-03-07T22:05:17.319Z",
-  "commitSha": "5c0313937628f0b74394775590e7ebf74cca8467",
+  "generatedAt": "2026-10-27T13:07:13.301Z",
+  "commitSha": "0c26d57f0981d0f3ee8a37e4d26c54fe448e958d",
   "ciRunId": null,
   "overallStatus": "partial",
   "completeness": "partial",
   "degradedChecks": {
     "tenantCoverage": false,
     "crossTenant": false,
-    "headerProbe": true,
+    "headerProbe": false,
     "dependencyAudit": true
   },
   "checks": {
     "routeRegistry": {
       "status": "pass",
       "totalRoutes": 228,
-      "generatedAt": "2026-03-07T19:55:11.444Z"
+      "generatedAt": "2026-03-07T22:02:12.517Z"
     },
     "tenantCoverage": {
       "status": "pass",
@@ -29,11 +29,11 @@
       "degraded": false
     },
     "headerProbe": {
-      "status": "degraded",
-      "failedChecks": 0,
-      "probeableRoutes": 133,
-      "degraded": true,
-      "degradedReasons": ["missing_build"]
+      "status": "pass",
+      "failedChecks": null,
+      "probeableRoutes": 141,
+      "degraded": false,
+      "degradedReasons": []
     },
     "dependencyAudit": {
       "status": "degraded",

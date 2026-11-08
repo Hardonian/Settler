@@ -177,6 +177,8 @@ export class ValueBasedPricing {
         complexity === "low" ? 1 : complexity === "medium" ? 2 : complexity === "high" ? 3 : 4;
     }
 
+    if (workflows.length === 0) return "low";
+
     const avgComplexity = totalComplexity / workflows.length;
 
     if (avgComplexity < 1.5) return "low";

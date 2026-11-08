@@ -1,6 +1,34 @@
 import { Adapter, NormalizedData, FetchOptions, ValidationResult } from "./base";
 import Stripe from "stripe";
 
+const ZERO_DECIMAL_CURRENCIES = new Set([
+  "BIF",
+  "CLP",
+  "DJF",
+  "GNF",
+  "JPY",
+  "KMF",
+  "KRW",
+  "MGA",
+  "PYG",
+  "RWF",
+  "UGX",
+  "VND",
+  "VUV",
+  "XAF",
+  "XOF",
+  "XPF",
+]);
+
+const THREE_DECIMAL_CURRENCIES = new Set(["BHD", "JOD", "KWD", "OMR", "TND"]);
+
+function currencyMinorUnitDivisor(currency: string): number {
+  const upper = currency.toUpperCase();
+  if (ZERO_DECIMAL_CURRENCIES.has(upper)) return 1;
+  if (THREE_DECIMAL_CURRENCIES.has(upper)) return 1000;
+  return 100;
+}
+
 export class StripeAdapter implements Adapter {
   name = "stripe";
   version = "1.0.0";
@@ -26,12 +54,31 @@ export class StripeAdapter implements Adapter {
     }
 
     const hasCreatedParams = Object.keys(createdParams).length > 0;
-    const charges = await stripe.charges.list({
-      ...(hasCreatedParams ? { created: createdParams } : {}),
-      limit: 100,
-    });
+    const maxPages = typeof config.maxPages === "number" ? config.maxPages : 10;
+    const allNormalized: NormalizedData[] = [];
+    let startingAfter: string | undefined;
 
-    return charges.data.map((charge) => this.normalize(charge));
+    for (let page = 0; page < maxPages; page++) {
+      const charges = await stripe.charges.list({
+        ...(hasCreatedParams ? { created: createdParams } : {}),
+        ...(startingAfter ? { starting_after: startingAfter } : {}),
+        limit: 100,
+      });
+
+      for (const charge of charges.data) {
+        allNormalized.push(this.normalize(charge));
+      }
+
+      if (!charges.has_more || charges.data.length === 0) {
+        break;
+      }
+      startingAfter = charges.data[charges.data.length - 1]?.id;
+      if (!startingAfter) {
+        break;
+      }
+    }
+
+    return allNormalized;
   }
 
   normalize(data: unknown): NormalizedData {
@@ -44,12 +91,18 @@ export class StripeAdapter implements Adapter {
       metadata?: Record<string, unknown>;
     };
 
+    const currency = charge.currency.toUpperCase();
+    const divisor = currencyMinorUnitDivisor(currency);
+
     const normalized: NormalizedData = {
       id: charge.id,
-      amount: charge.amount / 100, // Convert cents to dollars
-      currency: charge.currency.toUpperCase(),
+      amount: charge.amount / divisor,
+      currency,
       date: new Date(charge.created * 1000),
-      metadata: charge.metadata || {},
+      metadata: {
+        ...(charge.metadata || {}),
+        amountMinorUnits: charge.amount,
+      },
       sourceId: charge.id,
     };
 

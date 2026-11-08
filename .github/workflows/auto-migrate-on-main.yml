@@ -190,6 +190,35 @@ jobs:
             echo "- Result: \`${{ job.status }}\`"
           } >> "$GITHUB_STEP_SUMMARY"
 
+      - name: Close resolved failure issue
+        if: success()
+        uses: actions/github-script@v9
+        with:
+          script: |
+            const marker = `<!-- settler-migration-failure:${context.ref} -->`;
+            const { data: issues } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'migration-failure',
+              per_page: 20,
+            });
+            const existing = issues.find((issue) => (issue.body || '').includes(marker));
+            if (existing) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: existing.number,
+                body: `Resolved by run ${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId} on commit \`${context.sha}\`.`,
+              });
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: existing.number,
+                state: 'closed',
+              });
+            }
+
       - name: Create or update failure issue
         if: failure()
         uses: actions/github-script@v9

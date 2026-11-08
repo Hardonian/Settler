@@ -50,13 +50,15 @@ import {
 } from "../../domain/LedgerError";
 import { logger } from "@settler/types";
 import { createCircuitBreaker } from "../../utils/circuit-breakers";
+import { parseTigerBeetleAddresses } from "./tigerbeetle-driver";
 
 // =============================================================================
 // Configuration
 // =============================================================================
 
 interface TigerBeetleConfig {
-  address: string;
+  address?: string;
+  addresses?: string[] | string;
   concurrencyMax?: number;
   clusterId?: number;
   timeout?: number;
@@ -202,9 +204,25 @@ export class TigerBeetleLedgerRepository implements ILedgerRepository {
     }
   );
 
+  private readonly replicaAddresses: string[];
+  private readonly accountTenantCache = new Map<bigint, bigint>();
+  private static readonly MAX_ACCOUNT_CACHE_SIZE = 10_000;
+
+  private rememberAccountTenant(accountId: bigint, tenantFingerprint: bigint): void {
+    if (this.accountTenantCache.size >= TigerBeetleLedgerRepository.MAX_ACCOUNT_CACHE_SIZE) {
+      const firstKey = this.accountTenantCache.keys().next().value;
+      if (firstKey !== undefined) {
+        this.accountTenantCache.delete(firstKey);
+      }
+    }
+    this.accountTenantCache.set(accountId, tenantFingerprint);
+  }
+
   constructor(config?: Partial<TigerBeetleConfig>) {
+    this.replicaAddresses = parseTigerBeetleAddresses(config?.addresses ?? config?.address);
     this.config = {
-      address: config?.address || process.env.TIGERBEETLE_ADDRESS || "127.0.0.1:4300",
+      address: this.replicaAddresses[0] || "127.0.0.1:4300",
+      addresses: this.replicaAddresses,
       concurrencyMax: config?.concurrencyMax || 32,
       clusterId: config?.clusterId || 0,
       timeout: config?.timeout || 5000,
@@ -219,11 +237,11 @@ export class TigerBeetleLedgerRepository implements ILedgerRepository {
     try {
       this.client = await createClient({
         cluster_id: BigInt(this.config.clusterId || 0),
-        replica_addresses: [this.config.address],
+        replica_addresses: this.replicaAddresses,
       });
       this.initialized = true;
       this.initError = null;
-      logger.info("TigerBeetle client initialized", { address: this.config.address });
+      logger.info("TigerBeetle client initialized", { replicas: this.replicaAddresses });
       return this.client;
     } catch (error) {
       const message = error instanceof Error ? error.message : "Unknown error";
@@ -234,6 +252,7 @@ export class TigerBeetleLedgerRepository implements ILedgerRepository {
   }
 
   async close(): Promise<void> {
+    this.accountTenantCache.clear();
     if (this.client) {
       try {
         this.client.destroy();
@@ -320,6 +339,8 @@ export class TigerBeetleLedgerRepository implements ILedgerRepository {
         );
       }
 
+      this.rememberAccountTenant(accountId, tenantFingerprint(input.tenantId));
+
       return {
         id: bigintToString(accountId),
         tenantId: input.tenantId,
@@ -350,6 +371,7 @@ export class TigerBeetleLedgerRepository implements ILedgerRepository {
       if (account.user_data_128 !== tenantFingerprint(tenantId)) {
         return null;
       }
+      this.rememberAccountTenant(account.id, account.user_data_128);
       const type = codeToAccountType(account.code);
 
       let balance: Money;
@@ -446,16 +468,43 @@ export class TigerBeetleLedgerRepository implements ILedgerRepository {
         );
       }
 
-      const accounts = await client.lookupAccounts([debitAccountId, creditAccountId]);
       const fingerprint = tenantFingerprint(input.tenantId);
-      if (
-        accounts.length !== 2 ||
-        accounts.some((account) => account.user_data_128 !== fingerprint)
-      ) {
+      const missingAccountIds: bigint[] = [];
+
+      const debitCached = this.accountTenantCache.get(debitAccountId);
+      if (debitCached === undefined) {
+        missingAccountIds.push(debitAccountId);
+      } else if (debitCached !== fingerprint) {
         throw new LedgerOperationError(
           "createTransfer",
           "Debit and credit accounts must both belong to the authenticated tenant"
         );
+      }
+
+      const creditCached = this.accountTenantCache.get(creditAccountId);
+      if (creditCached === undefined) {
+        missingAccountIds.push(creditAccountId);
+      } else if (creditCached !== fingerprint) {
+        throw new LedgerOperationError(
+          "createTransfer",
+          "Debit and credit accounts must both belong to the authenticated tenant"
+        );
+      }
+
+      if (missingAccountIds.length > 0) {
+        const accounts = await client.lookupAccounts(missingAccountIds);
+        if (
+          accounts.length !== missingAccountIds.length ||
+          accounts.some((account) => account.user_data_128 !== fingerprint)
+        ) {
+          throw new LedgerOperationError(
+            "createTransfer",
+            "Debit and credit accounts must both belong to the authenticated tenant"
+          );
+        }
+        for (const account of accounts) {
+          this.rememberAccountTenant(account.id, account.user_data_128);
+        }
       }
 
       const now = new Date();

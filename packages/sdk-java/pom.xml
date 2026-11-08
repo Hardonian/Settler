@@ -7,7 +7,7 @@
 
     <groupId>io.settler</groupId>
     <artifactId>settler-java-sdk</artifactId>
-    <version>1.0.0</version>
+    <version>1.7.0</version>
     <packaging>jar</packaging>
 
     <name>Settler Java SDK</name>

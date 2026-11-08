@@ -103,20 +103,21 @@ export function generateAuditSamplingPackage(
       });
       topStratumCount++;
       sampledBookValueCents += tx.amountCents;
-      cumulativeBookValue += tx.amountCents;
       continue;
     }
 
-    // 2. Interval PPS sampling
+    // 2. Interval PPS sampling on non-top-stratum population
     cumulativeBookValue += tx.amountCents;
-    if (cumulativeBookValue >= currentThreshold) {
-      selectedTransactions.push({
-        transaction: tx,
-        selectionReason: "INTERVAL_SAMPLE",
-        cumulativeIntervalHitCents: currentThreshold,
-      });
-      representativeCount++;
-      sampledBookValueCents += tx.amountCents;
+    while (samplingIntervalCents > 0n && cumulativeBookValue >= currentThreshold) {
+      if (selectedTransactions[selectedTransactions.length - 1]?.transaction.id !== tx.id) {
+        selectedTransactions.push({
+          transaction: tx,
+          selectionReason: "INTERVAL_SAMPLE",
+          cumulativeIntervalHitCents: currentThreshold,
+        });
+        representativeCount++;
+        sampledBookValueCents += tx.amountCents;
+      }
       currentThreshold += samplingIntervalCents;
     }
   }

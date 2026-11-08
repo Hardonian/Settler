@@ -18,6 +18,7 @@ export { NetSuiteDriver } from "./netsuite";
 export { SapDriver } from "./sap";
 export { AvalaraDriver } from "./avalara";
 export { TaxJarDriver } from "./taxjar";
+export { KlarnaDriver } from "./klarna";
 
 import { ConnectorDriver } from "../connector-driver";
 import { PlaidDriver } from "./plaid";
@@ -34,6 +35,7 @@ import { NetSuiteDriver } from "./netsuite";
 import { SapDriver } from "./sap";
 import { AvalaraDriver } from "./avalara";
 import { TaxJarDriver } from "./taxjar";
+import { KlarnaDriver } from "./klarna";
 
 /**
  * Registry of all available connector drivers
@@ -53,6 +55,7 @@ export const CONNECTOR_REGISTRY: Record<string, () => ConnectorDriver> = {
   sap: () => new SapDriver(),
   avalara: () => new AvalaraDriver(),
   taxjar: () => new TaxJarDriver(),
+  klarna: () => new KlarnaDriver(),
 };
 
 /**

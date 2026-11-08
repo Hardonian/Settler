@@ -16,14 +16,7 @@ import {
 } from "lucide-react";
 
 type ActivityType =
-  | "reconcile"
-  | "receipt"
-  | "flag"
-  | "api_key"
-  | "usage"
-  | "billing"
-  | "site"
-  | "experiment";
+  "reconcile" | "receipt" | "flag" | "api_key" | "usage" | "billing" | "site" | "experiment";
 type ActivityStatus = "success" | "processing" | "failed";
 
 interface ActivityItem {
@@ -86,7 +79,7 @@ export function LiveActivityFeed() {
 
   return (
     <Card className="h-full">
-      <CardHeader className="flex flex-row items-center justify-between pb-2">
+      <CardHeader className="flex flex-row items-center justify-between gap-2 pb-2">
         <CardTitle className="text-lg font-medium">Live Activity</CardTitle>
         <Badge variant="outline" className="animate-pulse text-green-600 border-green-600">
           ● Live

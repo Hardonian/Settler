@@ -424,7 +424,7 @@ export function AutonomousDaemonWorkbench() {
 
         {/* Right Column: Live Tick Activity Audit Log */}
         <Card className="border-slate-800 bg-slate-900/40 backdrop-blur-sm lg:col-span-2 shadow-lg">
-          <CardHeader className="flex flex-row items-center justify-between">
+          <CardHeader className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
               <CardTitle className="text-base font-semibold text-white flex items-center gap-2">
                 <Cpu className="w-4 h-4 text-emerald-400" />

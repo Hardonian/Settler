@@ -14,6 +14,7 @@ import {
   Webhook,
   KeyRound,
   Copy,
+  Check,
   Cloud,
 } from "lucide-react";
 import { DemoBanner } from "@/components/app/DemoBanner";
@@ -26,6 +27,8 @@ const githubActivity = [
 ];
 
 const IntegrationList: React.FC = () => {
+  const [copied, setCopied] = React.useState(false);
+
   return (
     <main className="space-y-8 py-2">
       <DemoBanner label="Integration cards and activity logs are sample data. Connect the integrations API to display live connector status." />
@@ -236,14 +239,26 @@ const IntegrationList: React.FC = () => {
                 Endpoint
               </p>
               <div className="flex items-center gap-2 rounded border border-border bg-muted/20 p-2.5 shadow-inner">
-                <code className="flex-1 truncate font-mono text-xs text-muted-foreground">
+                <code className="flex-1 min-w-0 truncate font-mono text-xs text-muted-foreground">
                   https://api.mysite.com/hook/v1/payment_events
                 </code>
                 <button
+                  type="button"
                   aria-label="Copy endpoint URL"
-                  className="text-muted-foreground transition-colors hover:text-primary"
+                  onClick={() => {
+                    void navigator.clipboard.writeText(
+                      "https://api.mysite.com/hook/v1/payment_events"
+                    );
+                    setCopied(true);
+                    setTimeout(() => setCopied(false), 2000);
+                  }}
+                  className="shrink-0 text-muted-foreground transition-colors hover:text-primary"
                 >
-                  <Copy size={16} aria-hidden="true" />
+                  {copied ? (
+                    <Check size={16} className="text-emerald-500" aria-hidden="true" />
+                  ) : (
+                    <Copy size={16} aria-hidden="true" />
+                  )}
                 </button>
               </div>
             </div>

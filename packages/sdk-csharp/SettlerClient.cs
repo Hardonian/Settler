@@ -64,6 +64,15 @@ public sealed class SettlerClient : IDisposable
     /// <summary>Client for console operations.</summary>
     public ConsoleClient Console { get; }
 
+    /// <summary>Client for interchange and fee optimization operations.</summary>
+    public InterchangeClient Interchange { get; }
+
+    /// <summary>Client for multi-rail settlement graph operations.</summary>
+    public CrossRailClient CrossRail { get; }
+
+    /// <summary>Client for cryptographic audit proofs and ZKP operations.</summary>
+    public ProofsClient Proofs { get; }
+
     /// <summary>
     /// Creates a new SettlerClient with the specified API key.
     /// </summary>
@@ -89,7 +98,7 @@ public sealed class SettlerClient : IDisposable
         }
 
         _httpClient.BaseAddress = new Uri(baseUrl ?? "https://api.settler.io/api/v1/");
-        _httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("settler-dotnet/1.0.0");
+        _httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("settler-dotnet/1.7.0");
         _httpClient.Timeout = TimeSpan.FromSeconds(30);
 
         Transactions = new TransactionsClient(this);
@@ -104,6 +113,9 @@ public sealed class SettlerClient : IDisposable
         Receipts = new ReceiptsClient(this);
         Adapters = new AdaptersClient(this);
         Console = new ConsoleClient(this);
+        Interchange = new InterchangeClient(this);
+        CrossRail = new CrossRailClient(this);
+        Proofs = new ProofsClient(this);
     }
 
     internal async Task<T> RequestAsync<T>(HttpMethod method, string path, object? body = null, Dictionary<string, string>? query = null, CancellationToken cancellationToken = default)

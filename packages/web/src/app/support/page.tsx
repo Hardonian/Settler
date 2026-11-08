@@ -98,7 +98,7 @@ export default function SupportPage() {
               <a
                 href="https://github.com/Hardonian/Settler/issues"
                 target="_blank"
-                rel="noreferrer"
+                rel="noopener noreferrer"
               >
                 <Bug className="mr-2 h-4 w-4" /> Open-source issues
               </a>

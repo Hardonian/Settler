@@ -102,6 +102,7 @@ export interface TriangularReconciliationOptions {
   toleranceCents?: bigint; // Default: 0n (exact match)
   maxTransitDelayHours?: number; // Default: 96 (4 days for weekend sweeps)
   enableBatchSweepAggregation?: boolean; // Default: true
+  asOfTimestamp?: string | Date; // Optional deterministic clock anchor
 }
 
 export interface TriangularReconciliationResult {
@@ -169,9 +170,18 @@ export function reconcileTriangular(
   const matchedCaptureIds = new Set<string>();
   const matchedDepositIds = new Set<string>();
 
-  // 1. Index Gateway Captures by orderNumber and id
+  // 1. Index Orders by orderNumber (preserving first-seen order for .find() parity)
+  const orderByOrderNumber = new Map<string, OrderRecord>();
+  for (const order of orders) {
+    if (!orderByOrderNumber.has(order.orderNumber)) {
+      orderByOrderNumber.set(order.orderNumber, order);
+    }
+  }
+
+  // 2. Index Gateway Captures by orderNumber, payoutBatchId, and currency+grossAmountCents
   const captureByOrderNumber = new Map<string, GatewayCaptureRecord>();
   const capturesByBatchId = new Map<string, GatewayCaptureRecord[]>();
+  const capturesByCurrencyAndGross = new Map<string, GatewayCaptureRecord[]>();
 
   for (const capture of captures) {
     if (capture.orderNumber) {
@@ -182,17 +192,42 @@ export function reconcileTriangular(
       existing.push(capture);
       capturesByBatchId.set(capture.payoutBatchId, existing);
     }
+    const grossKey = `${capture.currency}:${capture.grossAmountCents.toString()}`;
+    const grossBucket = capturesByCurrencyAndGross.get(grossKey);
+    if (grossBucket) {
+      grossBucket.push(capture);
+    } else {
+      capturesByCurrencyAndGross.set(grossKey, [capture]);
+    }
   }
 
-  // 2. Index Bank Deposits by payoutBatchId and reference
+  // 3. Index Bank Deposits by payoutBatchId and currency+depositAmountCents
   const depositByBatchId = new Map<string, BankDepositRecord>();
+  const depositsByCurrencyAndAmount = new Map<string, BankDepositRecord[]>();
+  const depositsWithReferenceByCurrency = new Map<string, BankDepositRecord[]>();
+
   for (const deposit of deposits) {
     if (deposit.payoutBatchId) {
       depositByBatchId.set(deposit.payoutBatchId, deposit);
     }
+    const netKey = `${deposit.currency}:${deposit.depositAmountCents.toString()}`;
+    const netBucket = depositsByCurrencyAndAmount.get(netKey);
+    if (netBucket) {
+      netBucket.push(deposit);
+    } else {
+      depositsByCurrencyAndAmount.set(netKey, [deposit]);
+    }
+    if (deposit.reference) {
+      const refBucket = depositsWithReferenceByCurrency.get(deposit.currency);
+      if (refBucket) {
+        refBucket.push(deposit);
+      } else {
+        depositsWithReferenceByCurrency.set(deposit.currency, [deposit]);
+      }
+    }
   }
 
-  // 3. Process Batch Sweep Aggregations if batch IDs correlate
+  // 4. Process Batch Sweep Aggregations if batch IDs correlate
   if (enableBatchSweepAggregation) {
     for (const [batchId, batchCaptures] of capturesByBatchId.entries()) {
       const deposit = depositByBatchId.get(batchId);
@@ -206,7 +241,7 @@ export function reconcileTriangular(
         aggregateExpectedNetCents += cap.netAmountCents;
         matchedCaptureIds.add(cap.id);
         if (cap.orderNumber) {
-          const ord = orders.find((o) => o.orderNumber === cap.orderNumber);
+          const ord = orderByOrderNumber.get(cap.orderNumber);
           if (ord) {
             batchOrders.push(ord);
             matchedOrderIds.add(ord.id);
@@ -243,19 +278,17 @@ export function reconcileTriangular(
     }
   }
 
-  // 4. Process 1:1:1 Triangular Correlations
+  const referenceClock = options.asOfTimestamp ?? new Date();
+
+  // 5. Process 1:1:1 Triangular Correlations
   for (const order of orders) {
     if (matchedOrderIds.has(order.id)) continue;
 
     // Find Leg B: Gateway Capture
+    const grossKey = `${order.currency}:${order.amountCents.toString()}`;
     const capture =
       captureByOrderNumber.get(order.orderNumber) ??
-      captures.find(
-        (c) =>
-          !matchedCaptureIds.has(c.id) &&
-          c.grossAmountCents === order.amountCents &&
-          c.currency === order.currency
-      );
+      capturesByCurrencyAndGross.get(grossKey)?.find((c) => !matchedCaptureIds.has(c.id));
 
     if (!capture) {
       // Order has no gateway capture yet (unsettled leg A)
@@ -270,21 +303,26 @@ export function reconcileTriangular(
     if (capture.payoutBatchId && depositByBatchId.has(capture.payoutBatchId)) {
       deposit = depositByBatchId.get(capture.payoutBatchId)!;
     } else {
+      const netKey = `${capture.currency}:${capture.netAmountCents.toString()}`;
       deposit =
-        deposits.find(
-          (d) =>
-            !matchedDepositIds.has(d.id) &&
-            d.currency === capture.currency &&
-            (d.depositAmountCents === capture.netAmountCents ||
-              (d.reference && capture.orderNumber && d.reference.includes(capture.orderNumber)))
-        ) ?? null;
+        depositsByCurrencyAndAmount.get(netKey)?.find((d) => !matchedDepositIds.has(d.id)) ??
+        (capture.orderNumber
+          ? depositsWithReferenceByCurrency
+              .get(capture.currency)
+              ?.find(
+                (d) =>
+                  !matchedDepositIds.has(d.id) &&
+                  Boolean(d.reference && d.reference.includes(capture.orderNumber!))
+              )
+          : undefined) ??
+        null;
     }
 
     const expectedNet = order.amountCents - capture.feeCents;
 
     if (!deposit) {
       // Missing Bank Deposit -> Check Transit Window
-      const transitHours = computeHoursDiff(capture.timestamp, new Date());
+      const transitHours = computeHoursDiff(capture.timestamp, referenceClock);
       const isWithinSla = transitHours <= maxTransitDelayHours;
 
       const matched: MatchedTriangle = {

@@ -147,16 +147,17 @@ class NextJSBuildValidator {
             for (const pathPattern of pathArray) {
               // Check if path references dist directories
               if (pathPattern.includes("/dist")) {
-                const packageName = alias.replace("@settler/", "").split("/")[0];
-                const distPath = join(this.rootDir, "packages", packageName, "dist");
-                // Don't fail if dist doesn't exist - it will be built by Turbo
-                // But warn if package.json doesn't exist
-                const packageJsonPath = join(this.rootDir, "packages", packageName, "package.json");
+                const packageDir = pathPattern
+                  .replace(/\/\*$/, "")
+                  .replace(/\/dist(?:\/.*)?$/, "")
+                  .replace(/^\.\.\//, "")
+                  .replace(/^\.\.\//, "");
+                const packageJsonPath = join(this.rootDir, "packages", packageDir, "package.json");
                 if (!existsSync(packageJsonPath)) {
                   this.issues.push({
                     severity: "error",
                     category: "typescript",
-                    message: `Path mapping ${alias} references package ${packageName} but package.json not found`,
+                    message: `Path mapping ${alias} references package ${packageDir} but package.json not found`,
                   });
                 }
               }

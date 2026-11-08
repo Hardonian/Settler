@@ -63,3 +63,23 @@ pub fn verify_smt(proof_json: &str) -> String {
         "{\"valid\":false,\"computed_root\":\"\",\"expected_root\":\"\",\"is_non_inclusion\":false,\"error\":\"serialization_failed\"}".to_string()
     })
 }
+
+#[wasm_bindgen]
+pub fn verify_compact_smt(compact_proof_json: &str) -> String {
+    let parsed: Result<settler_kernel::CompactSmtProof, serde_json::Error> =
+        serde_json::from_str(compact_proof_json);
+    let result = match parsed {
+        Ok(compact) => settler_kernel::verify_compact_smt_proof(&compact),
+        Err(err) => settler_kernel::SmtVerificationResult {
+            valid: false,
+            computed_root: String::new(),
+            expected_root: String::new(),
+            is_non_inclusion: false,
+            error: Some(format!("Invalid compact proof JSON: {err}")),
+        },
+    };
+
+    serde_json::to_string(&result).unwrap_or_else(|_| {
+        "{\"valid\":false,\"computed_root\":\"\",\"expected_root\":\"\",\"is_non_inclusion\":false,\"error\":\"serialization_failed\"}".to_string()
+    })
+}

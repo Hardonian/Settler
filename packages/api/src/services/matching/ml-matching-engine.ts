@@ -23,6 +23,7 @@ export interface MLMatchFeatures {
 }
 
 export interface MLMatchPrediction {
+  targetTransactionId?: string;
   confidence: number;
   matchType: "exact" | "fuzzy" | "manual" | "unmatched";
   reasoning: string;
@@ -179,6 +180,7 @@ export class MLMatchingEngine {
       }
 
       const prediction: MLMatchPrediction = {
+        targetTransactionId: bestCandidate.target.id,
         confidence: bestCandidate.score,
         matchType,
         reasoning: `ML model prediction: ${bestCandidate.features.externalIdMatch ? "external ID match" : ""} ${bestCandidate.features.amountDiff === 0 ? "exact amount" : `amount diff: ${bestCandidate.features.amountDiff.toFixed(2)}`} ${bestCandidate.features.dateDiff === 0 ? "exact date" : `date diff: ${bestCandidate.features.dateDiff} days`} description similarity: ${(bestCandidate.features.descriptionSimilarity * 100).toFixed(1)}% historical match rate: ${(historicalMatchRate * 100).toFixed(1)}%`,

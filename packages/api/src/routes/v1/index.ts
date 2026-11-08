@@ -44,6 +44,7 @@ import toleranceSettingsRouter from "../tolerance-settings";
 import ventureInvoiceNudgerRouter from "./venture-invoice-nudger";
 import agenticWorkflowRouter from "./agentic-workflow";
 import { ssoRouter } from "./sso";
+import interchangeRouter from "./interchange";
 
 export const v1Router: Router = Router();
 export const v1WebhookRouter: Router = Router();
@@ -63,6 +64,7 @@ v1Router.use("/reconciliations", reconciliationSummaryRouter);
 v1Router.use("/transactions", transactionsRouter);
 v1Router.use("/settlements", settlementsRouter);
 v1Router.use("/fees", feesRouter);
+v1Router.use("/interchange", interchangeRouter);
 v1Router.use("/exports", exportsRouter);
 v1Router.use("/currency", currencyRouter);
 

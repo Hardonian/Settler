@@ -19,14 +19,19 @@ export default function UpgradePage() {
   const handleUpgrade = async (tier: string) => {
     setIsProcessing(true);
     try {
-      const res = await fetch("/api/v1/billing/checkout", {
+      const res = await fetch("/api/stripe/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ tier }),
+        body: JSON.stringify({
+          planCode: tier,
+          successUrl: `${window.location.origin}/console/billing?success=true`,
+          cancelUrl: `${window.location.origin}/console/billing/upgrade?canceled=true`,
+        }),
       });
 
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Failed to create checkout session");
+      if (!res.ok)
+        throw new Error(data.message || data.error || "Failed to create checkout session");
 
       // Redirect to Stripe
       window.location.href = data.url;
@@ -157,7 +162,9 @@ export default function UpgradePage() {
               </li>
               <li className="flex items-center gap-3">
                 <CheckCircle2 className="w-5 h-5 text-primary" />
-                <span className="text-sm font-medium">99.99% Uptime SLA</span>
+                <span className="text-sm font-medium">
+                  Contract-Scoped Reliability &amp; Audit Controls
+                </span>
               </li>
             </ul>
           </CardContent>

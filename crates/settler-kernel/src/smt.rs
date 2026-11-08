@@ -1,9 +1,12 @@
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
 use std::collections::HashMap;
+use std::sync::OnceLock;
 
 /// Tree depth for 256-bit keys (SHA-256 digests)
 pub const SMT_DEPTH: usize = 256;
+
+static EMPTY_HASHES_CACHE: OnceLock<Vec<[u8; 32]>> = OnceLock::new();
 
 /// Deterministically computes the SHA-256 hash of two 32-byte chunks with domain separator (0x01)
 pub fn hash_nodes(left: &[u8; 32], right: &[u8; 32]) -> [u8; 32] {
@@ -34,13 +37,17 @@ pub fn hash_empty_leaf() -> [u8; 32] {
 /// `empty_hashes[256]` is the domain-separated canonical empty leaf hash.
 /// `empty_hashes[d]` is `hash_nodes(&empty_hashes[d+1], &empty_hashes[d+1])`.
 pub fn get_empty_hashes() -> Vec<[u8; 32]> {
-    let mut empty = vec![[0u8; 32]; SMT_DEPTH + 1];
-    // Depth 256 is the empty leaf
-    empty[SMT_DEPTH] = hash_empty_leaf();
-    for d in (0..SMT_DEPTH).rev() {
-        empty[d] = hash_nodes(&empty[d + 1], &empty[d + 1]);
-    }
-    empty
+    EMPTY_HASHES_CACHE
+        .get_or_init(|| {
+            let mut empty = vec![[0u8; 32]; SMT_DEPTH + 1];
+            // Depth 256 is the empty leaf
+            empty[SMT_DEPTH] = hash_empty_leaf();
+            for d in (0..SMT_DEPTH).rev() {
+                empty[d] = hash_nodes(&empty[d + 1], &empty[d + 1]);
+            }
+            empty
+        })
+        .clone()
 }
 
 /// A Sparse Merkle Tree Proof for inclusion or non-inclusion
@@ -55,6 +62,26 @@ pub struct SmtProof {
     /// Expected root hash in hex format
     pub root_hex: String,
     /// Whether this is an inclusion proof or a non-inclusion proof
+    pub is_inclusion: bool,
+}
+
+/// A Compact Sparse Merkle Tree Proof that compresses default empty hashes
+/// via a 256-bit presence bitmap.
+/// Reduces wire payload size by >90% (e.g. from 16.4 KB down to ~300-800 bytes).
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub struct CompactSmtProof {
+    /// 32-byte key in hex format
+    pub key_hex: String,
+    /// 32-byte value in hex format, or None for non-inclusion proof
+    pub value_hex: Option<String>,
+    /// 32-byte presence bitmap (64 hex chars, MSB at index 0).
+    /// Bit `i` is 1 if sibling `i` (from depth 255 to 0) is explicit, 0 if it is the canonical empty hash.
+    pub presence_bitmap_hex: String,
+    /// Vector of non-empty sibling hashes in hex format
+    pub non_empty_siblings_hex: Vec<String>,
+    /// Expected root hash in hex format
+    pub root_hex: String,
+    /// Whether this is an inclusion proof or non-inclusion proof
     pub is_inclusion: bool,
 }
 
@@ -196,6 +223,18 @@ impl SparseMerkleTree {
         })
     }
 
+    /// Generates a compact cryptographic inclusion proof, omitting default empty hashes
+    pub fn prove_compact_inclusion(&self, key: &[u8; 32]) -> Option<CompactSmtProof> {
+        let full_proof = self.prove_inclusion(key)?;
+        compress_smt_proof(&full_proof).ok()
+    }
+
+    /// Generates a compact cryptographic non-inclusion proof, omitting default empty hashes
+    pub fn prove_compact_non_inclusion(&self, key: &[u8; 32]) -> Option<CompactSmtProof> {
+        let full_proof = self.prove_non_inclusion(key)?;
+        compress_smt_proof(&full_proof).ok()
+    }
+
     /// Collects the sibling hashes for a key path (from leaf up to root)
     fn collect_siblings(&self, key: &[u8; 32]) -> Vec<[u8; 32]> {
         let mut siblings = Vec::with_capacity(SMT_DEPTH);
@@ -327,8 +366,7 @@ pub fn verify_smt_proof(proof: &SmtProof) -> SmtVerificationResult {
         hash_leaf(&key_bytes, &val_bytes)
     } else {
         // Non-inclusion proof terminates at the canonical domain-separated empty leaf.
-        let empty_hashes = get_empty_hashes();
-        empty_hashes[SMT_DEPTH]
+        hash_empty_leaf()
     };
 
     // Ascend tree from leaf to root
@@ -355,6 +393,97 @@ pub fn verify_smt_proof(proof: &SmtProof) -> SmtVerificationResult {
             None
         } else {
             Some("Root hash mismatch: computed root does not match declared root".to_string())
+        },
+    }
+}
+
+/// Compresses a standard 256-sibling SMT proof into a Compact SMT proof
+pub fn compress_smt_proof(proof: &SmtProof) -> Result<CompactSmtProof, String> {
+    if proof.siblings_hex.len() != SMT_DEPTH {
+        return Err(format!(
+            "Invalid siblings length for compression: expected {}, got {}",
+            SMT_DEPTH,
+            proof.siblings_hex.len()
+        ));
+    }
+
+    let empty_hashes = get_empty_hashes();
+    let mut bitmap = [0u8; 32];
+    let mut non_empty_siblings_hex = Vec::new();
+
+    for (depth_rev, sibling_hex) in proof.siblings_hex.iter().enumerate() {
+        let depth = SMT_DEPTH - 1 - depth_rev;
+        let expected_empty_hex = hex::encode(empty_hashes[depth + 1]);
+
+        if !sibling_hex.eq_ignore_ascii_case(&expected_empty_hex) {
+            let byte_idx = depth_rev / 8;
+            let bit_idx = 7 - (depth_rev % 8);
+            bitmap[byte_idx] |= 1 << bit_idx;
+            non_empty_siblings_hex.push(sibling_hex.clone());
+        }
+    }
+
+    Ok(CompactSmtProof {
+        key_hex: proof.key_hex.clone(),
+        value_hex: proof.value_hex.clone(),
+        presence_bitmap_hex: hex::encode(bitmap),
+        non_empty_siblings_hex,
+        root_hex: proof.root_hex.clone(),
+        is_inclusion: proof.is_inclusion,
+    })
+}
+
+/// Expands a Compact SMT proof back into a standard 256-sibling SMT proof
+pub fn expand_smt_proof(compact: &CompactSmtProof) -> Result<SmtProof, String> {
+    let bitmap_bytes = hex::decode(&compact.presence_bitmap_hex)
+        .map_err(|e| format!("Invalid presence_bitmap_hex: {e}"))?;
+    if bitmap_bytes.len() != 32 {
+        return Err("Invalid presence_bitmap length (expected 32 bytes)".to_string());
+    }
+
+    let empty_hashes = get_empty_hashes();
+    let mut siblings_hex = Vec::with_capacity(SMT_DEPTH);
+    let mut explicit_iter = compact.non_empty_siblings_hex.iter();
+
+    for depth_rev in 0..SMT_DEPTH {
+        let depth = SMT_DEPTH - 1 - depth_rev;
+        let byte_idx = depth_rev / 8;
+        let bit_idx = 7 - (depth_rev % 8);
+        let is_present = ((bitmap_bytes[byte_idx] >> bit_idx) & 1) == 1;
+
+        if is_present {
+            let sibling = explicit_iter
+                .next()
+                .ok_or_else(|| "Premature end of non_empty_siblings_hex".to_string())?;
+            siblings_hex.push(sibling.clone());
+        } else {
+            siblings_hex.push(hex::encode(empty_hashes[depth + 1]));
+        }
+    }
+
+    if explicit_iter.next().is_some() {
+        return Err("Superfluous non-empty siblings provided in compact proof".to_string());
+    }
+
+    Ok(SmtProof {
+        key_hex: compact.key_hex.clone(),
+        value_hex: compact.value_hex.clone(),
+        siblings_hex,
+        root_hex: compact.root_hex.clone(),
+        is_inclusion: compact.is_inclusion,
+    })
+}
+
+/// Verifies a Compact SMT proof directly against the declared root hash
+pub fn verify_compact_smt_proof(compact: &CompactSmtProof) -> SmtVerificationResult {
+    match expand_smt_proof(compact) {
+        Ok(proof) => verify_smt_proof(&proof),
+        Err(err) => SmtVerificationResult {
+            valid: false,
+            computed_root: String::new(),
+            expected_root: compact.root_hex.clone(),
+            is_non_inclusion: compact.value_hex.is_none(),
+            error: Some(err),
         },
     }
 }
@@ -446,5 +575,56 @@ mod tests {
             verification.error.as_deref(),
             Some("Proof kind is inconsistent with value_hex presence")
         );
+    }
+
+    #[test]
+    fn test_compact_smt_inclusion_roundtrip_and_compression() {
+        let mut tree = SparseMerkleTree::new();
+        let key_1 = Sha256::digest(b"tx_settlement_1001").into();
+        let val_1 = Sha256::digest(b"amount_cents=5000:status=cleared").into();
+        let key_2 = Sha256::digest(b"tx_settlement_1002").into();
+        let val_2 = Sha256::digest(b"amount_cents=7500:status=cleared").into();
+
+        tree.update(&key_1, &val_1);
+        tree.update(&key_2, &val_2);
+
+        let full_proof = tree.prove_inclusion(&key_1).expect("Full proof");
+        let compact_proof = tree.prove_compact_inclusion(&key_1).expect("Compact proof");
+
+        // Verify dramatic compression: 256 siblings down to < 20 siblings
+        assert!(
+            compact_proof.non_empty_siblings_hex.len() <= 16,
+            "Expected compact proof to compress 256 siblings to <= 16, got {}",
+            compact_proof.non_empty_siblings_hex.len()
+        );
+
+        // Verify expansion roundtrip matches 100%
+        let expanded = expand_smt_proof(&compact_proof).expect("Expansion must succeed");
+        assert_eq!(expanded, full_proof);
+
+        // Verify direct verification
+        let verification = verify_compact_smt_proof(&compact_proof);
+        assert!(verification.valid);
+        assert_eq!(verification.computed_root, tree.root_hex());
+    }
+
+    #[test]
+    fn test_compact_smt_non_inclusion() {
+        let mut tree = SparseMerkleTree::new();
+        let key_1 = Sha256::digest(b"tx_settlement_1001").into();
+        let val_1 = Sha256::digest(b"amount_cents=5000:status=cleared").into();
+        tree.update(&key_1, &val_1);
+
+        let absent_key = Sha256::digest(b"non_existent_key").into();
+        let compact_non_proof = tree
+            .prove_compact_non_inclusion(&absent_key)
+            .expect("Compact non-inclusion proof");
+
+        assert!(!compact_non_proof.is_inclusion);
+        assert!(compact_non_proof.value_hex.is_none());
+
+        let verification = verify_compact_smt_proof(&compact_non_proof);
+        assert!(verification.valid);
+        assert!(verification.is_non_inclusion);
     }
 }

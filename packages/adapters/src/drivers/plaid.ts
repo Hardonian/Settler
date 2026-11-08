@@ -316,26 +316,44 @@ export class PlaidDriver implements ConnectorDriver {
       const transactionsData = await transactionsResponse.json();
       rawPayloads.push({ type: "transactions", payload: transactionsData });
 
-      // Normalize transactions
-      for (const tx of transactionsData.added || []) {
-        const amountCents = Math.round((tx.amount || 0) * 100);
+      // Normalize added and modified transactions
+      const addedAndModified = [
+        ...(transactionsData.added || []).map((tx: Record<string, unknown>) => ({
+          tx,
+          syncAction: "added" as const,
+        })),
+        ...(transactionsData.modified || []).map((tx: Record<string, unknown>) => ({
+          tx,
+          syncAction: "modified" as const,
+        })),
+      ];
+
+      for (const { tx, syncAction } of addedAndModified) {
+        const rawAmount = typeof tx.amount === "number" ? tx.amount : 0;
+        const amountCents = Math.round(rawAmount * 100);
+        const txId = String(tx.transaction_id || "");
+        const txDate = String(tx.date || new Date().toISOString());
         transactions.push({
-          externalId: tx.transaction_id,
-          accountId: tx.account_id,
+          externalId: txId,
+          accountId: String(tx.account_id || ""),
           transactionType: amountCents >= 0 ? "credit" : "debit",
           amountCents: Math.abs(amountCents),
-          currency: tx.iso_currency_code || "USD",
-          occurredAt: new Date(tx.date),
-          description: tx.name || tx.merchant_name,
-          ...(tx.pending_transaction_id ? { referenceId: tx.pending_transaction_id } : {}),
+          currency: String(tx.iso_currency_code || "USD"),
+          occurredAt: new Date(txDate),
+          description: String(tx.name || tx.merchant_name || ""),
+          ...(tx.pending_transaction_id ? { referenceId: String(tx.pending_transaction_id) } : {}),
           ...(tx.pending ? { referenceType: "pending_transaction" } : {}),
           providerMetadata: {
             category: tx.category,
             merchant_name: tx.merchant_name,
             payment_channel: tx.payment_channel,
             pending: tx.pending,
+            syncAction,
+            removedTransactionIds: (transactionsData.removed || []).map(
+              (r: { transaction_id?: string }) => r.transaction_id
+            ),
           },
-          idempotencyKey: `${tx.transaction_id}-${tx.date}`,
+          idempotencyKey: `${txId}-${txDate}-${syncAction}`,
         });
       }
 

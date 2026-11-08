@@ -42,10 +42,14 @@ module Settler
       @flags = FlagsClient.new(self)
       @receipts = ReceiptsClient.new(self)
       @console = ConsoleClient.new(self)
+      @interchange = InterchangeClient.new(self)
+      @cross_rail = CrossRailClient.new(self)
+      @proofs = ProofsClient.new(self)
     end
 
     attr_reader :transactions, :settlements, :fees, :exports, :currency,
-                :webhooks, :jobs, :reports, :adapters, :flags, :receipts, :console
+                :webhooks, :jobs, :reports, :adapters, :flags, :receipts, :console,
+                :interchange, :cross_rail, :proofs
 
     def request(method:, path:, data: nil, params: nil)
       uri = URI.parse("#{@base_url}#{path}")
@@ -67,7 +71,7 @@ module Settler
       end
 
       request["Content-Type"] = "application/json"
-      request["User-Agent"] = "settler-ruby/1.0.0"
+      request["User-Agent"] = "settler-ruby/1.7.0"
       request["Accept-Encoding"] = "gzip"
       
       req_id = SecureRandom.uuid
@@ -340,6 +344,64 @@ module Settler
     def generate_api_key(name:)
       data = { name: name }
       @client.request(method: "POST", path: "/console/api-keys", data: data)
+    end
+  end
+
+  # Interchange client
+  class InterchangeClient
+    def initialize(client)
+      @client = client
+    end
+
+    def rates(rail:, card_tier: nil)
+      params = { rail: rail }
+      params[:cardTier] = card_tier if card_tier
+      @client.request(method: "GET", path: "/interchange/rates", params: params)
+    end
+
+    def analyze(transactions:)
+      @client.request(method: "POST", path: "/interchange/analyze", data: { transactions: transactions })
+    end
+
+    def portfolio(tenant_id: nil)
+      params = {}
+      params[:tenantId] = tenant_id if tenant_id
+      @client.request(method: "GET", path: "/interchange/portfolio", params: params)
+    end
+
+    def enrich_l3(transactions:)
+      @client.request(method: "POST", path: "/interchange/enrich-l3", data: { transactions: transactions })
+    end
+  end
+
+  # Cross-rail client
+  class CrossRailClient
+    def initialize(client)
+      @client = client
+    end
+
+    def analyze(transactions:, bank_sweeps: nil)
+      payload = { transactions: transactions }
+      payload[:bankSweeps] = bank_sweeps if bank_sweeps
+      @client.request(method: "POST", path: "/reconciliation/cross-rail", data: payload)
+    end
+  end
+
+  # Proofs client
+  class ProofsClient
+    def initialize(client)
+      @client = client
+    end
+
+    def verify(proofpack:)
+      @client.request(method: "POST", path: "/zkp/verify", data: proofpack)
+    end
+
+    def audit_sampling(population:, sample_size: nil, seed: nil)
+      data = { population: population }
+      data[:sampleSize] = sample_size if sample_size
+      data[:seed] = seed if seed
+      @client.request(method: "POST", path: "/auditor/samples", data: data)
     end
   end
 end

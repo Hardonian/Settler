@@ -5,6 +5,7 @@ import { liquidityMetricsRouter } from "../liquidity-metrics";
 import { zkpSyncRouter } from "../zkp-sync";
 import { erpSyncRouter } from "../erp-sync";
 import { vendorDisputesRouter } from "../vendor-disputes";
+import { auditorRouter } from "../auditor";
 
 process.env.PROOF_COMMITMENT_SECRET =
   "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef";
@@ -81,6 +82,7 @@ describe("Hardened API Routes Integration", () => {
   app.use("/api/intelligence", zkpSyncRouter);
   app.use("/api/erp/sync", erpSyncRouter);
   app.use("/api/v1/vendor-disputes", vendorDisputesRouter);
+  app.use("/api/auditor", auditorRouter);
 
   describe("POST /api/close/sign-off", () => {
     it("cryptographically locks the accounting period with deterministic state commitment", async () => {
@@ -134,6 +136,25 @@ describe("Hardened API Routes Integration", () => {
 
       expect(verifyRes.status).toBe(200);
       expect(verifyRes.body.data.isValid).toBe(true);
+
+      // Fail-closed check: omitting commitment parameters must return 400
+      const incompleteVerifyRes = await request(app).post("/api/intelligence/zkp/verify").send({
+        proofHash: genRes.body.data.proofHash,
+      });
+      expect(incompleteVerifyRes.status).toBe(400);
+    });
+  });
+
+  describe("GET /api/auditor/samples", () => {
+    it("returns deterministic tenant-scoped MUS/PPS samples with a Merkle manifest root", async () => {
+      const res1 = await request(app).get("/api/auditor/samples?limit=4&seed=42");
+      const res2 = await request(app).get("/api/auditor/samples?limit=4&seed=42");
+
+      expect(res1.status).toBe(200);
+      expect(res1.body.data.tenantId).toBe("tenant-test-hardened");
+      expect(res1.body.data.samples).toHaveLength(4);
+      expect(res1.body.data.sampleManifestMerkleRoot).toMatch(/^[a-f0-9]{64}$/);
+      expect(res1.body.data.sampleManifestMerkleRoot).toBe(res2.body.data.sampleManifestMerkleRoot);
     });
   });
 

@@ -20,7 +20,16 @@
 
 import * as React from "react";
 import { cn } from "@/lib/utils";
-import { Search, ChevronLeft, ChevronRight, AlertCircle, Inbox } from "lucide-react";
+import {
+  Search,
+  ChevronLeft,
+  ChevronRight,
+  AlertCircle,
+  Inbox,
+  ArrowUpDown,
+  ArrowUp,
+  ArrowDown,
+} from "lucide-react";
 import { Button } from "./button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "./table";
 import { Card, CardContent, CardHeader } from "./card";
@@ -95,6 +104,10 @@ export interface DataTableProps<TRow> {
   description?: string;
   /** Make rows clickable */
   onRowClick?: (row: TRow) => void;
+  /** Active sort state: column key and direction */
+  sortState?: { columnKey: string; direction: "asc" | "desc" } | null;
+  /** Callback when a sortable column header is clicked */
+  onSortChange?: (columnKey: string) => void;
   /** Additional className on the outer wrapper */
   className?: string;
   /** Show row count summary */
@@ -194,6 +207,8 @@ export function DataTable<TRow>({
   title,
   description,
   onRowClick,
+  sortState,
+  onSortChange,
   className,
   showCount = true,
 }: DataTableProps<TRow>) {
@@ -255,14 +270,50 @@ export function DataTable<TRow>({
         <Table stickyScroll>
           <TableHeader sticky>
             <TableRow className="border-b border-border/40 bg-muted/25 hover:bg-muted/25">
-              {columns.map((col) => (
-                <TableHead
-                  key={col.key}
-                  className={cn("h-9 py-2 text-[11px] font-semibold", col.headerClassName)}
-                >
-                  {col.header}
-                </TableHead>
-              ))}
+              {columns.map((col) => {
+                const isSorted = sortState?.columnKey === col.key;
+                const sortDir = isSorted ? sortState?.direction : undefined;
+                const canSort = Boolean(col.sortable && onSortChange);
+
+                return (
+                  <TableHead
+                    key={col.key}
+                    aria-sort={
+                      isSorted ? (sortDir === "asc" ? "ascending" : "descending") : undefined
+                    }
+                    className={cn(
+                      "h-9 py-2 text-[11px] font-semibold select-none",
+                      canSort && "cursor-pointer hover:text-foreground transition-colors",
+                      col.headerClassName
+                    )}
+                    onClick={canSort ? () => onSortChange?.(col.key) : undefined}
+                  >
+                    <div className="flex items-center gap-1.5">
+                      <span>{col.header}</span>
+                      {canSort && (
+                        <span className="text-muted-foreground/60 inline-flex items-center">
+                          {sortDir === "asc" ? (
+                            <ArrowUp
+                              className="h-3 w-3 text-primary"
+                              aria-label="Sorted ascending"
+                            />
+                          ) : sortDir === "desc" ? (
+                            <ArrowDown
+                              className="h-3 w-3 text-primary"
+                              aria-label="Sorted descending"
+                            />
+                          ) : (
+                            <ArrowUpDown
+                              className="h-3 w-3 opacity-40 hover:opacity-100"
+                              aria-label="Sortable"
+                            />
+                          )}
+                        </span>
+                      )}
+                    </div>
+                  </TableHead>
+                );
+              })}
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -273,25 +324,44 @@ export function DataTable<TRow>({
             ) : data.length === 0 ? (
               <EmptyRow columns={columns.length} state={emptyState} />
             ) : (
-              data.map((row, index) => (
-                <TableRow
-                  key={getRowKey ? getRowKey(row, index) : index}
-                  onClick={onRowClick ? () => onRowClick(row) : undefined}
-                  className={cn(
-                    "border-b border-border/20 last:border-0 transition-colors",
-                    onRowClick && "cursor-pointer hover:bg-muted/50"
-                  )}
-                >
-                  {columns.map((col) => (
-                    <TableCell
-                      key={col.key}
-                      className={cn("py-2.5 text-[13px] leading-snug", col.cellClassName)}
-                    >
-                      {col.cell(row)}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
+              data.map((row, index) => {
+                const rowKey = getRowKey
+                  ? getRowKey(row, index)
+                  : ((row as any)?.id ?? (row as any)?.run_id ?? (row as any)?.key ?? index);
+
+                return (
+                  <TableRow
+                    key={rowKey}
+                    role={onRowClick ? "button" : undefined}
+                    tabIndex={onRowClick ? 0 : undefined}
+                    onKeyDown={
+                      onRowClick
+                        ? (e) => {
+                            if (e.key === "Enter" || e.key === " ") {
+                              e.preventDefault();
+                              onRowClick(row);
+                            }
+                          }
+                        : undefined
+                    }
+                    onClick={onRowClick ? () => onRowClick(row) : undefined}
+                    className={cn(
+                      "border-b border-border/20 last:border-0 transition-colors",
+                      onRowClick &&
+                        "cursor-pointer hover:bg-muted/50 focus-visible:outline-none focus-visible:bg-muted/60"
+                    )}
+                  >
+                    {columns.map((col) => (
+                      <TableCell
+                        key={col.key}
+                        className={cn("py-2.5 text-[13px] leading-snug", col.cellClassName)}
+                      >
+                        {col.cell(row)}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                );
+              })
             )}
           </TableBody>
         </Table>

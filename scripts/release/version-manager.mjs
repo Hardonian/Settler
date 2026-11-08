@@ -54,10 +54,11 @@ if (!command || command === "help") {
 }
 
 if (command === "sync" || command === "bump") {
-  if (!arg) {
+  const targetVersion = arg || (command === "sync" ? readJson("package.json").version : "");
+  if (!targetVersion) {
     throw new Error(`Missing version for '${command}'`);
   }
-  syncVersions(arg);
+  syncVersions(targetVersion);
 } else {
   throw new Error(`Unknown command: ${command}`);
 }
