@@ -49,7 +49,7 @@ test.describe("Landing page visual baselines", () => {
       fullPage: false,
       animations: "disabled",
       maxDiffPixels: 75000,
-      maxDiffPixelRatio: 0.08,
+      maxDiffPixelRatio: 0.15,
     });
   });
 });

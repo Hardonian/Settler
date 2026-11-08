@@ -12,6 +12,7 @@ on:
       - "packages/**"
       - "config/**"
       - "scripts/**"
+      - "deploy/**"
       - ".github/workflows/deploy-production.yml"
   workflow_dispatch:
     inputs:

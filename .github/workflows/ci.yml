@@ -7,6 +7,7 @@ on:
       - "packages/**"
       - "scripts/**"
       - "tests/**"
+      - "deploy/**"
       - ".github/workflows/ci.yml"
       - "package.json"
       - "pnpm-lock.yaml"

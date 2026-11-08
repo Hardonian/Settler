@@ -374,8 +374,8 @@ pub fn compute_variances(
                     }
 
                     for key in &ruleset.compare_keys {
-                        let left_value = match_value(&left_record, key);
-                        let right_value = match_value(&right_record, key);
+                        let left_value = match_value(left_record, key);
+                        let right_value = match_value(right_record, key);
                         if left_value != right_value {
                             let variance = build_variance(
                                 VarianceType::AttributeMismatch,
@@ -596,7 +596,7 @@ mod tests {
         assert_eq!(canonical_json_bytes(&1e-7_f64).unwrap(), b"1e-7");
         assert_eq!(canonical_json_bytes(&-0.0_f64).unwrap(), b"0");
         assert_eq!(
-            canonical_json_bytes(&333333333.33333329_f64).unwrap(),
+            canonical_json_bytes(&333_333_333.333_333_3_f64).unwrap(),
             b"333333333.3333333"
         );
     }
