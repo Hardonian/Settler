@@ -370,7 +370,10 @@ jobs:
               if [ -n "${VERCEL_ORG_ID:-}" ]; then
                 vercel_scope_args=(--scope "${VERCEL_ORG_ID}")
               fi
-              if NO_UPDATE_NOTIFIER=1 vercel curl "${path}" --deployment "${DEPLOY_URL}" --token "${VERCEL_TOKEN}" "${vercel_scope_args[@]}" --yes --no-color -- -sfS --max-time 15 > "${out}" 2>/dev/null && sanitize_json "${out}" && jq -e . "${out}" >/dev/null 2>&1; then
+              if NO_UPDATE_NOTIFIER=1 vercel curl "${path}" --deployment "${DEPLOY_URL}" --token "${VERCEL_TOKEN}" "${vercel_scope_args[@]}" --yes -- -sfS --max-time 15 > "${out}" 2>/dev/null && sanitize_json "${out}" && jq -e . "${out}" >/dev/null 2>&1; then
+                return 0
+              fi
+              if NO_UPDATE_NOTIFIER=1 vercel curl "${path}" --deployment "${DEPLOY_URL}" --yes -- -sfS --max-time 15 > "${out}" 2>/dev/null && sanitize_json "${out}" && jq -e . "${out}" >/dev/null 2>&1; then
                 return 0
               fi
             fi
@@ -445,7 +448,10 @@ jobs:
               if [ -n "${VERCEL_ORG_ID:-}" ]; then
                 vercel_scope_args=(--scope "${VERCEL_ORG_ID}")
               fi
-              if NO_UPDATE_NOTIFIER=1 vercel curl "${path}" --deployment "${DEPLOY_URL}" --token "${VERCEL_TOKEN}" "${vercel_scope_args[@]}" --yes --no-color -- -sfS --max-time 15 > "${out}" 2>/dev/null && sanitize_json "${out}" && jq -e . "${out}" >/dev/null 2>&1; then
+              if NO_UPDATE_NOTIFIER=1 vercel curl "${path}" --deployment "${DEPLOY_URL}" --token "${VERCEL_TOKEN}" "${vercel_scope_args[@]}" --yes -- -sfS --max-time 15 > "${out}" 2>/dev/null && sanitize_json "${out}" && jq -e . "${out}" >/dev/null 2>&1; then
+                return 0
+              fi
+              if NO_UPDATE_NOTIFIER=1 vercel curl "${path}" --deployment "${DEPLOY_URL}" --yes -- -sfS --max-time 15 > "${out}" 2>/dev/null && sanitize_json "${out}" && jq -e . "${out}" >/dev/null 2>&1; then
                 return 0
               fi
             fi
@@ -503,7 +509,10 @@ jobs:
               if [ -n "${VERCEL_ORG_ID:-}" ]; then
                 vercel_scope_args=(--scope "${VERCEL_ORG_ID}")
               fi
-              if NO_UPDATE_NOTIFIER=1 vercel curl "${path}" --deployment "${DEPLOY_URL}" --token "${VERCEL_TOKEN}" "${vercel_scope_args[@]}" --yes --no-color -- -sfS --max-time 15 > "${out}" 2>/dev/null && sanitize_json "${out}" && jq -e . "${out}" >/dev/null 2>&1; then
+              if NO_UPDATE_NOTIFIER=1 vercel curl "${path}" --deployment "${DEPLOY_URL}" --token "${VERCEL_TOKEN}" "${vercel_scope_args[@]}" --yes -- -sfS --max-time 15 > "${out}" 2>/dev/null && sanitize_json "${out}" && jq -e . "${out}" >/dev/null 2>&1; then
+                return 0
+              fi
+              if NO_UPDATE_NOTIFIER=1 vercel curl "${path}" --deployment "${DEPLOY_URL}" --yes -- -sfS --max-time 15 > "${out}" 2>/dev/null && sanitize_json "${out}" && jq -e . "${out}" >/dev/null 2>&1; then
                 return 0
               fi
             fi
