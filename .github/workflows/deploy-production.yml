@@ -335,6 +335,22 @@ jobs:
           set -euo pipefail
           echo "🔍 Probing /health and /health/detailed..."
 
+          sanitize_json() {
+            local target="$1"
+            [ -s "$target" ] || return 1
+            node -e '
+              const fs = require("fs");
+              const file = process.argv[1];
+              const content = fs.readFileSync(file, "utf8");
+              const firstBrace = content.indexOf("{");
+              const lastBrace = content.lastIndexOf("}");
+              if (firstBrace === -1 || lastBrace <= firstBrace) process.exit(1);
+              const json = content.slice(firstBrace, lastBrace + 1);
+              JSON.parse(json);
+              fs.writeFileSync(file, json, "utf8");
+            ' "$target" 2>/dev/null
+          }
+
           probe_url() {
             local path="$1"
             local out="$2"
@@ -343,11 +359,18 @@ jobs:
             if [ -n "${VERCEL_AUTOMATION_BYPASS_SECRET:-}" ]; then
               curl_args+=(-H "x-vercel-protection-bypass: ${VERCEL_AUTOMATION_BYPASS_SECRET}")
             fi
-            if curl "${curl_args[@]}" "${url}" > "${out}" 2>/dev/null && jq -e . "${out}" >/dev/null 2>&1; then
+            if [ -n "${VERCEL_TOKEN:-}" ]; then
+              curl_args+=(-H "Authorization: Bearer ${VERCEL_TOKEN}")
+            fi
+            if curl "${curl_args[@]}" "${url}" > "${out}" 2>/dev/null && sanitize_json "${out}" && jq -e . "${out}" >/dev/null 2>&1; then
               return 0
             fi
             if [ -n "${VERCEL_TOKEN:-}" ] && command -v vercel >/dev/null 2>&1; then
-              if vercel curl "${path}" --deployment "${DEPLOY_URL}" --token "${VERCEL_TOKEN}" --scope "${VERCEL_ORG_ID}" -- -sfS --max-time 15 > "${out}" 2>/dev/null && jq -e . "${out}" >/dev/null 2>&1; then
+              local vercel_scope_args=()
+              if [ -n "${VERCEL_ORG_ID:-}" ]; then
+                vercel_scope_args=(--scope "${VERCEL_ORG_ID}")
+              fi
+              if NO_UPDATE_NOTIFIER=1 vercel curl "${path}" --deployment "${DEPLOY_URL}" --token "${VERCEL_TOKEN}" "${vercel_scope_args[@]}" --yes --no-color -- -sfS --max-time 15 > "${out}" 2>/dev/null && sanitize_json "${out}" && jq -e . "${out}" >/dev/null 2>&1; then
                 return 0
               fi
             fi
@@ -387,6 +410,22 @@ jobs:
           set -euo pipefail
           echo "🔍 Verifying API endpoints..."
 
+          sanitize_json() {
+            local target="$1"
+            [ -s "$target" ] || return 1
+            node -e '
+              const fs = require("fs");
+              const file = process.argv[1];
+              const content = fs.readFileSync(file, "utf8");
+              const firstBrace = content.indexOf("{");
+              const lastBrace = content.lastIndexOf("}");
+              if (firstBrace === -1 || lastBrace <= firstBrace) process.exit(1);
+              const json = content.slice(firstBrace, lastBrace + 1);
+              JSON.parse(json);
+              fs.writeFileSync(file, json, "utf8");
+            ' "$target" 2>/dev/null
+          }
+
           probe_url() {
             local path="$1"
             local out="$2"
@@ -395,11 +434,18 @@ jobs:
             if [ -n "${VERCEL_AUTOMATION_BYPASS_SECRET:-}" ]; then
               curl_args+=(-H "x-vercel-protection-bypass: ${VERCEL_AUTOMATION_BYPASS_SECRET}")
             fi
-            if curl "${curl_args[@]}" "${url}" > "${out}" 2>/dev/null && jq -e . "${out}" >/dev/null 2>&1; then
+            if [ -n "${VERCEL_TOKEN:-}" ]; then
+              curl_args+=(-H "Authorization: Bearer ${VERCEL_TOKEN}")
+            fi
+            if curl "${curl_args[@]}" "${url}" > "${out}" 2>/dev/null && sanitize_json "${out}" && jq -e . "${out}" >/dev/null 2>&1; then
               return 0
             fi
             if [ -n "${VERCEL_TOKEN:-}" ] && command -v vercel >/dev/null 2>&1; then
-              if vercel curl "${path}" --deployment "${DEPLOY_URL}" --token "${VERCEL_TOKEN}" --scope "${VERCEL_ORG_ID}" -- -sfS --max-time 15 > "${out}" 2>/dev/null && jq -e . "${out}" >/dev/null 2>&1; then
+              local vercel_scope_args=()
+              if [ -n "${VERCEL_ORG_ID:-}" ]; then
+                vercel_scope_args=(--scope "${VERCEL_ORG_ID}")
+              fi
+              if NO_UPDATE_NOTIFIER=1 vercel curl "${path}" --deployment "${DEPLOY_URL}" --token "${VERCEL_TOKEN}" "${vercel_scope_args[@]}" --yes --no-color -- -sfS --max-time 15 > "${out}" 2>/dev/null && sanitize_json "${out}" && jq -e . "${out}" >/dev/null 2>&1; then
                 return 0
               fi
             fi
@@ -422,6 +468,22 @@ jobs:
           set -euo pipefail
           echo "🔍 Verifying deployed commit SHA..."
 
+          sanitize_json() {
+            local target="$1"
+            [ -s "$target" ] || return 1
+            node -e '
+              const fs = require("fs");
+              const file = process.argv[1];
+              const content = fs.readFileSync(file, "utf8");
+              const firstBrace = content.indexOf("{");
+              const lastBrace = content.lastIndexOf("}");
+              if (firstBrace === -1 || lastBrace <= firstBrace) process.exit(1);
+              const json = content.slice(firstBrace, lastBrace + 1);
+              JSON.parse(json);
+              fs.writeFileSync(file, json, "utf8");
+            ' "$target" 2>/dev/null
+          }
+
           probe_url() {
             local path="$1"
             local out="$2"
@@ -430,11 +492,18 @@ jobs:
             if [ -n "${VERCEL_AUTOMATION_BYPASS_SECRET:-}" ]; then
               curl_args+=(-H "x-vercel-protection-bypass: ${VERCEL_AUTOMATION_BYPASS_SECRET}")
             fi
-            if curl "${curl_args[@]}" "${url}" > "${out}" 2>/dev/null && jq -e . "${out}" >/dev/null 2>&1; then
+            if [ -n "${VERCEL_TOKEN:-}" ]; then
+              curl_args+=(-H "Authorization: Bearer ${VERCEL_TOKEN}")
+            fi
+            if curl "${curl_args[@]}" "${url}" > "${out}" 2>/dev/null && sanitize_json "${out}" && jq -e . "${out}" >/dev/null 2>&1; then
               return 0
             fi
             if [ -n "${VERCEL_TOKEN:-}" ] && command -v vercel >/dev/null 2>&1; then
-              if vercel curl "${path}" --deployment "${DEPLOY_URL}" --token "${VERCEL_TOKEN}" --scope "${VERCEL_ORG_ID}" -- -sfS --max-time 15 > "${out}" 2>/dev/null && jq -e . "${out}" >/dev/null 2>&1; then
+              local vercel_scope_args=()
+              if [ -n "${VERCEL_ORG_ID:-}" ]; then
+                vercel_scope_args=(--scope "${VERCEL_ORG_ID}")
+              fi
+              if NO_UPDATE_NOTIFIER=1 vercel curl "${path}" --deployment "${DEPLOY_URL}" --token "${VERCEL_TOKEN}" "${vercel_scope_args[@]}" --yes --no-color -- -sfS --max-time 15 > "${out}" 2>/dev/null && sanitize_json "${out}" && jq -e . "${out}" >/dev/null 2>&1; then
                 return 0
               fi
             fi

@@ -68,23 +68,47 @@ try {
   await client.connect();
 
   const sbLocal = localSupabaseVersions();
-  const sbRemote = (
-    await client.query(
+
+  // Versions recorded in either the Supabase CLI ledger or the internal contract ledger
+  const sbLedgerVersions = new Set();
+  try {
+    const resCli = await client.query(
       "select version::text as v from supabase_migrations.schema_migrations order by version"
-    )
-  ).rows.map((r) => r.v);
+    );
+    for (const row of resCli.rows) sbLedgerVersions.add(row.v);
+  } catch {}
+  try {
+    const resInternal = await client.query(
+      "select split_part(migration_name, '_', 1) as v from settler_internal.supabase_migrations"
+    );
+    for (const row of resInternal.rows) sbLedgerVersions.add(row.v);
+  } catch {}
+  const sbRemote = [...sbLedgerVersions].sort();
+
+  // Known superseded migration versions that were replaced before live application
+  const SUPERSEDED_VERSIONS = new Set([
+    "20261105000000", // superseded by 20261107000000_edge_functions_rpc_support_fix.sql
+  ]);
 
   const prLocal = localPrismaVersions();
   const prRemote = (
     await client.query("select migration_name as v from _prisma_migrations order by migration_name")
   ).rows.map((r) => r.v.split("_")[0]);
 
-  const compare = (label, local, remote) => {
+  const compare = (label, local, remote, isSupabase = false) => {
     const l = new Set(local);
     const r = new Set(remote);
-    const missingInLedger = [...l].filter((v) => !r.has(v)).sort();
+    const missingInLedger = [...l]
+      .filter((v) => !r.has(v) && (!isSupabase || !SUPERSEDED_VERSIONS.has(v)))
+      .sort();
     const missingOnDisk = [...r].filter((v) => !l.has(v)).sort();
     console.log(`\n${label}: ${local.length} file(s) vs ${remote.length} ledger row(s)`);
+    if (isSupabase) {
+      const supersededPresent = [...l].filter((v) => SUPERSEDED_VERSIONS.has(v));
+      if (supersededPresent.length) {
+        console.log(`  ℹ️  known superseded unapplied version(s): ${supersededPresent.join(", ")}`);
+      }
+    }
     if (missingInLedger.length) {
       drift += missingInLedger.length;
       console.error(`  ❌ recorded nowhere in ledger: ${missingInLedger.join(", ")}`);
@@ -98,8 +122,13 @@ try {
     }
   };
 
-  compare("supabase/migrations <-> supabase_migrations.schema_migrations", sbLocal, sbRemote);
-  compare("prisma/migrations <-> _prisma_migrations", prLocal, prRemote);
+  compare(
+    "supabase/migrations <-> supabase_migrations / settler_internal",
+    sbLocal,
+    sbRemote,
+    true
+  );
+  compare("prisma/migrations <-> _prisma_migrations", prLocal, prRemote, false);
 
   if (drift > 0) {
     console.error(`\n❌ migration catalog drift: ${drift} offender(s)`);

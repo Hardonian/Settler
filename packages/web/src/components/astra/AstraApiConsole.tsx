@@ -67,7 +67,7 @@ const ENDPOINTS: EndpointDef[] = [
       switch (lang) {
         case "curl":
           return `curl -X POST https://api.settler.io/v1/reconcile/bilateral \\
-  -H "Authorization: Bearer stlr_live_9f823a9d8214" \\
+  -H "Authorization: Bearer stlr_test_example_key_00000000" \\
   -H "Content-Type: application/json" \\
   -H "Idempotency-Key: ${Date.now()}-req" \\
   -d '${JSON.stringify(payload)}'`;
@@ -88,7 +88,7 @@ console.log("Sovereign Status:", result.status);`;
           return `from settler import SettlerClient
 
 client = SettlerClient(
-    api_key="stlr_live_9f823a9d8214",
+    api_key="stlr_test_example_key_00000000",
     tenant_id="${payload.tenantId}"
 )
 
@@ -107,7 +107,7 @@ import (
 )
 
 func main() {
-  client := settler.NewClient("stlr_live_9f823a9d8214", "${payload.tenantId}")
+  client := settler.NewClient("stlr_test_example_key_00000000", "${payload.tenantId}")
   res, err := client.ReconcileBilateral(context.Background(), settler.BilateralParams{
     Rails: []string{"stripe", "paypal"},
     ToleranceBps: 5,
@@ -122,7 +122,7 @@ use settler_protocol::BilateralRequest;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let client = SettlerClient::new("stlr_live_9f823a9d8214")
+    let client = SettlerClient::new("stlr_test_example_key_00000000")
         .with_tenant("${payload.tenantId}");
 
     let res = client.reconcile_bilateral(BilateralRequest {
@@ -174,7 +174,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
       switch (lang) {
         case "curl":
           return `curl -X POST https://api.settler.io/v1/proofs/verify \\
-  -H "Authorization: Bearer stlr_live_9f823a9d8214" \\
+  -H "Authorization: Bearer stlr_test_example_key_00000000" \\
   -H "Content-Type: application/json" \\
   -d '${JSON.stringify(payload)}'`;
 
@@ -246,7 +246,7 @@ fn main() {
       switch (lang) {
         case "curl":
           return `curl -X POST https://api.settler.io/v1/disputes/synthesize \\
-  -H "Authorization: Bearer stlr_live_9f823a9d8214" \\
+  -H "Authorization: Bearer stlr_test_example_key_00000000" \\
   -H "Content-Type: application/json" \\
   -d '${JSON.stringify(payload)}'`;
 
@@ -289,7 +289,7 @@ console.log("Defense Package Hash:", dossier.packageHash);`;
       switch (lang) {
         case "curl":
           return `curl -X GET https://api.settler.io/v1/telemetry/invariants \\
-  -H "Authorization: Bearer stlr_live_9f823a9d8214"`;
+  -H "Authorization: Bearer stlr_test_example_key_00000000"`;
         default:
           return `import { SettlerClient } from "@settler/sdk";
 const settler = new SettlerClient({ apiKey: process.env.SETTLER_API_KEY! });
@@ -373,7 +373,7 @@ export function AstraApiConsole() {
           method: target.method,
           headers: {
             "Content-Type": "application/json",
-            Authorization: "Bearer stlr_live_9f823a9d8214",
+            Authorization: "Bearer stlr_test_example_key_00000000",
           },
         };
 

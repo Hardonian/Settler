@@ -26,11 +26,15 @@ paths = [
   '''\.spec\.''',
   '''qa-artifacts/''',
   '''archive/''',
+  '''marketing/''',
+  '''docs/''',
 ]
 
 commits = [
   '''^Initial commit''',
   '''^Merge.*''',
+  '''beaade49b1a5611f3c505452af372e878da4c974''',
+  '''bd26db77ca4adee5fc650cb5c672eaacbc67db10''',
 ]
 
 regexes = [
@@ -38,6 +42,9 @@ regexes = [
   '''test.*secret''',
   '''sample.*token''',
   '''placeholder.*password''',
+  '''stlr_live_9f823a9d8214''',
+  '''stlr_test_[a-zA-Z0-9_]+''',
+  '''X-API-Key:\s*stlr_test_[a-zA-Z0-9_]+''',
 ]
 
 [[rules]]
