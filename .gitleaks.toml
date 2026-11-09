@@ -28,6 +28,11 @@ paths = [
   '''archive/''',
   '''marketing/''',
   '''docs/''',
+  '''examples/''',
+  '''\.settler/''',
+  '''\.md$''',
+  '''\.py$''',
+  '''supabase/production-schema\.json''',
 ]
 
 commits = [
@@ -35,6 +40,9 @@ commits = [
   '''^Merge.*''',
   '''beaade49b1a5611f3c505452af372e878da4c974''',
   '''bd26db77ca4adee5fc650cb5c672eaacbc67db10''',
+  '''e1e556471d2ee4facc895de8cab6b0da43caf5c7''',
+  '''9f8f159a7465dd285cd5dd914cd1f12c1784fc15''',
+  '''3b5f22a621fb762674e50f2d59ef9906350de0fa''',
 ]
 
 regexes = [
@@ -45,6 +53,10 @@ regexes = [
   '''stlr_live_9f823a9d8214''',
   '''stlr_test_[a-zA-Z0-9_]+''',
   '''X-API-Key:\s*stlr_test_[a-zA-Z0-9_]+''',
+  '''rk_your_api_key''',
+  '''rk_test_[a-zA-Z0-9_]+''',
+  '''SETTLER_API_TOKEN''',
+  '''Authorization:\s*Bearer\s*\$\{SETTLER_API_TOKEN\}''',
 ]
 
 [[rules]]
