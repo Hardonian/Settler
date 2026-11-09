@@ -56,10 +56,22 @@ function runCommand(command: string, args: string[], cwd: string): Promise<void>
   });
 }
 
-async function waitForServer(url: string, timeoutMs = 120_000): Promise<void> {
+async function waitForServer(
+  url: string,
+  serverProcess?: ChildProcessWithoutNullStreams | null,
+  getErrorOutput?: () => string,
+  timeoutMs = 60_000
+): Promise<void> {
   const startedAt = Date.now();
 
   while (Date.now() - startedAt < timeoutMs) {
+    if (serverProcess && serverProcess.exitCode !== null && serverProcess.exitCode !== undefined) {
+      const err = getErrorOutput?.() || "";
+      throw new Error(
+        `Server process exited prematurely with code ${serverProcess.exitCode}: ${err}`
+      );
+    }
+
     try {
       const response = await fetch(url, { redirect: "manual" });
       if (response.status > 0) {
@@ -72,17 +84,20 @@ async function waitForServer(url: string, timeoutMs = 120_000): Promise<void> {
     await new Promise((resolve) => setTimeout(resolve, 500));
   }
 
-  throw new Error(`Timed out waiting for production server at ${url}`);
+  const err = getErrorOutput?.() || "";
+  throw new Error(`Timed out waiting for production server at ${url}. Output: ${err}`);
 }
 
 jest.setTimeout(300_000);
 
 describe("content pages in production build mode", () => {
   let serverProcess: ChildProcessWithoutNullStreams | null = null;
+  let serverOutput = "";
 
   beforeAll(async () => {
     const buildIdPath = path.join(WEB_PACKAGE_DIR, ".next", "BUILD_ID");
-    if (!fs.existsSync(buildIdPath)) {
+    const previewPropsPath = path.join(WEB_PACKAGE_DIR, ".next", "server", "preview-props.json");
+    if (!fs.existsSync(buildIdPath) || !fs.existsSync(previewPropsPath)) {
       await runCommand(
         PACKAGE_MANAGER.command,
         [...PACKAGE_MANAGER.argsPrefix, "run", "build"],
@@ -90,37 +105,58 @@ describe("content pages in production build mode", () => {
       );
     }
 
-    serverProcess = spawn(
-      process.execPath,
-      ["node_modules/next/dist/bin/next", "start", "-p", String(PRODUCTION_PORT)],
-      {
-        cwd: WEB_PACKAGE_DIR,
-        env: { ...process.env, NODE_ENV: "production", PORT: String(PRODUCTION_PORT) },
-        stdio: "inherit",
-        shell: false,
-      }
-    ) as unknown as ChildProcessWithoutNullStreams;
+    const nextBin = path.join(WEB_PACKAGE_DIR, "node_modules", "next", "dist", "bin", "next");
 
-    await waitForServer(`${BASE_URL}/product`);
+    serverProcess = spawn(process.execPath, [nextBin, "start", "-p", String(PRODUCTION_PORT)], {
+      cwd: WEB_PACKAGE_DIR,
+      env: { ...process.env, NODE_ENV: "production", PORT: String(PRODUCTION_PORT) },
+      stdio: ["ignore", "pipe", "pipe"],
+      shell: false,
+    }) as unknown as ChildProcessWithoutNullStreams;
+
+    serverProcess.stdout?.on("data", (chunk: Buffer) => {
+      serverOutput += chunk.toString();
+    });
+    serverProcess.stderr?.on("data", (chunk: Buffer) => {
+      serverOutput += chunk.toString();
+    });
+
+    await waitForServer(`${BASE_URL}/product`, serverProcess, () => serverOutput);
   });
 
   afterAll(async () => {
-    if (serverProcess && !serverProcess.killed) {
-      serverProcess.kill("SIGTERM");
+    if (serverProcess) {
+      serverProcess.stdout?.destroy();
+      serverProcess.stderr?.destroy();
 
-      await Promise.race([
-        new Promise<void>((resolve) => {
-          serverProcess?.once("exit", () => resolve());
-        }),
-        new Promise<void>((resolve) => {
-          setTimeout(() => {
-            if (serverProcess && !serverProcess.killed) {
-              serverProcess.kill("SIGKILL");
-            }
-            resolve();
-          }, 2_000);
-        }),
-      ]);
+      if (!serverProcess.killed) {
+        if (process.platform === "win32" && serverProcess.pid) {
+          try {
+            const { execSync } = await import("child_process");
+            execSync(`taskkill /pid ${serverProcess.pid} /T /F`, { stdio: "ignore" });
+          } catch {}
+        } else {
+          serverProcess.kill("SIGTERM");
+        }
+
+        await Promise.race([
+          new Promise<void>((resolve) => {
+            serverProcess?.once("exit", () => resolve());
+          }),
+          new Promise<void>((resolve) => {
+            setTimeout(() => {
+              if (serverProcess && !serverProcess.killed) {
+                try {
+                  serverProcess.kill("SIGKILL");
+                } catch {}
+              }
+              resolve();
+            }, 2_000);
+          }),
+        ]);
+      }
+
+      serverProcess.unref();
     }
   });
 
