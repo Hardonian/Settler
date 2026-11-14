@@ -6,6 +6,7 @@
  */
 
 import { Router, Response } from "express";
+import rateLimit from "express-rate-limit";
 import { AuthRequest } from "../../middleware/auth";
 import { enforceFreezeState } from "../../middleware/governance";
 import { requirePermission } from "../../middleware/authorization";
@@ -24,6 +25,13 @@ import {
 
 const router: Router = Router();
 
+const automatedReviewRateLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // limit each client to 100 requests per window
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
 /**
  * POST /api/v1/automated-review/run/:runId
  * Trigger automated review for a reconciliation run
@@ -31,6 +39,7 @@ const router: Router = Router();
 router.post(
   "/run/:runId",
   enforceFreezeState(),
+  automatedReviewRateLimiter,
   requirePermission(Permission.JOBS_EXECUTE),
   async (req: AuthRequest, res: Response) => {
     try {
@@ -84,6 +93,7 @@ router.post(
 router.post(
   "/match/:matchId",
   enforceFreezeState(),
+  automatedReviewRateLimiter,
   requirePermission(Permission.JOBS_EXECUTE),
   async (req: AuthRequest, res: Response) => {
     try {
