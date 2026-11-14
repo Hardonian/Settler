@@ -378,7 +378,7 @@
     "prettier": "^3.9.10",
     "prisma": "7.10.1",
     "sharp": "^0.35.5",
-    "supabase": "2.122.0",
+    "supabase": "3.0.0",
     "ts-jest": "^29.4.15",
     "tsx": "^4.23.15",
     "typescript": "^6.0.3",
