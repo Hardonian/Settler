@@ -55,20 +55,20 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@ai-sdk/openai": "^4.0.102",
-    "@types/node": "^26.6.5",
-    "ai": "^7.0.153",
+    "@ai-sdk/openai": "^4.0.111",
+    "@types/node": "^26.6.6",
+    "ai": "^7.0.165",
     "typescript": "^6.0.3"
   },
   "devDependencies": {
     "@jest/globals": "^30.5.2",
     "@types/jest": "^30.0.0",
-    "@vitest/coverage-v8": "^5.0.5",
+    "@vitest/coverage-v8": "^5.1.0",
     "eslint-config-prettier": "^10.1.8",
     "jest": "^30.5.2",
     "ts-jest": "^29.4.14",
-    "vite": "^8.3.5",
-    "vitest": "^5.0.5"
+    "vite": "^8.3.6",
+    "vitest": "^5.1.0"
   },
   "peerDependencies": {
     "typescript": ">=5.0.0"
