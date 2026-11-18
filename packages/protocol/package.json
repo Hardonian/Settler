@@ -24,9 +24,9 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@ai-sdk/openai": "^4.0.111",
+    "@ai-sdk/openai": "^4.0.118",
     "@types/node": "^26.6.6",
-    "ai": "^7.0.165",
+    "ai": "^7.0.173",
     "typescript": "^6.0.3"
   },
   "keywords": [
@@ -47,7 +47,7 @@
     "@vitest/coverage-v8": "^5.1.0",
     "jest": "^30.5.2",
     "ts-jest": "^29.4.14",
-    "vite": "^8.3.6",
+    "vite": "^8.3.8",
     "vitest": "^5.1.0"
   }
 }

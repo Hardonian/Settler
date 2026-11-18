@@ -29,14 +29,14 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@ai-sdk/openai": "^4.0.111",
+    "@ai-sdk/openai": "^4.0.118",
     "@settler/types": "workspace:*",
-    "ai": "^7.0.165",
-    "axios": "^1.21.0",
+    "ai": "^7.0.173",
+    "axios": "^1.21.1",
     "better-sqlite3": "^12.10.0",
     "chalk": "^6.0.1",
     "commander": "^15.1.0",
-    "dotenv": "^18.0.9",
+    "dotenv": "^18.0.10",
     "node-cron": "^4.6.0",
     "uuid": "^14.0.3",
     "winston": "^3.19.0"
@@ -54,7 +54,7 @@
     "ts-jest": "^29.4.15",
     "tsx": "^4.23.15",
     "typescript": "^6.0.3",
-    "vite": "^8.3.6",
+    "vite": "^8.3.8",
     "vitest": "^5.1.0"
   },
   "keywords": [
