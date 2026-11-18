@@ -25,9 +25,9 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@ai-sdk/openai": "^4.0.111",
+    "@ai-sdk/openai": "^4.0.118",
     "@types/node": "^26.6.6",
-    "ai": "^7.0.165",
+    "ai": "^7.0.173",
     "typescript": "^6.0.3",
     "uuid": "^14.0.3"
   },
@@ -40,10 +40,10 @@
     "eslint": "^9.39.4",
     "eslint-config-prettier": "^10.1.8",
     "jest": "^30.5.2",
-    "prettier": "^3.9.10",
+    "prettier": "^3.10.1",
     "ts-jest": "^29.4.15",
     "tsx": "^4.23.15",
-    "vite": "^8.3.6",
+    "vite": "^8.3.8",
     "vitest": "^5.1.0"
   },
   "keywords": [
