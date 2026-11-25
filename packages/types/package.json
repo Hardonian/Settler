@@ -23,16 +23,16 @@
     "clean": "node -e \"const fs=require('fs'); fs.existsSync('dist') && fs.rmSync('dist', {recursive: true, force: true})\""
   },
   "dependencies": {
-    "@ai-sdk/openai": "^4.0.118",
+    "@ai-sdk/openai": "^4.0.122",
     "@types/node": "^26.6.6",
-    "ai": "^7.0.173",
+    "ai": "^7.0.179",
     "typescript": "^6.0.3",
     "zod": "^4.6.7"
   },
   "license": "MIT",
   "devDependencies": {
-    "@vitest/coverage-v8": "^5.1.0",
+    "@vitest/coverage-v8": "^5.1.1",
     "vite": "^8.3.8",
-    "vitest": "^5.1.0"
+    "vitest": "^5.1.1"
   }
 }
