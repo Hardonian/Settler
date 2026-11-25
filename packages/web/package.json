@@ -85,7 +85,7 @@
     "sharp": "^0.35.5",
     "sonner": "^2.0.8",
     "stripe": "^23.0.1",
-    "tailwind-merge": "^2.6.1",
+    "tailwind-merge": "^3.7.1",
     "tailwindcss": "^4.3.5",
     "uuid": "^14.0.3",
     "xstate": "^5.33.4",
