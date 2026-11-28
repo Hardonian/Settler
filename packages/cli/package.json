@@ -30,27 +30,27 @@
     "foundry:faults": "tsx src/index.ts foundry generate --type faults --seeds 1 && node ../../scripts/run-with-env.mjs --set FOUNDRY_FAULTS=1 -- tsx src/index.ts foundry report --last 1"
   },
   "dependencies": {
-    "@ai-sdk/openai": "^4.0.118",
+    "@ai-sdk/openai": "^4.0.122",
     "@jobforge/sdk-ts": "workspace:*",
     "@settler/protocol": "workspace:*",
     "@settler/reconciliation-core": "workspace:*",
     "@settler/sdk": "workspace:*",
-    "ai": "^7.0.173",
+    "ai": "^7.0.179",
     "chalk": "^6.0.1",
     "commander": "^15.1.0",
     "dotenv": "^18.0.10",
-    "inquirer": "^14.3.0",
+    "inquirer": "^14.3.1",
     "yaml": "^2.9.1"
   },
   "devDependencies": {
     "@types/node": "^26.6.6",
-    "@vitest/coverage-v8": "^5.1.0",
+    "@vitest/coverage-v8": "^5.1.1",
     "jest": "^30.5.2",
     "ts-jest": "^29.4.15",
     "tsx": "^4.23.15",
     "typescript": "^6.0.3",
     "vite": "^8.3.8",
-    "vitest": "^5.1.0"
+    "vitest": "^5.1.1"
   },
   "keywords": [
     "reconciliation",
