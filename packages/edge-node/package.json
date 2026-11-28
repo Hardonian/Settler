@@ -29,9 +29,9 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@ai-sdk/openai": "^4.0.118",
+    "@ai-sdk/openai": "^4.0.122",
     "@settler/types": "workspace:*",
-    "ai": "^7.0.173",
+    "ai": "^7.0.179",
     "axios": "^1.21.1",
     "better-sqlite3": "^13.2.0",
     "chalk": "^6.0.1",
@@ -46,16 +46,16 @@
     "@types/node": "^26.6.6",
     "@types/node-cron": "^3.0.11",
     "@types/uuid": "^9.0.8",
-    "@typescript-eslint/eslint-plugin": "^8.72.1",
-    "@typescript-eslint/parser": "^8.72.1",
-    "@vitest/coverage-v8": "^5.1.0",
+    "@typescript-eslint/eslint-plugin": "^8.73.0",
+    "@typescript-eslint/parser": "^8.73.0",
+    "@vitest/coverage-v8": "^5.1.1",
     "eslint": "^9.39.4",
     "jest": "^30.5.2",
     "ts-jest": "^29.4.15",
     "tsx": "^4.23.15",
     "typescript": "^6.0.3",
     "vite": "^8.3.8",
-    "vitest": "^5.1.0"
+    "vitest": "^5.1.1"
   },
   "keywords": [
     "settler",
